@@ -11,6 +11,7 @@ pids
 build/*.js
 build/*.map
 
+src/assets
 node_modules
 
 .lock-wscript

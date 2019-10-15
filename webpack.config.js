@@ -75,7 +75,7 @@ module.exports = {
         {
           loader: 'file-loader',
           options: {
-            name: path.posix.join('assets', 'assets-3d/[name].[hash:7].[ext]')
+            name: path.posix.join('assets', '[name].[ext]')
           }
         }
       ]
@@ -84,7 +84,7 @@ module.exports = {
       use: [{
         loader: 'file-loader',
         options: {
-          name: path.posix.join('assets', 'assets-3d/[name].[hash:7].png')
+          name: path.posix.join('assets', '[name].png')
         }
       }, {
         loader: 'lut-loader'
@@ -97,6 +97,7 @@ module.exports = {
     extensions: ['.js', '.json'],
 
     alias: {
+      '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@three': path.resolve('./node_modules/three/src'),
       '@': path.resolve('./src')
     }

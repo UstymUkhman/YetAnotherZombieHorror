@@ -11,7 +11,8 @@
     "build": "webpack --env build"
   },
   "dependencies": {
-    "three": "^0.108.0"
+    "await-to-js": "^2.1.1",
+    "three": "^0.109.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.0",

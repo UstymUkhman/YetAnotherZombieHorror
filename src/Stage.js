@@ -24,7 +24,7 @@ export default class Playground {
     this.createScene();
     this.createCamera();
     this.createLights();
-    this.createGround();
+    // this.createGround();
 
     this.createRenderer();
     this.createControls();
@@ -48,7 +48,7 @@ export default class Playground {
 
   createCamera () {
     this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
-    this.camera.position.set(0, 10, -50);
+    this.camera.position.set(0, 15, -30);
     this.camera.lookAt(0, 0, 0);
   }
 
@@ -104,7 +104,7 @@ export default class Playground {
 
   createControls () {
     this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.orbitControls.target.set(0, 0, 25);
+    this.orbitControls.target.set(0, 8, 0);
     this.orbitControls.update();
   }
 
