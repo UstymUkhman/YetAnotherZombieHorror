@@ -11,8 +11,8 @@ pids
 build/*.js
 build/*.map
 
+src/assets/
 node_modules
-src/assets/envmap
 
 .lock-wscript
 .sublime-workspace
