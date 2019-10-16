@@ -4,13 +4,14 @@
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com>",
   "description": "Another Dumb Zombie Game",
   "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game",
-  "main": "src/index.js",
+  "main": "src/main.js",
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --inline --progress",
     "build": "webpack --env build"
   },
   "dependencies": {
+    "animejs": "^3.1.0",
     "await-to-js": "^2.1.1",
     "three": "^0.109.0"
   },

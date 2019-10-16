@@ -42,7 +42,7 @@ const productionPlugins = [
 module.exports = {
   devtool: build ? '#source-map' : 'cheap-module-eval-source-map',
   mode: build ? 'production' : 'development',
-  entry: path.resolve('./src/index.js'),
+  entry: path.resolve('./src/main.js'),
 
   module: {
     rules: [{
