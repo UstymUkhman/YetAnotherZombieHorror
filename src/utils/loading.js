@@ -15,21 +15,20 @@ const loading = new LoadingManager();
 dispatchEvent(0, 0);
 
 loading.onStart = function (url, toLoad, total) {
-  console.log(`Loading Started: ${toLoad} of ${total}.`);
+  console.info('Loading... 0%');
   dispatchEvent(0, total);
 };
 
 loading.onProgress = function (url, loaded, total) {
-  console.log(`Loaded: ${loaded} of ${total}.`);
+  const progress = (loaded * 100 / total).toFixed();
+  console.info(`Loading... ${progress}%`);
   dispatchEvent(loaded, total);
 };
 
 loading.onError = function (url) {
-  console.log(`Error occurred loading: ${url}.`);
+  console.info(`Error occurred loading: ${url}.`);
 };
 
-loading.onLoad = function () {
-  console.log('Loading complete!');
-};
+loading.onLoad = function () { };
 
 export { loading };

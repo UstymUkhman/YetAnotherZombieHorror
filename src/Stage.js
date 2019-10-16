@@ -24,14 +24,11 @@ export default class Playground {
     this.createScene();
     this.createCamera();
     this.createLights();
-    // this.createGround();
 
     this.createRenderer();
     this.createControls();
     this.createEvents();
     this.createStats();
-
-    this.raf = requestAnimationFrame(this.render.bind(this));
   }
 
   setSize () {
@@ -43,12 +40,12 @@ export default class Playground {
   createScene () {
     this.scene = new Scene();
     this.scene.background = new Color(FOG);
-    this.scene.fog = new Fog(FOG, 50, 500);
+    this.scene.fog = new Fog(FOG, 1, 50);
   }
 
   createCamera () {
     this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
-    this.camera.position.set(0, 15, -30);
+    this.camera.position.set(0, 3.5, -5);
     this.camera.lookAt(0, 0, 0);
   }
 
@@ -56,19 +53,17 @@ export default class Playground {
     const directional = new DirectionalLight(WHITE, 1);
     const ambient = new AmbientLight(WHITE);
 
-    directional.position.set(-5, 10, 15);
+    directional.position.set(0, 10, -25);
     directional.castShadow = true;
 
-    directional.shadow.camera.bottom = -25;
-    directional.shadow.camera.right = 25;
-    directional.shadow.camera.left = -25;
-    directional.shadow.camera.top = 15;
+    directional.shadow.mapSize.height = 1024;
+    directional.shadow.mapSize.width = 1024;
 
     directional.shadow.mapSize.x = 1024;
     directional.shadow.mapSize.y = 1024;
 
-    directional.shadow.camera.near = 2;
-    directional.shadow.camera.far = 50;
+    directional.shadow.camera.near = 1;
+    directional.shadow.camera.far = 50; // 100
 
     this.scene.add(directional);
     this.scene.add(ambient);
@@ -76,7 +71,7 @@ export default class Playground {
 
   createGround () {
     const ground = new Mesh(
-      new BoxGeometry(500, 500, 1),
+      new BoxGeometry(100, 100, 1),
       new MeshPhongMaterial({
         depthWrite: false,
         color: GROUND
@@ -87,9 +82,10 @@ export default class Playground {
     ground.receiveShadow = true;
     this.scene.add(ground);
 
-    const grid = new GridHelper(500, 50, 0, 0);
+    const grid = new GridHelper(100, 50, 0, 0);
     grid.material.transparent = true;
-    grid.material.opacity = 0.2;
+    grid.material.opacity = 0.25;
+    grid.position.y = 0.5;
     this.scene.add(grid);
   }
 
@@ -104,7 +100,7 @@ export default class Playground {
 
   createControls () {
     this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.orbitControls.target.set(0, 8, 0);
+    this.orbitControls.target.set(0, 2, 0);
     this.orbitControls.update();
   }
 
@@ -123,8 +119,6 @@ export default class Playground {
     this.stats.begin();
     this.orbitControls.update();
     this.renderer.render(this.scene, this.camera);
-
-    this.raf = requestAnimationFrame(this.render.bind(this));
     this.stats.end();
   }
 
@@ -139,7 +133,6 @@ export default class Playground {
     window.removeEventListener('resize', this._onResize, false);
     document.body.removeChild(this.renderer.domElement);
     document.body.removeChild(this.stats.domElement);
-    cancelAnimationFrame(this.raf);
 
     delete this.orbitControls;
     delete this.renderer;
