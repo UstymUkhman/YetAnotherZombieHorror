@@ -2,14 +2,11 @@ import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { gltfLoader } from '@/utils/assetsLoader';
 
-import { LoopOnce } from '@three/constants';
 import { camelCase } from '@/utils/string';
-import { Clock } from '@three/core/Clock';
 import to from 'await-to-js';
 
 export default class Character {
   constructor (asset, onLoad = null) {
-    this._clock = new Clock();
     this.load(asset, onLoad);
 
     this.character = null;
@@ -40,8 +37,6 @@ export default class Character {
         this._mixer = new AnimationMixer(gltf.scene);
         this._createAnimations(gltf.animations);
 
-        this.currentAnimation = this.animations.rifleIdle;
-        this.animations.rifleIdle.play();
         this.character = gltf.scene;
         callback(this.character);
       }
@@ -53,16 +48,9 @@ export default class Character {
       const clip = camelCase(clips[c].name);
       this.animations[clip] = this._mixer.clipAction(clips[c]);
     }
-
-    this.animations.rifleAim.clampWhenFinished = true;
-    this.animations.death.clampWhenFinished = true;
-
-    this.animations.rifleAim.setLoop(LoopOnce);
-    this.animations.death.setLoop(LoopOnce);
   }
 
-  update () {
-    const delta = this._clock.getDelta();
+  update (delta) {
     this._mixer.update(delta);
   }
 };

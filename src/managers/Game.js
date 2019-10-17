@@ -1,5 +1,8 @@
+import { Clock } from '@three/core/Clock';
+
 class Game {
   constructor () {
+    this._clock = new Clock();
     this.calls = [];
     this.loop();
   }
@@ -10,8 +13,10 @@ class Game {
   }
 
   loop () {
+    const delta = this._clock.getDelta();
+
     for (let c = 0; c < this.calls.length; c++) {
-      this.calls[c]();
+      this.calls[c](delta);
     }
 
     requestAnimationFrame(this.loop.bind(this));

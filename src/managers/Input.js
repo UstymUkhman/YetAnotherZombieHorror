@@ -22,11 +22,9 @@ class Input {
     }
   }
 
-  onKeyDown (event) {
-  }
+  onKeyDown (event) { }
 
-  onKeyUp (event) {
-  }
+  onKeyUp (event) { }
 
   _addEvents () {
     document.addEventListener('mousedown', this._onMouseDown, false);
