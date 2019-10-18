@@ -24,7 +24,7 @@ export default class Playground {
     this.createScene();
     this.createCamera();
     this.createLights();
-    this.createGround();
+    // this.createGround();
 
     this.createRenderer();
     this.createControls();
