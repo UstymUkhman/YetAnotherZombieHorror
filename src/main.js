@@ -2,24 +2,41 @@ import Input from '@/managers/Input';
 import Game from '@/managers/Game';
 
 import Player from '@/Player';
-// import Enemy from '@/Enemy';
+import Enemy from '@/Enemy';
 
 import Stage from '@/Stage';
 
 (() => {
+  let loadedCharacters = 0;
   const stage = new Stage();
-  Game.add(stage.render.bind(stage));
+
+  Enemy.setBounds(stage.bounds);
+  Player.setBounds(stage.bounds);
+
+  function onCharacterLoad () {
+    if (loadedCharacters) {
+      const grid = stage.scene.children.length - 1;
+      stage.scene.remove(stage.scene.children[grid]);
+
+      Game.add(stage.render.bind(stage));
+      stage.createGrid();
+    }
+
+    loadedCharacters++;
+  }
 
   const player = new Player(character => {
-    stage.scene.add(character);
-    stage.createGround();
-
     Game.add(player.update.bind(player));
+    stage.scene.add(character);
     Input.player = player;
+
+    stage.createGrid();
+    onCharacterLoad();
   });
 
-  // const zombie = new Enemy(character => {
-  //   stage.scene.add(character);
-  //   Game.add(zombie.update.bind(zombie));
-  // });
+  const zombie = new Enemy(character => {
+    Game.add(zombie.update.bind(zombie));
+    stage.scene.add(character);
+    onCharacterLoad();
+  });
 })();

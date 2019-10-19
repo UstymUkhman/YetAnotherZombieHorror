@@ -24,7 +24,7 @@ export default class Playground {
     this.createScene();
     this.createCamera();
     this.createLights();
-    // this.createGround();
+    this.createGround();
 
     this.createRenderer();
     this.createControls();
@@ -82,7 +82,9 @@ export default class Playground {
     ground.rotateX(-Math.PI / 2);
     ground.receiveShadow = true;
     this.scene.add(ground);
+  }
 
+  createGrid () {
     const grid = new GridHelper(100, 50, 0, 0);
     grid.material.transparent = true;
     grid.material.opacity = 0.25;
@@ -140,5 +142,12 @@ export default class Playground {
     delete this.camera;
     delete this.scene;
     delete this.stats;
+  }
+
+  get bounds () {
+    return {
+      front: 49,
+      side: 49
+    };
   }
 }

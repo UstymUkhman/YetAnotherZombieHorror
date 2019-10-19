@@ -15,9 +15,6 @@ export default class Player extends Character {
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
-      player.position.set(...config.position);
-      player.scale.set(...config.scale);
-
       // console.log(this.animations);
 
       this.lastAnimation = 'rifleIdle';

@@ -3,7 +3,13 @@ import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { gltfLoader } from '@/utils/assetsLoader';
 
 import { camelCase } from '@/utils/string';
+import { clamp } from '@/utils/number';
 import to from 'await-to-js';
+
+const BOUNDS = {
+  front: Infinity,
+  side: Infinity
+};
 
 export default class Character {
   constructor (asset, setting, onLoad = null) {
@@ -39,6 +45,9 @@ export default class Character {
           }
         });
 
+        gltf.scene.position.set(...this.setting.position);
+        gltf.scene.scale.set(...this.setting.scale);
+
         this.mixer = new AnimationMixer(gltf.scene);
         this.createAnimations(gltf.animations);
 
@@ -61,8 +70,14 @@ export default class Character {
   }
 
   updatePosition () {
-    this.character.position.x += this.speed.x;
-    this.character.position.z += this.speed.z;
+    let x = this.character.position.x + this.speed.x;
+    let z = this.character.position.z + this.speed.z;
+
+    z = clamp(z, -BOUNDS.front, BOUNDS.front);
+    x = clamp(x, -BOUNDS.side, BOUNDS.side);
+
+    this.character.position.x = x;
+    this.character.position.z = z;
   }
 
   update (delta) {
@@ -71,5 +86,10 @@ export default class Character {
     if (this.moving) {
       this.updatePosition();
     }
+  }
+
+  static setBounds (stage) {
+    BOUNDS.front = stage.front;
+    BOUNDS.side = stage.side;
   }
 };
