@@ -8,6 +8,7 @@ class Input {
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
+    this.keyDown = null;
     this.move = '0000';
 
     this.player = null;
@@ -17,13 +18,13 @@ class Input {
 
   onMouseDown (event) {
     if (event.which === 3) {
-      this.player.aim();
+      this.player.aim(true);
     }
   }
 
   onMouseUp (event) {
     if (event.which === 3) {
-      this.player.idle();
+      this.player.aim(false);
     }
   }
 
@@ -33,6 +34,7 @@ class Input {
       this.moves[2] = 0;
       this.moves[3] = 0;
 
+      this.keyDown = Date.now();
       this.player.run(true);
       this.shift = true;
       return;
@@ -58,17 +60,28 @@ class Input {
         this.moves[3] = 1;
         this.moves[1] = 0;
         break;
+
+      default:
+        return;
     }
 
     const move = this.moves.join('');
 
     if (this.move !== move) {
       this.player.move(this.moves, this.shift);
+      this.keyDown = Date.now();
       this.move = move;
     }
   }
 
   onKeyUp (event) {
+    const delay = Date.now() - this.keyDown;
+
+    if (delay < 300) {
+      setTimeout(() => { this.onKeyUp(event); }, 300 - delay);
+      return;
+    }
+
     if (event.keyCode === 16 && this.shift) {
       this.player.run(false);
       this.shift = false;
@@ -90,6 +103,9 @@ class Input {
       case 68:
         this.moves[3] = 0;
         break;
+
+      default:
+        return;
     }
 
     const move = this.moves.join('');

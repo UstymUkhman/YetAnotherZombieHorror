@@ -1,7 +1,7 @@
 import PLAYER from '@/assets/gltf/player.glb';
 import { LoopOnce } from '@three/constants';
 import Character from '@/Character';
-import anime from 'animejs';
+// import anime from 'animejs';
 
 export default class Player extends Character {
   constructor (onLoad) {
@@ -18,8 +18,9 @@ export default class Player extends Character {
       player.scale.set(1.8, 1.8, 1.8);
       player.position.set(0, 0.5, 0);
 
-      console.log(this.animations);
+      // console.log(this.animations);
 
+      this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
       onLoad(player);
     });
@@ -28,45 +29,55 @@ export default class Player extends Character {
 
     this.hasRifle = true;
     this.running = false;
+    this.moving = false;
     this.aiming = false;
   }
 
   idle () {
     const idle = `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
 
+    if (this.aiming) {
+      this.lastAnimation = idle;
+      return;
+    }
+
     this.currentAnimation.crossFadeTo(this.animations[idle], 0.25, true);
     this.animations[idle].play();
-    this.aiming = false;
+    this.moving = false;
 
     setTimeout(() => {
+      this.lastAnimation = idle;
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[idle];
     }, 250);
 
-    anime({
-      targets: this.character.rotation,
-      y: this.rotation,
-      easing: 'linear',
-      duration: 250
-    });
+    // anime({
+    //   targets: this.character.rotation,
+    //   y: this.rotation,
+    //   easing: 'linear',
+    //   duration: 250
+    // });
   }
 
-  aim () {
-    this.currentAnimation.crossFadeTo(this.animations.rifleAim, 0.25, true);
-    this.animations.rifleAim.play();
-    this.aiming = true;
+  aim (aiming) {
+    const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
+    const next = aiming ? aim : this.lastAnimation;
+
+    this.currentAnimation.crossFadeTo(this.animations[next], 0.25, true);
+    this.animations[next].play();
+    this.aiming = aiming;
 
     setTimeout(() => {
       this.currentAnimation.stop();
-      this.currentAnimation = this.animations.rifleAim;
+      this.currentAnimation = this.animations[next];
     }, 250);
 
-    anime({
-      targets: this.character.rotation,
-      y: -Math.PI / 1.0,
-      easing: 'linear',
-      duration: 250
-    });
+    // anime({
+    //   targets: this.character.rotation,
+    //   y: -Math.PI / 1.0,
+    //   easing: 'linear',
+    //   duration: 250
+    // });
   }
 
   move (directions, run = false) {
@@ -78,11 +89,12 @@ export default class Player extends Character {
 
     setTimeout(() => {
       this.currentAnimation.stop();
+      this.lastAnimation = animation;
       this.currentAnimation = this.animations[animation];
     }, 250);
 
-    console.log(animation);
     this.running = run;
+    this.moving = true;
   }
 
   getMoveDirection (w, a, s, d) {

@@ -50,6 +50,10 @@ export default class Character {
     }
   }
 
+  updatePosition (w, a, s, d) {
+    // this.character.position
+  }
+
   update (delta) {
     this._mixer.update(delta);
   }
