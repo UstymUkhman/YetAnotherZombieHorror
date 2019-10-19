@@ -8,7 +8,7 @@ import Stage from '@/Stage';
 
 (() => {
   let loadedCharacters = 0;
-  const stage = new Stage();
+  const stage = new Stage(false);
 
   Enemy.setBounds(stage.bounds);
   Player.setBounds(stage.bounds);
@@ -26,7 +26,10 @@ import Stage from '@/Stage';
   }
 
   const player = new Player(character => {
+    player.camera = stage.camera.position;
     Game.add(player.update.bind(player));
+
+    player.character.add(stage.camera);
     stage.scene.add(character);
     Input.player = player;
 

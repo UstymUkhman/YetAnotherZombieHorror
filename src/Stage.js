@@ -18,18 +18,21 @@ const WHITE = 0xFFFFFF;
 const FOG = 0xA0A0A0;
 
 export default class Playground {
-  constructor () {
+  constructor (free = true) {
     this.setSize();
 
     this.createScene();
-    this.createCamera();
+    this.createCamera(free);
     this.createLights();
     this.createGround();
 
     this.createRenderer();
-    this.createControls();
     this.createEvents();
     this.createStats();
+
+    if (free) {
+      this.createControls();
+    }
   }
 
   setSize () {
@@ -44,10 +47,17 @@ export default class Playground {
     this.scene.fog = new Fog(FOG, 1, 50);
   }
 
-  createCamera () {
+  createCamera (free = false) {
     this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
-    this.camera.position.set(0, 3.5, -5);
-    this.camera.lookAt(0, 0, 0);
+
+    if (!free) {
+      this.camera.position.set(-0.75, 1.5, -3);
+      this.camera.rotation.set(0, Math.PI, 0);
+      this.camera.setFocalLength(25.0);
+    } else {
+      this.camera.position.set(0, 3.5, -5);
+      this.camera.lookAt(0, 0, 0);
+    }
   }
 
   createLights () {
@@ -120,9 +130,12 @@ export default class Playground {
 
   render () {
     this.stats.begin();
-    this.orbitControls.update();
     this.renderer.render(this.scene, this.camera);
     this.stats.end();
+
+    if (this.orbitControls) {
+      this.orbitControls.update();
+    }
   }
 
   onResize () {

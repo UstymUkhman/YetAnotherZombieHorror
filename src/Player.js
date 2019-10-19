@@ -1,8 +1,13 @@
 import PLAYER from '@/assets/gltf/player.glb';
+import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
+
 import config from '@/assets/player.json';
 import Character from '@/Character';
-// import anime from 'animejs';
+import anime from 'animejs';
+
+const AIM_CAMERA = new Vector3(-0.4, 1.675, -1.15);
+const CAMERA = new Vector3(-0.75, 1.5, -3);
 
 export default class Player extends Character {
   constructor (onLoad) {
@@ -22,6 +27,7 @@ export default class Player extends Character {
       onLoad(player);
     });
 
+    this.camera = new Vector3();
     this.hasRifle = true;
     this.aiming = false;
   }
@@ -66,12 +72,20 @@ export default class Player extends Character {
       this.currentAnimation = this.animations[next];
     }, 100);
 
-    // anime({
-    //   targets: this.character.rotation,
-    //   y: -Math.PI / 1.0,
-    //   easing: 'linear',
-    //   duration: 250
-    // });
+    const x = aiming ? AIM_CAMERA.x : CAMERA.x;
+    const y = aiming ? AIM_CAMERA.y : CAMERA.y;
+    const z = aiming ? AIM_CAMERA.z : CAMERA.z;
+
+    anime({
+      delay: aiming ? 100 : 0,
+      easing: 'easeInOutQuad',
+      targets: this.camera,
+      duration: 400,
+
+      x: x,
+      y: y,
+      z: z
+    });
   }
 
   move (directions, run = false) {

@@ -16,19 +16,34 @@ class Input {
     this._addEvents();
   }
 
+  onContextMenu (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  }
+
   onMouseDown (event) {
+    event.stopPropagation();
+    event.preventDefault();
+
     if (event.which === 3) {
       this.player.aim(true);
     }
   }
 
   onMouseUp (event) {
+    event.stopPropagation();
+    event.preventDefault();
+
     if (event.which === 3) {
       this.player.aim(false);
     }
   }
 
   onKeyDown (event) {
+    // event.stopPropagation();
+    // event.preventDefault();
+
     if (event.keyCode === 16 && this.moves[0] && !this.shift) {
       this.moves[1] = 0;
       this.moves[2] = 0;
@@ -75,6 +90,9 @@ class Input {
   }
 
   onKeyUp (event) {
+    // event.stopPropagation();
+    // event.preventDefault();
+
     const delay = Date.now() - this.keyDown;
 
     if (delay < 100) {
@@ -126,6 +144,7 @@ class Input {
   }
 
   _addEvents () {
+    document.addEventListener('contextmenu', this.onContextMenu, false);
     document.addEventListener('mousedown', this._onMouseDown, false);
     document.addEventListener('mouseup', this._onMouseUp, false);
     document.addEventListener('keydown', this._onKeyDown, false);
@@ -133,6 +152,7 @@ class Input {
   }
 
   removeEvents () {
+    document.removeEventListener('contextmenu', this.onContextMenu, false);
     document.removeEventListener('mousedown', this._onMouseDown, false);
     document.removeEventListener('mouseup', this._onMouseUp, false);
     document.removeEventListener('keydown', this._onKeyDown, false);
