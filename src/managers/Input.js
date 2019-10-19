@@ -77,8 +77,8 @@ class Input {
   onKeyUp (event) {
     const delay = Date.now() - this.keyDown;
 
-    if (delay < 300) {
-      setTimeout(() => { this.onKeyUp(event); }, 300 - delay);
+    if (delay < 100) {
+      setTimeout(() => { this.onKeyUp(event); }, 100 - delay);
       return;
     }
 
@@ -121,7 +121,7 @@ class Input {
       this.idleTimeout = setTimeout(() => {
         this.player.move(this.moves, this.shift);
         this.move = move;
-      }, 300);
+      }, 100);
     }
   }
 

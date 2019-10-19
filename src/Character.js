@@ -6,14 +6,19 @@ import { camelCase } from '@/utils/string';
 import to from 'await-to-js';
 
 export default class Character {
-  constructor (asset, onLoad = null) {
+  constructor (asset, setting, onLoad = null) {
+    this.speed = { x: 0, z: 0 };
     this.load(asset, onLoad);
 
+    this.setting = setting;
     this.character = null;
     this.animations = {};
 
-    this._mixer = null;
-    this._health = 100;
+    this.running = false;
+    this.moving = false;
+
+    this.mixer = null;
+    this.health = 100;
   }
 
   load (asset, callback) {
@@ -34,8 +39,8 @@ export default class Character {
           }
         });
 
-        this._mixer = new AnimationMixer(gltf.scene);
-        this._createAnimations(gltf.animations);
+        this.mixer = new AnimationMixer(gltf.scene);
+        this.createAnimations(gltf.animations);
 
         this.character = gltf.scene;
         callback(this.character);
@@ -43,18 +48,28 @@ export default class Character {
     });
   }
 
-  _createAnimations (clips) {
+  createAnimations (clips) {
     for (let c = 0; c < clips.length; c++) {
       const clip = camelCase(clips[c].name);
-      this.animations[clip] = this._mixer.clipAction(clips[c]);
+      this.animations[clip] = this.mixer.clipAction(clips[c]);
     }
   }
 
-  updatePosition (w, a, s, d) {
-    // this.character.position
+  setDirection (direction, running = false, aiming = false) {
+    this.speed.x = this.setting.moves[direction][0];
+    this.speed.z = this.setting.moves[direction][1];
+  }
+
+  updatePosition () {
+    this.character.position.x += this.speed.x;
+    this.character.position.z += this.speed.z;
   }
 
   update (delta) {
-    this._mixer.update(delta);
+    this.mixer.update(delta);
+
+    if (this.moving) {
+      this.updatePosition();
+    }
   }
 };
