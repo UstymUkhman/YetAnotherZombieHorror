@@ -7,8 +7,8 @@ import config from '@/assets/player.json';
 import Character from '@/Character';
 import anime from 'animejs';
 
-const AIM_CAMERA = new Vector3(-1, 3.5, -1.5);
-const CAMERA = new Vector3(-1.25, 3.25, -4);
+const AIM_CAMERA = new Vector3(-1, 3, -1.5);
+const CAMERA = new Vector3(-1.25, 2.75, -4);
 
 export default class Player extends Character {
   constructor (onLoad) {

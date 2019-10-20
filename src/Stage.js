@@ -51,7 +51,7 @@ export default class Playground {
     this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
 
     if (!free) {
-      this.camera.position.set(-1.25, 3.25, -4);
+      this.camera.position.set(-1.25, 2.75, -4);
       this.camera.rotation.set(0, Math.PI, 0);
       this.camera.setFocalLength(25.0);
     } else {
@@ -91,6 +91,7 @@ export default class Playground {
 
     ground.rotateX(-Math.PI / 2);
     ground.receiveShadow = true;
+    ground.position.y = -0.5;
     this.scene.add(ground);
   }
 
@@ -98,7 +99,7 @@ export default class Playground {
     const grid = new GridHelper(100, 50, 0, 0);
     grid.material.transparent = true;
     grid.material.opacity = 0.25;
-    grid.position.y = 0.5;
+    grid.position.y = 0.0;
     this.scene.add(grid);
   }
 
