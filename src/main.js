@@ -5,13 +5,14 @@ import Player from '@/Player';
 import Enemy from '@/Enemy';
 
 import Stage from '@/Stage';
+const FREE_CAMERA = false;
 
 (() => {
   let loadedCharacters = 0;
-  const stage = new Stage(false);
+  const stage = new Stage(FREE_CAMERA);
 
-  Enemy.setBounds(stage.bounds);
   Player.setBounds(stage.bounds);
+  Enemy.setBounds(stage.bounds);
 
   function onCharacterLoad () {
     if (loadedCharacters) {
@@ -26,10 +27,13 @@ import Stage from '@/Stage';
   }
 
   const player = new Player(character => {
-    player.camera = stage.camera.position;
+    Game.add(Input.updateRotation.bind(Input));
     Game.add(player.update.bind(player));
 
-    player.character.add(stage.camera);
+    if (!FREE_CAMERA) {
+      player.addCamera(stage.camera);
+    }
+
     stage.scene.add(character);
     Input.player = player;
 
@@ -42,4 +46,8 @@ import Stage from '@/Stage';
     stage.scene.add(character);
     onCharacterLoad();
   });
+
+  if (!FREE_CAMERA) {
+    stage.element.addEventListener('click', Input.requestPointerLock);
+  }
 })();

@@ -51,8 +51,7 @@ export default class Character {
         this.mixer = new AnimationMixer(gltf.scene);
         this.createAnimations(gltf.animations);
 
-        this.character = gltf.scene;
-        callback(this.character);
+        callback(gltf.scene);
       }
     });
   }

@@ -1,0 +1,21 @@
+{
+  "scale": [1.8, 1.8, 1.8],
+  "position": [0, 0.5, 0],
+
+  "moves": {
+    "Idle": [0, 0],
+
+    "Run": [0, 0.2],
+    "Left": [0.07, 0],
+    "Right": [-0.09, 0],
+
+    "Backward": [0, -0.06],
+    "BackwardLeft": [0.04, -0.04],
+    "BackwardRight": [-0.04, -0.04],
+
+    "ForwardRight": [-0.065, 0.065],
+    "ForwardLeft": [0.065, 0.065],
+    "ForwardAim": [0, 0.04],
+    "Forward": [0, 0.1]
+  }
+}

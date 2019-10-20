@@ -51,7 +51,7 @@ export default class Playground {
     this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
 
     if (!free) {
-      this.camera.position.set(-0.75, 1.5, -3);
+      this.camera.position.set(-1.25, 3.25, -4);
       this.camera.rotation.set(0, Math.PI, 0);
       this.camera.setFocalLength(25.0);
     } else {
@@ -108,7 +108,8 @@ export default class Playground {
     this.renderer.setSize(this.width, this.height);
     this.renderer.shadowMap.enabled = true;
 
-    document.body.appendChild(this.renderer.domElement);
+    this.element = this.renderer.domElement;
+    document.body.appendChild(this.element);
   }
 
   createControls () {

@@ -6,8 +6,22 @@ const map = (value, min, max) => clamp((value - min) / (max - min), 0, 1);
 const random = (min, max) => Math.random() * (max - min) + min;
 const lerp = (v0, v1, t) => v0 + t * (v1 - v0);
 
+class Elastic {
+  constructor (value) {
+    this.target = value;
+    this.value = value;
+    this.speed = 3;
+  }
+
+  update (delta = 1 / 60) {
+    const dist = this.target - this.value;
+    this.value += dist * (this.speed * delta);
+  }
+}
+
 export {
   smoothstep,
+  Elastic,
   random,
   clamp,
   lerp,

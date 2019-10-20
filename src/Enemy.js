@@ -16,6 +16,8 @@ export default class Enemy extends Character {
 
       enemy.rotation.set(0, -Math.PI, 0);
       this.animations.idle.play();
+
+      this.character = enemy;
       onLoad(enemy);
     });
   }

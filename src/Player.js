@@ -1,3 +1,4 @@
+import { Object3D } from '@three/core/Object3D';
 import PLAYER from '@/assets/gltf/player.glb';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
@@ -6,8 +7,8 @@ import config from '@/assets/player.json';
 import Character from '@/Character';
 import anime from 'animejs';
 
-const AIM_CAMERA = new Vector3(-0.4, 1.675, -1.15);
-const CAMERA = new Vector3(-0.75, 1.5, -3);
+const AIM_CAMERA = new Vector3(-1, 3.5, -1.5);
+const CAMERA = new Vector3(-1.25, 3.25, -4);
 
 export default class Player extends Character {
   constructor (onLoad) {
@@ -24,10 +25,13 @@ export default class Player extends Character {
 
       this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
-      onLoad(player);
+
+      this.character = new Object3D();
+      this.character.add(player);
+      onLoad(this.character);
     });
 
-    this.camera = new Vector3();
+    this._camera = new Vector3();
     this.hasRifle = true;
     this.aiming = false;
   }
@@ -115,5 +119,14 @@ export default class Player extends Character {
 
   update (delta) {
     super.update(delta);
+  }
+
+  addCamera (camera) {
+    this._camera = camera.position;
+    this.character.add(camera);
+  }
+
+  get camera () {
+    return this._camera;
   }
 };

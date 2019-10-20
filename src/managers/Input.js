@@ -1,19 +1,54 @@
+import { clamp } from '@/utils/number';
+import Elastic from '@/utils/vector2';
+import { Vector2 } from '@three/math/Vector2';
+
 class Input {
   constructor () {
+    this._onPointerLockChange = this.onPointerLockChange.bind(this);
+    this._onPointerLockError = this.onPointerLockError.bind(this);
+
+    document.documentElement.requestPointerLock =
+      document.documentElement.requestPointerLock ||
+      document.documentElement.mozRequestPointerLock ||
+      document.documentElement.webkitRequestPointerLock;
+
     this._onMouseDown = this.onMouseDown.bind(this);
+    this._onMouseMove = this.onMouseMove.bind(this);
     this._onMouseUp = this.onMouseUp.bind(this);
 
     this._onKeyDown = this.onKeyDown.bind(this);
     this._onKeyUp = this.onKeyUp.bind(this);
 
+    this.torque = new Vector2(0, 0);
+    this.rotation = new Elastic(this.torque);
+
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
     this.keyDown = null;
-    this.move = '0000';
-
     this.player = null;
+
     this.shift = false;
-    this._addEvents();
+    this.move = '0000';
+    this.addEvents();
+  }
+
+  requestPointerLock () {
+    document.documentElement.requestPointerLock();
+  }
+
+  exitPointerLock () {
+    document.exitPointerLock();
+  }
+
+  onPointerLockChange (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  onPointerLockError (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    console.error(event);
   }
 
   onContextMenu (event) {
@@ -29,6 +64,15 @@ class Input {
     if (event.which === 3) {
       this.player.aim(true);
     }
+  }
+
+  onMouseMove (event) {
+    if (!this.pointerLocked) return;
+
+    this.rotation.copy({
+      x: this.player.character.rotation.y - (event.movementX || 0) * 0.005,
+      y: this.camera.rotation.x + (event.movementY || 0) * 0.005
+    });
   }
 
   onMouseUp (event) {
@@ -143,20 +187,44 @@ class Input {
     }
   }
 
-  _addEvents () {
+  addEvents () {
+    document.addEventListener('pointerlockchange', this._onPointerLockChange, false);
+    document.addEventListener('pointerlockerror', this._onPointerLockError, false);
+
     document.addEventListener('contextmenu', this.onContextMenu, false);
     document.addEventListener('mousedown', this._onMouseDown, false);
+    document.addEventListener('mousemove', this._onMouseMove, false);
     document.addEventListener('mouseup', this._onMouseUp, false);
+
     document.addEventListener('keydown', this._onKeyDown, false);
     document.addEventListener('keyup', this._onKeyUp, false);
   }
 
   removeEvents () {
+    document.removeEventListener('pointerlockchange', this._onPointerLockChange, false);
+    document.removeEventListener('pointerlockerror', this._onPointerLockError, false);
+
     document.removeEventListener('contextmenu', this.onContextMenu, false);
     document.removeEventListener('mousedown', this._onMouseDown, false);
+    document.removeEventListener('mousemove', this._onMouseMove, false);
     document.removeEventListener('mouseup', this._onMouseUp, false);
+
     document.removeEventListener('keydown', this._onKeyDown, false);
     document.removeEventListener('keyup', this._onKeyUp, false);
+  }
+
+  updateRotation (delta) {
+    this.camera.rotation.x = clamp(this.torque.y, -0.1, 0.1);
+    this.player.character.rotation.y = this.torque.x;
+    this.rotation.update(delta);
+  }
+
+  get camera () {
+    return this.player.character.children[1];
+  }
+
+  get pointerLocked () {
+    return !!document.pointerLockElement;
   }
 };
 
