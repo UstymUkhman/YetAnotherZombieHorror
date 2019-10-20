@@ -3,7 +3,7 @@ export default class Elastic {
     this.value = value;
     this.x = value.x;
     this.y = value.y;
-    this.speed = 15;
+    this.speed = 5;
   }
 
   copy (value) {

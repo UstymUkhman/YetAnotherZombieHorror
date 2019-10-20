@@ -69,14 +69,20 @@ export default class Character {
   }
 
   updatePosition () {
-    let x = this.character.position.x + this.speed.x;
-    let z = this.character.position.z + this.speed.z;
+    this.character.translateX(this.speed.x);
+    this.character.translateZ(this.speed.z);
 
-    z = clamp(z, -BOUNDS.front, BOUNDS.front);
-    x = clamp(x, -BOUNDS.side, BOUNDS.side);
+    this.character.position.z = clamp(
+      this.character.position.z,
+      -BOUNDS.front,
+      BOUNDS.front
+    );
 
-    this.character.position.x = x;
-    this.character.position.z = z;
+    this.character.position.x = clamp(
+      this.character.position.x,
+      -BOUNDS.side,
+      BOUNDS.side
+    );
   }
 
   update (delta) {

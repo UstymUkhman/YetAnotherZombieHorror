@@ -1,6 +1,4 @@
-import { clamp } from '@/utils/number';
-import Elastic from '@/utils/vector2';
-import { Vector2 } from '@three/math/Vector2';
+import { Elastic, clamp } from '@/utils/number';
 
 class Input {
   constructor () {
@@ -19,8 +17,9 @@ class Input {
     this._onKeyDown = this.onKeyDown.bind(this);
     this._onKeyUp = this.onKeyUp.bind(this);
 
-    this.torque = new Vector2(0, 0);
-    this.rotation = new Elastic(this.torque);
+    this.rotationX = new Elastic(0);
+    this.rotationY = new Elastic(0);
+    this.rotationX.speed = 20;
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
@@ -62,6 +61,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
+      this.rotationX.speed = 10;
       this.player.aim(true);
     }
   }
@@ -69,10 +69,8 @@ class Input {
   onMouseMove (event) {
     if (!this.pointerLocked) return;
 
-    this.rotation.copy({
-      x: this.player.character.rotation.y - (event.movementX || 0) * 0.005,
-      y: this.camera.rotation.x + (event.movementY || 0) * 0.005
-    });
+    this.rotationY.target = this.camera.rotation.x + (event.movementY || 0) * 0.005;
+    this.rotationX.target = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
   }
 
   onMouseUp (event) {
@@ -80,6 +78,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
+      this.rotationX.speed = 20;
       this.player.aim(false);
     }
   }
@@ -214,9 +213,11 @@ class Input {
   }
 
   updateRotation (delta) {
-    this.camera.rotation.x = clamp(this.torque.y, -0.1, 0.1);
-    this.player.character.rotation.y = this.torque.x;
-    this.rotation.update(delta);
+    this.rotationX.update(delta);
+    this.rotationY.update(delta);
+
+    this.player.character.rotation.y = this.rotationX.value;
+    this.camera.rotation.x = clamp(this.rotationY.value, -0.1, 0.1);
   }
 
   get camera () {

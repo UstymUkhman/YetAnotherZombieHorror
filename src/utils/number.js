@@ -10,7 +10,7 @@ class Elastic {
   constructor (value) {
     this.target = value;
     this.value = value;
-    this.speed = 3;
+    this.speed = 10;
   }
 
   update (delta = 1 / 60) {
