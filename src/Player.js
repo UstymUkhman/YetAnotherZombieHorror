@@ -46,6 +46,7 @@ export default class Player extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
     this.animations[idle].play();
+    this.running = false;
     this.moving = false;
 
     setTimeout(() => {
@@ -106,7 +107,7 @@ export default class Player extends Character {
       this.currentAnimation.stop();
       this.lastAnimation = animation;
 
-      this.setDirection(direction, run, this.aiming);
+      this.setDirection(direction);
       this.currentAnimation = this.animations[animation];
     }, 100);
   }

@@ -63,7 +63,7 @@ export default class Character {
     }
   }
 
-  setDirection (direction, running = false, aiming = false) {
+  setDirection (direction) {
     this.speed.x = this.setting.moves[direction][0];
     this.speed.z = this.setting.moves[direction][1];
   }

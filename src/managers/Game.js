@@ -15,17 +15,28 @@ class Game {
     this.player = player;
 
     this.playerPosition = player.character.position;
-    enemy.playerPosition = player.character.position;
+    enemy.playerPosition = this.playerPosition;
+    enemy.character.lookAt(this.playerPosition);
 
-    // this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
-    // this._distanceLoop = this.add(this._checkPlayerDistance);
+    this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
+    this._distanceLoop = this.add(this._checkPlayerDistance);
   }
 
   checkPlayerDistance () {
     const enemyPosition = this.enemy.character.position;
     const distance = enemyPosition.distanceTo(this.playerPosition);
 
-    console.log('Distance From Player', distance);
+    const nextToPlayer = this.enemy.nextToPlayer || distance < 7.5;
+    const visiblePlayer = this.enemy.visiblePlayer || distance < 15;
+
+    if (nextToPlayer && !this.enemy.nextToPlayer) {
+      this.enemy.scream();
+    } else if (visiblePlayer && !this.enemy.visiblePlayer) {
+      this.enemy.walk();
+    }
+
+    this.enemy.visiblePlayer = visiblePlayer;
+    this.enemy.nextToPlayer = nextToPlayer;
   }
 
   add (call) {

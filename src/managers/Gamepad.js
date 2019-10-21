@@ -1,6 +1,5 @@
 class Gamepad {
   constructor () {
-    this.gamepad = null;
     this.search();
   }
 
