@@ -26,10 +26,13 @@ class Game {
     const enemyPosition = this.enemy.character.position;
     const distance = enemyPosition.distanceTo(this.playerPosition);
 
-    const nextToPlayer = this.enemy.nextToPlayer || distance < 7.5;
-    const visiblePlayer = this.enemy.visiblePlayer || distance < 15;
+    const attack = this.enemy.attacking || distance < 1.75;
+    const nextToPlayer = this.enemy.nextToPlayer || distance < 10;
+    const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
 
-    if (nextToPlayer && !this.enemy.nextToPlayer) {
+    if (attack && !this.enemy.attacking) {
+      this.enemy.attack();
+    } else if (nextToPlayer && !this.enemy.nextToPlayer) {
       this.enemy.scream();
     } else if (visiblePlayer && !this.enemy.visiblePlayer) {
       this.enemy.walk();
@@ -37,6 +40,7 @@ class Game {
 
     this.enemy.visiblePlayer = visiblePlayer;
     this.enemy.nextToPlayer = nextToPlayer;
+    this.enemy.attacking = attack;
   }
 
   add (call) {

@@ -21,7 +21,7 @@ export default class Player extends Character {
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
-      // console.log(this.animations);
+      console.log(this.animations);
 
       this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
@@ -32,7 +32,9 @@ export default class Player extends Character {
     });
 
     this._camera = new Vector3();
+    this.aimTimeout = null;
     this.hasRifle = true;
+    this.aimTime = null;
     this.aiming = false;
   }
 
@@ -55,28 +57,64 @@ export default class Player extends Character {
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[idle];
     }, 100);
-
-    // anime({
-    //   targets: this.character.rotation,
-    //   y: this.rotation,
-    //   easing: 'linear',
-    //   duration: 250
-    // });
   }
 
   aim (aiming) {
     const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
     const next = aiming ? aim : this.lastAnimation;
+    const aimDuration = Date.now() - this.aimTime;
 
     const x = aiming ? AIM_CAMERA.x : CAMERA.x;
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
+    if (!aiming && aimDuration < 900) {
+      const immediate = aimDuration > 100;
+
+      if (immediate) {
+        this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+        // this.currentAnimation.stop();
+        this.animations[next].play();
+      } else {
+        this.animations[aim].crossFadeTo(this.currentAnimation, 0.1, true);
+        // this.animations[aim].stop();
+        this.currentAnimation.play();
+      }
+
+      clearTimeout(this.aimTimeout);
+      anime.running.length = 0;
+
+      setTimeout(() => {
+        this.setDirection('Idle');
+
+        if (immediate) {
+          this.currentAnimation.stop();
+          this.currentAnimation = this.animations[next];
+        } else {
+          this.animations[aim].stop();
+        }
+      }, 100);
+
+      anime({
+        duration: Math.min(aimDuration, 400),
+        easing: 'easeInOutQuad',
+        targets: this.camera,
+
+        x: x,
+        y: y,
+        z: z
+      });
+
+      return;
+    }
+
     this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+    this.aimTime = aiming ? Date.now() : null;
     this.animations[next].play();
     this.aiming = aiming;
 
-    setTimeout(() => {
+    this.aimTimeout = setTimeout(() => {
+      this.setDirection('Idle');
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[next];
     }, 100);

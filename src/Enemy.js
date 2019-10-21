@@ -10,9 +10,15 @@ export default class Enemy extends Character {
     super(ZOMBIE, config, enemy => {
       this.currentAnimation = this.animations.idle;
 
+      this.animations.softAttack.clampWhenFinished = true;
+      this.animations.hardAttack.clampWhenFinished = true;
+
       this.animations.headshot.clampWhenFinished = true;
       this.animations.scream.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
+
+      this.animations.softAttack.setLoop(LoopOnce);
+      this.animations.hardAttack.setLoop(LoopOnce);
 
       this.animations.headshot.setLoop(LoopOnce);
       this.animations.scream.setLoop(LoopOnce);
@@ -28,6 +34,24 @@ export default class Enemy extends Character {
     this.playerPosition = new Vector3();
     this.visiblePlayer = false;
     this.nextToPlayer = false;
+    this.attacking = false;
+  }
+
+  idle () {
+    this.currentAnimation.crossFadeTo(this.animations.idle, 0.25, true);
+    this.animations.idle.play();
+
+    setTimeout(() => {
+      this.moving = false;
+      this.running = false;
+      this.attacking = false;
+
+      this.lastAnimation = 'idle';
+      this.currentAnimation.stop();
+
+      this.setDirection('Idle');
+      this.currentAnimation = this.animations.idle;
+    }, 250);
   }
 
   walk () {
@@ -37,6 +61,7 @@ export default class Enemy extends Character {
     setTimeout(() => {
       this.moving = true;
       this.running = false;
+      this.attacking = false;
 
       this.lastAnimation = 'walk';
       this.currentAnimation.stop();
@@ -50,6 +75,7 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.133, true);
     this.animations.scream.play();
 
+    this.attacking = false;
     this.running = false;
     this.moving = false;
 
@@ -68,6 +94,7 @@ export default class Enemy extends Character {
     setTimeout(() => {
       this.moving = true;
       this.running = true;
+      this.attacking = false;
 
       this.lastAnimation = 'run';
       this.currentAnimation.stop();
@@ -75,6 +102,26 @@ export default class Enemy extends Character {
       this.setDirection('Running');
       this.currentAnimation = this.animations.run;
     }, 100);
+  }
+
+  attack (hard = false) {
+    const attack = hard ? 'hardAttack' : 'softAttack';
+    const lastAnimation = this.lastAnimation;
+
+    this.currentAnimation.crossFadeTo(this.animations[attack], 0.166, true);
+    this.animations[attack].play();
+
+    this.attacking = true;
+    this.running = false;
+    this.moving = false;
+
+    setTimeout(() => {
+      this.lastAnimation = attack;
+      this.currentAnimation.stop();
+
+      this.currentAnimation = this.animations[attack];
+      setTimeout(() => { this[lastAnimation](); }, hard ? 4400 : 2500);
+    }, 166);
   }
 
   update (delta) {
