@@ -67,6 +67,10 @@ export default class Player extends Character {
     const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
     const next = aiming ? aim : this.lastAnimation;
 
+    const x = aiming ? AIM_CAMERA.x : CAMERA.x;
+    const y = aiming ? AIM_CAMERA.y : CAMERA.y;
+    const z = aiming ? AIM_CAMERA.z : CAMERA.z;
+
     this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
     this.animations[next].play();
     this.aiming = aiming;
@@ -75,10 +79,6 @@ export default class Player extends Character {
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[next];
     }, 100);
-
-    const x = aiming ? AIM_CAMERA.x : CAMERA.x;
-    const y = aiming ? AIM_CAMERA.y : CAMERA.y;
-    const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
     anime({
       delay: aiming ? 100 : 0,

@@ -16,6 +16,8 @@ export default class Enemy extends Character {
       this.animations.headshot.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
+      console.log(this.animations);
+
       this.animations.idle.play();
       this.character = enemy;
       onLoad(enemy);

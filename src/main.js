@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+import Gamepad from '@/managers/Gamepad';
 import Input from '@/managers/Input';
 import Game from '@/managers/Game';
 
@@ -50,7 +52,7 @@ class AnotherDumbZombieGame {
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
 
-      this.zombie.playerPosition = this.player.character.position;
+      Game.setCharacters(this.player, this.zombie);
       Game.add(this.stage.render.bind(this.stage));
       this.stage.createGrid();
     }
