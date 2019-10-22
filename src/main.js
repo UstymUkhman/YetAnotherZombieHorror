@@ -1,10 +1,10 @@
+import Player from '@/characters/Player';
+import Enemy from '@/characters/Enemy';
+
 // eslint-disable-next-line no-unused-vars
 import Gamepad from '@/managers/Gamepad';
 import Input from '@/managers/Input';
 import Game from '@/managers/Game';
-
-import Player from '@/Player';
-import Enemy from '@/Enemy';
 
 import Stage from '@/Stage';
 const FREE_CAMERA = false;
@@ -36,6 +36,7 @@ class AnotherDumbZombieGame {
       this.stage.scene.add(character);
       Input.player = this.player;
 
+      this.player.setWeapon();
       this.stage.createGrid();
       this.onCharacterLoad();
     });

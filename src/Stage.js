@@ -48,7 +48,7 @@ export default class Playground {
   }
 
   createCamera (free = false) {
-    this.camera = new PerspectiveCamera(45, this.ratio, 1, 500);
+    this.camera = new PerspectiveCamera(45, this.ratio, 0.1, 1000);
 
     if (!free) {
       this.camera.position.set(-1.25, 2.75, -4);

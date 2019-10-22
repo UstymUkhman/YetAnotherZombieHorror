@@ -2,13 +2,13 @@ import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
+import Character from '@/characters/Character';
 import ZOMBIE from '@/assets/gltf/zombie.glb';
 import { Vector3 } from '@three/math/Vector3';
+
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
-
 import config from '@/assets/enemy.json';
-import Character from '@/Character';
 
 const colliderMaterial = new MeshBasicMaterial({
   transparent: true,

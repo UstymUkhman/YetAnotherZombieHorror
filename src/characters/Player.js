@@ -1,10 +1,12 @@
 import { Object3D } from '@three/core/Object3D';
+import Character from '@/characters/Character';
 import PLAYER from '@/assets/gltf/player.glb';
+
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
-
 import config from '@/assets/player.json';
-import Character from '@/Character';
+
+import AK47 from '@/weapons/AK47';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-1, 3, -1.5);
@@ -34,8 +36,20 @@ export default class Player extends Character {
     this._camera = new Vector3();
     this.aimTimeout = null;
     this.hasRifle = true;
+    this.weapon = null;
+
     this.aimTime = null;
     this.aiming = false;
+  }
+
+  setWeapon (ak = true) {
+    this.hasRifle = ak;
+
+    if (ak) {
+      this.weapon = new AK47(rifle => {
+        this.character.getObjectById(102, true).add(rifle);
+      });
+    }
   }
 
   idle () {
@@ -62,6 +76,7 @@ export default class Player extends Character {
   aim (aiming) {
     const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
     const aimElapse = Date.now() - this.aimTime;
+    const delay = aiming ? 100 : 0;
     let duration = 400;
 
     if (!aiming && aimElapse < 900) {
@@ -86,11 +101,13 @@ export default class Player extends Character {
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
+    this.weapon.aim(aiming, duration, delay);
+
     anime({
-      delay: aiming ? 100 : 0,
       easing: 'easeInOutQuad',
       targets: this.camera,
       duration: duration,
+      delay: delay,
 
       x: x,
       y: y,
