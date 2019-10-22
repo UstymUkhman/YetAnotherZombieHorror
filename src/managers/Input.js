@@ -19,7 +19,7 @@ class Input {
 
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
-    this.rotationX.speed = 20;
+    this.rotationX.speed = 10;
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
@@ -61,7 +61,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      this.rotationX.speed = 10;
+      this.rotationX.speed = 5;
       this.player.aim(true);
     }
   }
@@ -78,7 +78,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      this.rotationX.speed = 20;
+      this.rotationX.speed = 10;
       this.player.aim(false);
     }
   }

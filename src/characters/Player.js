@@ -76,12 +76,15 @@ export default class Player extends Character {
   aim (aiming) {
     const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
     const aimElapse = Date.now() - this.aimTime;
+
+    const cancelAim = !aiming && aimElapse < 900;
     const delay = aiming ? 100 : 0;
     let duration = 400;
 
-    if (!aiming && aimElapse < 900) {
+    if (cancelAim) {
       this._cancelAimAnimation(aim, aimElapse > 100);
       duration = Math.min(aimElapse, 400);
+      this.weapon.cancelAim();
     } else {
       const next = aiming ? aim : this.lastAnimation;
 
@@ -101,7 +104,9 @@ export default class Player extends Character {
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
-    this.weapon.aim(aiming, duration, delay);
+    if (!cancelAim) {
+      this.weapon.aim(aiming, duration - 100, delay);
+    }
 
     anime({
       easing: 'easeInOutQuad',
