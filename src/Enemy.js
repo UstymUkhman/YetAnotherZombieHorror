@@ -1,13 +1,21 @@
-import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
+import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
+import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
-import { Mesh } from 'three/src/objects/Mesh';
 import ZOMBIE from '@/assets/gltf/zombie.glb';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
+import { Mesh } from '@three/objects/Mesh';
 
 import config from '@/assets/enemy.json';
 import Character from '@/Character';
+
+const colliderMaterial = new MeshBasicMaterial({
+  transparent: true,
+  color: 0xFF0000,
+  visible: true,
+  opacity: 0.5
+});
 
 export default class Enemy extends Character {
   constructor (onLoad) {
@@ -29,6 +37,9 @@ export default class Enemy extends Character {
       this.animations.death.setLoop(LoopOnce);
 
       this._addHeadCollider(enemy);
+      this._addBodyCollider(enemy);
+      this._addLegsCollider(enemy);
+
       this.currentAnimation.play();
       this.character = enemy;
       onLoad(enemy);
@@ -41,18 +52,60 @@ export default class Enemy extends Character {
   }
 
   _addHeadCollider (character) {
-    const bone = character.getObjectById(10, true);
+    const head = character.getObjectById(10, true);
 
     this.head = new Mesh(
       new BoxGeometry(20, 25, 25),
-      new MeshBasicMaterial({
-        color: 0xFF0000,
-        visible: false
-      })
+      colliderMaterial
     );
 
     this.head.position.y += 5;
-    bone.add(this.head);
+    head.add(this.head);
+  }
+
+  _addBodyCollider (character) {
+    const spine = character.getObjectById(6, true);
+
+    this.body = new Mesh(
+      CapsuleGeometry(20, 50),
+      colliderMaterial
+    );
+
+    this.body.rotation.x -= Math.PI / 2;
+    this.body.position.y += 12.5;
+    this.body.position.z += 2.5;
+
+    spine.add(this.body);
+  }
+
+  _addLegsCollider (character) {
+    const rightUpLeg = character.getObjectById(53, true);
+    const leftUpLeg = character.getObjectById(49, true);
+    const rightLeg = character.getObjectById(54, true);
+    const leftLeg = character.getObjectById(50, true);
+
+    const upperLeg = new Mesh(
+      new BoxGeometry(15, 50, 15),
+      colliderMaterial
+    );
+
+    const lowerLeg = new Mesh(
+      new BoxGeometry(10, 50, 10),
+      colliderMaterial
+    );
+
+    lowerLeg.position.y -= 27.5;
+    upperLeg.position.y -= 20;
+
+    this.rightUpLeg = upperLeg.clone();
+    this.leftUpLeg = upperLeg.clone();
+    this.rightLeg = lowerLeg.clone();
+    this.leftLeg = lowerLeg.clone();
+
+    rightUpLeg.add(this.rightUpLeg);
+    leftUpLeg.add(this.leftUpLeg);
+    rightLeg.add(this.rightLeg);
+    leftLeg.add(this.leftLeg);
   }
 
   idle () {
