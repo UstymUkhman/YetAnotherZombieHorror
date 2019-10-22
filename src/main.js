@@ -1,3 +1,4 @@
+// import { SkeletonHelper } from 'three/src/helpers/SkeletonHelper';
 // eslint-disable-next-line no-unused-vars
 import Gamepad from '@/managers/Gamepad';
 import Input from '@/managers/Input';
@@ -43,6 +44,11 @@ class AnotherDumbZombieGame {
     this.zombie = new Enemy(character => {
       Game.add(this.zombie.update.bind(this.zombie));
       this.stage.scene.add(character);
+
+      // const skeleton = new SkeletonHelper(character);
+      // skeleton.visible = true;
+      // this.stage.scene.add(skeleton);
+
       this.onCharacterLoad();
     });
   }

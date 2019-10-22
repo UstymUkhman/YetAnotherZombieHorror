@@ -1,3 +1,7 @@
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
+
+import { Mesh } from 'three/src/objects/Mesh';
 import ZOMBIE from '@/assets/gltf/zombie.glb';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
@@ -24,8 +28,7 @@ export default class Enemy extends Character {
       this.animations.scream.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
-      // console.log(this.animations);
-
+      this._addHeadCollider(enemy);
       this.currentAnimation.play();
       this.character = enemy;
       onLoad(enemy);
@@ -35,6 +38,21 @@ export default class Enemy extends Character {
     this.visiblePlayer = false;
     this.nextToPlayer = false;
     this.attacking = false;
+  }
+
+  _addHeadCollider (character) {
+    const bone = character.getObjectById(10, true);
+
+    this.head = new Mesh(
+      new BoxGeometry(20, 25, 25),
+      new MeshBasicMaterial({
+        color: 0xFF0000,
+        visible: false
+      })
+    );
+
+    this.head.position.y += 5;
+    bone.add(this.head);
   }
 
   idle () {

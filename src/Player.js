@@ -21,7 +21,7 @@ export default class Player extends Character {
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
-      console.log(this.animations);
+      // console.log(this.animations);
 
       this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
@@ -61,74 +61,57 @@ export default class Player extends Character {
 
   aim (aiming) {
     const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
-    const next = aiming ? aim : this.lastAnimation;
-    const aimDuration = Date.now() - this.aimTime;
+    const aimElapse = Date.now() - this.aimTime;
+    let duration = 400;
+
+    if (!aiming && aimElapse < 900) {
+      this._cancelAimAnimation(aim, aimElapse > 100);
+      duration = Math.min(aimElapse, 400);
+    } else {
+      const next = aiming ? aim : this.lastAnimation;
+
+      this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+      this.aimTime = aiming ? Date.now() : null;
+      this.animations[next].play();
+      this.aiming = aiming;
+
+      this.aimTimeout = setTimeout(() => {
+        this.setDirection('Idle');
+        this.currentAnimation.stop();
+        this.currentAnimation = this.animations[next];
+      }, 100);
+    }
 
     const x = aiming ? AIM_CAMERA.x : CAMERA.x;
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
-    if (!aiming && aimDuration < 900) {
-      const immediate = aimDuration > 100;
-
-      if (immediate) {
-        this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
-        // this.currentAnimation.stop();
-        this.animations[next].play();
-      } else {
-        this.animations[aim].crossFadeTo(this.currentAnimation, 0.1, true);
-        // this.animations[aim].stop();
-        this.currentAnimation.play();
-      }
-
-      clearTimeout(this.aimTimeout);
-      anime.running.length = 0;
-
-      setTimeout(() => {
-        this.setDirection('Idle');
-
-        if (immediate) {
-          this.currentAnimation.stop();
-          this.currentAnimation = this.animations[next];
-        } else {
-          this.animations[aim].stop();
-        }
-      }, 100);
-
-      anime({
-        duration: Math.min(aimDuration, 400),
-        easing: 'easeInOutQuad',
-        targets: this.camera,
-
-        x: x,
-        y: y,
-        z: z
-      });
-
-      return;
-    }
-
-    this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
-    this.aimTime = aiming ? Date.now() : null;
-    this.animations[next].play();
-    this.aiming = aiming;
-
-    this.aimTimeout = setTimeout(() => {
-      this.setDirection('Idle');
-      this.currentAnimation.stop();
-      this.currentAnimation = this.animations[next];
-    }, 100);
-
     anime({
       delay: aiming ? 100 : 0,
       easing: 'easeInOutQuad',
       targets: this.camera,
-      duration: 400,
+      duration: duration,
 
       x: x,
       y: y,
       z: z
     });
+  }
+
+  _cancelAimAnimation (animation, immediate) {
+    const next = immediate ? this.animations[this.lastAnimation] : this.currentAnimation;
+    const current = immediate ? this.currentAnimation : this.animations[animation];
+
+    current.crossFadeTo(next, 0.1, true);
+    clearTimeout(this.aimTimeout);
+    anime.running.length = 0;
+    next.play();
+
+    setTimeout(() => {
+      current.stop();
+      this.setDirection('Idle');
+      if (immediate) this.currentAnimation = next;
+    }, 100);
   }
 
   move (directions, run = false) {
