@@ -11,7 +11,6 @@ class Input {
       document.documentElement.mozRequestPointerLock ||
       document.documentElement.webkitRequestPointerLock;
 
-    // this._onKeyUp = debounce(this.onKeyUp.bind(this), 100, { leading: true });
     this._onMouseUp = debounce(this.onMouseUp.bind(this), 150);
     this._onKeyUp = this.onKeyUp.bind(this);
 
@@ -21,11 +20,10 @@ class Input {
 
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
-    this.rotationX.speed = 10;
+    this.rotationX.speed = 20;
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
-    // this.keyDown = null;
     this.player = null;
 
     this.shift = false;
@@ -64,7 +62,7 @@ class Input {
 
     if (event.which === 3) {
       this.rotationX.speed = 5;
-      // this.player.aim(true);
+      this.player.aim(true);
     }
   }
 
@@ -80,8 +78,8 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      this.rotationX.speed = 10;
-      // this.player.aim(false);
+      this.rotationX.speed = 20;
+      this.player.aim(false);
     }
   }
 
@@ -94,7 +92,6 @@ class Input {
       this.moves[2] = 0;
       this.moves[3] = 0;
 
-      // this.keyDown = Date.now();
       this.player.run(true);
       this.shift = true;
       return;
@@ -129,7 +126,6 @@ class Input {
 
     if (this.move !== move) {
       this.player.move(this.moves, this.shift);
-      // this.keyDown = Date.now();
       this.move = move;
     }
   }
@@ -137,13 +133,6 @@ class Input {
   onKeyUp (event) {
     // event.stopPropagation();
     // event.preventDefault();
-
-    // const delay = Date.now() - this.keyDown;
-
-    // if (delay < 150) {
-    //   setTimeout(() => { this.onKeyUp(event); }, 150 - delay);
-    //   return;
-    // }
 
     if (event.keyCode === 16 && this.shift) {
       this.player.run(false);

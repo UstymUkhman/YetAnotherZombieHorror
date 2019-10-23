@@ -1,13 +1,22 @@
+import Stats from 'three/examples/js/libs/stats.min';
 import { Clock } from '@three/core/Clock';
 
 class Game {
   constructor () {
     this._clock = new Clock();
+    this.createStats();
+
     this.player = null;
     this.enemy = null;
 
     this.calls = [];
     this.loop();
+  }
+
+  createStats () {
+    this.stats = new Stats();
+    this.stats.showPanel(0);
+    document.body.appendChild(this.stats.domElement);
   }
 
   setCharacters (player, enemy) {
@@ -49,6 +58,7 @@ class Game {
   }
 
   loop () {
+    this.stats.begin();
     const delta = this._clock.getDelta();
 
     for (let c = 0; c < this.calls.length; c++) {
@@ -56,10 +66,16 @@ class Game {
     }
 
     requestAnimationFrame(this.loop.bind(this));
+    this.stats.end();
   }
 
   remove (call) {
     this.calls.splice(call, 1);
+  }
+
+  end () {
+    document.body.removeChild(this.stats.domElement);
+    delete this.stats;
   }
 };
 

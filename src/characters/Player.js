@@ -6,7 +6,8 @@ import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import config from '@/assets/player.json';
 
-// import AK47 from '@/weapons/AK47';
+// import { capitalize } from '@/utils/string';
+import AK47 from '@/weapons/AK47';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-1, 3, -1.5);
@@ -27,6 +28,7 @@ export default class Player extends Character {
 
       this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
+      this.lastDirection = 'Idle';
 
       this.character = new Object3D();
       this.character.add(player);
@@ -45,65 +47,77 @@ export default class Player extends Character {
   setWeapon (ak = true) {
     this.hasRifle = ak;
 
-    // if (ak) {
-    //   this.weapon = new AK47(rifle => {
-    //     this.character.getObjectById(102, true).add(rifle);
-    //   });
-    // }
+    if (ak) {
+      this.weapon = new AK47(rifle => {
+        this.character.getObjectById(102, true).add(rifle);
+      });
+    }
   }
 
   idle () {
-    const idle = `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
-    if (this.lastAnimation === idle) return;
+    if (this.lastAnimation === this._idle || this.aiming) {
+      return false;
+    }
 
     this.running = false;
     this.moving = false;
 
-    this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
-    this.animations[idle].play();
-    this.lastAnimation = idle;
+    this.currentAnimation.crossFadeTo(this.animations[this._idle], 0.1, true);
+    this.animations[this._idle].play();
 
     setTimeout(() => {
       this.setDirection('Idle');
+      this.lastDirection = 'Idle';
       this.currentAnimation.stop();
-      this.currentAnimation = this.animations[idle];
+
+      this.lastAnimation = this._idle;
+      this.currentAnimation = this.animations[this._idle];
     }, 100);
+
+    return true;
   }
 
   aim (aiming) {
-    const aim = `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
     const aimElapse = Date.now() - this.aimTime;
-
     const cancelAim = !aiming && aimElapse < 900;
-    const delay = aiming ? 100 : 0;
+
+    this.aiming = aiming;
     let duration = 400;
 
     if (cancelAim) {
-      this._cancelAimAnimation(aim, aimElapse > 100);
+      this._cancelAimAnimation(aimElapse < 100);
       duration = Math.min(aimElapse, 400);
-      // this.weapon.cancelAim();
+      this.weapon.cancelAim();
     } else {
-      const next = aiming ? aim : this.lastAnimation;
-
-      this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+      const next = aiming ? this._aim : this._idle;
       this.aimTime = aiming ? Date.now() : null;
-      this.animations[next].play();
-      this.aiming = aiming;
 
-      this.aimTimeout = setTimeout(() => {
-        this.setDirection('Idle');
-        this.currentAnimation.stop();
-        this.currentAnimation = this.animations[next];
-      }, 100);
+      if (this.lastAnimation !== next) {
+        this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+        this.animations[next].play();
+
+        this.aimTimeout = setTimeout(() => {
+          this.setDirection('Idle');
+          this.lastAnimation = next;
+          this.currentAnimation.stop();
+          this.currentAnimation = this.animations[next];
+        }, 100);
+      }
     }
 
+    this._aimCameraAnimation(aiming, duration, !cancelAim);
+  }
+
+  _aimCameraAnimation (aiming, duration, cancel) {
     const x = aiming ? AIM_CAMERA.x : CAMERA.x;
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
-    // if (!cancelAim) {
-    //   this.weapon.aim(aiming, duration - 100, delay);
-    // }
+    const delay = aiming ? 100 : 0;
+
+    if (cancel) {
+      this.weapon.aim(aiming, duration - 100, delay);
+    }
 
     anime({
       easing: 'easeInOutQuad',
@@ -117,31 +131,30 @@ export default class Player extends Character {
     });
   }
 
-  _cancelAimAnimation (animation, immediate) {
-    const next = immediate ? this.animations[this.lastAnimation] : this.currentAnimation;
-    const current = immediate ? this.currentAnimation : this.animations[animation];
-
-    current.crossFadeTo(next, 0.1, true);
+  _cancelAimAnimation (immediate) {
     clearTimeout(this.aimTimeout);
     anime.running.length = 0;
-    next.play();
+    this.idle();
 
-    setTimeout(() => {
-      current.stop();
-      this.setDirection('Idle');
-      if (immediate) this.currentAnimation = next;
-    }, 100);
+    if (immediate) {
+      this.currentAnimation.stop();
+
+      this.running = false;
+      this.moving = false;
+    }
   }
 
   move (directions, run = false) {
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
 
-    if (this.lastAnimation === animation) return;
+    if (this.aiming || this.lastAnimation === animation) return;
 
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
+
     this.lastAnimation = animation;
+    this.lastDirection = direction;
 
     this.running = run;
     this.moving = true;
@@ -171,6 +184,14 @@ export default class Player extends Character {
   addCamera (camera) {
     this._camera = camera.position;
     this.character.add(camera);
+  }
+
+  get _idle () {
+    return `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
+  }
+
+  get _aim () {
+    return `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
   }
 
   get camera () {

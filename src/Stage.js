@@ -7,7 +7,6 @@ import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GridHelper } from 'three/src/helpers/GridHelper';
 
-import Stats from 'three/examples/js/libs/stats.min';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Color } from 'three/src/math/Color';
@@ -28,7 +27,6 @@ export default class Playground {
 
     this.createRenderer();
     this.createEvents();
-    this.createStats();
 
     if (free) {
       this.createControls();
@@ -124,16 +122,8 @@ export default class Playground {
     window.addEventListener('resize', this._onResize, false);
   }
 
-  createStats () {
-    this.stats = new Stats();
-    this.stats.showPanel(0);
-    document.body.appendChild(this.stats.domElement);
-  }
-
   render () {
-    this.stats.begin();
     this.renderer.render(this.scene, this.camera);
-    this.stats.end();
 
     if (this.orbitControls) {
       this.orbitControls.update();
@@ -150,13 +140,11 @@ export default class Playground {
   destroy () {
     window.removeEventListener('resize', this._onResize, false);
     document.body.removeChild(this.renderer.domElement);
-    document.body.removeChild(this.stats.domElement);
 
     delete this.orbitControls;
     delete this.renderer;
     delete this.camera;
     delete this.scene;
-    delete this.stats;
   }
 
   get bounds () {
