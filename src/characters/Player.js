@@ -6,7 +6,7 @@ import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import config from '@/assets/player.json';
 
-import AK47 from '@/weapons/AK47';
+// import AK47 from '@/weapons/AK47';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-1, 3, -1.5);
@@ -45,29 +45,26 @@ export default class Player extends Character {
   setWeapon (ak = true) {
     this.hasRifle = ak;
 
-    if (ak) {
-      this.weapon = new AK47(rifle => {
-        this.character.getObjectById(102, true).add(rifle);
-      });
-    }
+    // if (ak) {
+    //   this.weapon = new AK47(rifle => {
+    //     this.character.getObjectById(102, true).add(rifle);
+    //   });
+    // }
   }
 
   idle () {
     const idle = `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
+    if (this.lastAnimation === idle) return;
 
-    if (this.aiming) {
-      this.lastAnimation = idle;
-      return;
-    }
-
-    this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
-    this.animations[idle].play();
     this.running = false;
     this.moving = false;
 
+    this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
+    this.animations[idle].play();
+    this.lastAnimation = idle;
+
     setTimeout(() => {
       this.setDirection('Idle');
-      this.lastAnimation = idle;
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[idle];
     }, 100);
@@ -84,7 +81,7 @@ export default class Player extends Character {
     if (cancelAim) {
       this._cancelAimAnimation(aim, aimElapse > 100);
       duration = Math.min(aimElapse, 400);
-      this.weapon.cancelAim();
+      // this.weapon.cancelAim();
     } else {
       const next = aiming ? aim : this.lastAnimation;
 
@@ -104,9 +101,9 @@ export default class Player extends Character {
     const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
-    if (!cancelAim) {
-      this.weapon.aim(aiming, duration - 100, delay);
-    }
+    // if (!cancelAim) {
+    //   this.weapon.aim(aiming, duration - 100, delay);
+    // }
 
     anime({
       easing: 'easeInOutQuad',
@@ -140,16 +137,17 @@ export default class Player extends Character {
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
 
+    if (this.lastAnimation === animation) return;
+
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
+    this.lastAnimation = animation;
+
+    this.running = run;
+    this.moving = true;
 
     setTimeout(() => {
-      this.moving = true;
-      this.running = run;
-
       this.currentAnimation.stop();
-      this.lastAnimation = animation;
-
       this.setDirection(direction);
       this.currentAnimation = this.animations[animation];
     }, 100);
@@ -160,6 +158,11 @@ export default class Player extends Character {
     direction += a ? 'Left' : d ? 'Right' : '';
     return direction || 'Idle';
   }
+
+  // getMoveAnimation (animation) {
+  //   const weapon = this.hasRifle ? 'rifle' : 'pistol';
+  //   return animation.replace(weapon, '');
+  // }
 
   update (delta) {
     super.update(delta);

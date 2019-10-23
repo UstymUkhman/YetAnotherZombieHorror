@@ -99,7 +99,7 @@ module.exports = {
     alias: {
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@three': path.resolve('./node_modules/three/src'),
-      '@': path.resolve('./src')
+      '@': build ? '.' : path.resolve('./src')
     }
   },
 
