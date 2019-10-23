@@ -39,13 +39,13 @@ class Game {
     const nextToPlayer = this.enemy.nextToPlayer || distance < 10;
     const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
 
-    // if (attack && !this.enemy.attacking) {
-    //   this.enemy.attack();
-    // } else if (nextToPlayer && !this.enemy.nextToPlayer) {
-    //   this.enemy.scream();
-    // } else if (visiblePlayer && !this.enemy.visiblePlayer) {
-    //   this.enemy.walk();
-    // }
+    if (attack && !this.enemy.attacking) {
+      this.enemy.attack();
+    } else if (nextToPlayer && !this.enemy.nextToPlayer) {
+      this.enemy.scream();
+    } else if (visiblePlayer && !this.enemy.visiblePlayer) {
+      this.enemy.walk();
+    }
 
     this.enemy.visiblePlayer = visiblePlayer;
     this.enemy.nextToPlayer = nextToPlayer;

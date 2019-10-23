@@ -1,4 +1,4 @@
-import { Elastic, clamp } from '@/utils/number';
+import { /* Elastic, */ clamp } from '@/utils/number';
 import debounce from 'lodash.debounce';
 
 class Input {
@@ -18,9 +18,9 @@ class Input {
     this._onMouseMove = this.onMouseMove.bind(this);
     this._onKeyDown = this.onKeyDown.bind(this);
 
-    this.rotationX = new Elastic(0);
-    this.rotationY = new Elastic(0);
-    this.rotationX.speed = 20;
+    // this.rotationX = new Elastic(0);
+    // this.rotationY = new Elastic(0);
+    // this.rotationX.speed = 20;
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
@@ -61,7 +61,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      this.rotationX.speed = 5;
+      // this.rotationX.speed = 5;
       this.player.aim(true);
     }
   }
@@ -69,8 +69,14 @@ class Input {
   onMouseMove (event) {
     if (!this.pointerLocked) return;
 
-    this.rotationY.target = this.camera.rotation.x + (event.movementY || 0) * 0.005;
-    this.rotationX.target = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
+    const y = this.camera.rotation.x + (event.movementY || 0) * 0.005;
+    const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
+
+    // this.rotationY.target = y;
+    // this.rotationX.target = x;
+
+    this.player.character.rotation.y = x;
+    this.camera.rotation.x = clamp(y, -0.1, 0.1);
   }
 
   onMouseUp (event) {
@@ -78,7 +84,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      this.rotationX.speed = 20;
+      // this.rotationX.speed = 20;
       this.player.aim(false);
     }
   }
@@ -126,6 +132,7 @@ class Input {
 
     if (this.move !== move) {
       this.player.move(this.moves, this.shift);
+      this.player.character.rotation.x = 0;
       this.move = move;
     }
   }
@@ -203,13 +210,13 @@ class Input {
     document.removeEventListener('keyup', this._onKeyUp, false);
   }
 
-  updateRotation (delta) {
+  /* updateRotation (delta) {
     this.rotationX.update(delta);
     this.rotationY.update(delta);
 
     this.player.character.rotation.y = this.rotationX.value;
-    this.camera.rotation.x = clamp(this.rotationY.value, -0.1, 0.1);
-  }
+    this.camera.rotation.x = clamp(this.rotationY.value, -0.25, 0.25);
+  } */
 
   get camera () {
     return this.player.character.children[1];

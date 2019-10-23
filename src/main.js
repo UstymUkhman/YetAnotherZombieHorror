@@ -5,6 +5,7 @@ import Enemy from '@/characters/Enemy';
 import Gamepad from '@/managers/Gamepad';
 import Input from '@/managers/Input';
 import Game from '@/managers/Game';
+import AK47 from '@/weapons/AK47';
 
 import Stage from '@/Stage';
 const FREE_CAMERA = false;
@@ -29,16 +30,27 @@ class AnotherDumbZombieGame {
       Game.add(this.player.update.bind(this.player));
 
       if (!FREE_CAMERA) {
-        Game.add(Input.updateRotation.bind(Input));
+        // Game.add(Input.updateRotation.bind(Input));
         this.player.addCamera(this.stage.camera);
       }
 
       this.stage.scene.add(character);
       Input.player = this.player;
 
-      this.player.setWeapon();
-      this.stage.createGrid();
-      this.onCharacterLoad();
+      this.weapon = new AK47(() => {
+        Game.add(this.weapon.shoot.bind(this.weapon));
+        const colliders = this.zombie.colliders;
+        this.weapon.camera = this.stage.camera;
+
+        this.player.setWeapon(
+          this.weapon,
+          colliders,
+          true
+        );
+
+        this.stage.createGrid();
+        this.onCharacterLoad();
+      });
     });
 
     this.zombie = new Enemy(character => {

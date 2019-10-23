@@ -36,12 +36,14 @@ export default class Enemy extends Character {
       this.animations.scream.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
+      this.currentAnimation.play();
+      this.character = enemy;
+      this.colliders = [];
+
       this._addHeadCollider(enemy);
       this._addBodyCollider(enemy);
       this._addLegsCollider(enemy);
 
-      this.currentAnimation.play();
-      this.character = enemy;
       onLoad(enemy);
     });
 
@@ -54,28 +56,30 @@ export default class Enemy extends Character {
   _addHeadCollider (character) {
     const head = character.getObjectById(10, true);
 
-    this.head = new Mesh(
+    const headCollider = new Mesh(
       new BoxGeometry(20, 25, 25),
-      colliderMaterial
+      colliderMaterial.clone()
     );
 
-    this.head.position.y += 5;
-    head.add(this.head);
+    this.colliders.push(headCollider);
+    headCollider.position.y += 5;
+    head.add(headCollider);
   }
 
   _addBodyCollider (character) {
     const spine = character.getObjectById(6, true);
 
-    this.body = new Mesh(
+    const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
-      colliderMaterial
+      colliderMaterial.clone()
     );
 
-    this.body.rotation.x -= Math.PI / 2;
-    this.body.position.y += 12.5;
-    this.body.position.z += 2.5;
+    bodyCollider.rotation.x -= Math.PI / 2;
+    bodyCollider.position.y += 12.5;
+    bodyCollider.position.z += 2.5;
 
-    spine.add(this.body);
+    this.colliders.push(bodyCollider);
+    spine.add(bodyCollider);
   }
 
   _addLegsCollider (character) {
@@ -86,26 +90,31 @@ export default class Enemy extends Character {
 
     const upperLeg = new Mesh(
       new BoxGeometry(15, 50, 15),
-      colliderMaterial
+      colliderMaterial.clone()
     );
 
     const lowerLeg = new Mesh(
       new BoxGeometry(10, 50, 10),
-      colliderMaterial
+      colliderMaterial.clone()
     );
 
     lowerLeg.position.y -= 27.5;
     upperLeg.position.y -= 20;
 
-    this.rightUpLeg = upperLeg.clone();
-    this.leftUpLeg = upperLeg.clone();
-    this.rightLeg = lowerLeg.clone();
-    this.leftLeg = lowerLeg.clone();
+    const rightUpLegCollider = upperLeg.clone();
+    const leftUpLegCollider = upperLeg.clone();
+    const rightLegCollider = lowerLeg.clone();
+    const leftLegCollider = lowerLeg.clone();
 
-    rightUpLeg.add(this.rightUpLeg);
-    leftUpLeg.add(this.leftUpLeg);
-    rightLeg.add(this.rightLeg);
-    leftLeg.add(this.leftLeg);
+    this.colliders.push(rightUpLegCollider);
+    this.colliders.push(leftUpLegCollider);
+    this.colliders.push(rightLegCollider);
+    this.colliders.push(leftLegCollider);
+
+    rightUpLeg.add(rightUpLegCollider);
+    leftUpLeg.add(leftUpLegCollider);
+    rightLeg.add(rightLegCollider);
+    leftLeg.add(leftLegCollider);
   }
 
   idle () {

@@ -5,9 +5,6 @@ import PLAYER from '@/assets/gltf/player.glb';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import config from '@/assets/player.json';
-
-// import { capitalize } from '@/utils/string';
-import AK47 from '@/weapons/AK47';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-1, 3, -1.5);
@@ -44,14 +41,14 @@ export default class Player extends Character {
     this.aiming = false;
   }
 
-  setWeapon (ak = true) {
-    this.hasRifle = ak;
+  setWeapon (weapon, colliders, rifle = false) {
+    const hand = this.character.getObjectById(102, true);
 
-    if (ak) {
-      this.weapon = new AK47(rifle => {
-        this.character.getObjectById(102, true).add(rifle);
-      });
-    }
+    this.weapon = weapon;
+    this.hasRifle = rifle;
+
+    hand.add(this.weapon.arm);
+    weapon.targets = colliders;
   }
 
   idle () {

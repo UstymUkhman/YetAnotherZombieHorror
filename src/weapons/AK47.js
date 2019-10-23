@@ -20,18 +20,18 @@ export default class AK47 extends Weapon {
   aim (aiming, duration) {
     if (aiming) {
       this.aimTimeout = setTimeout(() => {
-        this.weapon.rotation.set(ROTATION.x, Math.PI, -0.1);
-        this.weapon.position.set(POSITION.x, 0, -1);
+        this.arm.rotation.set(ROTATION.x, Math.PI, -0.1);
+        this.arm.position.set(POSITION.x, 0, -1);
       }, Math.max(duration, 0));
     } else {
-      this.weapon.position.set(POSITION.x, POSITION.y, POSITION.z);
-      this.weapon.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+      this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
+      this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
     }
   }
 
   cancelAim () {
     clearTimeout(this.aimTimeout);
-    this.weapon.position.set(POSITION.x, POSITION.y, POSITION.z);
-    this.weapon.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+    this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
   }
 };
