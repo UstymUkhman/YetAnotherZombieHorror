@@ -100,7 +100,8 @@ class Input {
       this.moves[2] = 0;
       this.moves[3] = 0;
 
-      this.player.run(true);
+      this.player.run(this.moves, true);
+      this._keyDown = Date.now();
       this.shift = true;
       return;
     }
@@ -133,8 +134,7 @@ class Input {
     const move = this.moves.join('');
 
     if (this.move !== move) {
-      this.player.move(this.moves, this.shift);
-      this.player.character.rotation.x = 0;
+      this.player.move(this.moves);
       this._keyDown = Date.now();
       this.move = move;
     }
@@ -145,8 +145,8 @@ class Input {
     // event.preventDefault();
 
     if (event.keyCode === 16 && this.shift) {
-      this.player.run(false);
-      this.shift = false;
+      setTimeout(() => { this.shift = false; }, 150);
+      this.player.run(this.moves, false);
     }
 
     switch (event.keyCode) {
@@ -185,7 +185,7 @@ class Input {
 
     if (this.move !== move) {
       this.idleTimeout = setTimeout(() => {
-        this.player.move(this.moves, this.shift);
+        this.player.move(this.moves);
         this.move = move;
       }, 100);
     }

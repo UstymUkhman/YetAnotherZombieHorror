@@ -25,7 +25,6 @@ export default class Player extends Character {
 
       this.lastAnimation = 'rifleIdle';
       this.currentAnimation.play();
-      this.lastDirection = 'Idle';
 
       this.character = new Object3D();
       this.character.add(player);
@@ -34,6 +33,7 @@ export default class Player extends Character {
 
     this._camera = new Vector3();
     this.aimTimeout = null;
+    this.moveTime = null;
     this.hasRifle = true;
     this.weapon = null;
 
@@ -52,46 +52,43 @@ export default class Player extends Character {
   }
 
   idle () {
-    if (this.lastAnimation === this._idle || this.aiming) {
-      return false;
-    }
-
-    this.running = false;
-    this.moving = false;
+    if (this.lastAnimation === this._idle || this.aiming) return;
 
     this.currentAnimation.crossFadeTo(this.animations[this._idle], 0.1, true);
     this.animations[this._idle].play();
 
+    this.running = false;
+    this.moving = false;
+
     setTimeout(() => {
       this.setDirection('Idle');
-      this.lastDirection = 'Idle';
       this.currentAnimation.stop();
-
       this.lastAnimation = this._idle;
       this.currentAnimation = this.animations[this._idle];
     }, 100);
-
-    return true;
   }
 
-  move (directions, run = false) {
+  move (directions) {
+    const now = Date.now();
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
 
     if (this.aiming || this.lastAnimation === animation) return;
+    if (this.running && direction.includes('Forward')) return;
+    if (now - this.moveTime < 150) return;
 
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
 
-    this.lastAnimation = animation;
-    this.lastDirection = direction;
-
-    this.running = run;
+    this.running = false;
+    this.moveTime = now;
     this.moving = true;
 
     setTimeout(() => {
       this.currentAnimation.stop();
       this.setDirection(direction);
+
+      this.lastAnimation = animation;
       this.currentAnimation = this.animations[animation];
     }, 100);
   }
@@ -102,12 +99,41 @@ export default class Player extends Character {
     return direction || 'Idle';
   }
 
+  run (directions, running) {
+    if (running && this.aiming) return;
+    const run = `${this.hasRifle ? 'rifle' : 'pistol'}Run`;
+
+    this.running = running;
+
+    if (!running || this.lastAnimation === run) {
+      if (!this.aiming && !directions.includes(1)) {
+        setTimeout(() => { this.idle(); }, 150);
+      } else {
+        this.move(directions);
+      }
+
+      return;
+    }
+
+    this.currentAnimation.crossFadeTo(this.animations[run], 0.1, true);
+    this.animations[run].play();
+    // this.lastAnimation = run;
+
+    setTimeout(() => {
+      this.setDirection('Run');
+      this.lastAnimation = run;
+      this.currentAnimation.stop();
+      this.currentAnimation = this.animations[run];
+    }, 100);
+  }
+
   /* getMoveAnimation (animation) {
     const weapon = this.hasRifle ? 'rifle' : 'pistol';
     return animation.replace(weapon, '');
   } */
 
   aim (aiming) {
+    // if (this.moving || this.running) return;
     const aimElapse = Date.now() - this.aimTime;
     const cancelAim = !aiming && aimElapse < 900;
 
