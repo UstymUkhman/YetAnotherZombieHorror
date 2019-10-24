@@ -38,7 +38,6 @@ class AnotherDumbZombieGame {
       Input.player = this.player;
 
       this.weapon = new AK47(() => {
-        Game.add(this.weapon.shoot.bind(this.weapon));
         const colliders = this.zombie.colliders;
         this.weapon.camera = this.stage.camera;
 

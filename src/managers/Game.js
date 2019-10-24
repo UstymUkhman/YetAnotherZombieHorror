@@ -1,10 +1,19 @@
 import Stats from 'three/examples/js/libs/stats.min';
 import { Clock } from '@three/core/Clock';
+import Events from '@/managers/Events';
 
 class Game {
   constructor () {
     this._clock = new Clock();
     this.createStats();
+
+    this._onHeadshoot = this.onHeadshoot.bind(this);
+    this._onBodyHit = this.onBodyHit.bind(this);
+    this._onLegHit = this.onLegHit.bind(this);
+
+    Events.add('headshoot', this._onHeadshoot);
+    Events.add('bodyHit', this._onBodyHit);
+    Events.add('legHit', this._onLegHit);
 
     this.player = null;
     this.enemy = null;
@@ -51,6 +60,16 @@ class Game {
     this.enemy.nextToPlayer = nextToPlayer;
     this.enemy.attacking = attack;
   }
+
+  onHeadshoot () {
+    this.enemy.headshot();
+  }
+
+  onBodyHit () {
+    this.enemy.death();
+  }
+
+  onLegHit () { }
 
   add (call) {
     this.calls.push(call);

@@ -12,11 +12,11 @@ class Input {
       document.documentElement.webkitRequestPointerLock;
 
     this._onMouseUp = debounce(this.onMouseUp.bind(this), 150);
-    this._onKeyUp = debounce(this.onKeyUp.bind(this), 150);
-
     this._onMouseMove = this.onMouseMove.bind(this);
     this._onMouseDown = this.onMouseDown.bind(this);
+
     this._onKeyDown = this.onKeyDown.bind(this);
+    this._onKeyUp = this.onKeyUp.bind(this);
 
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
@@ -24,6 +24,7 @@ class Input {
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
+    this._keyDown = null;
     this.player = null;
 
     this.shift = false;
@@ -60,7 +61,9 @@ class Input {
     event.stopPropagation();
     event.preventDefault();
 
-    if (event.which === 3) {
+    if (event.which === 1) {
+      this.player.shoot(true);
+    } else if (event.which === 3) {
       this.rotationX.speed = 5;
       this.player.aim(true);
     }
@@ -74,17 +77,15 @@ class Input {
 
     this.rotationY.target = y;
     this.rotationX.target = x;
-
-    // this.player.character.rotation.y = x;
-    // this.character.rotation.x = y;
-    // this.camera.rotation.x = y;
   }
 
   onMouseUp (event) {
     event.stopPropagation();
     event.preventDefault();
 
-    if (event.which === 3) {
+    if (event.which === 1) {
+      this.player.shoot(false);
+    } else if (event.which === 3) {
       this.rotationX.speed = 15;
       this.player.aim(false);
     }
@@ -134,6 +135,7 @@ class Input {
     if (this.move !== move) {
       this.player.move(this.moves, this.shift);
       this.player.character.rotation.x = 0;
+      this._keyDown = Date.now();
       this.move = move;
     }
   }
@@ -171,8 +173,12 @@ class Input {
     const move = this.moves.join('');
 
     if (move === '0000') {
+      let delay = Date.now() - this._keyDown;
+      delay = Math.max(150 - delay, 0);
+
+      setTimeout(() => { this.player.idle(); }, delay);
       clearTimeout(this.idleTimeout);
-      this.player.idle();
+
       this.move = move;
       return;
     }
@@ -214,9 +220,6 @@ class Input {
   updateRotation (delta) {
     this.rotationX.update(delta);
     this.rotationY.update(delta);
-
-    // this.player.character.rotation.y = this.rotationX.value;
-    // this.camera.rotation.x = clamp(this.rotationY.value, -0.25, 0.25);
 
     this.player.character.rotation.y = this.rotationX.value;
     this.character.rotation.x = this.rotationY.value;

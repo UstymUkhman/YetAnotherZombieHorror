@@ -74,6 +74,39 @@ export default class Player extends Character {
     return true;
   }
 
+  move (directions, run = false) {
+    const direction = this.getMoveDirection(...directions);
+    const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
+
+    if (this.aiming || this.lastAnimation === animation) return;
+
+    this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
+    this.animations[animation].play();
+
+    this.lastAnimation = animation;
+    this.lastDirection = direction;
+
+    this.running = run;
+    this.moving = true;
+
+    setTimeout(() => {
+      this.currentAnimation.stop();
+      this.setDirection(direction);
+      this.currentAnimation = this.animations[animation];
+    }, 100);
+  }
+
+  getMoveDirection (w, a, s, d) {
+    let direction = w ? 'Forward' : s ? 'Backward' : '';
+    direction += a ? 'Left' : d ? 'Right' : '';
+    return direction || 'Idle';
+  }
+
+  /* getMoveAnimation (animation) {
+    const weapon = this.hasRifle ? 'rifle' : 'pistol';
+    return animation.replace(weapon, '');
+  } */
+
   aim (aiming) {
     const aimElapse = Date.now() - this.aimTime;
     const cancelAim = !aiming && aimElapse < 900;
@@ -142,38 +175,11 @@ export default class Player extends Character {
     }
   }
 
-  move (directions, run = false) {
-    const direction = this.getMoveDirection(...directions);
-    const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
-
-    if (this.aiming || this.lastAnimation === animation) return;
-
-    this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
-    this.animations[animation].play();
-
-    this.lastAnimation = animation;
-    this.lastDirection = direction;
-
-    this.running = run;
-    this.moving = true;
-
-    setTimeout(() => {
-      this.currentAnimation.stop();
-      this.setDirection(direction);
-      this.currentAnimation = this.animations[animation];
-    }, 100);
+  shoot (now) {
+    if (now) {
+      this.weapon.shoot(this.character.position);
+    }
   }
-
-  getMoveDirection (w, a, s, d) {
-    let direction = w ? 'Forward' : s ? 'Backward' : '';
-    direction += a ? 'Left' : d ? 'Right' : '';
-    return direction || 'Idle';
-  }
-
-  /* getMoveAnimation (animation) {
-    const weapon = this.hasRifle ? 'rifle' : 'pistol';
-    return animation.replace(weapon, '');
-  } */
 
   update (delta) {
     super.update(delta);

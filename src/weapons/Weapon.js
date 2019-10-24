@@ -3,6 +3,7 @@ import { gltfLoader } from '@/utils/assetsLoader';
 import { Raycaster } from '@three/core/Raycaster';
 
 import { Vector2 } from '@three/math/Vector2';
+import Events from '@/managers/Events';
 import to from 'await-to-js';
 
 const AIM_NEAR = 3;
@@ -10,12 +11,11 @@ const NEAR = 4.5;
 
 export default class Character {
   constructor (asset, onLoad = null) {
+    this._raycaster = new Raycaster();
     this.origin = new Vector2(0, 0);
+    this._raycaster.near = NEAR;
 
-    this.ray = new Raycaster();
     this.load(asset, onLoad);
-
-    this.ray.near = NEAR;
     this._aiming = false;
 
     this.camera = null;
@@ -47,23 +47,28 @@ export default class Character {
     });
   }
 
-  shoot () {
-    this.ray.setFromCamera(this.origin, this.camera);
-    const colliders = this.ray.intersectObjects(this.targets);
-
-    for (let c = 0; c < this.targets.length; c++) {
-      this.targets[c].material.color.setHex(0xFF0000);
-    }
-
-    if (colliders.length) {
-      colliders[0].object.material.color.setHex(0x00CC00);
-    }
+  shoot (collider) {
+    const event = this._getEvent(collider);
+    Events.dispatch(event);
   }
 
   // update (delta) { }
 
+  _getEvent (collider) {
+    if (!collider) return 'headshoot';
+    else if (collider === 1) return 'bodyHit';
+
+    return 'legHit';
+  }
+
+  get target () {
+    this._raycaster.setFromCamera(this.origin, this.camera);
+    const colliders = this._raycaster.intersectObjects(this.targets);
+    return colliders.length ? this.targets.indexOf(colliders[0].object) : -1;
+  }
+
   set aiming (now) {
-    this.ray.near = now ? AIM_NEAR : NEAR;
+    this._raycaster.near = now ? AIM_NEAR : NEAR;
     this._aiming = now;
   }
 

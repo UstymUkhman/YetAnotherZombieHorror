@@ -11,10 +11,10 @@ import { Mesh } from '@three/objects/Mesh';
 import config from '@/assets/enemy.json';
 
 const colliderMaterial = new MeshBasicMaterial({
-  transparent: true,
-  color: 0xFF0000,
-  visible: true,
-  opacity: 0.5
+  // transparent: true,
+  // color: 0xFF0000,
+  visible: false // ,
+  // opacity: 0.5
 });
 
 export default class Enemy extends Character {
@@ -152,7 +152,7 @@ export default class Enemy extends Character {
   }
 
   scream (run = true) {
-    this.currentAnimation.crossFadeTo(this.animations.scream, 0.133, true);
+    this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
 
     this.attacking = false;
@@ -163,12 +163,12 @@ export default class Enemy extends Character {
       this.currentAnimation.stop();
       this.lastAnimation = 'scream';
       this.currentAnimation = this.animations.scream;
-      if (run) setTimeout(() => { this.run(); }, 2500);
-    }, 133);
+      if (run) setTimeout(() => { this.run(); }, 2400);
+    }, 233);
   }
 
   run () {
-    this.currentAnimation.crossFadeTo(this.animations.run, 0.1, true);
+    this.currentAnimation.crossFadeTo(this.animations.run, 0.25, true);
     this.animations.run.play();
 
     setTimeout(() => {
@@ -181,7 +181,7 @@ export default class Enemy extends Character {
 
       this.setDirection('Running');
       this.currentAnimation = this.animations.run;
-    }, 100);
+    }, 250);
   }
 
   attack (hard = false) {
@@ -202,6 +202,46 @@ export default class Enemy extends Character {
       this.currentAnimation = this.animations[attack];
       setTimeout(() => { this[lastAnimation](); }, hard ? 4400 : 2500);
     }, 166);
+  }
+
+  headshot () {
+    this.currentAnimation.crossFadeTo(this.animations.headshot, 0.25, true);
+    this.animations.headshot.play();
+
+    setTimeout(() => {
+      this.moving = false;
+      this.running = false;
+      this.attacking = false;
+
+      this.setDirection('Idle');
+      this.currentAnimation.stop();
+      this.lastAnimation = 'headshot';
+      this.currentAnimation = this.animations.headshot;
+
+      setTimeout(() => {
+        console.log('Headshot!');
+      }, 2750);
+    }, 250);
+  }
+
+  death () {
+    this.currentAnimation.crossFadeTo(this.animations.death, 0.133, true);
+    this.animations.death.play();
+
+    setTimeout(() => {
+      this.moving = false;
+      this.running = false;
+      this.attacking = false;
+
+      this.setDirection('Idle');
+      this.lastAnimation = 'death';
+      this.currentAnimation.stop();
+      this.currentAnimation = this.animations.death;
+
+      setTimeout(() => {
+        console.log('Dead!');
+      }, 2500);
+    }, 133);
   }
 
   update (delta) {

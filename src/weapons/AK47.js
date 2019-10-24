@@ -15,6 +15,7 @@ export default class AK47 extends Weapon {
     });
 
     this.aimTimeout = null;
+    this.speed = 715; // m/s
   }
 
   aim (aiming, duration) {
@@ -33,5 +34,16 @@ export default class AK47 extends Weapon {
     clearTimeout(this.aimTimeout);
     this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+  }
+
+  shoot (player) {
+    const target = this.target;
+    const collider = this.targets[target];
+
+    if (target > -1) {
+      const distance = collider.position.distanceTo(player);
+      const time = Math.round(distance / this.speed * 1000);
+      setTimeout(() => { super.shoot(target); }, time);
+    }
   }
 };
