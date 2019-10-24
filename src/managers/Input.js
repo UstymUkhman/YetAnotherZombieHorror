@@ -64,8 +64,8 @@ class Input {
     if (event.which === 1) {
       this.player.shoot(true);
     } else if (event.which === 3) {
+      this.player.aim(true, this.moves);
       this.rotationX.speed = 5;
-      this.player.aim(true);
     }
   }
 
@@ -86,8 +86,8 @@ class Input {
     if (event.which === 1) {
       this.player.shoot(false);
     } else if (event.which === 3) {
+      this.player.aim(false, this.moves);
       this.rotationX.speed = 15;
-      this.player.aim(false);
     }
   }
 
