@@ -1,4 +1,4 @@
-import { /* Elastic, */ clamp } from '@/utils/number';
+import { Elastic, clamp } from '@/utils/number';
 import debounce from 'lodash.debounce';
 
 class Input {
@@ -12,15 +12,15 @@ class Input {
       document.documentElement.webkitRequestPointerLock;
 
     this._onMouseUp = debounce(this.onMouseUp.bind(this), 150);
-    this._onKeyUp = this.onKeyUp.bind(this);
+    this._onKeyUp = debounce(this.onKeyUp.bind(this), 150);
 
-    this._onMouseDown = this.onMouseDown.bind(this);
     this._onMouseMove = this.onMouseMove.bind(this);
+    this._onMouseDown = this.onMouseDown.bind(this);
     this._onKeyDown = this.onKeyDown.bind(this);
 
-    // this.rotationX = new Elastic(0);
-    // this.rotationY = new Elastic(0);
-    // this.rotationX.speed = 20;
+    this.rotationX = new Elastic(0);
+    this.rotationY = new Elastic(0);
+    this.rotationX.speed = 15;
 
     this.moves = [0, 0, 0, 0];
     this.idleTimeout = null;
@@ -61,7 +61,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      // this.rotationX.speed = 5;
+      this.rotationX.speed = 5;
       this.player.aim(true);
     }
   }
@@ -69,14 +69,15 @@ class Input {
   onMouseMove (event) {
     if (!this.pointerLocked) return;
 
-    const y = this.camera.rotation.x + (event.movementY || 0) * 0.005;
     const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
+    const y = clamp(this.camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, 0.2);
 
-    // this.rotationY.target = y;
-    // this.rotationX.target = x;
+    this.rotationY.target = y;
+    this.rotationX.target = x;
 
-    this.player.character.rotation.y = x;
-    this.camera.rotation.x = clamp(y, -0.1, 0.1);
+    // this.player.character.rotation.y = x;
+    // this.character.rotation.x = y;
+    // this.camera.rotation.x = y;
   }
 
   onMouseUp (event) {
@@ -84,7 +85,7 @@ class Input {
     event.preventDefault();
 
     if (event.which === 3) {
-      // this.rotationX.speed = 20;
+      this.rotationX.speed = 15;
       this.player.aim(false);
     }
   }
@@ -210,13 +211,21 @@ class Input {
     document.removeEventListener('keyup', this._onKeyUp, false);
   }
 
-  /* updateRotation (delta) {
+  updateRotation (delta) {
     this.rotationX.update(delta);
     this.rotationY.update(delta);
 
+    // this.player.character.rotation.y = this.rotationX.value;
+    // this.camera.rotation.x = clamp(this.rotationY.value, -0.25, 0.25);
+
     this.player.character.rotation.y = this.rotationX.value;
-    this.camera.rotation.x = clamp(this.rotationY.value, -0.25, 0.25);
-  } */
+    this.character.rotation.x = this.rotationY.value;
+    this.camera.rotation.x = this.rotationY.value;
+  }
+
+  get character () {
+    return this.player.character.children[0];
+  }
 
   get camera () {
     return this.player.character.children[1];

@@ -30,7 +30,7 @@ class AnotherDumbZombieGame {
       Game.add(this.player.update.bind(this.player));
 
       if (!FREE_CAMERA) {
-        // Game.add(Input.updateRotation.bind(Input));
+        Game.add(Input.updateRotation.bind(Input));
         this.player.addCamera(this.stage.camera);
       }
 

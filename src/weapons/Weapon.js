@@ -5,6 +5,9 @@ import { Raycaster } from '@three/core/Raycaster';
 import { Vector2 } from '@three/math/Vector2';
 import to from 'await-to-js';
 
+const AIM_NEAR = 3;
+const NEAR = 4.5;
+
 export default class Character {
   constructor (asset, onLoad = null) {
     this.origin = new Vector2(0, 0);
@@ -12,9 +15,12 @@ export default class Character {
     this.ray = new Raycaster();
     this.load(asset, onLoad);
 
-    this.ray.near = 5;
+    this.ray.near = NEAR;
+    this._aiming = false;
+
     this.camera = null;
     this.targets = [];
+
     this.damage = 10;
     this.arm = null;
   }
@@ -55,4 +61,13 @@ export default class Character {
   }
 
   // update (delta) { }
+
+  set aiming (now) {
+    this.ray.near = now ? AIM_NEAR : NEAR;
+    this._aiming = now;
+  }
+
+  get aiming () {
+    this._aiming;
+  }
 };

@@ -7,8 +7,8 @@ import { LoopOnce } from '@three/constants';
 import config from '@/assets/player.json';
 import anime from 'animejs';
 
-const AIM_CAMERA = new Vector3(-1, 3, -1.5);
-const CAMERA = new Vector3(-1.25, 2.75, -4);
+const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
+const CAMERA = new Vector3(-1.25, 3, -3);
 
 export default class Player extends Character {
   constructor (onLoad) {
@@ -78,6 +78,7 @@ export default class Player extends Character {
     const aimElapse = Date.now() - this.aimTime;
     const cancelAim = !aiming && aimElapse < 900;
 
+    this.weapon.aiming = aiming;
     this.aiming = aiming;
     let duration = 400;
 
@@ -169,10 +170,10 @@ export default class Player extends Character {
     return direction || 'Idle';
   }
 
-  // getMoveAnimation (animation) {
-  //   const weapon = this.hasRifle ? 'rifle' : 'pistol';
-  //   return animation.replace(weapon, '');
-  // }
+  /* getMoveAnimation (animation) {
+    const weapon = this.hasRifle ? 'rifle' : 'pistol';
+    return animation.replace(weapon, '');
+  } */
 
   update (delta) {
     super.update(delta);
