@@ -11,6 +11,8 @@ import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Color } from 'three/src/math/Color';
 import { Fog } from 'three/src/scenes/Fog';
+// import { clamp } from '@/utils/number';
+// import anime from 'animejs';
 
 const GROUND = 0x888888;
 const WHITE = 0xFFFFFF;
@@ -122,13 +124,32 @@ export default class Playground {
     window.addEventListener('resize', this._onResize, false);
   }
 
-  render () {
+  render (delta) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.orbitControls) {
       this.orbitControls.update();
     }
   }
+
+  // updateCameraPosition () {
+  //   if (!this.oscillation) return;
+
+  //   const torque = 0.1 * this.oscillation;
+  //   const oscillation = this.oscillation;
+  //   this.oscillation = 0;
+
+  //   anime({
+  //     targets: this.camera.rotation,
+  //     y: Math.PI + torque,
+  //     easing: 'linear',
+  //     duration: 500,
+
+  //     complete: () => {
+  //       this.oscillation = oscillation * -1;
+  //     }
+  //   });
+  // }
 
   onResize () {
     this.setSize();

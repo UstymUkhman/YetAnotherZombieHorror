@@ -8,6 +8,7 @@ import config from '@/assets/player.json';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
+const RUN_CAMERA = new Vector3(-1.5, 3, -5);
 const CAMERA = new Vector3(-1.25, 3, -3);
 
 export default class Player extends Character {
@@ -31,7 +32,10 @@ export default class Player extends Character {
       onLoad(this.character);
     });
 
-    this._camera = new Vector3();
+    this._cameraPosition = new Vector3();
+    this._cameraRotation = new Vector3();
+
+    this.shakeDirection = 0;
     this.aimTimeout = null;
     this.shooting = false;
     this.moveTime = null;
@@ -107,6 +111,10 @@ export default class Player extends Character {
     if (running && this.aiming) return;
     const run = `${this.hasRifle ? 'rifle' : 'pistol'}Run`;
 
+    this._runCameraAnimation();
+    this.shakeDirection = ~~this.running;
+    this._shakeCameraAnimation(this.running);
+
     if (!running || this.lastAnimation === run) {
       if (!this.aiming && !directions.includes(1)) {
         setTimeout(() => { this.idle(); }, 150);
@@ -128,6 +136,56 @@ export default class Player extends Character {
     }, 100);
   }
 
+  _runCameraAnimation () {
+    const x = this.running ? RUN_CAMERA.x : CAMERA.x;
+    const z = this.running ? RUN_CAMERA.z : CAMERA.z;
+
+    const delay = this.running ? 100 : 0;
+
+    anime({
+      targets: this.cameraPosition,
+      easing: 'easeInOutQuad',
+      duration: 250,
+      delay: delay,
+      x: x,
+      z: z
+    });
+  }
+
+  _shakeCameraAnimation (first = false) {
+    if (!this.running) {
+      this.shakeDirection = 0;
+
+      // anime({
+      //   targets: this.cameraRotation,
+      //   easing: 'linear',
+      //   duration: 150,
+      //   delay: 350,
+      //   y: Math.PI
+      // });
+
+      return;
+    }
+
+    const torque = this.shakeDirection * 0.05;
+    const oscillation = this.shakeDirection;
+    const speed = first ? 150 : 300;
+    const delay = first ? 350 : 0;
+
+    anime({
+      targets: this.cameraRotation,
+      y: Math.PI + torque,
+      easing: 'linear',
+      duration: speed,
+      delay: delay,
+
+      complete: () => {
+        this.shakeDirection = oscillation * -1;
+        this._shakeCameraAnimation();
+      }
+    });
+  }
+
   /* getMoveAnimation (animation) {
     const weapon = this.hasRifle ? 'rifle' : 'pistol';
     return animation.replace(weapon, '');
@@ -135,6 +193,7 @@ export default class Player extends Character {
 
   aim (aiming, directions) {
     // if (this.moving || this.running) return;
+    const animationDelay = aiming ? 100 : 0;
     const aimElapse = Date.now() - this.aimTime;
     const cancelAim = !aiming && aimElapse < 900;
     const move = !aiming && directions.includes(1);
@@ -168,29 +227,29 @@ export default class Player extends Character {
       }
     }
 
-    if (move) this.running ? this.run(directions) : this.move(directions);
-    this._aimCameraAnimation(aiming, duration, !cancelAim);
-  }
-
-  _aimCameraAnimation (aiming, duration, cancel) {
-    const x = aiming ? AIM_CAMERA.x : CAMERA.x;
-    const y = aiming ? AIM_CAMERA.y : CAMERA.y;
-    const z = aiming ? AIM_CAMERA.z : CAMERA.z;
-
-    const delay = aiming ? 100 : 0;
-
-    if (cancel) {
-      this.weapon.aim(aiming, duration - 100, delay);
+    if (move) {
+      this.running ? this.run(directions) : this.move(directions);
     }
 
+    if (!this.running) {
+      this._aimCameraAnimation(aiming, duration, animationDelay);
+    }
+
+    if (!cancelAim) {
+      this.weapon.aim(aiming, duration - 100, animationDelay);
+    }
+  }
+
+  _aimCameraAnimation (aiming, duration, delay) {
+    const x = aiming ? AIM_CAMERA.x : CAMERA.x;
+    const z = aiming ? AIM_CAMERA.z : CAMERA.z;
+
     anime({
+      targets: this.cameraPosition,
       easing: 'easeInOutQuad',
-      targets: this.camera,
       duration: duration,
       delay: delay,
-
       x: x,
-      y: y,
       z: z
     });
   }
@@ -223,7 +282,8 @@ export default class Player extends Character {
   } */
 
   addCamera (camera) {
-    this._camera = camera.position;
+    this._cameraPosition = camera.position;
+    this._cameraRotation = camera.rotation;
     this.character.add(camera);
   }
 
@@ -235,7 +295,11 @@ export default class Player extends Character {
     return `${this.hasRifle ? 'rifle' : 'pistol'}Aim`;
   }
 
-  get camera () {
-    return this._camera;
+  get cameraPosition () {
+    return this._cameraPosition;
+  }
+
+  get cameraRotation () {
+    return this._cameraRotation;
   }
 };
