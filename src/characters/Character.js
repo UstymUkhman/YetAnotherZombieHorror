@@ -22,6 +22,7 @@ export default class Character {
 
     this.running = false;
     this.moving = false;
+    this.alive = true;
 
     this.mixer = null;
     this.health = 100;

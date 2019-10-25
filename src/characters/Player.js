@@ -33,12 +33,13 @@ export default class Player extends Character {
 
     this._camera = new Vector3();
     this.aimTimeout = null;
+    this.shooting = false;
     this.moveTime = null;
-    this.hasRifle = true;
-    this.weapon = null;
 
+    this.hasRifle = true;
     this.aimTime = null;
     this.aiming = false;
+    this.weapon = null;
   }
 
   setWeapon (weapon, colliders, rifle = false) {
@@ -207,9 +208,14 @@ export default class Player extends Character {
   }
 
   shoot (now) {
+    this.shooting = now;
+
     if (now) {
       this.weapon.shoot(this.character.position);
+      return this.weapon.recoil;
     }
+
+    return { x: 0, y: 0 };
   }
 
   /* update (delta) {

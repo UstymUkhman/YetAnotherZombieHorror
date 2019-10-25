@@ -1,5 +1,5 @@
 import { Elastic, clamp } from '@/utils/number';
-import debounce from 'lodash.debounce';
+import throttle from 'lodash.throttle';
 
 class Input {
   constructor () {
@@ -11,9 +11,10 @@ class Input {
       document.documentElement.mozRequestPointerLock ||
       document.documentElement.webkitRequestPointerLock;
 
-    this._onMouseUp = debounce(this.onMouseUp.bind(this), 150);
+    this._onMousePress = throttle(this.onMousePress.bind(this), 100, { leading: true });
     this._onMouseMove = this.onMouseMove.bind(this);
     this._onMouseDown = this.onMouseDown.bind(this);
+    this._onMouseUp = this.onMouseUp.bind(this);
 
     this._onKeyDown = this.onKeyDown.bind(this);
     this._onKeyUp = this.onKeyUp.bind(this);
@@ -23,7 +24,11 @@ class Input {
     this.rotationX.speed = 15;
 
     this.moves = [0, 0, 0, 0];
+    this.rightTimeout = null;
     this.idleTimeout = null;
+
+    this._mouseDown = false;
+    this.mouseRight = null;
     this._keyDown = null;
     this.player = null;
 
@@ -62,8 +67,9 @@ class Input {
     event.preventDefault();
 
     if (event.which === 1) {
-      this.player.shoot(true);
+      this._mouseDown = true;
     } else if (event.which === 3) {
+      this.mouseRight = Date.now();
       this.player.aim(true, this.moves);
       this.rotationX.speed = 5;
     }
@@ -84,10 +90,16 @@ class Input {
     event.preventDefault();
 
     if (event.which === 1) {
-      this.player.shoot(false);
+      this._mouseDown = false;
     } else if (event.which === 3) {
-      this.player.aim(false, this.moves);
-      this.rotationX.speed = 15;
+      let delay = Date.now() - this.mouseRight;
+      delay = Math.max(150 - delay, 0);
+      clearTimeout(this.rightTimeout);
+
+      this.rightTimeout = setTimeout(() => {
+        this.player.aim(false, this.moves);
+        this.rotationX.speed = 15;
+      }, delay);
     }
   }
 
@@ -217,9 +229,25 @@ class Input {
     document.removeEventListener('keyup', this._onKeyUp, false);
   }
 
-  updateRotation (delta) {
+  update (delta) {
     this.rotationX.update(delta);
     this.rotationY.update(delta);
+
+    this.player.character.rotation.y = this.rotationX.value;
+    this.character.rotation.x = this.rotationY.value;
+    this.camera.rotation.x = this.rotationY.value;
+
+    if (this._mouseDown) {
+      this._onMousePress();
+    }
+  }
+
+  onMousePress () {
+    const recoil = this.player.shoot(this._mouseDown);
+    this._mouseDown = this._mouseDown && this.player.hasRifle;
+
+    this.rotationY.value += recoil.y;
+    this.rotationX.value += recoil.x;
 
     this.player.character.rotation.y = this.rotationX.value;
     this.character.rotation.x = this.rotationY.value;

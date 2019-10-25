@@ -118,6 +118,8 @@ export default class Enemy extends Character {
   }
 
   idle () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.idle, 0.25, true);
     this.animations.idle.play();
 
@@ -135,6 +137,8 @@ export default class Enemy extends Character {
   }
 
   walk () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.walk, 0.25, true);
     this.animations.walk.play();
 
@@ -152,6 +156,8 @@ export default class Enemy extends Character {
   }
 
   scream (run = true) {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
 
@@ -168,6 +174,8 @@ export default class Enemy extends Character {
   }
 
   run () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.run, 0.25, true);
     this.animations.run.play();
 
@@ -185,6 +193,8 @@ export default class Enemy extends Character {
   }
 
   attack (hard = false) {
+    if (!this.alive) return;
+
     const attack = hard ? 'hardAttack' : 'softAttack';
     const lastAnimation = this.lastAnimation;
 
@@ -205,6 +215,9 @@ export default class Enemy extends Character {
   }
 
   headshot () {
+    if (!this.alive) return;
+    this.alive = false;
+
     this.currentAnimation.crossFadeTo(this.animations.headshot, 0.25, true);
     this.animations.headshot.play();
 
@@ -225,6 +238,9 @@ export default class Enemy extends Character {
   }
 
   death () {
+    if (!this.alive) return;
+    this.alive = false;
+
     this.currentAnimation.crossFadeTo(this.animations.death, 0.133, true);
     this.animations.death.play();
 
@@ -238,16 +254,16 @@ export default class Enemy extends Character {
       this.currentAnimation.stop();
       this.currentAnimation = this.animations.death;
 
-      setTimeout(() => {
-        console.log('Dead!');
-      }, 2500);
+      // setTimeout(() => {
+      //   console.log('Dead!');
+      // }, 2500);
     }, 133);
   }
 
   update (delta) {
     super.update(delta);
 
-    if (this.visiblePlayer) {
+    if (this.visiblePlayer && this.alive) {
       this.character.lookAt(this.playerPosition);
     }
   }
