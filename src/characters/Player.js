@@ -112,8 +112,8 @@ export default class Player extends Character {
     const run = `${this.hasRifle ? 'rifle' : 'pistol'}Run`;
 
     this._runCameraAnimation();
-    this.shakeDirection = ~~this.running;
-    this._shakeCameraAnimation(this.running);
+    this.shakeDirection = ~~running;
+    this._shakeCameraAnimation(running);
 
     if (!running || this.lastAnimation === run) {
       if (!this.aiming && !directions.includes(1)) {
@@ -140,37 +140,23 @@ export default class Player extends Character {
     const x = this.running ? RUN_CAMERA.x : CAMERA.x;
     const z = this.running ? RUN_CAMERA.z : CAMERA.z;
 
-    const delay = this.running ? 100 : 0;
+    // const delay = this.running ? 100 : 0;
 
     anime({
       targets: this.cameraPosition,
-      easing: 'easeInOutQuad',
+      easing: 'easeOutQuad',
       duration: 250,
-      delay: delay,
+      delay: 200,
       x: x,
       z: z
     });
   }
 
-  _shakeCameraAnimation (first = false) {
-    if (!this.running) {
-      this.shakeDirection = 0;
-
-      // anime({
-      //   targets: this.cameraRotation,
-      //   easing: 'linear',
-      //   duration: 150,
-      //   delay: 350,
-      //   y: Math.PI
-      // });
-
-      return;
-    }
-
+  _shakeCameraAnimation (first) {
+    const speed = first || !this.running ? 150 : 300;
     const torque = this.shakeDirection * 0.05;
     const oscillation = this.shakeDirection;
-    const speed = first ? 150 : 300;
-    const delay = first ? 350 : 0;
+    const delay = first ? 500 : 0;
 
     anime({
       targets: this.cameraRotation,
@@ -180,8 +166,10 @@ export default class Player extends Character {
       delay: delay,
 
       complete: () => {
-        this.shakeDirection = oscillation * -1;
-        this._shakeCameraAnimation();
+        if (this.running) {
+          this.shakeDirection = oscillation * -1;
+          this._shakeCameraAnimation(false);
+        }
       }
     });
   }
