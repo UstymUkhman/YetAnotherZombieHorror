@@ -1,12 +1,12 @@
-import { Vector3 } from '@three/math/Vector3';
+import SHOOT_SOUND from '@/assets/sounds/ak47-shoot.mp3';
 import AK_47 from '@/assets/gltf/ak47.glb';
+
+import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
-
-const SHOOT_SOUND = '../assets/sounds/ak47-shoot.mp3';
 
 export default class AK47 extends Weapon {
   constructor (onLoad) {

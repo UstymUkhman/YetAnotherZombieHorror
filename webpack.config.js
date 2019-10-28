@@ -64,6 +64,13 @@ module.exports = {
         path.resolve('./node_modules/three/src')
       ]
     }, {
+      test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i,
+      loader: 'url-loader',
+      options: {
+        limit: 10000,
+        name: path.posix.join('assets', '[name].[ext]')
+      }
+    }, {
       test: /\.(glsl|vert|frag)$/i,
       loader: 'threejs-glsl-loader'
     }, {
@@ -99,7 +106,7 @@ module.exports = {
     alias: {
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@three': path.resolve('./node_modules/three/src'),
-      '@': build ? '.' : path.resolve('./src')
+      '@': path.resolve('./src')
     }
   },
 
@@ -127,13 +134,14 @@ module.exports = {
   output: {
     globalObject: build ? 'typeof self !== \'undefined\' ? self : this' : 'window',
     filename: (build ? `${config.name}.min` : 'main') + '.js',
+
     libraryTarget: build ? 'umd' : 'var',
     library: build ? config.name : '',
+    publicPath: build ? './' : '/',
 
     path: path.resolve('./build'),
     libraryExport: 'default',
-    umdNamedDefine: true,
-    publicPath: '/'
+    umdNamedDefine: true
   },
 
   optimization: {

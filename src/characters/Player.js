@@ -62,8 +62,12 @@ export default class Player extends Character {
     this.currentAnimation.crossFadeTo(this.animations[this._idle], 0.1, true);
     this.animations[this._idle].play();
 
-    this.running = false;
     this.moving = false;
+    this.running = false;
+
+    this.shakeDirection = 0;
+    this._runCameraAnimation();
+    this._shakeCameraAnimation();
 
     setTimeout(() => {
       this.setDirection('Idle');
@@ -105,15 +109,17 @@ export default class Player extends Character {
   }
 
   run (directions, running = this.running) {
-    this.moving = running;
     this.running = running;
-
-    if (running && this.aiming) return;
+    if (this.aiming) return;
     const run = `${this.hasRifle ? 'rifle' : 'pistol'}Run`;
 
+    this.moving = running;
     this._runCameraAnimation();
     this.shakeDirection = ~~running;
-    this._shakeCameraAnimation(running);
+
+    setTimeout(() => {
+      this._shakeCameraAnimation();
+    }, running ? 500 : 0);
 
     if (!running || this.lastAnimation === run) {
       if (!this.aiming && !directions.includes(1)) {
@@ -140,35 +146,33 @@ export default class Player extends Character {
     const x = this.running ? RUN_CAMERA.x : CAMERA.x;
     const z = this.running ? RUN_CAMERA.z : CAMERA.z;
 
-    // const delay = this.running ? 100 : 0;
+    const delay = this.running ? 100 : 0;
 
     anime({
       targets: this.cameraPosition,
       easing: 'easeOutQuad',
-      duration: 250,
-      delay: 200,
+      duration: 300,
+      delay: delay,
       x: x,
       z: z
     });
   }
 
-  _shakeCameraAnimation (first) {
-    const speed = first || !this.running ? 150 : 300;
-    const torque = this.shakeDirection * 0.05;
+  _shakeCameraAnimation () {
+    const speed = this.shakeDirection || !this.running ? 250 : 500;
+    const torque = this.shakeDirection * 0.025;
     const oscillation = this.shakeDirection;
-    const delay = first ? 500 : 0;
 
     anime({
       targets: this.cameraRotation,
       y: Math.PI + torque,
       easing: 'linear',
       duration: speed,
-      delay: delay,
 
       complete: () => {
-        if (this.running) {
+        if (this.running && !this.aiming) {
           this.shakeDirection = oscillation * -1;
-          this._shakeCameraAnimation(false);
+          this._shakeCameraAnimation();
         }
       }
     });
@@ -180,7 +184,6 @@ export default class Player extends Character {
   } */
 
   aim (aiming, directions) {
-    // if (this.moving || this.running) return;
     const animationDelay = aiming ? 100 : 0;
     const aimElapse = Date.now() - this.aimTime;
     const cancelAim = !aiming && aimElapse < 900;
@@ -219,9 +222,7 @@ export default class Player extends Character {
       this.running ? this.run(directions) : this.move(directions);
     }
 
-    if (!this.running) {
-      this._aimCameraAnimation(aiming, duration, animationDelay);
-    }
+    this._aimCameraAnimation(aiming, duration, animationDelay);
 
     if (!cancelAim) {
       this.weapon.aim(aiming, duration - 100, animationDelay);
@@ -229,6 +230,17 @@ export default class Player extends Character {
   }
 
   _aimCameraAnimation (aiming, duration, delay) {
+    if (this.running) {
+      anime({
+        targets: this.cameraRotation,
+        easing: 'linear',
+        duration: 250,
+        y: Math.PI
+      });
+    }
+
+    if (this.running && this.moving && !aiming) return;
+
     const x = aiming ? AIM_CAMERA.x : CAMERA.x;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 

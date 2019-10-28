@@ -10,6 +10,8 @@ pids
 
 build/*.js
 build/*.map
+build/assets/gltf/*
+build/assets/envmap/*
 
 node_modules
 src/assets/*/*
