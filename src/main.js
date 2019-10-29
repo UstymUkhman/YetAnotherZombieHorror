@@ -41,6 +41,8 @@ class AnotherDumbZombieGame {
         const colliders = this.zombie.colliders;
         this.weapon.camera = this.stage.camera;
 
+        console.log(this, this.player, this.weapon);
+
         this.player.setWeapon(
           this.weapon,
           colliders,

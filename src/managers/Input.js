@@ -11,7 +11,7 @@ class Input {
       document.documentElement.mozRequestPointerLock ||
       document.documentElement.webkitRequestPointerLock;
 
-    this._onMousePress = throttle(this.onMousePress.bind(this), 100, { leading: true });
+    this._onMousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
     this._onMouseMove = this.onMouseMove.bind(this);
     this._onMouseDown = this.onMouseDown.bind(this);
     this._onMouseUp = this.onMouseUp.bind(this);
@@ -249,9 +249,9 @@ class Input {
     this.rotationY.value += recoil.y;
     this.rotationX.value += recoil.x;
 
-    this.player.character.rotation.y = this.rotationX.value;
-    this.character.rotation.x = this.rotationY.value;
-    this.camera.rotation.x = this.rotationY.value;
+    // this.player.character.rotation.y = this.rotationX.value;
+    // this.character.rotation.x = this.rotationY.value;
+    // this.camera.rotation.x = this.rotationY.value;
   }
 
   get character () {

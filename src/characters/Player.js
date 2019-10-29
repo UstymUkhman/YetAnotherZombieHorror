@@ -7,7 +7,7 @@ import { LoopOnce } from '@three/constants';
 import config from '@/assets/player.json';
 import anime from 'animejs';
 
-const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
+const AIM_CAMERA = new Vector3(-1.25, 3, -3); // new Vector3(-0.75, 3, -1.25);
 const RUN_CAMERA = new Vector3(-1.5, 3, -5);
 const CAMERA = new Vector3(-1.25, 3, -3);
 
@@ -16,9 +16,11 @@ export default class Player extends Character {
     super(PLAYER, config, player => {
       this.currentAnimation = this.animations.rifleIdle;
 
+      this.animations.rifleShoot.clampWhenFinished = true;
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
 
+      this.animations.rifleShoot.setLoop(LoopOnce);
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
@@ -51,6 +53,8 @@ export default class Player extends Character {
 
     this.weapon = weapon;
     this.hasRifle = rifle;
+
+    console.log(hand);
 
     hand.add(this.weapon.arm);
     weapon.targets = colliders;
@@ -271,6 +275,14 @@ export default class Player extends Character {
 
     if (now) {
       this.weapon.shoot(this.character.position);
+
+      // if (this.aiming) {
+      //   const shoot = `${this.hasRifle ? 'rifle' : 'pistol'}Shoot`;
+
+      //   this.currentAnimation.crossFadeTo(this.animations[shoot], 0.1, true);
+      //   this.animations[shoot].setDuration(0.25).play();
+      // }
+
       return this.weapon.recoil;
     }
 

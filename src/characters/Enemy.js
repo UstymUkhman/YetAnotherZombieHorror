@@ -61,6 +61,8 @@ export default class Enemy extends Character {
       colliderMaterial.clone()
     );
 
+    console.log(head, headCollider);
+
     this.colliders.push(headCollider);
     headCollider.position.y += 5;
     head.add(headCollider);
