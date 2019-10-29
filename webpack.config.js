@@ -122,13 +122,13 @@ module.exports = {
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NamedModulesPlugin(),
       new webpack.NoEmitOnErrorsPlugin()
-    ]),
+    ]) // ,
 
-    new CopyWebpackPlugin([{
-      from: path.resolve(__dirname, './src/assets'),
-      ignore: ['.*'],
-      to: 'assets'
-    }])
+    // new CopyWebpackPlugin([{
+    //   from: path.resolve(__dirname, './src/assets'),
+    //   ignore: ['.*'],
+    //   to: 'assets'
+    // }])
   ],
 
   output: {
