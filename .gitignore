@@ -8,7 +8,6 @@ pids
 .idea
 .vscode
 
-build/*.js
 build/*.map
 build/assets/gltf/*
 build/assets/envmap/*
