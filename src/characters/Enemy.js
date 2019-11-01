@@ -2,13 +2,13 @@ import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
-import Character from '@/characters/Character';
-import ZOMBIE from '@/assets/gltf/zombie.glb';
-import { Vector3 } from '@three/math/Vector3';
+import config from '@/assets/characters/enemy.json';
+import ZOMBIE from '@/assets/characters/enemy.glb';
 
+import Character from '@/characters/Character';
+import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
-import config from '@/assets/enemy.json';
 
 const colliderMaterial = new MeshBasicMaterial({
   // transparent: true,
@@ -60,8 +60,6 @@ export default class Enemy extends Character {
       new BoxGeometry(20, 25, 25),
       colliderMaterial.clone()
     );
-
-    console.log(head, headCollider);
 
     this.colliders.push(headCollider);
     headCollider.position.y += 5;

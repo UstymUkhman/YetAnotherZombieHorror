@@ -47,9 +47,24 @@ export default class Character {
     });
   }
 
-  shoot (collider) {
-    const event = this._getEvent(collider);
-    Events.dispatch(event);
+  shoot (player) {
+    const target = this.target;
+    const collider = this.targets[target];
+
+    console.log(this.shootSound, this.speed);
+
+    this.shootSound.currentTime = 0.0;
+    this.shootSound.play();
+
+    if (target > -1) {
+      const distance = collider.position.distanceTo(player);
+      const time = Math.round(distance / this.speed);
+      const event = this._getEvent(target);
+
+      setTimeout(() => {
+        Events.dispatch(event);
+      }, time);
+    }
   }
 
   // update (delta) { }

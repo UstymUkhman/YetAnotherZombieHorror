@@ -5,7 +5,9 @@ import Enemy from '@/characters/Enemy';
 import Gamepad from '@/managers/Gamepad';
 import Input from '@/managers/Input';
 import Game from '@/managers/Game';
-import AK47 from '@/weapons/AK47';
+
+import Pistol from '@/weapons/Pistol';
+// import AK47 from '@/weapons/AK47';
 
 import Stage from '@/Stage';
 const FREE_CAMERA = false;
@@ -37,16 +39,27 @@ class AnotherDumbZombieGame {
       this.stage.scene.add(character);
       Input.player = this.player;
 
-      this.weapon = new AK47(() => {
+      // this.weapon = new AK47(() => {
+      //   const colliders = this.zombie.colliders;
+      //   this.weapon.camera = this.stage.camera;
+
+      //   this.player.setWeapon(
+      //     this.weapon,
+      //     colliders,
+      //     true
+      //   );
+
+      //   this.stage.createGrid();
+      //   this.onCharacterLoad();
+      // });
+
+      this.weapon = new Pistol(() => {
         const colliders = this.zombie.colliders;
         this.weapon.camera = this.stage.camera;
 
-        console.log(this, this.player, this.weapon);
-
         this.player.setWeapon(
           this.weapon,
-          colliders,
-          true
+          colliders
         );
 
         this.stage.createGrid();

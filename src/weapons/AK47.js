@@ -1,9 +1,9 @@
-import SHOOT_SOUND from '@/assets/sounds/ak47-shoot.mp3';
-import AK_47 from '@/assets/gltf/ak47.glb';
-
 import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Weapon from '@/weapons/Weapon';
+
+import AK_47 from '@/assets/AK47/rifle.glb';
+import SHOOT from '@/assets/AK47/shoot.mp3';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
@@ -18,12 +18,13 @@ export default class AK47 extends Weapon {
     });
 
     this.aimTimeout = null;
+    // Muzzle velocity (m/s) * 1000
+    this.speed = 715000;
     this._loadSounds();
-    this.speed = 715; // m/s
   }
 
   _loadSounds () {
-    this.shootSound = new Audio(SHOOT_SOUND);
+    this.shootSound = new Audio(SHOOT);
     this.shootSound.autoplay = false;
     this.shootSound.loop = false;
     this.shootSound.volume = 1;
@@ -48,19 +49,19 @@ export default class AK47 extends Weapon {
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
   }
 
-  shoot (player) {
-    const target = this.target;
-    const collider = this.targets[target];
+  // shoot (player) {
+  //   const target = this.target;
+  //   const collider = this.targets[target];
 
-    this.shootSound.currentTime = 0.0;
-    this.shootSound.play();
+  //   this.shootSound.currentTime = 0.0;
+  //   this.shootSound.play();
 
-    if (target > -1) {
-      const distance = collider.position.distanceTo(player);
-      const time = Math.round(distance / this.speed * 1000);
-      setTimeout(() => { super.shoot(target); }, time);
-    }
-  }
+  //   if (target > -1) {
+  //     const distance = collider.position.distanceTo(player);
+  //     const time = Math.round(distance / this.speed);
+  //     setTimeout(() => { super.shoot(target); }, time);
+  //   }
+  // }
 
   get recoil () {
     const energy = this.aiming ? 2 : 1;

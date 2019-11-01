@@ -249,9 +249,9 @@ class Input {
     this.rotationY.value += recoil.y;
     this.rotationX.value += recoil.x;
 
-    // this.player.character.rotation.y = this.rotationX.value;
-    // this.character.rotation.x = this.rotationY.value;
-    // this.camera.rotation.x = this.rotationY.value;
+    this.player.character.rotation.y = this.rotationX.value;
+    this.character.rotation.x = this.rotationY.value;
+    this.camera.rotation.x = this.rotationY.value;
   }
 
   get character () {
