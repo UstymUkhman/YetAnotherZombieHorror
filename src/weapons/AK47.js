@@ -49,26 +49,12 @@ export default class AK47 extends Weapon {
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
   }
 
-  // shoot (player) {
-  //   const target = this.target;
-  //   const collider = this.targets[target];
-
-  //   this.shootSound.currentTime = 0.0;
-  //   this.shootSound.play();
-
-  //   if (target > -1) {
-  //     const distance = collider.position.distanceTo(player);
-  //     const time = Math.round(distance / this.speed);
-  //     setTimeout(() => { super.shoot(target); }, time);
-  //   }
-  // }
-
   get recoil () {
     const energy = this.aiming ? 2 : 1;
 
     return {
-      x: random(-0.01, 0.001) / energy,
-      y: -0.02 / energy
+      x: random(-0.03, 0.03) / energy,
+      y: -0.04 / energy
     };
   }
 };

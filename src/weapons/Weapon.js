@@ -51,8 +51,6 @@ export default class Character {
     const target = this.target;
     const collider = this.targets[target];
 
-    console.log(this.shootSound, this.speed);
-
     this.shootSound.currentTime = 0.0;
     this.shootSound.play();
 

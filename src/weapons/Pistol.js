@@ -30,42 +30,14 @@ export default class Pistol extends Weapon {
     this.shootSound.load();
   }
 
-  // aim (aiming, duration) {
-  //   if (aiming) {
-  //     this.aimTimeout = setTimeout(() => {
-  //       this.arm.rotation.set(ROTATION.x, Math.PI, -0.1);
-  //       this.arm.position.set(POSITION.x, 0, -1);
-  //     }, Math.max(duration, 0));
-  //   } else {
-  //     this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
-  //     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-  //   }
-  // }
-
-  // cancelAim () {
-  //   clearTimeout(this.aimTimeout);
-  //   this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
-  //   this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-  // }
-
-  // shoot (player) {
-  //   const target = this.target;
-  //   const collider = this.targets[target];
-
-  //   this.shootSound.currentTime = 0.0;
-  //   this.shootSound.play();
-
-  //   if (target > -1) {
-  //     const distance = collider.position.distanceTo(player);
-  //     const time = Math.round(distance / this.speed);
-  //     setTimeout(() => { super.shoot(target); }, time);
-  //   }
-  // }
+  cancelAim () { }
 
   get recoil () {
+    const energy = this.aiming ? 2 : 1;
+
     return {
-      x: random(-0.005, 0.005),
-      y: -0.01
+      x: random(-0.01, 0.01) / energy,
+      y: -0.02 / energy
     };
   }
 };
