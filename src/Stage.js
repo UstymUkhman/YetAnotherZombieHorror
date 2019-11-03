@@ -1,18 +1,16 @@
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
-import { DirectionalLight } from 'three/src/lights/DirectionalLight';
-import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
-import { AmbientLight } from 'three/src/lights/AmbientLight';
-import { GridHelper } from 'three/src/helpers/GridHelper';
+import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
+import { DirectionalLight } from '@three/lights/DirectionalLight';
+import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
+import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { AmbientLight } from '@three/lights/AmbientLight';
+import { OrbitControls } from '@controls/OrbitControls';
+import { GridHelper } from '@three/helpers/GridHelper';
 
-import { Scene } from 'three/src/scenes/Scene';
-import { Mesh } from 'three/src/objects/Mesh';
-import { Color } from 'three/src/math/Color';
-import { Fog } from 'three/src/scenes/Fog';
-// import { clamp } from '@/utils/number';
-// import anime from 'animejs';
+import { Scene } from '@three/scenes/Scene';
+import { Mesh } from '@three/objects/Mesh';
+import { Color } from '@three/math/Color';
+import { Fog } from '@three/scenes/Fog';
 
 const GROUND = 0x888888;
 const WHITE = 0xFFFFFF;
@@ -44,7 +42,7 @@ export default class Playground {
   createScene () {
     this.scene = new Scene();
     this.scene.background = new Color(FOG);
-    this.scene.fog = new Fog(FOG, 1, 50);
+    this.scene.fog = new Fog(FOG, 1, 33);
   }
 
   createCamera (free = false) {
@@ -61,20 +59,25 @@ export default class Playground {
   }
 
   createLights () {
-    const directional = new DirectionalLight(WHITE, 1);
+    const directional = new DirectionalLight(WHITE, 0.8);
     const ambient = new AmbientLight(WHITE);
 
-    directional.position.set(0, 10, -25);
+    directional.position.set(0, 10, -50);
     directional.castShadow = true;
 
-    directional.shadow.mapSize.height = 1024;
-    directional.shadow.mapSize.width = 1024;
+    directional.shadow.mapSize.height = 8192;
+    directional.shadow.mapSize.width = 8192;
 
-    directional.shadow.mapSize.x = 1024;
-    directional.shadow.mapSize.y = 1024;
+    directional.shadow.mapSize.x = 8192;
+    directional.shadow.mapSize.y = 8192;
 
+    directional.shadow.camera.bottom = -50;
+    directional.shadow.camera.right = 50;
+    directional.shadow.camera.left = -50;
+    directional.shadow.camera.top = 50;
+
+    directional.shadow.camera.far = 100;
     directional.shadow.camera.near = 1;
-    directional.shadow.camera.far = 50; // 100
 
     this.scene.add(directional);
     this.scene.add(ambient);
@@ -131,25 +134,6 @@ export default class Playground {
       this.orbitControls.update();
     }
   }
-
-  // updateCameraPosition () {
-  //   if (!this.oscillation) return;
-
-  //   const torque = 0.1 * this.oscillation;
-  //   const oscillation = this.oscillation;
-  //   this.oscillation = 0;
-
-  //   anime({
-  //     targets: this.camera.rotation,
-  //     y: Math.PI + torque,
-  //     easing: 'linear',
-  //     duration: 500,
-
-  //     complete: () => {
-  //       this.oscillation = oscillation * -1;
-  //     }
-  //   });
-  // }
 
   onResize () {
     this.setSize();

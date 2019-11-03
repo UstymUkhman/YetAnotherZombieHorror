@@ -103,6 +103,7 @@ module.exports = {
     extensions: ['.js', '.json'],
 
     alias: {
+      '@controls': path.resolve('./node_modules/three/examples/jsm/controls'),
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@three': path.resolve('./node_modules/three/src'),
       '@': path.resolve('./src')

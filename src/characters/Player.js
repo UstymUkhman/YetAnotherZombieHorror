@@ -275,9 +275,9 @@ export default class Player extends Character {
   }
 
   _cancelAimAnimation (immediate) {
+    if (!this.running) this.idle();
     clearTimeout(this.aimTimeout);
     anime.running.length = 0;
-    this.idle();
 
     if (immediate) {
       this.currentAnimation.stop();
