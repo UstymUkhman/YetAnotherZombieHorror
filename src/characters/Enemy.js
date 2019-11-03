@@ -13,39 +13,18 @@ import { Mesh } from '@three/objects/Mesh';
 const colliderMaterial = new MeshBasicMaterial({
   // transparent: true,
   // color: 0xFF0000,
-  visible: false // ,
-  // opacity: 0.5
+  // opacity: 0.5,
+  visible: false
 });
 
 export default class Enemy extends Character {
-  constructor (onLoad) {
-    super(ZOMBIE, config, enemy => {
-      this.currentAnimation = this.animations.idle;
-
-      this.animations.softAttack.clampWhenFinished = true;
-      this.animations.hardAttack.clampWhenFinished = true;
-
-      this.animations.headshot.clampWhenFinished = true;
-      this.animations.scream.clampWhenFinished = true;
-      this.animations.death.clampWhenFinished = true;
-
-      this.animations.softAttack.setLoop(LoopOnce);
-      this.animations.hardAttack.setLoop(LoopOnce);
-
-      this.animations.headshot.setLoop(LoopOnce);
-      this.animations.scream.setLoop(LoopOnce);
-      this.animations.death.setLoop(LoopOnce);
-
-      this.currentAnimation.play();
-      this.character = enemy;
-      this.colliders = [];
-
-      this._addHeadCollider(enemy);
-      this._addBodyCollider(enemy);
-      this._addLegsCollider(enemy);
-
-      onLoad(enemy);
-    });
+  constructor (character, onLoad) {
+    character ?
+      this._setDefaultState(character, onLoad) :
+      super(
+        ZOMBIE, config, character =>
+          this._setDefaultState(character, onLoad)
+      );
 
     this.playerPosition = new Vector3();
     this.visiblePlayer = false;
@@ -53,8 +32,36 @@ export default class Enemy extends Character {
     this.attacking = false;
   }
 
+  _setDefaultState (character, onLoad) {
+    this.currentAnimation = this.animations.idle;
+
+    this.animations.softAttack.clampWhenFinished = true;
+    this.animations.hardAttack.clampWhenFinished = true;
+
+    this.animations.headshot.clampWhenFinished = true;
+    this.animations.scream.clampWhenFinished = true;
+    this.animations.death.clampWhenFinished = true;
+
+    this.animations.softAttack.setLoop(LoopOnce);
+    this.animations.hardAttack.setLoop(LoopOnce);
+
+    this.animations.headshot.setLoop(LoopOnce);
+    this.animations.scream.setLoop(LoopOnce);
+    this.animations.death.setLoop(LoopOnce);
+
+    this.currentAnimation.play();
+    this.character = character;
+    this.colliders = [];
+
+    this._addHeadCollider(character);
+    this._addBodyCollider(character);
+    this._addLegsCollider(character);
+
+    onLoad(character);
+  }
+
   _addHeadCollider (character) {
-    const head = character.getObjectById(10, true);
+    const head = character.getObjectById(14);
 
     const headCollider = new Mesh(
       new BoxGeometry(20, 25, 25),
@@ -67,7 +74,7 @@ export default class Enemy extends Character {
   }
 
   _addBodyCollider (character) {
-    const spine = character.getObjectById(6, true);
+    const spine = character.getObjectById(10);
 
     const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
@@ -83,10 +90,10 @@ export default class Enemy extends Character {
   }
 
   _addLegsCollider (character) {
-    const rightUpLeg = character.getObjectById(53, true);
-    const leftUpLeg = character.getObjectById(49, true);
-    const rightLeg = character.getObjectById(54, true);
-    const leftLeg = character.getObjectById(50, true);
+    const rightUpLeg = character.getObjectById(57);
+    const leftUpLeg = character.getObjectById(53);
+    const rightLeg = character.getObjectById(58);
+    const leftLeg = character.getObjectById(54);
 
     const upperLeg = new Mesh(
       new BoxGeometry(15, 50, 15),

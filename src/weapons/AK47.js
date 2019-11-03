@@ -9,16 +9,14 @@ const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
 
 export default class AK47 extends Weapon {
-  constructor (onLoad) {
-    super(AK_47, rifle => {
+  constructor (camera) {
+    super(AK_47, camera, rifle => {
       rifle.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
       rifle.scale.set(0.29, 0.29, 0.29);
       rifle.position.copy(POSITION);
-      onLoad(rifle);
     });
 
     this.aimTimeout = null;
-    // Muzzle velocity (m/s) * 1000
     this.speed = 715000;
     this._loadSounds();
   }

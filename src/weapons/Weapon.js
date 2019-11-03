@@ -9,18 +9,17 @@ import to from 'await-to-js';
 const AIM_NEAR = 3;
 const NEAR = 4.5;
 
-export default class Character {
-  constructor (asset, onLoad = null) {
+export default class Weapon {
+  constructor (asset, camera, onLoad = null) {
     this._raycaster = new Raycaster();
-    this.origin = new Vector2(0, 0);
+    this._origin = new Vector2(0, 0);
     this._raycaster.near = NEAR;
 
     this.load(asset, onLoad);
+    this._camera = camera;
     this._aiming = false;
 
-    this.camera = null;
     this.targets = [];
-
     this.damage = 10;
     this.arm = null;
   }
@@ -75,7 +74,7 @@ export default class Character {
   }
 
   get target () {
-    this._raycaster.setFromCamera(this.origin, this.camera);
+    this._raycaster.setFromCamera(this._origin, this._camera);
     const colliders = this._raycaster.intersectObjects(this.targets);
     return colliders.length ? this.targets.indexOf(colliders[0].object) : -1;
   }

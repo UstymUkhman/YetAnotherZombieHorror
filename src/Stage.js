@@ -11,26 +11,24 @@ import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 import { Color } from '@three/math/Color';
 import { Fog } from '@three/scenes/Fog';
+import Input from '@/managers/Input';
 
 const GROUND = 0x888888;
 const WHITE = 0xFFFFFF;
 const FOG = 0xA0A0A0;
 
 export default class Playground {
-  constructor (free = true) {
+  constructor () {
     this.setSize();
 
     this.createScene();
-    this.createCamera(free);
+    this.createCamera();
     this.createLights();
     this.createGround();
 
     this.createRenderer();
     this.createEvents();
-
-    if (free) {
-      this.createControls();
-    }
+    // this.createControls();
   }
 
   setSize () {
@@ -45,17 +43,14 @@ export default class Playground {
     this.scene.fog = new Fog(FOG, 1, 33);
   }
 
-  createCamera (free = false) {
+  createCamera () {
     this.camera = new PerspectiveCamera(45, this.ratio, 0.1, 1000);
+    this.camera.rotation.set(0, Math.PI, 0);
+    this.camera.position.set(-1.25, 3, -3);
+    this.camera.setFocalLength(25.0);
 
-    if (!free) {
-      this.camera.rotation.set(0, Math.PI, 0);
-      this.camera.position.set(-1.25, 3, -3);
-      this.camera.setFocalLength(25.0);
-    } else {
-      this.camera.position.set(0, 3.5, -5);
-      this.camera.lookAt(0, 0, 0);
-    }
+    // this.camera.position.set(0, 3.5, -5);
+    // this.camera.lookAt(0, 0, 0);
   }
 
   createLights () {
@@ -125,14 +120,15 @@ export default class Playground {
   createEvents () {
     this._onResize = this.onResize.bind(this);
     window.addEventListener('resize', this._onResize, false);
+    this.element.addEventListener('click', Input.requestPointerLock);
   }
 
-  render (delta) {
+  render () {
     this.renderer.render(this.scene, this.camera);
 
-    if (this.orbitControls) {
-      this.orbitControls.update();
-    }
+    // if (this.orbitControls) {
+    //   this.orbitControls.update();
+    // }
   }
 
   onResize () {
@@ -152,7 +148,7 @@ export default class Playground {
     delete this.scene;
   }
 
-  get bounds () {
+  static get bounds () {
     return {
       front: 49,
       side: 49

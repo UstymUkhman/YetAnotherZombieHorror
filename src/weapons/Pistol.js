@@ -9,15 +9,13 @@ const ROTATION = new Vector3(Math.PI / 2, Math.PI + 0.2, -0.075);
 const POSITION = new Vector3(-10, -4, 0.25);
 
 export default class Pistol extends Weapon {
-  constructor (onLoad) {
-    super(PISTOL, pistol => {
+  constructor (camera) {
+    super(PISTOL, camera, pistol => {
       pistol.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
       pistol.position.copy(POSITION);
       pistol.scale.set(13, 13, 13);
-      onLoad(pistol);
     });
 
-    // Muzzle velocity (m/s) * 1000
     this.speed = 255000;
     this._loadSounds();
   }

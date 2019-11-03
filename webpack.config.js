@@ -3,37 +3,37 @@ const webpack = require('webpack');
 const config = require('./package.json');
 
 const build = require('yargs').argv.env === 'build';
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const HOST = process.env.HOST;
 const PORT = process.env.PORT && Number(process.env.PORT);
 process.env.NODE_ENV = build ? 'production' : 'development';
 
 const productionPlugins = [
-  // new UglifyJsPlugin({
-  //   sourceMap: true,
-  //   parallel: true,
+  new UglifyJsPlugin({
+    sourceMap: true,
+    parallel: true,
 
-  //   uglifyOptions: {
-  //     sourceMap: true,
-  //     parallel: true,
+    uglifyOptions: {
+      sourceMap: true,
+      parallel: true,
 
-  //     compress: {
-  //       drop_console: true,
-  //       conditionals: true,
-  //       comparisons: true,
-  //       dead_code: true,
-  //       if_return: true,
-  //       join_vars: true,
-  //       warnings: false,
-  //       unused: true
-  //     },
+      compress: {
+        drop_console: true,
+        conditionals: true,
+        comparisons: true,
+        dead_code: true,
+        if_return: true,
+        join_vars: true,
+        warnings: false,
+        unused: true
+      },
 
-  //     output: {
-  //       comments: false
-  //     }
-  //   }
-  // }),
+      output: {
+        comments: false
+      }
+    }
+  }),
 
   new webpack.optimize.ModuleConcatenationPlugin()
 ];
@@ -138,14 +138,14 @@ module.exports = {
     umdNamedDefine: true
   },
 
-  // optimization: {
-  //   mergeDuplicateChunks: true,
-  //   flagIncludedChunks: true,
-  //   removeEmptyChunks: true,
-  //   namedModules: true,
-  //   namedChunks: true,
-  //   minimize: build
-  // },
+  optimization: {
+    mergeDuplicateChunks: true,
+    flagIncludedChunks: true,
+    removeEmptyChunks: true,
+    namedModules: true,
+    namedChunks: true,
+    minimize: build
+  },
 
   devServer: {
     contentBase: path.join(__dirname, './build'),

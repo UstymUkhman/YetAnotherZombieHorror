@@ -12,11 +12,11 @@ const BOUNDS = {
 };
 
 export default class Character {
-  constructor (asset, setting, onLoad = null) {
+  constructor (asset, settings, onLoad) {
+    if (asset) this.load(asset, onLoad);
     this.speed = { x: 0, z: 0 };
-    this.load(asset, onLoad);
 
-    this.setting = setting;
+    this.settings = settings;
     this.character = null;
     this.animations = {};
 
@@ -46,8 +46,8 @@ export default class Character {
           }
         });
 
-        gltf.scene.position.set(...this.setting.position);
-        gltf.scene.scale.set(...this.setting.scale);
+        gltf.scene.position.set(...this.settings.position);
+        gltf.scene.scale.set(...this.settings.scale);
 
         this.mixer = new AnimationMixer(gltf.scene);
         this.createAnimations(gltf.animations);
@@ -65,8 +65,8 @@ export default class Character {
   }
 
   setDirection (direction) {
-    this.speed.x = this.setting.moves[direction][0];
-    this.speed.z = this.setting.moves[direction][1];
+    this.speed.x = this.settings.moves[direction][0];
+    this.speed.z = this.settings.moves[direction][1];
   }
 
   updatePosition () {

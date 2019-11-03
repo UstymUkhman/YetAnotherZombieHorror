@@ -1,4 +1,5 @@
 import { LoadingManager } from '@three/loaders/LoadingManager';
+import Events from '@/managers/Events';
 
 const dispatchEvent = function (loaded, total) {
   document.dispatchEvent(
@@ -21,6 +22,8 @@ loading.onStart = function (url, toLoad, total) {
 
 loading.onProgress = function (url, loaded, total) {
   const progress = (loaded * 100 / total).toFixed();
+  if (loaded === total) Events.dispatch('loaded');
+
   console.info(`Loading... ${progress}%`);
   dispatchEvent(loaded, total);
 };

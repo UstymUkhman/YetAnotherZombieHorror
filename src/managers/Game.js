@@ -1,24 +1,41 @@
 import Stats from 'three/examples/js/libs/stats.min';
 import { Clock } from '@three/core/Clock';
+
+import Player from '@/characters/Player';
+import Enemy from '@/characters/Enemy';
+
 import Events from '@/managers/Events';
+import Input from '@/managers/Input';
 
-class Game {
+import Pistol from '@/weapons/Pistol';
+// import AK47 from '@/weapons/AK47';
+import Stage from '@/Stage';
+
+export default class Game {
   constructor () {
-    this._clock = new Clock();
-    this.createStats();
-
     this._onHeadshoot = this.onHeadshoot.bind(this);
     this._onBodyHit = this.onBodyHit.bind(this);
+    this._onLoaded = this.onLoaded.bind(this);
     this._onLegHit = this.onLegHit.bind(this);
 
     Events.add('headshoot', this._onHeadshoot);
     Events.add('bodyHit', this._onBodyHit);
     Events.add('legHit', this._onLegHit);
+    Events.add('loaded', this._onLoaded);
 
+    Player.setBounds(Stage.bounds);
+    Enemy.setBounds(Stage.bounds);
+
+    this._clock = new Clock();
+    this.stage = new Stage();
+
+    this._zombie = null;
     this.player = null;
     this.enemy = null;
-
     this.calls = [];
+
+    this.createStats();
+    this.loadAssets();
     this.loop();
   }
 
@@ -26,6 +43,41 @@ class Game {
     this.stats = new Stats();
     this.stats.showPanel(0);
     document.body.appendChild(this.stats.domElement);
+  }
+
+  loadAssets () {
+    this.pistol = new Pistol(this.stage.camera);
+    // this.ak47 = new AK47(this.stage.camera);
+
+    this.player = new Player(character => {
+      this.add(this.player.update.bind(this.player));
+      this.player.addCamera(this.stage.camera);
+      this.stage.scene.add(character);
+    });
+
+    this.enemy = new Enemy(null, character => {
+      this.add(this.enemy.update.bind(this.enemy));
+      this.stage.scene.add(character);
+      this._zombie = character;
+    });
+  }
+
+  onLoaded () {
+    Events.remove('loaded');
+
+    setTimeout(() => {
+      this.add(Input.update.bind(Input));
+      Input.player = this.player;
+
+      this.player.setWeapon(
+        this.enemy.colliders,
+        this.pistol
+      );
+
+      this.add(this.stage.render.bind(this.stage));
+      this.setCharacters(this.player, this.enemy);
+      this.stage.createGrid();
+    }, 100);
   }
 
   setCharacters (player, enemy) {
@@ -97,5 +149,3 @@ class Game {
     delete this.stats;
   }
 };
-
-export default new Game();

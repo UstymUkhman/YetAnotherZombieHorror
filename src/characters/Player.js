@@ -15,8 +15,8 @@ const CAMERA = new Vector3(-1.25, 3, -3);
 export default class Player extends Character {
   constructor (onLoad) {
     super(PLAYER, config, player => {
-      this.currentAnimation = this.animations.rifleIdle;
-      // this.currentAnimation = this.animations.pistolIdle;
+      // this.currentAnimation = this.animations.rifleIdle;
+      this.currentAnimation = this.animations.pistolIdle;
 
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
@@ -47,8 +47,9 @@ export default class Player extends Character {
     this.aiming = false;
   }
 
-  setWeapon (weapon, colliders, rifle = false) {
-    const hand = this.character.getObjectById(102, true);
+  setWeapon (colliders, weapon, rifle = false) {
+    const hand = this.character.getObjectById(106);
+    // getObjectByName --> 'swatRightHand'
 
     this.weapon = weapon;
     this.hasRifle = rifle;
@@ -86,7 +87,6 @@ export default class Player extends Character {
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
 
-    // if (this.running && direction.includes('Forward')) return;
     if (this.aiming || this.lastAnimation === animation) return;
     if (now - this.moveTime < 150) return;
 
