@@ -23,8 +23,9 @@ export default class Game {
     Events.add('legHit', this._onLegHit);
     Events.add('loaded', this._onLoaded);
 
-    Player.setBounds(Stage.bounds);
-    Enemy.setBounds(Stage.bounds);
+    this._bounds = Stage.bounds;
+    Enemy.setBounds(this._bounds);
+    Player.setBounds(this._bounds);
 
     this._clock = new Clock();
     this.stage = new Stage();
@@ -74,9 +75,14 @@ export default class Game {
         this.pistol
       );
 
-      this.add(this.stage.render.bind(this.stage));
-      this.setCharacters(this.player, this.enemy);
+      // this.player.setWeapon(
+      //   this.enemy.colliders,
+      //   this.ak47, true
+      // );
+
       this.stage.createGrid();
+      this.setCharacters(this.player, this.enemy);
+      this.add(this.stage.render.bind(this.stage));
     }, 100);
   }
 
@@ -90,6 +96,16 @@ export default class Game {
 
     this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
     this._distanceLoop = this.add(this._checkPlayerDistance);
+
+    setTimeout(() => {
+      const grid = this.stage.scene.children.length - 1;
+      this.stage.scene.remove(this.stage.scene.children[grid]);
+      this.stage.createGrid();
+
+      // this.pistol.spawnMagazine(this._bounds, magazine => {
+      //   this.stage.scene.add(magazine);
+      // });
+    }, 100);
   }
 
   checkPlayerDistance () {

@@ -15,9 +15,7 @@ const CAMERA = new Vector3(-1.25, 3, -3);
 export default class Player extends Character {
   constructor (onLoad) {
     super(PLAYER, config, player => {
-      // this.currentAnimation = this.animations.rifleIdle;
-      this.currentAnimation = this.animations.pistolIdle;
-
+      this._hand = player.getObjectByName('swatRightHand');
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
 
@@ -25,9 +23,6 @@ export default class Player extends Character {
       this.animations.death.setLoop(LoopOnce);
 
       // console.log(this.animations);
-
-      this.lastAnimation = 'pistolIdle';
-      this.currentAnimation.play();
 
       this.character = new Object3D();
       this.character.add(player);
@@ -48,15 +43,31 @@ export default class Player extends Character {
   }
 
   setWeapon (colliders, weapon, rifle = false) {
-    const hand = this.character.getObjectById(106);
-    // getObjectByName --> 'swatRightHand'
+    if (!rifle) {
+      this.currentAnimation = this.animations.pistolIdle;
+      this.lastAnimation = 'pistolIdle';
+      this.hasRifle = false;
+      this.currentAnimation.play();
+    } else {
+      this.currentAnimation = this.animations.rifleIdle;
+      this.lastAnimation = 'rifleIdle';
+      this.hasRifle = true;
+    }
 
-    this.weapon = weapon;
-    this.hasRifle = rifle;
-
-    hand.add(this.weapon.arm);
+    this.currentAnimation.play();
     weapon.targets = colliders;
+
+    this._hand.add(weapon.arm);
+    this.weapon = weapon;
   }
+
+  /* changeWeapon (colliders, weapon, rifle = false) {
+    this._hand.remove(this.weapon.arm);
+    this.currentAnimation.stop();
+    delete this.weapon;
+
+    this.setWeapon(colliders, weapon, rifle);
+  } */
 
   idle () {
     const now = Date.now();

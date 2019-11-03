@@ -49,6 +49,8 @@ export default class Enemy extends Character {
     this.animations.scream.setLoop(LoopOnce);
     this.animations.death.setLoop(LoopOnce);
 
+    // console.log(this.animations);
+
     this.currentAnimation.play();
     this.character = character;
     this.colliders = [];
@@ -61,7 +63,8 @@ export default class Enemy extends Character {
   }
 
   _addHeadCollider (character) {
-    const head = character.getObjectById(14);
+    const head = character.getObjectByName('Head');
+    // const head = character.getObjectById(14);
 
     const headCollider = new Mesh(
       new BoxGeometry(20, 25, 25),
@@ -74,7 +77,8 @@ export default class Enemy extends Character {
   }
 
   _addBodyCollider (character) {
-    const spine = character.getObjectById(10);
+    const spine = character.getObjectByName('Spine');
+    // const spine = character.getObjectById(10);
 
     const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
@@ -90,10 +94,15 @@ export default class Enemy extends Character {
   }
 
   _addLegsCollider (character) {
-    const rightUpLeg = character.getObjectById(57);
-    const leftUpLeg = character.getObjectById(53);
-    const rightLeg = character.getObjectById(58);
-    const leftLeg = character.getObjectById(54);
+    const rightUpLeg = character.getObjectByName('RightUpLeg');
+    const leftUpLeg = character.getObjectByName('LeftUpLeg');
+    const rightLeg = character.getObjectByName('RightLeg');
+    const leftLeg = character.getObjectByName('LeftLeg');
+
+    // const rightUpLeg = character.getObjectById(57);
+    // const leftUpLeg = character.getObjectById(53);
+    // const rightLeg = character.getObjectById(58);
+    // const leftLeg = character.getObjectById(54);
 
     const upperLeg = new Mesh(
       new BoxGeometry(15, 50, 15),

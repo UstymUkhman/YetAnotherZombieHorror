@@ -127,12 +127,11 @@ module.exports = {
 
   output: {
     globalObject: build ? 'typeof self !== \'undefined\' ? self : this' : 'window',
-    filename: (build ? `${config.name}.min` : 'main') + '.js',
-
     libraryTarget: build ? 'umd' : 'var',
     library: build ? config.name : '',
     publicPath: build ? './' : '/',
 
+    filename: `${config.name}.min.js`,
     path: path.resolve('./build'),
     libraryExport: 'default',
     umdNamedDefine: true

@@ -1,3 +1,4 @@
+import MAGAZINE from '@/assets/1911/magazine.glb';
 import PISTOL from '@/assets/1911/pistol.glb';
 import SHOOT from '@/assets/1911/shoot.mp3';
 
@@ -16,6 +17,11 @@ export default class Pistol extends Weapon {
       pistol.scale.set(13, 13, 13);
     });
 
+    this.load(MAGAZINE, magazine => {
+      this.magazine = magazine.children[0];
+      this.magazine.scale.set(0.13, 0.13, 0.13);
+    });
+
     this.speed = 255000;
     this._loadSounds();
   }
@@ -26,6 +32,14 @@ export default class Pistol extends Weapon {
     this.shootSound.loop = false;
     this.shootSound.volume = 1;
     this.shootSound.load();
+  }
+
+  spawnMagazine (bounds, callback) {
+    const z = random(-bounds.front, bounds.front);
+    const x = random(-bounds.side, bounds.side);
+
+    this.magazine.position.set(x, 2.5, z);
+    callback(this.magazine);
   }
 
   cancelAim () { }

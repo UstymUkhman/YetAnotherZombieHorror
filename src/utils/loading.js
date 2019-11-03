@@ -29,7 +29,7 @@ loading.onProgress = function (url, loaded, total) {
 };
 
 loading.onError = function (url) {
-  console.info(`Error occurred loading: ${url}.`);
+  console.info(`Error occurred loading ${url}.`);
 };
 
 loading.onLoad = function () { };

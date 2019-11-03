@@ -1,4 +1,5 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { FrontSide, DoubleSide } from '@three/constants';
 import { gltfLoader } from '@/utils/assetsLoader';
 import { Raycaster } from '@three/core/Raycaster';
 
@@ -13,9 +14,9 @@ export default class Weapon {
   constructor (asset, camera, onLoad = null) {
     this._raycaster = new Raycaster();
     this._origin = new Vector2(0, 0);
+    this.load(asset, onLoad, true);
     this._raycaster.near = NEAR;
 
-    this.load(asset, onLoad);
     this._camera = camera;
     this._aiming = false;
 
@@ -24,7 +25,7 @@ export default class Weapon {
     this.arm = null;
   }
 
-  load (asset, callback) {
+  load (asset, callback, arm = false) {
     return new Promise(async () => {
       let [error, gltf] = await to(gltfLoader(asset));
 
@@ -34,13 +35,14 @@ export default class Weapon {
             child.castShadow = true;
 
             child.material = new MeshPhongMaterial({
+              side: arm ? FrontSide : DoubleSide,
               map: child.material.map,
               specular: 0x2F2F2F
             });
           }
         });
 
-        this.arm = gltf.scene;
+        if (arm) this.arm = gltf.scene;
         callback(gltf.scene);
       }
     });
