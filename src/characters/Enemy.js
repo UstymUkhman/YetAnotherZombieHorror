@@ -29,7 +29,9 @@ export default class Enemy extends Character {
     this.playerPosition = new Vector3();
     this.visiblePlayer = false;
     this.nextToPlayer = false;
+    this.gettingHit = false;
     this.attacking = false;
+    this.crawling = false;
   }
 
   _setDefaultState (character, onLoad) {
@@ -38,20 +40,29 @@ export default class Enemy extends Character {
     this.animations.softAttack.clampWhenFinished = true;
     this.animations.hardAttack.clampWhenFinished = true;
 
+    this.animations.crawlDeath.clampWhenFinished = true;
     this.animations.headshot.clampWhenFinished = true;
-    this.animations.scream.clampWhenFinished = true;
     this.animations.death.clampWhenFinished = true;
+
+    this.animations.falling.clampWhenFinished = true;
+    this.animations.scream.clampWhenFinished = true;
+    this.animations.hit.clampWhenFinished = true;
 
     this.animations.softAttack.setLoop(LoopOnce);
     this.animations.hardAttack.setLoop(LoopOnce);
 
+    this.animations.crawlDeath.setLoop(LoopOnce);
     this.animations.headshot.setLoop(LoopOnce);
-    this.animations.scream.setLoop(LoopOnce);
     this.animations.death.setLoop(LoopOnce);
+
+    this.animations.falling.setLoop(LoopOnce);
+    this.animations.scream.setLoop(LoopOnce);
+    this.animations.hit.setLoop(LoopOnce);
 
     // console.log(this.animations);
 
     this.currentAnimation.play();
+    this.lastAnimation = 'idle';
     this.character = character;
     this.colliders = [];
 
@@ -64,7 +75,6 @@ export default class Enemy extends Character {
 
   _addHeadCollider (character) {
     const head = character.getObjectByName('Head');
-    // const head = character.getObjectById(14);
 
     const headCollider = new Mesh(
       new BoxGeometry(20, 25, 25),
@@ -78,7 +88,6 @@ export default class Enemy extends Character {
 
   _addBodyCollider (character) {
     const spine = character.getObjectByName('Spine');
-    // const spine = character.getObjectById(10);
 
     const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
@@ -98,11 +107,6 @@ export default class Enemy extends Character {
     const leftUpLeg = character.getObjectByName('LeftUpLeg');
     const rightLeg = character.getObjectByName('RightLeg');
     const leftLeg = character.getObjectByName('LeftLeg');
-
-    // const rightUpLeg = character.getObjectById(57);
-    // const leftUpLeg = character.getObjectById(53);
-    // const rightLeg = character.getObjectById(58);
-    // const leftLeg = character.getObjectById(54);
 
     const upperLeg = new Mesh(
       new BoxGeometry(15, 50, 15),
@@ -230,12 +234,13 @@ export default class Enemy extends Character {
     }, 166);
   }
 
-  headshot () {
-    if (!this.alive) return;
-    this.alive = false;
+  bodyHit () {
+    if (!this.alive || this.crawling || this.gettingHit) return;
 
-    this.currentAnimation.crossFadeTo(this.animations.headshot, 0.25, true);
-    this.animations.headshot.play();
+    const lastAnimation = this.lastAnimation.includes('Attack') ? 'attack' : this.lastAnimation;
+    this.currentAnimation.crossFadeTo(this.animations.hit, 0.1, true);
+    this.animations.hit.play();
+    this.gettingHit = true;
 
     setTimeout(() => {
       this.moving = false;
@@ -243,22 +248,65 @@ export default class Enemy extends Character {
       this.attacking = false;
 
       this.setDirection('Idle');
+      this.lastAnimation = 'hit';
       this.currentAnimation.stop();
-      this.lastAnimation = 'headshot';
-      this.currentAnimation = this.animations.headshot;
+      this.currentAnimation = this.animations.hit;
 
-      setTimeout(() => {
-        console.log('Headshot!');
-      }, 2750);
-    }, 250);
+      if (this.alive) {
+        setTimeout(() => {
+          if (!this.crawling) {
+            this.gettingHit = false;
+            this[lastAnimation]();
+          }
+        }, 1400);
+      }
+    }, 100);
+  }
+
+  legHit () {
+    if (!this.alive) return;
+
+    this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
+    this.animations.falling.play();
+    this.gettingHit = true;
+
+    setTimeout(() => {
+      this.moving = true;
+      this.crawling = true;
+
+      this.running = false;
+      this.attacking = false;
+
+      this.setDirection('Idle');
+      this.currentAnimation.stop();
+      this.lastAnimation = 'falling';
+
+      this.currentAnimation = this.animations.falling;
+      setTimeout(this.crawl.bind(this), 2800);
+    }, 100);
+  }
+
+  crawl () {
+    this.currentAnimation.crossFadeTo(this.animations.crawling, 3, true);
+    this.animations.crawling.play();
+    this.setDirection('Falling');
+    this.gettingHit = false;
+
+    setTimeout(() => {
+      this.currentAnimation.stop();
+      this.setDirection('Crawling');
+      this.lastAnimation = 'crawling';
+      this.currentAnimation = this.animations.crawling;
+    }, 3000);
   }
 
   death () {
+    const death = this.crawling ? 'crawlDeath' : 'death';
     if (!this.alive) return;
     this.alive = false;
 
-    this.currentAnimation.crossFadeTo(this.animations.death, 0.133, true);
-    this.animations.death.play();
+    this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
+    this.animations[death].play();
 
     setTimeout(() => {
       this.moving = false;
@@ -266,14 +314,38 @@ export default class Enemy extends Character {
       this.attacking = false;
 
       this.setDirection('Idle');
-      this.lastAnimation = 'death';
+      this.lastAnimation = death;
       this.currentAnimation.stop();
-      this.currentAnimation = this.animations.death;
+      this.currentAnimation = this.animations[death];
 
       // setTimeout(() => {
       //   console.log('Dead!');
       // }, 2500);
     }, 133);
+  }
+
+  headshot () {
+    const death = this.crawling ? 'crawlDeath' : 'headshot';
+    if (!this.alive) return;
+    this.alive = false;
+
+    this.currentAnimation.crossFadeTo(this.animations[death], 0.25, true);
+    this.animations[death].play();
+
+    setTimeout(() => {
+      this.moving = false;
+      this.running = false;
+      this.attacking = false;
+
+      this.setDirection('Idle');
+      this.lastAnimation = death;
+      this.currentAnimation.stop();
+      this.currentAnimation = this.animations[death];
+
+      setTimeout(() => {
+        console.log('Headshot!');
+      }, 2750);
+    }, 250);
   }
 
   update (delta) {

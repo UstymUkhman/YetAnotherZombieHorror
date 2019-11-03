@@ -116,11 +116,11 @@ export default class Game {
     const nextToPlayer = this.enemy.nextToPlayer || distance < 10;
     const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
 
-    if (attack && !this.enemy.attacking) {
+    if (attack && !this.enemy.crawling && !this.enemy.attacking) {
       this.enemy.attack();
-    } else if (nextToPlayer && !this.enemy.nextToPlayer) {
+    } else if (nextToPlayer && !this.enemy.crawling && !this.enemy.nextToPlayer) {
       this.enemy.scream();
-    } else if (visiblePlayer && !this.enemy.visiblePlayer) {
+    } else if (visiblePlayer && !this.enemy.crawling && !this.enemy.visiblePlayer) {
       this.enemy.walk();
     }
 
@@ -134,10 +134,12 @@ export default class Game {
   }
 
   onBodyHit () {
-    // this.enemy.death();
+    this.enemy.bodyHit();
   }
 
-  onLegHit () { }
+  onLegHit () {
+    this.enemy.legHit();
+  }
 
   add (call) {
     this.calls.push(call);

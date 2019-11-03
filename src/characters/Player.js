@@ -239,12 +239,14 @@ export default class Player extends Character {
         this.animations[next].play();
 
         this.aimTimeout = setTimeout(() => {
-          this.moving = false;
-          this.lastAnimation = next;
+          if (this.lastAnimation !== next) {
+            this.moving = false;
+            this.lastAnimation = next;
 
-          this.setDirection('Idle');
-          this.currentAnimation.stop();
-          this.currentAnimation = this.animations[next];
+            this.setDirection('Idle');
+            this.currentAnimation.stop();
+            this.currentAnimation = this.animations[next];
+          }
         }, 100);
       }
     }

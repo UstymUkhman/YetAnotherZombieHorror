@@ -79,7 +79,7 @@ class Input {
     if (!this.pointerLocked) return;
 
     const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
-    const y = clamp(this.camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, 0.2);
+    const y = clamp(this.camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, 0.25);
 
     this.rotationY.target = y;
     this.rotationX.target = x;
