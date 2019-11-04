@@ -10,10 +10,8 @@ const POSITION = new Vector3(-26, 1, -5.75);
 
 export default class AK47 extends Weapon {
   constructor (camera) {
-    super(AK_47, camera, rifle => {
-      rifle.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-      rifle.scale.set(0.29, 0.29, 0.29);
-      rifle.position.copy(POSITION);
+    super(AK_47, camera, () => {
+      this.setOnStage();
     });
 
     this.aimTimeout = null;
@@ -27,6 +25,17 @@ export default class AK47 extends Weapon {
     this.shootSound.loop = false;
     this.shootSound.volume = 1;
     this.shootSound.load();
+  }
+
+  setOnStage () {
+    this.arm.scale.set(0.005, 0.005, 0.005);
+    this.arm.rotation.set(0, 0, 0);
+  }
+
+  setToPlayer () {
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+    this.arm.scale.set(0.29, 0.29, 0.29);
+    this.arm.position.copy(POSITION);
   }
 
   aim (aiming, duration) {
@@ -51,8 +60,12 @@ export default class AK47 extends Weapon {
     const energy = this.aiming ? 2 : 1;
 
     return {
-      x: random(-0.03, 0.03) / energy,
-      y: -0.04 / energy
+      x: random(-0.02, 0.02) / energy,
+      y: -0.03 / energy
     };
+  }
+
+  get hit () {
+    return 20;
   }
 };

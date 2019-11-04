@@ -1,4 +1,4 @@
-import MAGAZINE from '@/assets/1911/magazine.glb';
+// import MAGAZINE from '@/assets/1911/magazine.glb';
 import PISTOL from '@/assets/1911/pistol.glb';
 import SHOOT from '@/assets/1911/shoot.mp3';
 
@@ -11,16 +11,14 @@ const POSITION = new Vector3(-10, -4, 0.25);
 
 export default class Pistol extends Weapon {
   constructor (camera) {
-    super(PISTOL, camera, pistol => {
-      pistol.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-      pistol.position.copy(POSITION);
-      pistol.scale.set(13, 13, 13);
+    super(PISTOL, camera, () => {
+      this.setToPlayer();
     });
 
-    this.load(MAGAZINE, magazine => {
-      this.magazine = magazine.children[0];
-      this.magazine.scale.set(0.13, 0.13, 0.13);
-    });
+    // this.load(MAGAZINE, magazine => {
+    //   this.magazine = magazine.children[0];
+    //   this.magazine.scale.set(0.13, 0.13, 0.13);
+    // });
 
     this.speed = 255000;
     this._loadSounds();
@@ -34,12 +32,23 @@ export default class Pistol extends Weapon {
     this.shootSound.load();
   }
 
-  spawnMagazine (bounds, callback) {
+  /* spawnMagazine (bounds, callback) {
     const z = random(-bounds.front, bounds.front);
     const x = random(-bounds.side, bounds.side);
 
     this.magazine.position.set(x, 2.5, z);
     callback(this.magazine);
+  } */
+
+  setOnStage () {
+    this.arm.scale.set(0.225, 0.225, 0.225);
+    this.arm.rotation.set(0, 0, 0);
+  }
+
+  setToPlayer () {
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+    this.arm.position.copy(POSITION);
+    this.arm.scale.set(13, 13, 13);
   }
 
   cancelAim () { }
@@ -51,5 +60,9 @@ export default class Pistol extends Weapon {
       x: random(-0.01, 0.01) / energy,
       y: -0.02 / energy
     };
+  }
+
+  get hit () {
+    return 10;
   }
 };

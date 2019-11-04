@@ -16,11 +16,16 @@ export default class Player extends Character {
   constructor (onLoad) {
     super(PLAYER, config, player => {
       this._hand = player.getObjectByName('swatRightHand');
+      this.currentAnimation = this.animations.pistolIdle;
+
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
 
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
+
+      this.lastAnimation = 'pistolIdle';
+      this.currentAnimation.play();
 
       // console.log(this.animations);
 
@@ -39,35 +44,41 @@ export default class Player extends Character {
     this.moveTime = null;
     this.idleTime = null;
     this.aimTime = null;
+
     this.aiming = false;
+    this.weapon = null;
   }
 
-  setWeapon (colliders, weapon, rifle = false) {
-    if (!rifle) {
-      this.currentAnimation = this.animations.pistolIdle;
-      this.lastAnimation = 'pistolIdle';
-      this.hasRifle = false;
-      this.currentAnimation.play();
-    } else {
-      this.currentAnimation = this.animations.rifleIdle;
-      this.lastAnimation = 'rifleIdle';
-      this.hasRifle = true;
+  setWeapon (colliders, weapon, rifle) {
+    if (this.weapon) {
+      let animation = rifle ?
+        this.lastAnimation.replace('pistol', 'rifle') :
+        this.lastAnimation.replace('rifle', 'pistol');
+
+      this._hand.remove(this.weapon.arm);
+      delete this.weapon;
+
+      if (!rifle && !this.animations[animation]) {
+        animation = animation.replace(/BackwardLeft|BackwardRight/gm, 'Backward');
+        animation = animation.replace(/ForwardLeft|ForwardRight/gm, 'Forward');
+      }
+
+      this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
+      this.animations[animation].play();
+
+      setTimeout(() => {
+        this.currentAnimation.stop();
+        this.lastAnimation = animation;
+        this.currentAnimation = this.animations[animation];
+      }, 100);
     }
 
-    this.currentAnimation.play();
     weapon.targets = colliders;
-
     this._hand.add(weapon.arm);
+
+    this.hasRifle = rifle;
     this.weapon = weapon;
   }
-
-  /* changeWeapon (colliders, weapon, rifle = false) {
-    this._hand.remove(this.weapon.arm);
-    this.currentAnimation.stop();
-    delete this.weapon;
-
-    this.setWeapon(colliders, weapon, rifle);
-  } */
 
   idle () {
     const now = Date.now();
@@ -310,14 +321,14 @@ export default class Player extends Character {
     return { x: 0, y: 0 };
   }
 
-  /* update (delta) {
-    super.update(delta);
-  } */
-
   addCamera (camera) {
     this._cameraPosition = camera.position;
     this._cameraRotation = camera.rotation;
     this.character.add(camera);
+  }
+
+  get hit () {
+    return this.weapon.hit;
   }
 
   get _idle () {

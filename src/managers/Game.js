@@ -1,5 +1,6 @@
 import Stats from 'three/examples/js/libs/stats.min';
 import { Clock } from '@three/core/Clock';
+import { random } from '@/utils/number';
 
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
@@ -8,7 +9,7 @@ import Events from '@/managers/Events';
 import Input from '@/managers/Input';
 
 import Pistol from '@/weapons/Pistol';
-// import AK47 from '@/weapons/AK47';
+import AK47 from '@/weapons/AK47';
 import Stage from '@/Stage';
 
 export default class Game {
@@ -30,7 +31,9 @@ export default class Game {
     this._clock = new Clock();
     this.stage = new Stage();
 
+    this._rifleLoop = null;
     this._zombie = null;
+
     this.player = null;
     this.enemy = null;
     this.calls = [];
@@ -48,7 +51,7 @@ export default class Game {
 
   loadAssets () {
     this.pistol = new Pistol(this.stage.camera);
-    // this.ak47 = new AK47(this.stage.camera);
+    this.ak47 = new AK47(this.stage.camera);
 
     this.player = new Player(character => {
       this.add(this.player.update.bind(this.player));
@@ -72,13 +75,8 @@ export default class Game {
 
       this.player.setWeapon(
         this.enemy.colliders,
-        this.pistol
+        this.pistol, false
       );
-
-      // this.player.setWeapon(
-      //   this.enemy.colliders,
-      //   this.ak47, true
-      // );
 
       this.stage.createGrid();
       this.setCharacters(this.player, this.enemy);
@@ -106,6 +104,8 @@ export default class Game {
       //   this.stage.scene.add(magazine);
       // });
     }, 100);
+
+    setTimeout(this.spawnRifle.bind(this), 2000);
   }
 
   checkPlayerDistance () {
@@ -131,12 +131,41 @@ export default class Game {
     this.enemy.attacking = attack;
   }
 
+  spawnRifle () {
+    const z = random(-this._bounds.front, this._bounds.front);
+    const x = random(-this._bounds.side, this._bounds.side);
+
+    this.ak47.arm.position.set(x, 1.75, z);
+    this.stage.scene.add(this.ak47.arm);
+
+    this._rifleRotation = this.rifleRotation.bind(this);
+    this._rifleLoop = this.add(this._rifleRotation);
+  }
+
+  rifleRotation () {
+    const rifle = this.ak47.arm;
+    const distance = rifle.position.distanceTo(this.playerPosition);
+
+    rifle.rotation.y -= 0.01;
+
+    if (distance < 2.5) {
+      this.remove(this._rifleLoop);
+      this.ak47.setToPlayer();
+
+      this.player.setWeapon(
+        this.enemy.colliders,
+        this.ak47, true
+      );
+    }
+  }
+
   onHeadshoot () {
     this.enemy.headshot();
   }
 
   onBodyHit () {
-    this.enemy.bodyHit();
+    const hit = this.player.hit;
+    this.enemy.bodyHit(hit);
   }
 
   onLegHit () {

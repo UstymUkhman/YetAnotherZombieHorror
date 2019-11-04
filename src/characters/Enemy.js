@@ -29,6 +29,8 @@ export default class Enemy extends Character {
     this.playerPosition = new Vector3();
     this.visiblePlayer = false;
     this.nextToPlayer = false;
+    this._legHitTime = null;
+
     this.gettingHit = false;
     this.attacking = false;
     this.crawling = false;
@@ -229,37 +231,42 @@ export default class Enemy extends Character {
     }, 166);
   }
 
-  bodyHit () {
-    if (!this.alive || this.crawling || this.gettingHit) return;
+  bodyHit (amount) {
+    this.health -= amount;
+    if (!this.alive || this.gettingHit) return;
 
-    const lastAnimation = this.lastAnimation.includes('Attack') ? 'attack' : this.lastAnimation;
-    this.currentAnimation.crossFadeTo(this.animations.hit, 0.25, true);
-    this.animations.hit.play();
-    this.gettingHit = true;
+    this._checkIfAlive();
 
-    setTimeout(() => {
-      this.moving = false;
-      this.running = false;
-      this.attacking = false;
+    if (this.alive && !this.crawling) {
+      const lastAnimation = this.lastAnimation.includes('Attack') ? 'attack' : this.lastAnimation;
+      this.currentAnimation.crossFadeTo(this.animations.hit, 0.1, true);
+      this.animations.hit.play();
+      this.gettingHit = true;
 
-      this.setDirection('Idle');
-      this.lastAnimation = 'hit';
-      this.currentAnimation.stop();
-      this.currentAnimation = this.animations.hit;
+      setTimeout(() => {
+        this.moving = false;
+        this.running = false;
+        this.attacking = false;
 
-      if (this.alive) {
-        setTimeout(() => {
-          if (!this.crawling) {
-            this.gettingHit = false;
-            this[lastAnimation]();
-          }
-        }, 750);
-      }
-    }, 250);
+        this.setDirection('Idle');
+        this.currentAnimation.stop();
+        this.lastAnimation = 'bodyHit';
+        this.currentAnimation = this.animations.hit;
+
+        if (this.alive) {
+          setTimeout(() => {
+            if (!this.crawling) {
+              this.gettingHit = false;
+              this[lastAnimation]();
+            }
+          }, 900);
+        }
+      }, 100);
+    }
   }
 
   legHit () {
-    if (!this.alive) return;
+    if (!this.alive && !this.crawling) return;
 
     this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
     this.animations.falling.play();
@@ -274,6 +281,7 @@ export default class Enemy extends Character {
 
       this.setDirection('Idle');
       this.currentAnimation.stop();
+      this._legHitTime = Date.now();
       this.lastAnimation = 'falling';
 
       this.currentAnimation = this.animations.falling;
@@ -282,6 +290,8 @@ export default class Enemy extends Character {
   }
 
   crawl () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.crawling, 3, true);
     this.animations.crawling.play();
     this.setDirection('Falling');
@@ -294,19 +304,26 @@ export default class Enemy extends Character {
 
     setTimeout(() => {
       this.currentAnimation.stop();
+      if (!this.alive) return;
+
       this.setDirection('Crawling');
       this.lastAnimation = 'crawling';
       this.currentAnimation = this.animations.crawling;
     }, 3000);
   }
 
+  _checkIfAlive () {
+    this.alive = this.alive && this.health > 0;
+    if (!this.alive) this.death();
+  }
+
   death () {
     const death = this.crawling ? 'crawlDeath' : 'death';
-    if (!this.alive) return;
-    this.alive = false;
-
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
     this.animations[death].play();
+
+    this.alive = false;
+    this.health = 0;
 
     setTimeout(() => {
       this.moving = false;
@@ -317,35 +334,34 @@ export default class Enemy extends Character {
       this.lastAnimation = death;
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
-
-      // setTimeout(() => {
-      //   console.log('Dead!');
-      // }, 2500);
     }, 133);
   }
 
   headshot () {
-    const death = this.crawling ? 'crawlDeath' : 'headshot';
     if (!this.alive) return;
+
+    const death = this.crawling ? 'crawlDeath' : 'headshot';
+    const legHit = Date.now() - this._legHitTime;
+
     this.alive = false;
+    this.health = 0;
 
-    this.currentAnimation.crossFadeTo(this.animations[death], 0.25, true);
-    this.animations[death].play();
-
-    setTimeout(() => {
-      this.moving = false;
-      this.running = false;
-      this.attacking = false;
-
-      this.setDirection('Idle');
-      this.lastAnimation = death;
-      this.currentAnimation.stop();
-      this.currentAnimation = this.animations[death];
+    if (3000 - legHit < 0) {
+      this.currentAnimation.crossFadeTo(this.animations[death], 0.25, true);
+      this.animations[death].play();
 
       setTimeout(() => {
+        this.moving = false;
+        this.running = false;
+        this.attacking = false;
+
         console.log('Headshot!');
-      }, 2750);
-    }, 250);
+        this.setDirection('Idle');
+        this.lastAnimation = death;
+        this.currentAnimation.stop();
+        this.currentAnimation = this.animations[death];
+      }, 250);
+    }
   }
 
   update (delta) {
