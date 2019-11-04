@@ -176,8 +176,6 @@ export default class Enemy extends Character {
   }
 
   scream (run = true) {
-    if (!this.alive) return;
-
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
 
@@ -194,8 +192,6 @@ export default class Enemy extends Character {
   }
 
   run () {
-    if (!this.alive) return;
-
     this.currentAnimation.crossFadeTo(this.animations.run, 0.25, true);
     this.animations.run.play();
 
@@ -213,10 +209,9 @@ export default class Enemy extends Character {
   }
 
   attack (hard = false) {
-    if (!this.alive) return;
-
-    const attack = hard ? 'hardAttack' : 'softAttack';
-    const lastAnimation = this.lastAnimation;
+    const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
+    const lastAnimation = this.crawling ? 'crawl' : this.lastAnimation;
+    const delay = this.crawling ? 2200 : hard ? 4400 : 2500;
 
     this.currentAnimation.crossFadeTo(this.animations[attack], 0.166, true);
     this.animations[attack].play();
@@ -230,7 +225,7 @@ export default class Enemy extends Character {
       this.currentAnimation.stop();
 
       this.currentAnimation = this.animations[attack];
-      setTimeout(() => { this[lastAnimation](); }, hard ? 4400 : 2500);
+      setTimeout(() => { this[lastAnimation](); }, delay);
     }, 166);
   }
 
@@ -238,7 +233,7 @@ export default class Enemy extends Character {
     if (!this.alive || this.crawling || this.gettingHit) return;
 
     const lastAnimation = this.lastAnimation.includes('Attack') ? 'attack' : this.lastAnimation;
-    this.currentAnimation.crossFadeTo(this.animations.hit, 0.1, true);
+    this.currentAnimation.crossFadeTo(this.animations.hit, 0.25, true);
     this.animations.hit.play();
     this.gettingHit = true;
 
@@ -258,9 +253,9 @@ export default class Enemy extends Character {
             this.gettingHit = false;
             this[lastAnimation]();
           }
-        }, 1400);
+        }, 750);
       }
-    }, 100);
+    }, 250);
   }
 
   legHit () {
@@ -290,7 +285,12 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations.crawling, 3, true);
     this.animations.crawling.play();
     this.setDirection('Falling');
+
     this.gettingHit = false;
+    this.attacking = false;
+    this.crawling = true;
+    this.running = false;
+    this.moving = true;
 
     setTimeout(() => {
       this.currentAnimation.stop();

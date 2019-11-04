@@ -78,8 +78,9 @@ class Input {
   onMouseMove (event) {
     if (!this.pointerLocked) return;
 
+    const maxY = this.player.aiming ? 0.4 : 0.2;
     const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
-    const y = clamp(this.camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, 0.25);
+    const y = clamp(this.camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, maxY);
 
     this.rotationY.target = y;
     this.rotationX.target = x;
@@ -92,9 +93,12 @@ class Input {
     if (event.which === 1) {
       this._mouseDown = false;
     } else if (event.which === 3) {
+      const y = clamp(this.rotationY.target, -0.1, 0.2);
       let delay = Date.now() - this.mouseRight;
+
       delay = Math.max(150 - delay, 0);
       clearTimeout(this.rightTimeout);
+      this.rotationY.target = y;
 
       this.rightTimeout = setTimeout(() => {
         this.player.aim(false, this.moves);

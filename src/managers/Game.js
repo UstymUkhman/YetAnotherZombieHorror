@@ -116,12 +116,14 @@ export default class Game {
     const nextToPlayer = this.enemy.nextToPlayer || distance < 10;
     const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
 
-    if (attack && !this.enemy.crawling && !this.enemy.attacking) {
-      this.enemy.attack();
-    } else if (nextToPlayer && !this.enemy.crawling && !this.enemy.nextToPlayer) {
-      this.enemy.scream();
-    } else if (visiblePlayer && !this.enemy.crawling && !this.enemy.visiblePlayer) {
-      this.enemy.walk();
+    if (this.enemy.alive) {
+      if (attack && !this.enemy.attacking) {
+        this.enemy.attack();
+      } else if (nextToPlayer && !this.enemy.crawling && !this.enemy.nextToPlayer) {
+        this.enemy.scream();
+      } else if (visiblePlayer && !this.enemy.crawling && !this.enemy.visiblePlayer) {
+        this.enemy.walk();
+      }
     }
 
     this.enemy.visiblePlayer = visiblePlayer;
