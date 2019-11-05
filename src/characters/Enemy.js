@@ -1,4 +1,5 @@
 import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
+import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
@@ -18,13 +19,16 @@ const colliderMaterial = new MeshBasicMaterial({
 });
 
 export default class Enemy extends Character {
-  constructor (character, onLoad) {
-    character ?
-      this._setDefaultState(character, onLoad) :
+  constructor (character, animations, onLoad) {
+    if (character) {
+      super('', config);
+      this._setDefaultState(character, animations, onLoad);
+    } else {
       super(
-        ZOMBIE, config, character =>
-          this._setDefaultState(character, onLoad)
+        ZOMBIE, config, (character, animations) =>
+          this._setDefaultState(character, animations, onLoad)
       );
+    }
 
     this.playerPosition = new Vector3();
     this.visiblePlayer = false;
@@ -34,10 +38,13 @@ export default class Enemy extends Character {
     this.gettingHit = false;
     this.attacking = false;
     this.crawling = false;
+    this.running = false;
+    this.moving = false;
   }
 
-  _setDefaultState (character, onLoad) {
-    this.currentAnimation = this.animations.idle;
+  _setDefaultState (character, animations, onLoad) {
+    this.mixer = new AnimationMixer(character);
+    this.createAnimations(animations);
 
     this.animations.softAttack.clampWhenFinished = true;
     this.animations.hardAttack.clampWhenFinished = true;
@@ -63,6 +70,7 @@ export default class Enemy extends Character {
 
     // console.log(this.animations);
 
+    this.currentAnimation = this.animations.idle;
     this.currentAnimation.play();
     this.lastAnimation = 'idle';
     this.character = character;
@@ -72,7 +80,9 @@ export default class Enemy extends Character {
     this._addBodyCollider(character);
     this._addLegsCollider(character);
 
-    onLoad(character);
+    if (onLoad) {
+      onLoad(character, animations);
+    }
   }
 
   _addHeadCollider (character) {
@@ -238,9 +248,7 @@ export default class Enemy extends Character {
     this.health -= amount;
     this._checkIfAlive();
 
-    if (this.gettingHit) return;
-
-    if (this.alive && !this.crawling) {
+    if (this.alive && !this.crawling && !this.gettingHit) {
       const setIdle = this.moving || this.running;
       const lastAnimation = this.lastAnimation;
       const direction = this._direction;
@@ -275,33 +283,37 @@ export default class Enemy extends Character {
         }
       }, 1000);
     }
+
+    return this.alive;
   }
 
   legHit (amount) {
     this.health -= amount;
     this._checkIfAlive();
 
-    if (!this.alive || this.crawling) return;
+    if (this.alive && !this.crawling) {
+      this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
+      this.animations.falling.play();
+      this.gettingHit = true;
 
-    this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
-    this.animations.falling.play();
-    this.gettingHit = true;
+      setTimeout(() => {
+        this.moving = true;
+        this.crawling = true;
 
-    setTimeout(() => {
-      this.moving = true;
-      this.crawling = true;
+        this.running = false;
+        this.attacking = false;
 
-      this.running = false;
-      this.attacking = false;
+        this.setDirection('Idle');
+        this.currentAnimation.stop();
+        this.lastAnimation = 'legHit';
 
-      this.setDirection('Idle');
-      this.currentAnimation.stop();
-      this.lastAnimation = 'legHit';
+        setTimeout(() => { this.gettingHit = false; }, 1500);
+        this.currentAnimation = this.animations.falling;
+        setTimeout(this.crawl.bind(this), 2800);
+      }, 100);
+    }
 
-      setTimeout(() => { this.gettingHit = false; }, 1500);
-      this.currentAnimation = this.animations.falling;
-      setTimeout(this.crawl.bind(this), 2800);
-    }, 100);
+    return this.alive;
   }
 
   crawl () {

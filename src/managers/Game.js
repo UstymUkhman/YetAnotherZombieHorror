@@ -31,6 +31,7 @@ export default class Game {
     this._clock = new Clock();
     this.stage = new Stage();
 
+    this._animations = null;
     this._rifleLoop = null;
     this._zombie = null;
 
@@ -54,15 +55,19 @@ export default class Game {
     this.ak47 = new AK47(this.stage.camera);
 
     this.player = new Player(character => {
-      this.add(this.player.update.bind(this.player));
+      const loop = this.add(this.player.update.bind(this.player));
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
+      this.player.loop = loop;
     });
 
-    this.enemy = new Enemy(null, character => {
-      this.add(this.enemy.update.bind(this.enemy));
+    this.enemy = new Enemy(null, null, (character, animations) => {
+      const loop = this.add(this.enemy.update.bind(this.enemy));
       this.stage.scene.add(character);
+
+      this._animations = animations;
       this._zombie = character;
+      this.enemy.loop = loop;
     });
   }
 
@@ -78,19 +83,16 @@ export default class Game {
         this.pistol, false
       );
 
+      this.setCharacters();
       this.stage.createGrid();
-      this.setCharacters(this.player, this.enemy);
       this.add(this.stage.render.bind(this.stage));
     }, 100);
   }
 
-  setCharacters (player, enemy) {
-    this.enemy = enemy;
-    this.player = player;
-
-    this.playerPosition = player.character.position;
-    enemy.playerPosition = this.playerPosition;
-    enemy.character.lookAt(this.playerPosition);
+  setCharacters () {
+    this.playerPosition = this.player.character.position;
+    this.enemy.playerPosition = this.playerPosition;
+    this.enemy.character.lookAt(this.playerPosition);
 
     this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
     this._distanceLoop = this.add(this._checkPlayerDistance);
@@ -99,14 +101,12 @@ export default class Game {
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
       this.stage.createGrid();
-
-      // this.pistol.spawnMagazine(this._bounds, magazine => {
-      //   this.stage.scene.add(magazine);
-      // });
     }, 100);
   }
 
   checkPlayerDistance () {
+    if (!this.enemy) return;
+
     const enemyPosition = this.enemy.character.position;
     const distance = enemyPosition.distanceTo(this.playerPosition);
 
@@ -162,16 +162,47 @@ export default class Game {
 
   onHeadshoot () {
     this.enemy.headshot();
+    this.removeEnemy(true);
   }
 
   onBodyHit () {
     const hit = this.player.hit;
-    this.enemy.bodyHit(hit);
+    const dead = !this.enemy.bodyHit(hit);
+
+    if (dead) {
+      this.removeEnemy();
+    }
   }
 
   onLegHit () {
     const hit = this.player.hit / 2;
-    this.enemy.legHit(hit);
+    const dead = !this.enemy.legHit(hit);
+
+    if (dead) {
+      this.removeEnemy();
+    }
+  }
+
+  removeEnemy (headshoot = false) {
+    const delay = this.enemy.crawling ? 2033 : headshoot ? 4000 : 4366;
+
+    setTimeout(() => {
+      this.stage.scene.remove(this.enemy.character);
+      this.remove(this.enemy.loop);
+      this.enemy.dispose();
+      delete this.enemy;
+
+      this.enemy = new Enemy(this._zombie, this._animations);
+
+      setTimeout(() => {
+        const loop = this.add(this.enemy.update.bind(this.enemy));
+        this.enemy.playerPosition = this.playerPosition;
+        this.enemy.character.lookAt(this.playerPosition);
+
+        this.stage.scene.add(this.enemy.character);
+        this.enemy.loop = loop;
+      }, 2000);
+    }, delay);
   }
 
   add (call) {

@@ -1,5 +1,4 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { gltfLoader } from '@/utils/assetsLoader';
 
 import { camelCase } from '@/utils/string';
@@ -23,6 +22,7 @@ export default class Character {
     this.running = false;
     this.moving = false;
     this.alive = true;
+    this.loop = null;
 
     this.mixer = null;
     this.health = 100;
@@ -48,11 +48,7 @@ export default class Character {
 
         gltf.scene.position.set(...this.settings.position);
         gltf.scene.scale.set(...this.settings.scale);
-
-        this.mixer = new AnimationMixer(gltf.scene);
-        this.createAnimations(gltf.animations);
-
-        callback(gltf.scene);
+        callback(gltf.scene, gltf.animations);
       }
     });
   }
@@ -88,6 +84,16 @@ export default class Character {
         BOUNDS.side
       );
     }
+  }
+
+  dispose () {
+    for (const animation in this.animations) {
+      this.animations[animation].stopFading();
+      this.animations[animation].stop();
+    }
+
+    clearTimeout(this.crawlTimeout);
+    delete this.character;
   }
 
   static setBounds (stage) {
