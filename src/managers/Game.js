@@ -170,7 +170,8 @@ export default class Game {
   }
 
   onLegHit () {
-    this.enemy.legHit();
+    const hit = this.player.hit / 2;
+    this.enemy.legHit(hit);
   }
 
   add (call) {

@@ -69,28 +69,24 @@ export default class Character {
     this.speed.z = this.settings.moves[direction][1];
   }
 
-  updatePosition () {
-    this.character.translateX(this.speed.x);
-    this.character.translateZ(this.speed.z);
-
-    this.character.position.z = clamp(
-      this.character.position.z,
-      -BOUNDS.front,
-      BOUNDS.front
-    );
-
-    this.character.position.x = clamp(
-      this.character.position.x,
-      -BOUNDS.side,
-      BOUNDS.side
-    );
-  }
-
   update (delta) {
     this.mixer.update(delta);
 
     if (this.moving) {
-      this.updatePosition();
+      this.character.translateX(this.speed.x);
+      this.character.translateZ(this.speed.z);
+
+      this.character.position.z = clamp(
+        this.character.position.z,
+        -BOUNDS.front,
+        BOUNDS.front
+      );
+
+      this.character.position.x = clamp(
+        this.character.position.x,
+        -BOUNDS.side,
+        BOUNDS.side
+      );
     }
   }
 

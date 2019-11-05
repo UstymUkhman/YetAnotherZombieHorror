@@ -11,7 +11,7 @@ const POSITION = new Vector3(-26, 1, -5.75);
 export default class AK47 extends Weapon {
   constructor (camera) {
     super(AK_47, camera, () => {
-      this.setOnStage();
+      this.spawnOnStage();
     });
 
     this.aimTimeout = null;
@@ -27,7 +27,7 @@ export default class AK47 extends Weapon {
     this.shootSound.load();
   }
 
-  setOnStage () {
+  spawnOnStage () {
     this.arm.scale.set(0.005, 0.005, 0.005);
     this.arm.rotation.set(0, 0, 0);
   }

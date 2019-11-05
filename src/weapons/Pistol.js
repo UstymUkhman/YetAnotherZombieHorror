@@ -26,15 +26,7 @@ export default class Pistol extends Weapon {
     this.shootSound.load();
   }
 
-  /* spawnMagazine (bounds, callback) {
-    const z = random(-bounds.front, bounds.front);
-    const x = random(-bounds.side, bounds.side);
-
-    this.magazine.position.set(x, 2.5, z);
-    callback(this.magazine);
-  } */
-
-  setOnStage () {
+  spawnOnStage () {
     this.arm.scale.set(0.225, 0.225, 0.225);
     this.arm.rotation.set(0, 0, 0);
   }
