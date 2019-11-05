@@ -1,9 +1,9 @@
+import AK_47 from '@/assets/weapons/AK47.glb';
+import SHOOT from '@/assets/weapons/AK47.mp3';
+
 import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Weapon from '@/weapons/Weapon';
-
-import AK_47 from '@/assets/AK47/rifle.glb';
-import SHOOT from '@/assets/AK47/shoot.mp3';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);

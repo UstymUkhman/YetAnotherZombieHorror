@@ -233,33 +233,28 @@ export default class Enemy extends Character {
 
   bodyHit (amount) {
     this.health -= amount;
-    if (!this.alive || this.gettingHit) return;
-
     this._checkIfAlive();
 
+    if (this.gettingHit) return;
+
     if (this.alive && !this.crawling) {
-      const lastAnimation = this.lastAnimation.includes('Attack') ? 'attack' : this.lastAnimation;
-      this.currentAnimation.crossFadeTo(this.animations.hit, 0.1, true);
+      this.animations.hit.fadeIn(0.1);
       this.animations.hit.play();
       this.gettingHit = true;
 
       setTimeout(() => {
-        this.moving = false;
-        this.running = false;
-        this.attacking = false;
-
         this.setDirection('Idle');
-        this.currentAnimation.stop();
         this.lastAnimation = 'bodyHit';
-        this.currentAnimation = this.animations.hit;
 
         if (this.alive) {
           setTimeout(() => {
-            if (!this.crawling) {
-              this.gettingHit = false;
-              this[lastAnimation]();
-            }
-          }, 900);
+            this.animations.hit.fadeOut(0.1);
+          }, 650);
+
+          setTimeout(() => {
+            this.animations.hit.stop();
+            this.gettingHit = false;
+          }, 750);
         }
       }, 100);
     }

@@ -9,8 +9,8 @@ import { LoopOnce } from '@three/constants';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
-const RUN_CAMERA = new Vector3(-1.5, 3, -5);
-const CAMERA = new Vector3(-1.25, 3, -3);
+const RUN_CAMERA = new Vector3(-2.5, 3, -7);
+const CAMERA = new Vector3(-1.5, 3, -3.5);
 
 export default class Player extends Character {
   constructor (onLoad) {

@@ -104,8 +104,6 @@ export default class Game {
       //   this.stage.scene.add(magazine);
       // });
     }, 100);
-
-    setTimeout(this.spawnRifle.bind(this), 2000);
   }
 
   checkPlayerDistance () {
@@ -117,11 +115,14 @@ export default class Game {
     const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
 
     if (this.enemy.alive) {
+      const visible = visiblePlayer && !this.enemy.visiblePlayer;
+      const next = nextToPlayer && !this.enemy.nextToPlayer;
+
       if (attack && !this.enemy.attacking) {
         this.enemy.attack();
-      } else if (nextToPlayer && !this.enemy.crawling && !this.enemy.nextToPlayer) {
+      } else if (next && !this.enemy.crawling) {
         this.enemy.scream();
-      } else if (visiblePlayer && !this.enemy.crawling && !this.enemy.visiblePlayer) {
+      } else if (visible && !this.enemy.crawling) {
         this.enemy.walk();
       }
     }
