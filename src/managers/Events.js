@@ -10,8 +10,10 @@ class Events {
     document.addEventListener(name, callback, false);
   }
 
-  dispatch (name) {
-    document.dispatchEvent(this._events[name]);
+  dispatch (name, data = null) {
+    const event = this._events[name];
+    event.data = data;
+    document.dispatchEvent(event);
   }
 
   remove (name) {

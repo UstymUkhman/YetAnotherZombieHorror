@@ -95,10 +95,15 @@ export default class Character {
     clearTimeout(this.crawlTimeout);
     clearTimeout(this.hitTimeout);
     delete this.character;
+    this.colliders = [];
   }
 
   static setBounds (stage) {
     BOUNDS.front = stage.front;
     BOUNDS.side = stage.side;
+  }
+
+  get bounds () {
+    return BOUNDS;
   }
 };

@@ -61,7 +61,7 @@ export default class Weapon {
       const event = this._getEvent(target);
 
       setTimeout(() => {
-        Events.dispatch(event);
+        Events.dispatch(event, collider.userData.enemy);
       }, time);
     }
   }
@@ -71,7 +71,6 @@ export default class Weapon {
   _getEvent (collider) {
     if (!collider) return 'headshoot';
     else if (collider === 1) return 'bodyHit';
-
     return 'legHit';
   }
 

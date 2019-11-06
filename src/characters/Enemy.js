@@ -10,6 +10,7 @@ import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
+import { random } from '@/utils/number';
 
 const colliderMaterial = new MeshBasicMaterial({
   // transparent: true,
@@ -19,14 +20,14 @@ const colliderMaterial = new MeshBasicMaterial({
 });
 
 export default class Enemy extends Character {
-  constructor (character, animations, onLoad) {
+  constructor (character, animations, id, onLoad) {
     if (character) {
       super('', config);
-      this._setDefaultState(character, animations, onLoad);
+      this._setDefaultState(character, animations, id, onLoad);
     } else {
       super(
         ZOMBIE, config, (character, animations) =>
-          this._setDefaultState(character, animations, onLoad)
+          this._setDefaultState(character, animations, id, onLoad)
       );
     }
 
@@ -47,7 +48,7 @@ export default class Enemy extends Character {
     this.moving = false;
   }
 
-  _setDefaultState (character, animations, onLoad) {
+  _setDefaultState (character, animations, id, onLoad) {
     this.mixer = new AnimationMixer(character);
     this.createAnimations(animations);
 
@@ -78,8 +79,10 @@ export default class Enemy extends Character {
     this.currentAnimation = this.animations.idle;
     this.currentAnimation.play();
     this.lastAnimation = 'idle';
+
     this.character = character;
     this.colliders = [];
+    this.id = id;
 
     this._addHeadCollider(character);
     this._addBodyCollider(character);
@@ -98,6 +101,7 @@ export default class Enemy extends Character {
       colliderMaterial.clone()
     );
 
+    headCollider.userData.enemy = this.id;
     this.colliders.push(headCollider);
     headCollider.position.y += 5;
     head.add(headCollider);
@@ -115,6 +119,7 @@ export default class Enemy extends Character {
     bodyCollider.position.y += 12.5;
     bodyCollider.position.z += 2.5;
 
+    bodyCollider.userData.enemy = this.id;
     this.colliders.push(bodyCollider);
     spine.add(bodyCollider);
   }
@@ -135,6 +140,9 @@ export default class Enemy extends Character {
       colliderMaterial.clone()
     );
 
+    lowerLeg.userData.enemy = this.id;
+    upperLeg.userData.enemy = this.id;
+
     lowerLeg.position.y -= 27.5;
     upperLeg.position.y -= 20;
 
@@ -152,6 +160,12 @@ export default class Enemy extends Character {
     leftUpLeg.add(leftUpLegCollider);
     rightLeg.add(rightLegCollider);
     leftLeg.add(leftLegCollider);
+  }
+
+  setRandomPosition () {
+    const z = random(-this.bounds.front, this.bounds.front);
+    const x = random(-this.bounds.side, this.bounds.side);
+    this.character.position.set(x, 0, z);
   }
 
   idle () {

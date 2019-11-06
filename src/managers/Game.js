@@ -37,7 +37,9 @@ export default class Game {
     this._zombie = null;
 
     this.player = null;
-    this.enemy = null;
+    this.enemies = [];
+    this.enemyID = 0;
+    this.killed = 0;
     this.calls = [];
 
     this.createStats();
@@ -62,27 +64,26 @@ export default class Game {
       this.player.loop = loop;
     });
 
-    this.enemy = new Enemy(null, null, (character, animations) => {
-      const loop = this.add(this.enemy.update.bind(this.enemy));
+    const enemy = new Enemy(null, null, this.enemyID++, (character, animations) => {
+      const loop = this.add(enemy.update.bind(enemy));
       this.stage.scene.add(character);
 
       this._animations = animations;
       this._zombie = character;
-      this.enemy.loop = loop;
+      enemy.loop = loop;
     });
+
+    this.enemies.push(enemy);
   }
 
   onLoaded () {
     Events.remove('loaded');
+    const colliders = this.getEnemyColliders();
 
     setTimeout(() => {
+      this.player.setWeapon(colliders, this.pistol, false);
       this.add(Input.update.bind(Input));
       Input.player = this.player;
-
-      this.player.setWeapon(
-        this.enemy.colliders,
-        this.pistol, false
-      );
 
       this.setCharacters();
       this.stage.createGrid();
@@ -92,8 +93,8 @@ export default class Game {
 
   setCharacters () {
     this.playerPosition = this.player.character.position;
-    this.enemy.playerPosition = this.playerPosition;
-    this.enemy.character.lookAt(this.playerPosition);
+    this.enemies[0].playerPosition = this.playerPosition;
+    this.enemies[0].character.lookAt(this.playerPosition);
 
     this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
     this._distanceLoop = this.add(this._checkPlayerDistance);
@@ -107,30 +108,34 @@ export default class Game {
 
   checkPlayerDistance () {
     if (this.removing) return;
+    const length = this.enemies.length;
 
-    const enemyPosition = this.enemy.character.position;
-    const distance = enemyPosition.distanceTo(this.playerPosition);
+    for (let e = 0; e < length; e++) {
+      const enemy = this.enemies[e];
+      const enemyPosition = enemy.character.position;
+      const distance = enemyPosition.distanceTo(this.playerPosition);
 
-    const attack = this.enemy.attacking || distance < 1.75;
-    const nextToPlayer = this.enemy.nextToPlayer || distance < 10;
-    const visiblePlayer = this.enemy.visiblePlayer || distance < 20;
+      const attack = enemy.attacking || distance < 1.75;
+      const nextToPlayer = enemy.nextToPlayer || distance < 10;
+      const visiblePlayer = enemy.visiblePlayer || distance < 20;
 
-    if (this.enemy.alive) {
-      const visible = visiblePlayer && !this.enemy.visiblePlayer;
-      const next = nextToPlayer && !this.enemy.nextToPlayer;
+      if (enemy.alive) {
+        const visible = visiblePlayer && !enemy.visiblePlayer;
+        const next = nextToPlayer && !enemy.nextToPlayer;
 
-      if (attack) {
-        this.enemy.attack();
-      } else if (next) {
-        this.enemy.scream();
-      } else if (visible) {
-        this.enemy.walk();
+        if (attack) {
+          enemy.attack();
+        } else if (next) {
+          enemy.scream();
+        } else if (visible) {
+          enemy.walk();
+        }
       }
-    }
 
-    this.enemy.visiblePlayer = visiblePlayer;
-    this.enemy.nextToPlayer = nextToPlayer;
-    this.enemy.attacking = attack;
+      enemy.visiblePlayer = visiblePlayer;
+      enemy.nextToPlayer = nextToPlayer;
+      enemy.attacking = attack;
+    }
   }
 
   spawnRifle () {
@@ -151,70 +156,97 @@ export default class Game {
     rifle.rotation.y -= 0.01;
 
     if (distance < 2.5) {
+      const colliders = this.getEnemyColliders();
       this.remove(this._rifleLoop);
-      this.ak47.setToPlayer();
 
-      this.player.setWeapon(
-        this.enemy.colliders,
-        this.ak47, true
-      );
+      this.ak47.setToPlayer();
+      this.player.setWeapon(colliders, this.ak47, true);
     }
   }
 
-  onHeadshoot () {
-    const alive = this.enemy && this.enemy.alive;
-    if (this.removing || !alive) return;
+  getEnemyColliders () {
+    const colliders = [];
 
-    this.enemy.headshot();
-    this.removeEnemy();
+    for (let e = 0; e < this.enemies.length; e++) {
+      colliders.push(...this.enemies[e].colliders);
+    }
+
+    return colliders;
   }
 
-  onBodyHit () {
-    const alive = this.enemy && this.enemy.alive;
+  onHeadshoot (event) {
+    const index = event.data - this.killed;
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
+    if (this.removing || !alive) return;
+
+    enemy.headshot();
+    this.removeEnemy(index);
+  }
+
+  onBodyHit (event) {
+    const index = event.data - this.killed;
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
     if (this.removing || !alive) return;
 
     const hit = this.player.hit;
-    const dead = !this.enemy.bodyHit(hit);
+    const dead = !enemy.bodyHit(hit);
 
     if (dead) {
-      this.removeEnemy();
+      this.removeEnemy(index);
     }
   }
 
-  onLegHit () {
-    const alive = this.enemy && this.enemy.alive;
+  onLegHit (event) {
+    const index = event.data - this.killed;
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
     if (this.removing || !alive) return;
 
     const hit = this.player.hit / 2;
-    const dead = !this.enemy.legHit(hit);
+    const dead = !enemy.legHit(hit);
 
     if (dead) {
-      this.removeEnemy();
+      this.removeEnemy(index);
     }
   }
 
-  removeEnemy () {
-    if (this.removing) return;
-    this.removing = true;
+  removeEnemy (id) {
+    const enemy = this.enemies[id];
+    // this.removing = true;
 
     setTimeout(() => {
-      this.stage.scene.remove(this.enemy.character);
-      this.remove(this.enemy.loop);
-      this.enemy.dispose();
-      delete this.enemy;
+      this.stage.scene.remove(enemy.character);
+      this.remove(enemy.loop);
+      enemy.dispose();
+      this.killed++;
 
-      this.enemy = new Enemy(this._zombie, this._animations);
+      delete this.enemies[id];
+      this.enemies.splice(id, 1);
 
-      setTimeout(() => {
-        const loop = this.add(this.enemy.update.bind(this.enemy));
-        this.enemy.playerPosition = this.playerPosition;
-        this.enemy.character.lookAt(this.playerPosition);
-
-        this.stage.scene.add(this.enemy.character);
-        this.enemy.loop = loop;
-        this.removing = false;
-      }, 2000);
+      this.addEnemy();
+      // this.removing = false;
     }, 4000);
+  }
+
+  addEnemy () {
+    const enemy = new Enemy(this._zombie, this._animations, this.enemyID++);
+    const loop = this.add(enemy.update.bind(enemy));
+
+    enemy.playerPosition = this.playerPosition;
+    enemy.character.lookAt(this.playerPosition);
+    enemy.setRandomPosition();
+
+    this.stage.scene.add(enemy.character);
+    this.enemies.push(enemy);
+    enemy.loop = loop;
+
+    const colliders = this.getEnemyColliders();
+    this.player.weapon.targets = colliders;
   }
 
   add (call) {
