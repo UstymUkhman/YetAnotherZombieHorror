@@ -93,6 +93,7 @@ export default class Character {
     }
 
     clearTimeout(this.crawlTimeout);
+    clearTimeout(this.hitTimeout);
     delete this.character;
   }
 

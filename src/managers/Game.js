@@ -33,6 +33,7 @@ export default class Game {
 
     this._animations = null;
     this._rifleLoop = null;
+    this.removing = false;
     this._zombie = null;
 
     this.player = null;
@@ -105,7 +106,7 @@ export default class Game {
   }
 
   checkPlayerDistance () {
-    if (!this.enemy) return;
+    if (this.removing) return;
 
     const enemyPosition = this.enemy.character.position;
     const distance = enemyPosition.distanceTo(this.playerPosition);
@@ -161,11 +162,17 @@ export default class Game {
   }
 
   onHeadshoot () {
+    const alive = this.enemy && this.enemy.alive;
+    if (this.removing || !alive) return;
+
     this.enemy.headshot();
-    this.removeEnemy(true);
+    this.removeEnemy();
   }
 
   onBodyHit () {
+    const alive = this.enemy && this.enemy.alive;
+    if (this.removing || !alive) return;
+
     const hit = this.player.hit;
     const dead = !this.enemy.bodyHit(hit);
 
@@ -175,6 +182,9 @@ export default class Game {
   }
 
   onLegHit () {
+    const alive = this.enemy && this.enemy.alive;
+    if (this.removing || !alive) return;
+
     const hit = this.player.hit / 2;
     const dead = !this.enemy.legHit(hit);
 
@@ -183,8 +193,9 @@ export default class Game {
     }
   }
 
-  removeEnemy (headshoot = false) {
-    const delay = this.enemy.crawling ? 2033 : headshoot ? 4000 : 4366;
+  removeEnemy () {
+    if (this.removing) return;
+    this.removing = true;
 
     setTimeout(() => {
       this.stage.scene.remove(this.enemy.character);
@@ -201,8 +212,9 @@ export default class Game {
 
         this.stage.scene.add(this.enemy.character);
         this.enemy.loop = loop;
+        this.removing = false;
       }, 2000);
-    }, delay);
+    }, 4000);
   }
 
   add (call) {

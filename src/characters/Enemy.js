@@ -34,6 +34,8 @@ export default class Enemy extends Character {
     this.visiblePlayer = false;
     this.nextToPlayer = false;
     this.crawlTimeout = null;
+    this.hitTimeout = null;
+    this.hitFadeOut = null;
 
     this.gettingHit = false;
     this.attacking = false;
@@ -187,7 +189,9 @@ export default class Enemy extends Character {
     }, 250);
   }
 
-  scream (run = true) {
+  scream () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
 
@@ -201,12 +205,14 @@ export default class Enemy extends Character {
       this.currentAnimation = this.animations.scream;
 
       setTimeout(() => {
-        if (run && !this.crawling) this.run();
+        if (!this.crawling) this.run();
       }, 2400);
     }, 233);
   }
 
   run () {
+    if (!this.alive) return;
+
     this.currentAnimation.crossFadeTo(this.animations.run, 0.25, true);
     this.animations.run.play();
 
@@ -224,6 +230,8 @@ export default class Enemy extends Character {
   }
 
   attack (hard = false) {
+    if (!this.alive) return;
+
     const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
     const lastAnimation = this.crawling ? 'crawl' : this.lastAnimation;
     const delay = this.crawling ? 2200 : hard ? 4400 : 2500;
@@ -248,38 +256,39 @@ export default class Enemy extends Character {
     this.health -= amount;
     this._checkIfAlive();
 
-    if (this.alive && !this.crawling && !this.gettingHit) {
+    if (this.alive && !this.crawling) {
       const setIdle = this.moving || this.running;
-      const lastAnimation = this.lastAnimation;
       const direction = this._direction;
 
-      if (!setIdle) {
-        this.animations.hit.fadeIn(0.1);
-      } else {
-        this.currentAnimation.crossFadeTo(this.animations.hit, 0.1, true);
-        this.setDirection('Idle');
+      this.animations.hit.stopFading();
+      this.animations.hit.stop();
 
+      this.animations.hit.fadeIn(0.1);
+      clearTimeout(this.hitTimeout);
+      clearTimeout(this.hitFadeOut);
+      this.setDirection('Idle');
+
+      if (setIdle) {
         setTimeout(() => {
-          this.lastAnimation = 'hit';
           this.currentAnimation.stop();
-          this.currentAnimation = this.animations.hit;
         }, 100);
       }
 
       this.animations.hit.play();
       this.gettingHit = true;
 
-      setTimeout(() => {
+      this.hitFadeOut = setTimeout(() => {
         this.animations.hit.fadeOut(0.25);
       }, 750);
 
-      setTimeout(() => {
+      this.hitTimeout = setTimeout(() => {
         this.animations.hit.stop();
         this.gettingHit = false;
 
         if (setIdle) {
+          this.currentAnimation = this.animations.hit;
           this.setDirection(direction);
-          this[lastAnimation]();
+          this[this.lastAnimation]();
         }
       }, 1000);
     }
@@ -337,6 +346,7 @@ export default class Enemy extends Character {
   }
 
   _checkIfAlive () {
+    if (!this.alive) return;
     this.alive = this.alive && this.health > 0;
     if (!this.alive) this.death();
   }
@@ -346,16 +356,12 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
     this.animations[death].play();
 
-    this.alive = false;
-    this.health = 0;
-
     setTimeout(() => {
       this.moving = false;
       this.running = false;
       this.attacking = false;
 
       this.setDirection('Idle');
-      this.lastAnimation = 'death';
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
     }, 133);
@@ -363,6 +369,7 @@ export default class Enemy extends Character {
 
   headshot () {
     if (!this.alive) return;
+
     const crawling = this.crawling && !this.gettingHit;
     const death = crawling ? 'crawlDeath' : 'headshot';
 
@@ -385,9 +392,7 @@ export default class Enemy extends Character {
 
       this.setDirection('Idle');
       this.currentAnimation.stop();
-
       this.currentAnimation = this.animations[death];
-      this.lastAnimation = this.crawling ? 'death' : 'headshot';
     }, 250);
   }
 
