@@ -34,10 +34,13 @@ export default class Enemy extends Character {
     this.visiblePlayer = false;
     this.nextToPlayer = false;
     this.crawlTimeout = null;
+    this.gettingHit = false;
+
     this.hitTimeout = null;
     this.hitFadeOut = null;
+    this.runTimeout = null;
 
-    this.gettingHit = false;
+    this.screaming = false;
     this.attacking = false;
     this.crawling = false;
     this.running = false;
@@ -171,7 +174,7 @@ export default class Enemy extends Character {
   }
 
   walk () {
-    if (!this.alive) return;
+    if (!this.alive || this.crawling) return;
 
     this.currentAnimation.crossFadeTo(this.animations.walk, 0.25, true);
     this.animations.walk.play();
@@ -190,21 +193,24 @@ export default class Enemy extends Character {
   }
 
   scream () {
-    if (!this.alive) return;
+    if (!this.alive || this.crawling) return;
 
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
+    this.setDirection('Idle');
 
     this.attacking = false;
+    this.screaming = true;
     this.running = false;
     this.moving = false;
 
     setTimeout(() => {
+      this.lastAnimation = 'run';
       this.currentAnimation.stop();
-      this.lastAnimation = 'scream';
       this.currentAnimation = this.animations.scream;
 
-      setTimeout(() => {
+      this.runTimeout = setTimeout(() => {
+        this.screaming = false;
         if (!this.crawling) this.run();
       }, 2400);
     }, 233);
@@ -230,7 +236,7 @@ export default class Enemy extends Character {
   }
 
   attack (hard = false) {
-    if (!this.alive) return;
+    if (!this.alive || this.attacking) return;
 
     const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
     const lastAnimation = this.crawling ? 'crawl' : this.lastAnimation;
@@ -257,16 +263,18 @@ export default class Enemy extends Character {
     this._checkIfAlive();
 
     if (this.alive && !this.crawling) {
-      const setIdle = this.moving || this.running;
+      const setIdle = this.moving || this.running || this.screaming;
       const direction = this._direction;
 
       this.animations.hit.stopFading();
-      this.animations.hit.stop();
-
-      this.animations.hit.fadeIn(0.1);
       clearTimeout(this.hitTimeout);
       clearTimeout(this.hitFadeOut);
+      clearTimeout(this.runTimeout);
+      this.animations.hit.stop();
+
+      this.screaming = false;
       this.setDirection('Idle');
+      this.animations.hit.fadeIn(0.1);
 
       if (setIdle) {
         setTimeout(() => {
@@ -285,7 +293,7 @@ export default class Enemy extends Character {
         this.animations.hit.stop();
         this.gettingHit = false;
 
-        if (setIdle) {
+        if (setIdle || this.lastAnimation === 'run') {
           this.currentAnimation = this.animations.hit;
           this.setDirection(direction);
           this[this.lastAnimation]();
@@ -303,6 +311,7 @@ export default class Enemy extends Character {
     if (this.alive && !this.crawling) {
       this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
       this.animations.falling.play();
+      clearTimeout(this.runTimeout);
       this.gettingHit = true;
 
       setTimeout(() => {

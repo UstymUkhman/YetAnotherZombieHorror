@@ -119,11 +119,11 @@ export default class Game {
       const visible = visiblePlayer && !this.enemy.visiblePlayer;
       const next = nextToPlayer && !this.enemy.nextToPlayer;
 
-      if (attack && !this.enemy.attacking) {
+      if (attack) {
         this.enemy.attack();
-      } else if (next && !this.enemy.crawling) {
+      } else if (next) {
         this.enemy.scream();
-      } else if (visible && !this.enemy.crawling) {
+      } else if (visible) {
         this.enemy.walk();
       }
     }
