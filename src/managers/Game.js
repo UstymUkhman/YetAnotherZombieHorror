@@ -8,6 +8,7 @@ import Enemy from '@/characters/Enemy';
 import Events from '@/managers/Events';
 import Input from '@/managers/Input';
 
+import findIndex from 'lodash.findindex';
 import Pistol from '@/weapons/Pistol';
 import AK47 from '@/weapons/AK47';
 import Stage from '@/Stage';
@@ -31,9 +32,7 @@ export default class Game {
     this._clock = new Clock();
     this.stage = new Stage();
 
-    this._animations = null;
-    this._rifleLoop = null;
-
+    this.animations = null;
     this.player = null;
     this.enemy = null;
 
@@ -59,19 +58,17 @@ export default class Game {
     this.ak47 = new AK47(this.stage.camera);
 
     this.player = new Player(character => {
-      const loop = this.add(this.player.update.bind(this.player));
+      this.add(this.player.update.bind(this.player));
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
-      this.player.loop = loop;
     });
 
-    const enemy = new Enemy(this.enemyID++, this.enemy, this._animations, (character, animations) => {
-      const loop = this.add(enemy.update.bind(enemy));
+    const enemy = new Enemy(this.enemyID++, this.enemy, this.animations, (character, animations) => {
+      this.add(enemy.update.bind(enemy));
       this.stage.scene.add(character);
 
-      this._animations = animations;
+      this.animations = animations;
       this.enemy = character;
-      enemy.loop = loop;
     });
 
     this.enemies.push(enemy);
@@ -144,9 +141,7 @@ export default class Game {
 
     this.ak47.arm.position.set(x, 1.75, z);
     this.stage.scene.add(this.ak47.arm);
-
-    this._rifleRotation = this.rifleRotation.bind(this);
-    this._rifleLoop = this.add(this._rifleRotation);
+    this.add(this.rifleRotation);
   }
 
   rifleRotation () {
@@ -157,11 +152,81 @@ export default class Game {
 
     if (distance < 2.5) {
       const colliders = this.getEnemyColliders();
-      this.remove(this._rifleLoop);
+      this.remove(this.rifleRotation);
 
       this.ak47.setToPlayer();
       this.player.setWeapon(colliders, this.ak47, true);
     }
+  }
+
+  onHeadshoot (event) {
+    const index = findIndex(this.enemies, ['id', event.data]);
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
+    if (alive) {
+      enemy.headshot();
+      this.removeEnemy(event.data);
+    }
+  }
+
+  onBodyHit (event) {
+    const index = findIndex(this.enemies, ['id', event.data]);
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
+    if (alive) {
+      const hit = this.player.hit;
+      const dead = !enemy.bodyHit(hit);
+
+      if (dead) {
+        this.removeEnemy(event.data);
+      }
+    }
+  }
+
+  onLegHit (event) {
+    const index = findIndex(this.enemies, ['id', event.data]);
+    const enemy = this.enemies[index];
+    const alive = enemy && enemy.alive;
+
+    if (alive) {
+      const hit = this.player.hit / 2;
+      const dead = !enemy.legHit(hit);
+
+      if (dead) {
+        this.removeEnemy(event.data);
+      }
+    }
+  }
+
+  removeEnemy (id) {
+    setTimeout(() => {
+      const index = findIndex(this.enemies, ['id', id]);
+      const enemy = this.enemies[index];
+
+      this.stage.scene.remove(enemy.character);
+      // this.remove(enemy.update);
+      enemy.dispose();
+      this.killed++;
+
+      delete this.enemies[index];
+      this.enemies.splice(index, 1);
+
+      this.addEnemy();
+      this.addEnemy();
+    }, 4000);
+  }
+
+  addEnemy () {
+    const enemy = new Enemy(this.enemyID++, this.enemy, this.animations);
+    enemy.playerPosition = this.playerPosition;
+    this.add(enemy.update.bind(enemy));
+    enemy.setRandomPosition();
+
+    this.enemies.push(enemy);
+    this.stage.scene.add(enemy.character);
+    this.player.weapon.targets = this.getEnemyColliders();
   }
 
   getEnemyColliders () {
@@ -174,82 +239,8 @@ export default class Game {
     return colliders;
   }
 
-  onHeadshoot (event) {
-    const index = event.data - this.killed;
-    const enemy = this.enemies[index];
-    const alive = enemy && enemy.alive;
-
-    if (alive) {
-      enemy.headshot();
-      this.removeEnemy(index);
-    }
-  }
-
-  onBodyHit (event) {
-    const index = event.data - this.killed;
-    const enemy = this.enemies[index];
-    const alive = enemy && enemy.alive;
-
-    if (alive) {
-      const hit = this.player.hit;
-      const dead = !enemy.bodyHit(hit);
-
-      if (dead) {
-        this.removeEnemy(index);
-      }
-    }
-  }
-
-  onLegHit (event) {
-    const index = event.data - this.killed;
-    const enemy = this.enemies[index];
-    const alive = enemy && enemy.alive;
-
-    if (alive) {
-      const hit = this.player.hit / 2;
-      const dead = !enemy.legHit(hit);
-
-      if (dead) {
-        this.removeEnemy(index);
-      }
-    }
-  }
-
-  removeEnemy (id) {
-    const enemy = this.enemies[id];
-
-    setTimeout(() => {
-      this.stage.scene.remove(enemy.character);
-      this.remove(enemy.loop);
-      enemy.dispose();
-      this.killed++;
-
-      delete this.enemies[id];
-      this.enemies.splice(id, 1);
-
-      this.addEnemy();
-    }, 4000);
-  }
-
-  addEnemy () {
-    const enemy = new Enemy(this.enemyID++, this.enemy, this._animations);
-    const loop = this.add(enemy.update.bind(enemy));
-
-    enemy.playerPosition = this.playerPosition;
-    enemy.character.lookAt(this.playerPosition);
-    enemy.setRandomPosition();
-
-    this.stage.scene.add(enemy.character);
-    this.enemies.push(enemy);
-    enemy.loop = loop;
-
-    const colliders = this.getEnemyColliders();
-    this.player.weapon.targets = colliders;
-  }
-
   add (call) {
     this.calls.push(call);
-    return this.calls.length - 1;
   }
 
   loop () {
@@ -265,7 +256,9 @@ export default class Game {
   }
 
   remove (call) {
-    this.calls.splice(call, 1);
+    const index = this.calls.indexOf(call);
+    console.log('Remove call', index);
+    this.calls.splice(index, 1);
   }
 
   end () {

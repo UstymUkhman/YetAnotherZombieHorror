@@ -95,21 +95,22 @@ export default class Enemy extends Character {
   }
 
   _addHeadCollider (character) {
-    const head = character.getObjectByName('Head');
+    this.head = character.getObjectByName('Head');
 
     const headCollider = new Mesh(
-      new BoxGeometry(20, 25, 25),
+      new BoxGeometry(18, 20, 20),
       colliderMaterial.clone()
     );
 
     headCollider.userData.enemy = this.id;
     this.colliders.push(headCollider);
     headCollider.position.y += 5;
-    head.add(headCollider);
+    headCollider.position.z += 3;
+    this.head.add(headCollider);
   }
 
   _addBodyCollider (character) {
-    const spine = character.getObjectByName('Spine');
+    this.spine = character.getObjectByName('Spine');
 
     const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
@@ -117,22 +118,22 @@ export default class Enemy extends Character {
     );
 
     bodyCollider.rotation.x -= Math.PI / 2;
-    bodyCollider.position.y += 12.5;
-    bodyCollider.position.z += 2.5;
+    bodyCollider.position.y += 15;
+    bodyCollider.position.z += 5;
 
     bodyCollider.userData.enemy = this.id;
     this.colliders.push(bodyCollider);
-    spine.add(bodyCollider);
+    this.spine.add(bodyCollider);
   }
 
   _addLegsCollider (character) {
-    const rightUpLeg = character.getObjectByName('RightUpLeg');
-    const leftUpLeg = character.getObjectByName('LeftUpLeg');
-    const rightLeg = character.getObjectByName('RightLeg');
-    const leftLeg = character.getObjectByName('LeftLeg');
+    this.rightUpLeg = character.getObjectByName('RightUpLeg');
+    this.leftUpLeg = character.getObjectByName('LeftUpLeg');
+    this.rightLeg = character.getObjectByName('RightLeg');
+    this.leftLeg = character.getObjectByName('LeftLeg');
 
     const upperLeg = new Mesh(
-      new BoxGeometry(15, 50, 15),
+      new BoxGeometry(16, 50, 15),
       colliderMaterial.clone()
     );
 
@@ -145,6 +146,7 @@ export default class Enemy extends Character {
     upperLeg.userData.enemy = this.id;
 
     lowerLeg.position.y -= 27.5;
+    lowerLeg.position.z -= 2.5;
     upperLeg.position.y -= 20;
 
     const rightUpLegCollider = upperLeg.clone();
@@ -152,23 +154,23 @@ export default class Enemy extends Character {
     const rightLegCollider = lowerLeg.clone();
     const leftLegCollider = lowerLeg.clone();
 
+    rightUpLegCollider.position.x += 1;
+    leftUpLegCollider.position.x -= 1;
+
     this.colliders.push(rightUpLegCollider);
     this.colliders.push(leftUpLegCollider);
     this.colliders.push(rightLegCollider);
     this.colliders.push(leftLegCollider);
 
-    rightUpLeg.add(rightUpLegCollider);
-    leftUpLeg.add(leftUpLegCollider);
-    rightLeg.add(rightLegCollider);
-    leftLeg.add(leftLegCollider);
+    this.rightUpLeg.add(rightUpLegCollider);
+    this.leftUpLeg.add(leftUpLegCollider);
+    this.rightLeg.add(rightLegCollider);
+    this.leftLeg.add(leftLegCollider);
   }
 
   setRandomPosition () {
-    // const z = random(-this.bounds.front, this.bounds.front);
-    // const x = random(-this.bounds.side, this.bounds.side);
-
-    const z = random(10, 20);
-    const x = random(-5, 5);
+    const z = random(-this.bounds.front, this.bounds.front);
+    const x = random(-this.bounds.side, this.bounds.side);
     this.character.position.set(x, 0, z);
   }
 
@@ -383,11 +385,11 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
     this.animations[death].play();
 
-    setTimeout(() => {
-      this.moving = false;
-      this.running = false;
-      this.attacking = false;
+    this.attacking = false;
+    this.running = false;
+    this.moving = false;
 
+    setTimeout(() => {
       this.setDirection('Idle');
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
@@ -407,14 +409,14 @@ export default class Enemy extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations[death], 0.25, true);
     this.animations[death].play();
+
+    this.attacking = false;
+    this.running = false;
+    this.moving = false;
     this.alive = false;
     this.health = 0;
 
     setTimeout(() => {
-      this.moving = false;
-      this.running = false;
-      this.attacking = false;
-
       this.setDirection('Idle');
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
@@ -424,7 +426,7 @@ export default class Enemy extends Character {
   update (delta) {
     super.update(delta);
 
-    if (this.visiblePlayer && this.alive) {
+    if (/* this.visiblePlayer && */ this.alive) {
       this.character.lookAt(this.playerPosition);
     }
   }

@@ -23,7 +23,6 @@ export default class Character {
     this.running = false;
     this.moving = false;
     this.alive = true;
-    this.loop = null;
 
     this.mixer = null;
     this.health = 100;
@@ -77,7 +76,7 @@ export default class Character {
   update (delta) {
     this.mixer.update(delta);
 
-    if (this.moving) {
+    if (this.moving && this.character) {
       this.character.translateX(this.speed.x);
       this.character.translateZ(this.speed.z);
 
@@ -96,15 +95,30 @@ export default class Character {
   }
 
   dispose () {
-    for (const animation in this.animations) {
-      this.animations[animation].stopFading();
-      this.animations[animation].stop();
-    }
+    this.rightUpLeg.remove(this.colliders[2]);
+    this.leftUpLeg.remove(this.colliders[3]);
+    this.rightLeg.remove(this.colliders[4]);
+    this.leftLeg.remove(this.colliders[5]);
+    this.spine.remove(this.colliders[1]);
+    this.head.remove(this.colliders[0]);
 
     clearTimeout(this.crawlTimeout);
     clearTimeout(this.hitTimeout);
+
+    for (let c = 0; c < this.colliders.length; c++) {
+      this.colliders.splice(c, 1);
+    }
+
+    for (const animation in this.animations) {
+      this.animations[animation].stopFading();
+      this.animations[animation].stop();
+      delete this.animations[animation];
+    }
+
+    delete this.animations;
+    delete this.colliders;
     delete this.character;
-    this.colliders = [];
+    // delete this.mixer;
   }
 
   static setBounds (stage) {

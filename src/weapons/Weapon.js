@@ -68,10 +68,10 @@ export default class Weapon {
 
   // update (delta) { }
 
-  _getEvent (collider) {
-    if (!collider) return 'headshoot';
-    else if (collider === 1) return 'bodyHit';
-    return 'legHit';
+  _getEvent (index) {
+    const collider = index % 6;
+    return !collider ? 'headshoot' :
+      collider === 1 ? 'bodyHit' : 'legHit';
   }
 
   get target () {
