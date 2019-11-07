@@ -33,14 +33,15 @@ export default class Game {
 
     this._animations = null;
     this._rifleLoop = null;
-    this.removing = false;
-    this._zombie = null;
 
     this.player = null;
+    this.enemy = null;
+
     this.enemies = [];
+    this.calls = [];
+
     this.enemyID = 0;
     this.killed = 0;
-    this.calls = [];
 
     this.createStats();
     this.loadAssets();
@@ -64,12 +65,12 @@ export default class Game {
       this.player.loop = loop;
     });
 
-    const enemy = new Enemy(null, null, this.enemyID++, (character, animations) => {
+    const enemy = new Enemy(this.enemyID++, this.enemy, this._animations, (character, animations) => {
       const loop = this.add(enemy.update.bind(enemy));
       this.stage.scene.add(character);
 
       this._animations = animations;
-      this._zombie = character;
+      this.enemy = character;
       enemy.loop = loop;
     });
 
@@ -107,7 +108,6 @@ export default class Game {
   }
 
   checkPlayerDistance () {
-    if (this.removing) return;
     const length = this.enemies.length;
 
     for (let e = 0; e < length; e++) {
@@ -179,10 +179,10 @@ export default class Game {
     const enemy = this.enemies[index];
     const alive = enemy && enemy.alive;
 
-    if (this.removing || !alive) return;
-
-    enemy.headshot();
-    this.removeEnemy(index);
+    if (alive) {
+      enemy.headshot();
+      this.removeEnemy(index);
+    }
   }
 
   onBodyHit (event) {
@@ -190,13 +190,13 @@ export default class Game {
     const enemy = this.enemies[index];
     const alive = enemy && enemy.alive;
 
-    if (this.removing || !alive) return;
+    if (alive) {
+      const hit = this.player.hit;
+      const dead = !enemy.bodyHit(hit);
 
-    const hit = this.player.hit;
-    const dead = !enemy.bodyHit(hit);
-
-    if (dead) {
-      this.removeEnemy(index);
+      if (dead) {
+        this.removeEnemy(index);
+      }
     }
   }
 
@@ -205,19 +205,18 @@ export default class Game {
     const enemy = this.enemies[index];
     const alive = enemy && enemy.alive;
 
-    if (this.removing || !alive) return;
+    if (alive) {
+      const hit = this.player.hit / 2;
+      const dead = !enemy.legHit(hit);
 
-    const hit = this.player.hit / 2;
-    const dead = !enemy.legHit(hit);
-
-    if (dead) {
-      this.removeEnemy(index);
+      if (dead) {
+        this.removeEnemy(index);
+      }
     }
   }
 
   removeEnemy (id) {
     const enemy = this.enemies[id];
-    // this.removing = true;
 
     setTimeout(() => {
       this.stage.scene.remove(enemy.character);
@@ -229,12 +228,11 @@ export default class Game {
       this.enemies.splice(id, 1);
 
       this.addEnemy();
-      // this.removing = false;
     }, 4000);
   }
 
   addEnemy () {
-    const enemy = new Enemy(this._zombie, this._animations, this.enemyID++);
+    const enemy = new Enemy(this.enemyID++, this.enemy, this._animations);
     const loop = this.add(enemy.update.bind(enemy));
 
     enemy.playerPosition = this.playerPosition;

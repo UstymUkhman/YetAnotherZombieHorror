@@ -1,5 +1,3 @@
-import { AnimationMixer } from '@three/animation/AnimationMixer';
-
 import config from '@/assets/characters/player.json';
 import PLAYER from '@/assets/characters/player.glb';
 
@@ -16,10 +14,8 @@ const CAMERA = new Vector3(-1.5, 3, -3.5);
 
 export default class Player extends Character {
   constructor (onLoad) {
-    super(PLAYER, config, (character, animations) => {
+    super(PLAYER, config, character => {
       this._hand = character.getObjectByName('swatRightHand');
-      this.mixer = new AnimationMixer(character);
-      this.createAnimations(animations);
 
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;

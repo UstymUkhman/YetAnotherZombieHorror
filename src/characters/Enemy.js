@@ -1,7 +1,7 @@
 import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
-import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
+import { SkeletonUtils } from '@utils/SkeletonUtils';
 
 import config from '@/assets/characters/enemy.json';
 import ZOMBIE from '@/assets/characters/enemy.glb';
@@ -20,14 +20,18 @@ const colliderMaterial = new MeshBasicMaterial({
 });
 
 export default class Enemy extends Character {
-  constructor (character, animations, id, onLoad) {
+  constructor (id, character, animations, onLoad) {
     if (character) {
-      super('', config);
-      this._setDefaultState(character, animations, id, onLoad);
+      const clone = SkeletonUtils.clone(character);
+      super(ZOMBIE, config, null);
+
+      this.createMixer(clone);
+      this.createAnimations(animations);
+      this._setDefaultState(id, clone, animations, null);
     } else {
       super(
-        ZOMBIE, config, (character, animations) =>
-          this._setDefaultState(character, animations, id, onLoad)
+        ZOMBIE, config, (character, gltfAnimations) =>
+          this._setDefaultState(id, character, gltfAnimations, onLoad)
       );
     }
 
@@ -48,10 +52,7 @@ export default class Enemy extends Character {
     this.moving = false;
   }
 
-  _setDefaultState (character, animations, id, onLoad) {
-    this.mixer = new AnimationMixer(character);
-    this.createAnimations(animations);
-
+  _setDefaultState (id, character, animations, onLoad) {
     this.animations.softAttack.clampWhenFinished = true;
     this.animations.hardAttack.clampWhenFinished = true;
 
@@ -163,8 +164,11 @@ export default class Enemy extends Character {
   }
 
   setRandomPosition () {
-    const z = random(-this.bounds.front, this.bounds.front);
-    const x = random(-this.bounds.side, this.bounds.side);
+    // const z = random(-this.bounds.front, this.bounds.front);
+    // const x = random(-this.bounds.side, this.bounds.side);
+
+    const z = random(10, 20);
+    const x = random(-5, 5);
     this.character.position.set(x, 0, z);
   }
 
@@ -391,8 +395,6 @@ export default class Enemy extends Character {
   }
 
   headshot () {
-    if (!this.alive) return;
-
     const crawling = this.crawling && !this.gettingHit;
     const death = crawling ? 'crawlDeath' : 'headshot';
 

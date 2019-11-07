@@ -105,6 +105,7 @@ module.exports = {
     alias: {
       '@controls': path.resolve('./node_modules/three/examples/jsm/controls'),
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
+      '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
       '@': path.resolve('./src')
     }

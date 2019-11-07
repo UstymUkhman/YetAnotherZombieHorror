@@ -1,4 +1,5 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { gltfLoader } from '@/utils/assetsLoader';
 
 import { camelCase } from '@/utils/string';
@@ -12,7 +13,7 @@ const BOUNDS = {
 
 export default class Character {
   constructor (asset, settings, onLoad) {
-    if (asset) this.load(asset, onLoad);
+    if (onLoad) this.load(asset, onLoad);
     this.speed = { x: 0, z: 0 };
 
     this.settings = settings;
@@ -48,9 +49,17 @@ export default class Character {
 
         gltf.scene.position.set(...this.settings.position);
         gltf.scene.scale.set(...this.settings.scale);
+
+        this.createMixer(gltf.scene);
+        this.createAnimations(gltf.animations);
+
         callback(gltf.scene, gltf.animations);
       }
     });
+  }
+
+  createMixer (character) {
+    this.mixer = new AnimationMixer(character);
   }
 
   createAnimations (clips) {
