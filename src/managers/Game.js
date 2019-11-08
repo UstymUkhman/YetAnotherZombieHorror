@@ -1,5 +1,6 @@
 import Stats from 'three/examples/js/libs/stats.min';
 import { Clock } from '@three/core/Clock';
+import findIndex from 'lodash.findindex';
 import { random } from '@/utils/number';
 
 import Player from '@/characters/Player';
@@ -8,7 +9,6 @@ import Enemy from '@/characters/Enemy';
 import Events from '@/managers/Events';
 import Input from '@/managers/Input';
 
-import findIndex from 'lodash.findindex';
 import Pistol from '@/weapons/Pistol';
 import AK47 from '@/weapons/AK47';
 import Stage from '@/Stage';
@@ -115,13 +115,14 @@ export default class Game {
       const distance = enemyPosition.distanceTo(this.playerPosition);
 
       const attack = enemy.attacking || distance < 1.75;
-      const nextToPlayer = enemy.nextToPlayer || distance < 10;
+      const nextToPlayer = enemy.nextToPlayer || distance < 15;
 
       if (enemy.alive) {
         const next = nextToPlayer && !enemy.nextToPlayer;
 
         if (attack) {
-          enemy.attack();
+          /* const hitDelay = */ enemy.attack();
+          // console.log(hitDelay);
         } else if (next) {
           enemy.scream();
         }

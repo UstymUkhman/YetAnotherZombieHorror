@@ -1,20 +1,10 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
-// import { sRGBEncoding } from '@three/constants';
 import { gltfLoader } from '@/utils/assetsLoader';
 
 import { camelCase } from '@/utils/string';
 import { clamp } from '@/utils/number';
 import to from 'await-to-js';
-
-/* const envMap = [
-  () => import('@/assets/envmap/posx.jpg'),
-  () => import('@/assets/envmap/negx.jpg'),
-  () => import('@/assets/envmap/posy.jpg'),
-  () => import('@/assets/envmap/negy.jpg'),
-  () => import('@/assets/envmap/posz.jpg'),
-  () => import('@/assets/envmap/negz.jpg')
-]; */
 
 const BOUNDS = {
   front: Infinity,
@@ -49,19 +39,12 @@ export default class Character {
 
             child.material = new MeshPhongMaterial({
               map: child.material.map,
-              // envMap: gltf.envMap,
               specular: 0x000000,
               transparent: true,
               skinning: true,
               shininess: 0,
               opacity: 1
             });
-
-            /* if (child.material.map) {
-              child.material.map.encoding = sRGBEncoding;
-            }
-
-            child.material.needsUpdate = true; */
           }
         });
 
@@ -85,6 +68,23 @@ export default class Character {
       const clip = camelCase(clips[c].name);
       this.animations[clip] = this.mixer.clipAction(clips[c]);
     }
+  }
+
+  cloneMaterial (character) {
+    character.traverse(child => {
+      if (child.isMesh) {
+        child.castShadow = true;
+
+        child.material = new MeshPhongMaterial({
+          map: child.material.map,
+          specular: 0x000000,
+          transparent: true,
+          skinning: true,
+          shininess: 0,
+          opacity: 0
+        });
+      }
+    });
   }
 
   setDirection (direction) {

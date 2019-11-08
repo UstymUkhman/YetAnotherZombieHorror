@@ -20,9 +20,9 @@ export default class Enemy extends Character {
     if (character) {
       const clone = SkeletonUtils.clone(character);
       super(ZOMBIE, config, null);
-      // clone.visible = true;
 
       this.createMixer(clone);
+      this.cloneMaterial(clone);
       this.createAnimations(animations);
       this._setDefaultState(id, clone, animations, null);
     } else {
@@ -189,6 +189,25 @@ export default class Enemy extends Character {
     }, 250);
   } */
 
+  walk () {
+    if (!this.alive || this.crawling) return;
+
+    this.currentAnimation.crossFadeTo(this.animations.walk, 0.25, true);
+    this.animations.walk.play();
+
+    setTimeout(() => {
+      this.moving = true;
+      this.running = false;
+      this.attacking = false;
+
+      this.lastAnimation = 'walk';
+      this.currentAnimation.stop();
+
+      this.setDirection('Walking');
+      this.currentAnimation = this.animations.walk;
+    }, 250);
+  }
+
   scream () {
     if (!this.alive || this.crawling) return;
 
@@ -232,14 +251,18 @@ export default class Enemy extends Character {
     }, 250);
   }
 
-  attack (hard = false) {
-    if (!this.alive || this.attacking) return;
+  attack () {
+    if (!this.alive || this.attacking) return 0;
+
+    const hard = this.health > 50 && Math.random() < 0.5;
+    const delay = this.crawling ? 2200 : hard ? 3000 : 2500;
+    const hitDelay = this.crawling ? 250 : hard ? 750 : 1000;
 
     const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
     const lastAnimation = this.crawling ? 'crawl' : this.lastAnimation;
-    const delay = this.crawling ? 2200 : hard ? 4400 : 2500;
+    const duration = this.crawling ? 0.5 : 0.166;
 
-    this.currentAnimation.crossFadeTo(this.animations[attack], 0.166, true);
+    this.currentAnimation.crossFadeTo(this.animations[attack], duration, true);
     this.animations[attack].play();
 
     this.attacking = true;
@@ -247,12 +270,15 @@ export default class Enemy extends Character {
     this.moving = false;
 
     setTimeout(() => {
+      this.setDirection('Idle');
       this.lastAnimation = attack;
       this.currentAnimation.stop();
 
       this.currentAnimation = this.animations[attack];
       setTimeout(() => { this[lastAnimation](); }, delay);
-    }, 166);
+    }, duration * 1000);
+
+    return hitDelay;
   }
 
   bodyHit (amount) {
@@ -333,8 +359,9 @@ export default class Enemy extends Character {
 
   crawl () {
     if (!this.alive) return;
+    const duration = this.lastAnimation === 'legHit' ? 3 : 0.5;
 
-    this.currentAnimation.crossFadeTo(this.animations.crawling, 3, true);
+    this.currentAnimation.crossFadeTo(this.animations.crawling, duration, true);
     this.animations.crawling.play();
     this.setDirection('Falling');
 
@@ -346,9 +373,11 @@ export default class Enemy extends Character {
 
     this.crawlTimeout = setTimeout(() => {
       this.lastAnimation = 'crawl';
+      this.currentAnimation.stop();
+
       this.setDirection('Crawling');
       this.currentAnimation = this.animations.crawling;
-    }, 3000);
+    }, duration * 1000);
   }
 
   _checkIfAlive () {
@@ -412,7 +441,6 @@ export default class Enemy extends Character {
       opacity: 1,
 
       begin: () => {
-        character.material.opacity = 0;
         this.character.visible = true;
       }
     });
