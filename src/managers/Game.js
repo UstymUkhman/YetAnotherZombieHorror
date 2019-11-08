@@ -14,7 +14,7 @@ import AK47 from '@/weapons/AK47';
 import Stage from '@/Stage';
 
 export default class Game {
-  constructor () {
+  constructor (/* fps = 60 */) {
     this._onHeadshoot = this.onHeadshoot.bind(this);
     this._onBodyHit = this.onBodyHit.bind(this);
     this._onLoaded = this.onLoaded.bind(this);
@@ -38,6 +38,8 @@ export default class Game {
     this.player = null;
     this.enemy = null;
 
+    // this.frame = Date.now();
+    // this.fps = 1000 / fps;
     this.enemies = [];
     this.enemyID = 0;
     this.killed = 0;
@@ -244,16 +246,18 @@ export default class Game {
 
   loop () {
     this.stats.begin();
-    const firstCall = this.visibleRifle ? -4 : -3;
-    const calls = this.calls.size + firstCall;
+    // const now = Date.now();
+    // const elapse = now - this.frame;
+
+    // requestAnimationFrame(this.loop.bind(this));
+    // if (elapse < this.fps) return;
+
     const delta = this.clock.getDelta();
+    const calls = this.calls.values();
 
-    for (let c = firstCall - 1; c < calls; c++) {
-      const call = this.calls.get(c);
-      if (call) call(delta);
-    }
-
+    for (const call of calls) call(delta);
     requestAnimationFrame(this.loop.bind(this));
+    // this.frame = now - (elapse % this.fps);
     this.stats.end();
   }
 
