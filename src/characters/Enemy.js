@@ -11,6 +11,7 @@ import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { random } from '@/utils/number';
+import anime from 'animejs';
 
 const colliderMaterial = new MeshBasicMaterial({ visible: false });
 
@@ -19,6 +20,7 @@ export default class Enemy extends Character {
     if (character) {
       const clone = SkeletonUtils.clone(character);
       super(ZOMBIE, config, null);
+      // clone.visible = true;
 
       this.createMixer(clone);
       this.createAnimations(animations);
@@ -43,7 +45,7 @@ export default class Enemy extends Character {
     this.attacking = false;
     this.crawling = false;
     this.running = false;
-    this.moving = false;
+    this.moving = true;
   }
 
   _setDefaultState (id, character, animations, onLoad) {
@@ -69,11 +71,8 @@ export default class Enemy extends Character {
     this.animations.scream.setLoop(LoopOnce);
     this.animations.hit.setLoop(LoopOnce);
 
-    // this.currentAnimation = this.animations.idle;
-    // console.log(this.animations);
-    // this.lastAnimation = 'idle';
-
     this.currentAnimation = this.animations.walk;
+    this.setDirection('Walking');
     this.currentAnimation.play();
     this.lastAnimation = 'walk';
 
@@ -86,6 +85,7 @@ export default class Enemy extends Character {
     this._addLegsCollider(character);
 
     if (onLoad) {
+      this._mesh.material.opacity = 0;
       onLoad(character, animations);
     }
   }
@@ -361,6 +361,7 @@ export default class Enemy extends Character {
     const death = this.crawling ? 'crawlDeath' : 'death';
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
     this.animations[death].play();
+    this.fadeOut(this.crawling);
 
     this.attacking = false;
     this.running = false;
@@ -384,8 +385,9 @@ export default class Enemy extends Character {
       clearTimeout(this.crawlTimeout);
     }
 
-    this.currentAnimation.crossFadeTo(this.animations[death], 0.25, true);
+    this.currentAnimation.crossFadeTo(this.animations[death], 0.5, true);
     this.animations[death].play();
+    this.fadeOut(crawling);
 
     this.attacking = false;
     this.running = false;
@@ -397,7 +399,40 @@ export default class Enemy extends Character {
       this.setDirection('Idle');
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
-    }, 250);
+    }, 500);
+  }
+
+  fadeIn () {
+    const character = this._mesh;
+
+    anime({
+      targets: character.material,
+      easing: 'linear',
+      duration: 1000,
+      opacity: 1,
+
+      begin: () => {
+        character.material.opacity = 0;
+        this.character.visible = true;
+      }
+    });
+  }
+
+  fadeOut (crawling) {
+    const delay = crawling ? 1500 : 3500;
+    const character = this._mesh;
+
+    anime({
+      targets: character.material,
+      easing: 'linear',
+      duration: 1000,
+      delay: delay,
+      opacity: 0,
+
+      complete: () => {
+        this.character.visible = false;
+      }
+    });
   }
 
   update (delta) {
@@ -411,5 +446,9 @@ export default class Enemy extends Character {
   get _direction () {
     let direction = this.running ? 'Running' : this.moving ? 'Walking' : 'Idle';
     return this.crawling ? this.gettingHit ? 'Idle' : 'Crawling' : direction;
+  }
+
+  get _mesh () {
+    return this.character.children[0].children[1];
   }
 };

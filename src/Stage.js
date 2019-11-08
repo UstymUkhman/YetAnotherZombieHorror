@@ -2,10 +2,12 @@ import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { DirectionalLight } from '@three/lights/DirectionalLight';
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
+
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { AmbientLight } from '@three/lights/AmbientLight';
 import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
+import { ReinhardToneMapping } from '@three/constants';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
@@ -104,8 +106,13 @@ export default class Playground {
   createRenderer () {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+    this.renderer.toneMapping = ReinhardToneMapping;
     this.renderer.setSize(this.width, this.height);
+
+    this.renderer.toneMappingExposure = 1.25;
     this.renderer.shadowMap.enabled = true;
+    this.renderer.setClearColor(FOG, 1.0);
 
     this.element = this.renderer.domElement;
     document.body.appendChild(this.element);

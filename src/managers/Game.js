@@ -95,13 +95,13 @@ export default class Game {
   setCharacters () {
     this.playerPosition = this.player.character.position;
     this.enemies[0].playerPosition = this.playerPosition;
-    // this.enemies[0].character.lookAt(this.playerPosition);
 
     this.calls.set(-2, this.checkPlayerDistance.bind(this));
 
     setTimeout(() => {
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
+      this.enemies[0].fadeIn();
       this.stage.createGrid();
     }, 100);
   }
@@ -214,7 +214,7 @@ export default class Game {
 
       this.spawnEnemy();
       this.spawnEnemy();
-    }, 4000);
+    }, 5000);
   }
 
   spawnEnemy () {
@@ -222,6 +222,7 @@ export default class Game {
     this.calls.set(this.enemyID, enemy.update.bind(enemy));
     enemy.playerPosition = this.playerPosition;
     enemy.setRandomPosition();
+    enemy.fadeIn();
 
     this.enemyID++;
     this.enemies.push(enemy);

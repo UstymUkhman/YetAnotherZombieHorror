@@ -111,6 +111,7 @@ const gltfLoader = (file, envMap = null) => {
         }
 
         resolve({
+          animations: gltf.animations,
           envMap: textureCube,
           scene: gltf.scene
         });
