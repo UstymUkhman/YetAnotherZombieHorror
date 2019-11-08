@@ -10,7 +10,7 @@ import { GridHelper } from '@three/helpers/GridHelper';
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 import { Color } from '@three/math/Color';
-import { Fog } from '@three/scenes/Fog';
+// import { Fog } from '@three/scenes/Fog';
 import Input from '@/managers/Input';
 
 const GROUND = 0x888888;
@@ -40,7 +40,7 @@ export default class Playground {
   createScene () {
     this.scene = new Scene();
     this.scene.background = new Color(FOG);
-    this.scene.fog = new Fog(FOG, 1, 33);
+    // this.scene.fog = new Fog(FOG, 1, 33);
   }
 
   createCamera () {

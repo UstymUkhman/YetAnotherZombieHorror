@@ -29,16 +29,16 @@ export default class Game {
     Enemy.setBounds(this._bounds);
     Player.setBounds(this._bounds);
 
-    this._clock = new Clock();
+    this.clock = new Clock();
     this.stage = new Stage();
+    this.calls = new Map();
 
+    this.visibleRifle = false;
     this.animations = null;
     this.player = null;
     this.enemy = null;
 
     this.enemies = [];
-    this.calls = [];
-
     this.enemyID = 0;
     this.killed = 0;
 
@@ -58,17 +58,18 @@ export default class Game {
     this.ak47 = new AK47(this.stage.camera);
 
     this.player = new Player(character => {
-      this.add(this.player.update.bind(this.player));
+      this.calls.set(-1, this.player.update.bind(this.player));
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
     });
 
-    const enemy = new Enemy(this.enemyID++, this.enemy, this.animations, (character, animations) => {
-      this.add(enemy.update.bind(enemy));
+    const enemy = new Enemy(this.enemyID, this.enemy, this.animations, (character, animations) => {
+      this.calls.set(this.enemyID, enemy.update.bind(enemy));
       this.stage.scene.add(character);
 
       this.animations = animations;
       this.enemy = character;
+      this.enemyID++;
     });
 
     this.enemies.push(enemy);
@@ -80,12 +81,12 @@ export default class Game {
 
     setTimeout(() => {
       this.player.setWeapon(colliders, this.pistol, false);
-      this.add(Input.update.bind(Input));
+      this.calls.set(-4, Input.update.bind(Input));
       Input.player = this.player;
 
       this.setCharacters();
       this.stage.createGrid();
-      this.add(this.stage.render.bind(this.stage));
+      this.calls.set(-3, this.stage.render.bind(this.stage));
     }, 100);
   }
 
@@ -94,8 +95,7 @@ export default class Game {
     this.enemies[0].playerPosition = this.playerPosition;
     this.enemies[0].character.lookAt(this.playerPosition);
 
-    this._checkPlayerDistance = this.checkPlayerDistance.bind(this);
-    this._distanceLoop = this.add(this._checkPlayerDistance);
+    this.calls.set(-2, this.checkPlayerDistance.bind(this));
 
     setTimeout(() => {
       const grid = this.stage.scene.children.length - 1;
@@ -139,9 +139,10 @@ export default class Game {
     const z = random(-this._bounds.front, this._bounds.front);
     const x = random(-this._bounds.side, this._bounds.side);
 
+    this.calls.set(-5, this.rifleRotation.bind(this));
     this.ak47.arm.position.set(x, 1.75, z);
     this.stage.scene.add(this.ak47.arm);
-    this.add(this.rifleRotation);
+    this.visibleRifle = true;
   }
 
   rifleRotation () {
@@ -152,7 +153,8 @@ export default class Game {
 
     if (distance < 2.5) {
       const colliders = this.getEnemyColliders();
-      this.remove(this.rifleRotation);
+      this.visibleRifle = false;
+      this.calls.delete(-4);
 
       this.ak47.setToPlayer();
       this.player.setWeapon(colliders, this.ak47, true);
@@ -206,7 +208,7 @@ export default class Game {
       const enemy = this.enemies[index];
 
       this.stage.scene.remove(enemy.character);
-      // this.remove(enemy.update);
+      this.calls.delete(enemy.id);
       enemy.dispose();
       this.killed++;
 
@@ -219,10 +221,11 @@ export default class Game {
   }
 
   addEnemy () {
-    const enemy = new Enemy(this.enemyID++, this.enemy, this.animations);
+    const enemy = new Enemy(this.enemyID, this.enemy, this.animations);
+    this.calls.set(this.enemyID, enemy.update.bind(enemy));
     enemy.playerPosition = this.playerPosition;
-    this.add(enemy.update.bind(enemy));
     enemy.setRandomPosition();
+    this.enemyID++;
 
     this.enemies.push(enemy);
     this.stage.scene.add(enemy.character);
@@ -239,30 +242,35 @@ export default class Game {
     return colliders;
   }
 
-  add (call) {
-    this.calls.push(call);
-  }
-
   loop () {
     this.stats.begin();
-    const delta = this._clock.getDelta();
+    const firstCall = this.visibleRifle ? -4 : -3;
+    const calls = this.calls.size + firstCall;
+    const delta = this.clock.getDelta();
 
-    for (let c = 0; c < this.calls.length; c++) {
-      this.calls[c](delta);
+    for (let c = firstCall - 1; c < calls; c++) {
+      const call = this.calls.get(c);
+      if (call) call(delta);
     }
 
     requestAnimationFrame(this.loop.bind(this));
     this.stats.end();
   }
 
-  remove (call) {
-    const index = this.calls.indexOf(call);
-    console.log('Remove call', index);
-    this.calls.splice(index, 1);
-  }
-
   end () {
     document.body.removeChild(this.stats.domElement);
+    // Input.destroy.call(Input);
+    this.player.dispose();
+    this.stage.destroy();
+    this.calls.clear();
+
+    for (let e = 0; e < this.enemies.length; e++) {
+      this.enemies[e].dispose();
+      delete this.enemies[e];
+    }
+
+    delete this.player;
+    delete this.stage;
     delete this.stats;
   }
 };
