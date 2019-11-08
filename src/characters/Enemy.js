@@ -209,7 +209,7 @@ export default class Enemy extends Character {
   }
 
   scream () {
-    if (!this.alive || this.crawling) return;
+    if (!this.alive || this.crawling || this.gettingHit) return;
 
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
