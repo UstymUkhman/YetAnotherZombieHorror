@@ -95,7 +95,7 @@ export default class Game {
   setCharacters () {
     this.playerPosition = this.player.character.position;
     this.enemies[0].playerPosition = this.playerPosition;
-    this.enemies[0].character.lookAt(this.playerPosition);
+    // this.enemies[0].character.lookAt(this.playerPosition);
 
     this.calls.set(-2, this.checkPlayerDistance.bind(this));
 
@@ -116,22 +116,17 @@ export default class Game {
 
       const attack = enemy.attacking || distance < 1.75;
       const nextToPlayer = enemy.nextToPlayer || distance < 10;
-      const visiblePlayer = enemy.visiblePlayer || distance < 20;
 
       if (enemy.alive) {
-        const visible = visiblePlayer && !enemy.visiblePlayer;
         const next = nextToPlayer && !enemy.nextToPlayer;
 
         if (attack) {
           enemy.attack();
         } else if (next) {
           enemy.scream();
-        } else if (visible) {
-          enemy.walk();
         }
       }
 
-      enemy.visiblePlayer = visiblePlayer;
       enemy.nextToPlayer = nextToPlayer;
       enemy.attacking = attack;
     }
@@ -217,18 +212,18 @@ export default class Game {
       delete this.enemies[index];
       this.enemies.splice(index, 1);
 
-      this.addEnemy();
-      this.addEnemy();
+      this.spawnEnemy();
+      this.spawnEnemy();
     }, 4000);
   }
 
-  addEnemy () {
+  spawnEnemy () {
     const enemy = new Enemy(this.enemyID, this.enemy, this.animations);
     this.calls.set(this.enemyID, enemy.update.bind(enemy));
     enemy.playerPosition = this.playerPosition;
     enemy.setRandomPosition();
-    this.enemyID++;
 
+    this.enemyID++;
     this.enemies.push(enemy);
     this.stage.scene.add(enemy.character);
     this.player.weapon.targets = this.getEnemyColliders();

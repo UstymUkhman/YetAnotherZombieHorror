@@ -12,12 +12,7 @@ import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { random } from '@/utils/number';
 
-const colliderMaterial = new MeshBasicMaterial({
-  // transparent: true,
-  // color: 0xFF0000,
-  // opacity: 0.5,
-  visible: false
-});
+const colliderMaterial = new MeshBasicMaterial({ visible: false });
 
 export default class Enemy extends Character {
   constructor (id, character, animations, onLoad) {
@@ -36,7 +31,6 @@ export default class Enemy extends Character {
     }
 
     this.playerPosition = new Vector3();
-    this.visiblePlayer = false;
     this.nextToPlayer = false;
     this.crawlTimeout = null;
     this.gettingHit = false;
@@ -75,11 +69,13 @@ export default class Enemy extends Character {
     this.animations.scream.setLoop(LoopOnce);
     this.animations.hit.setLoop(LoopOnce);
 
+    // this.currentAnimation = this.animations.idle;
     // console.log(this.animations);
+    // this.lastAnimation = 'idle';
 
-    this.currentAnimation = this.animations.idle;
+    this.currentAnimation = this.animations.walk;
     this.currentAnimation.play();
-    this.lastAnimation = 'idle';
+    this.lastAnimation = 'walk';
 
     this.character = character;
     this.colliders = [];
@@ -174,7 +170,7 @@ export default class Enemy extends Character {
     this.character.position.set(x, 0, z);
   }
 
-  idle () {
+  /* idle () {
     if (!this.alive) return;
 
     this.currentAnimation.crossFadeTo(this.animations.idle, 0.25, true);
@@ -191,26 +187,7 @@ export default class Enemy extends Character {
       this.setDirection('Idle');
       this.currentAnimation = this.animations.idle;
     }, 250);
-  }
-
-  walk () {
-    if (!this.alive || this.crawling) return;
-
-    this.currentAnimation.crossFadeTo(this.animations.walk, 0.25, true);
-    this.animations.walk.play();
-
-    setTimeout(() => {
-      this.moving = true;
-      this.running = false;
-      this.attacking = false;
-
-      this.lastAnimation = 'walk';
-      this.currentAnimation.stop();
-
-      this.setDirection('Walking');
-      this.currentAnimation = this.animations.walk;
-    }, 250);
-  }
+  } */
 
   scream () {
     if (!this.alive || this.crawling) return;
@@ -426,7 +403,7 @@ export default class Enemy extends Character {
   update (delta) {
     super.update(delta);
 
-    if (/* this.visiblePlayer && */ this.alive) {
+    if (this.alive) {
       this.character.lookAt(this.playerPosition);
     }
   }
