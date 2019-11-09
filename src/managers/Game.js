@@ -79,10 +79,11 @@ export default class Game {
 
   onLoaded () {
     Events.remove('loaded');
-    const colliders = this.getEnemyColliders();
 
     setTimeout(() => {
+      const colliders = this.getEnemyColliders();
       this.player.setWeapon(colliders, this.pistol, false);
+
       this.calls.set(-4, Input.update.bind(Input));
       Input.player = this.player;
 
@@ -212,6 +213,8 @@ export default class Game {
 
       delete this.enemies[index];
       this.enemies.splice(index, 1);
+
+      // console.log(this.enemyID, this.killed);
 
       this.spawnEnemy();
       this.spawnEnemy();

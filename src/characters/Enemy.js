@@ -45,6 +45,7 @@ export default class Enemy extends Character {
     this.attacking = false;
     this.crawling = false;
     this.running = false;
+    this.hitTime = null;
     this.moving = true;
   }
 
@@ -214,6 +215,7 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations.scream, 0.233, true);
     this.animations.scream.play();
     this.setDirection('Idle');
+    this._cancelHit();
 
     this.attacking = false;
     this.screaming = true;
@@ -237,6 +239,7 @@ export default class Enemy extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations.run, 0.25, true);
     this.animations.run.play();
+    this._cancelHit();
 
     setTimeout(() => {
       this.moving = true;
@@ -286,14 +289,17 @@ export default class Enemy extends Character {
     this._checkIfAlive();
 
     if (this.alive && !this.crawling) {
+      const now = Date.now();
+      const interval = now - this.hitTime;
+      const crossFade = interval < 1250 && interval > 1000;
+
+      if (interval < 500 || crossFade) return this.alive;
+
       const setIdle = this.moving || this.running || this.screaming;
       const direction = this._direction;
 
-      this.animations.hit.stopFading();
-      clearTimeout(this.hitTimeout);
-      clearTimeout(this.hitFadeOut);
       clearTimeout(this.runTimeout);
-      this.animations.hit.stop();
+      this._cancelHit();
 
       this.screaming = false;
       this.setDirection('Idle');
@@ -307,6 +313,7 @@ export default class Enemy extends Character {
 
       this.animations.hit.play();
       this.gettingHit = true;
+      this.hitTime = now;
 
       this.hitFadeOut = setTimeout(() => {
         this.animations.hit.fadeOut(0.25);
@@ -334,8 +341,10 @@ export default class Enemy extends Character {
     if (this.alive && !this.crawling) {
       this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
       this.animations.falling.play();
+
       clearTimeout(this.runTimeout);
       this.gettingHit = true;
+      this._cancelHit();
 
       setTimeout(() => {
         this.moving = true;
@@ -384,6 +393,13 @@ export default class Enemy extends Character {
     if (!this.alive) return;
     this.alive = this.alive && this.health > 0;
     if (!this.alive) this.death();
+  }
+
+  _cancelHit () {
+    this.animations.hit.stopFading();
+    clearTimeout(this.hitTimeout);
+    clearTimeout(this.hitFadeOut);
+    this.animations.hit.stop();
   }
 
   death () {
