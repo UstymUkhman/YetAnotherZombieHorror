@@ -25,7 +25,7 @@ export default class Character {
     this.alive = true;
 
     this.mixer = null;
-    this.health = 1000;
+    this.health = 100;
   }
 
   load (asset, callback) {

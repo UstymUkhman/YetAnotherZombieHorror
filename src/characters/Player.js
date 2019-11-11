@@ -114,8 +114,7 @@ export default class Player extends Character {
 
     if (this.running) {
       if (!direction.includes('Forward')) {
-        this.running = false;
-        this.run(directions);
+        this.run(directions, false);
       }
 
       return;
@@ -149,7 +148,7 @@ export default class Player extends Character {
     return direction || 'Idle';
   }
 
-  run (directions, running = this.running) {
+  run (directions, running) {
     this.running = running;
     if (this.aiming) return;
     const run = `${this.hasRifle ? 'rifle' : 'pistol'}Run`;
@@ -263,7 +262,7 @@ export default class Player extends Character {
     }
 
     if (move) {
-      this.running ? this.run(directions, directions[0]) : this.move(directions);
+      this.running ? this.run(directions, !!directions[0]) : this.move(directions);
     }
 
     this._aimCameraAnimation(aiming, duration, animationDelay);

@@ -67,7 +67,9 @@ class Input {
     event.preventDefault();
 
     if (event.which === 1) {
-      this._mouseDown = true;
+      const aiming = this.player.running && this.player.aiming;
+      this._mouseDown = !this.player.running || aiming;
+
     } else if (event.which === 3) {
       this.mouseRight = Date.now();
       this.player.aim(true, this.moves);
