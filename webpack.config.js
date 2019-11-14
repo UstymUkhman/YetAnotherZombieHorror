@@ -61,7 +61,7 @@ module.exports = {
 
       options: {
         emitCss: true,
-        hotReload: true
+        hotReload: false,
       }
     }, {
       test: /\.css$/,
@@ -116,7 +116,7 @@ module.exports = {
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
     mainFields: ['svelte', 'browser', 'module', 'main'],
-    extensions: ['.svelte', '.js', '.json'],
+    extensions: ['.svelte', '.mjs', '.js', '.json'],
 
     alias: {
       '@controls': path.resolve('./node_modules/three/examples/jsm/controls'),

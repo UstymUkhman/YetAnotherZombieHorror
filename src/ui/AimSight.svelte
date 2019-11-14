@@ -1,31 +1,63 @@
-<div class="aim-sight">
-  <div class="sight-line horizontal"></div>
-  <div class="sight-line vertical"></div>
+<div class="aim-sight {expanded} {hidden}">
+  <div class="line horizontal right"></div>
+  <div class="line horizontal left"></div>
+
+  <div class="line vertical bottom"></div>
+  <div class="line vertical top"></div>
 </div>
+
+<script>
+  import Events from '@/managers/Events';
+  import { onDestroy } from 'svelte';
+
+  Events.add('shoot', animateAimSight);
+  Events.add('run', toggleAimSight);
+
+  export let expanded = '';
+  export let hidden = '';
+
+  function animateAimSight (event) {
+    expanded = event.data ? 'expanded' : '';
+    setTimeout(() => { expanded = ''; }, 100);
+  }
+
+  function toggleAimSight (event) {
+    hidden = event.data ? 'hidden' : '';
+  }
+
+  onDestroy(() => {
+    Events.remove('shoot', animateAimSight);
+    Events.remove('run', toggleAimSight);
+	});
+</script>
 
 <style>
 .aim-sight {
   pointer-events: none;
   position: absolute;
-  display: block;
 
+  height: 3.125vw;
+  width: 3.125vw;
+
+  display: block;
   margin: auto;
   z-index: 1;
 
-  height: 3vw;
-  width: 3vw;
-
   bottom: 0;
   right: 0;
   left: 0;
   top: 0;
 }
 
-.sight-line {
+.line {
+  transition: transform 0.1s ease-out, opacity 0.1s;
+  transform: translate3d(0, 0, 0);
   background-color: white;
+
   position: absolute;
   display: block;
   margin: auto;
+  opacity: 1;
 
   bottom: 0;
   right: 0;
@@ -33,13 +65,70 @@
   top: 0;
 }
 
-.sight-line.horizontal {
+.line.horizontal {
   height: 2px;
-  width: 100%;
+  width: 45%;
 }
 
-.sight-line.vertical {
-  height: 100%;
+.line.vertical {
+  height: 45%;
   width: 2px;
+}
+
+.line.bottom {
+  bottom: 0;
+  top: auto;
+}
+
+.line.right {
+  left: auto;
+  right: 0;
+}
+
+.line.left {
+  right: auto;
+  left: 0;
+}
+
+.line.top {
+  bottom: auto;
+  top: 0;
+}
+
+.aim-sight.expanded .line.bottom {
+  transform: translate3d(0, 25%, 0);
+}
+
+.aim-sight.expanded .line.right {
+  transform: translate3d(25%, 0, 0);
+}
+
+.aim-sight.expanded .line.left {
+  transform: translate3d(-25%, 0, 0);
+}
+
+.aim-sight.expanded .line.top {
+  transform: translate3d(0, -25%, 0);
+}
+
+.aim-sight.hidden .line.bottom {
+  transform: translate3d(0, 50%, 0);
+}
+
+.aim-sight.hidden .line.right {
+  transform: translate3d(50%, 0, 0);
+}
+
+.aim-sight.hidden .line.left {
+  transform: translate3d(-50%, 0, 0);
+}
+
+.aim-sight.hidden .line.top {
+  transform: translate3d(0, -50%, 0);
+}
+
+.aim-sight.hidden .line {
+  transition-duration: 0.3s;
+  opacity: 0;
 }
 </style>

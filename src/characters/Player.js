@@ -3,9 +3,10 @@ import PLAYER from '@/assets/characters/player.glb';
 
 import { Object3D } from '@three/core/Object3D';
 import Character from '@/characters/Character';
-
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
+
+import Events from '@/managers/Events';
 import anime from 'animejs';
 
 const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
@@ -155,7 +156,9 @@ export default class Player extends Character {
 
     this.moving = running;
     this._runCameraAnimation();
+
     this.shakeDirection = ~~running;
+    Events.dispatch('run', running);
 
     setTimeout(() => {
       this._shakeCameraAnimation();
@@ -235,6 +238,10 @@ export default class Player extends Character {
     this.aiming = aiming;
     let duration = 400;
 
+    if (this.running) {
+      Events.dispatch('run', !aiming);
+    }
+
     if (cancelAim) {
       this._cancelAimAnimation(aimElapse < 100);
       duration = Math.min(aimElapse, 400);
@@ -311,6 +318,7 @@ export default class Player extends Character {
 
   shoot (now) {
     this.shooting = now;
+    Events.dispatch('shoot', now);
 
     if (now) {
       this.weapon.shoot(this.character.position);
