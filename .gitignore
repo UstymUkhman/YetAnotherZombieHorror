@@ -7,13 +7,14 @@ pids
 
 .idea
 .vscode
-
-build/*.map
-build/assets/gltf/*
-build/assets/envmap/*
+.DS_Store
 
 node_modules
+public/*.map
 src/assets/*/*
 
+yarn.lock
 .lock-wscript
+yarn-error.lock
+package-lock.json
 .sublime-workspace

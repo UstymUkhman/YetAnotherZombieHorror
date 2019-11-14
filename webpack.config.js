@@ -4,6 +4,7 @@ const config = require('./package.json');
 
 const build = require('yargs').argv.env === 'build';
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const HOST = process.env.HOST;
 const PORT = process.env.PORT && Number(process.env.PORT);
@@ -55,6 +56,20 @@ module.exports = {
         formatter: require('eslint-friendly-formatter')
       }
     }, {
+      test: /\.svelte$/,
+      loader: 'svelte-loader',
+
+      options: {
+        emitCss: true,
+        hotReload: true
+      }
+    }, {
+      test: /\.css$/,
+      use: [
+        build ? MiniCssExtractPlugin.loader : 'style-loader',
+        'css-loader'
+      ]
+    }, {
       test: /\.(js|jsx)$/,
       loader: 'babel-loader',
       include: [
@@ -100,7 +115,8 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.js', '.json'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
+    extensions: ['.svelte', '.js', '.json'],
 
     alias: {
       '@controls': path.resolve('./node_modules/three/examples/jsm/controls'),
@@ -112,6 +128,10 @@ module.exports = {
   },
 
   plugins: [
+    new MiniCssExtractPlugin({
+			filename: 'main.css'
+		}),
+
     new webpack.DefinePlugin({
       BROWSER_SUPPORTS_HTML5: true,
       PRODUCTION: JSON.stringify(build),
@@ -132,10 +152,10 @@ module.exports = {
     library: build ? config.name : '',
     publicPath: build ? './' : '/',
 
-    filename: `${config.name}.min.js`,
-    path: path.resolve('./build'),
+    path: path.resolve('./public'),
     libraryExport: 'default',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+    filename: 'main.js'
   },
 
   optimization: {
@@ -148,7 +168,7 @@ module.exports = {
   },
 
   devServer: {
-    contentBase: path.join(__dirname, './build'),
+    contentBase: path.join(__dirname, './public'),
     clientLogLevel: 'warning',
     host: HOST || 'localhost',
     watchContentBase: true,

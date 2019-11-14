@@ -5,9 +5,20 @@
 		}
 	],
 	"settings": {
+		"svelte.plugin.svelte.enable": true,
 		"git.ignoreLimitWarning": true,
+		"eslint.autoFixOnSave": false,
+
+		"eslint.validate": [
+			"javascript", {
+				"language": "svelte",
+				"autoFix": false
+			}
+    ],
+
 		"js-import.alias": {
 			"@three": "three/src",
+			"svelte": "svelte",
 			"@": "/src"
 		}
   }

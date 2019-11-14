@@ -1,4 +1,15 @@
-html, body {
+<main id="game">
+  <AimSight />
+</main>
+
+<script>
+  import AimSight from '@/ui/AimSight';
+  import Game from '@/managers/Game';
+  export const game = new Game();
+</script>
+
+<style>
+:global(html, body) {
   -webkit-text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
@@ -29,7 +40,7 @@ html, body {
   top: 0;
 }
 
-canvas {
+:global(canvas) {
   position: absolute;
   display: block;
 
@@ -42,42 +53,4 @@ canvas {
   left: 0;
   top: 0;
 }
-
-.aim-container {
-  pointer-events: none;
-  position: absolute;
-  display: block;
-
-  margin: auto;
-  z-index: 1;
-
-  height: 3vw;
-  width: 3vw;
-
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-}
-
-.aim-line {
-  background-color: white;
-  position: absolute;
-  display: block;
-  margin: auto;
-
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-}
-
-.aim-line.horizontal {
-  height: 2px;
-  width: 100%;
-}
-
-.aim-line.vertical {
-  height: 100%;
-  width: 2px;
-}
+</style>

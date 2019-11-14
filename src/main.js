@@ -1,3 +1,5 @@
-import Game from '@/managers/Game';
-// eslint-disable-next-line no-new
-new Game();
+import Game from '@/ui/Game';
+
+export default new Game({
+  target: document.body
+});

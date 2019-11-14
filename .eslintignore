@@ -1,2 +1,2 @@
-build/**/*.*
+public/**/*.*
 webpack.config.js
