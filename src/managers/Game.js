@@ -85,6 +85,7 @@ export default class Game {
       this.player.setWeapon(colliders, this.pistol, false);
 
       this.calls.set(-4, Input.update.bind(Input));
+      this.player.lastDirections = Input.moves;
       Input.player = this.player;
 
       this.setCharacters();
@@ -122,8 +123,11 @@ export default class Game {
         const next = nextToPlayer && !enemy.nextToPlayer;
 
         if (attack) {
-          /* const hitDelay = */ enemy.attack();
-          // console.log(hitDelay);
+          const hitDelay = enemy.attack();
+
+          if (hitDelay && !this.player.hitting) {
+            this.player.hit(enemyPosition, hitDelay);
+          }
         } else if (next) {
           enemy.scream();
         }
@@ -151,7 +155,7 @@ export default class Game {
     const alive = enemy && enemy.alive;
 
     if (alive) {
-      const hit = this.player.hit;
+      const hit = this.player.hitAmount;
       const dead = !enemy.bodyHit(hit);
 
       if (dead) {
@@ -166,7 +170,7 @@ export default class Game {
     const alive = enemy && enemy.alive;
 
     if (alive) {
-      const hit = this.player.hit / 2;
+      const hit = this.player.hitAmount / 2;
       const dead = !enemy.legHit(hit);
 
       if (dead) {

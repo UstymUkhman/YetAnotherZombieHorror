@@ -70,10 +70,10 @@ class Input {
       const aiming = this.player.running && this.player.aiming;
       this._mouseDown = !this.player.running || aiming;
 
-    } else if (event.which === 3) {
+    } else if (event.which === 3 && !this.player.hitting) {
       this.mouseRight = Date.now();
-      this.player.aim(true, this.moves);
       this.rotationX.speed = 5;
+      this.player.aim(true);
     }
   }
 
@@ -103,8 +103,8 @@ class Input {
       this.rotationY.target = y;
 
       this.rightTimeout = setTimeout(() => {
-        this.player.aim(false, this.moves);
         this.rotationX.speed = 15;
+        this.player.aim(false);
       }, delay);
     }
   }
@@ -243,7 +243,7 @@ class Input {
     this.character.rotation.x = this.rotationY.value;
     this.camera.rotation.x = this.rotationY.value;
 
-    if (this._mouseDown) {
+    if (this._mouseDown && !this.player.hitting) {
       this._onMousePress();
     }
   }
