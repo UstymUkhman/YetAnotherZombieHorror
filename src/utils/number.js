@@ -7,6 +7,11 @@ const map = (value, min, max) => clamp((value - min) / (max - min), 0, 1);
 const random = (min, max) => Math.random() * (max - min) + min;
 const lerp = (v0, v1, t) => v0 + t * (v1 - v0);
 
+const PI_2 = Math.PI / 2;
+const PI_3 = Math.PI / 3;
+const PI_4 = Math.PI / 4;
+const PI_6 = Math.PI / 6;
+
 class Elastic {
   constructor (value) {
     this.target = value;
@@ -21,6 +26,7 @@ class Elastic {
 }
 
 export {
+  PI_2, PI_3, PI_4, PI_6,
   smoothstep,
   Elastic,
   random,

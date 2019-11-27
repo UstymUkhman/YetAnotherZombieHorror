@@ -332,35 +332,32 @@ export default class Player extends Character {
     return { x: 0, y: 0 };
   }
 
-  hit (enemy, delay) {
+  hit (direction) {
     if (this.hitting) return;
+    const hitAnimation = this.getHitAnimation(direction);
+
+    this.currentAnimation.crossFadeTo(this.animations[hitAnimation], 0.1, true);
+    this.animations[hitAnimation].play();
+
+    if (this.aiming) this.aim(false);
+    this.hitting = true;
 
     setTimeout(() => {
-      const hitAnimation = this._hit;
+      this.setDirection('Idle');
+      this.currentAnimation.stop();
+      this.lastAnimation = hitAnimation;
+      this.currentAnimation = this.animations[hitAnimation];
+    }, 100);
 
-      this.currentAnimation.crossFadeTo(this.animations[hitAnimation], 0.1, true);
-      this.animations[hitAnimation].play();
+    setTimeout(() => {
+      this.hitting = false;
 
-      if (this.aiming) this.aim(false);
-      this.hitting = true;
-
-      setTimeout(() => {
-        this.setDirection('Idle');
-        this.currentAnimation.stop();
-        this.lastAnimation = this._hit;
-        this.currentAnimation = this.animations[hitAnimation];
-      }, 100);
-
-      setTimeout(() => {
-        this.hitting = false;
-
-        if (this.moving) {
-          this.running ? this.run(this.lastDirections, !!this.lastDirections[0]) : this.move(this.lastDirections);
-        } else {
-          this.idle();
-        }
-      }, 2000);
-    }, delay);
+      if (this.moving) {
+        this.running ? this.run(this.lastDirections, !!this.lastDirections[0]) : this.move(this.lastDirections);
+      } else {
+        this.idle();
+      }
+    }, 1500);
   }
 
   addCamera (camera) {
@@ -377,8 +374,8 @@ export default class Player extends Character {
     return `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
   }
 
-  get _hit () {
-    return `${this.hasRifle ? 'rifle' : 'pistol'}FrontHit`;
+  getHitAnimation (direction) {
+    return `${this.hasRifle ? 'rifle' : 'pistol'}${direction}Hit`;
   }
 
   get cameraPosition () {

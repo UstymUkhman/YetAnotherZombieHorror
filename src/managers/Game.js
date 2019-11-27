@@ -1,7 +1,12 @@
 import Stats from 'three/examples/js/libs/stats.min';
+import { PI_2, PI_3, random } from '@/utils/number';
+import { Quaternion } from '@three/math/Quaternion';
+
+import { Vector3 } from '@three/math/Vector3';
+import { Euler } from '@three/math/Euler';
+
 import { Clock } from '@three/core/Clock';
 import findIndex from 'lodash.findindex';
-import { random } from '@/utils/number';
 
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
@@ -28,6 +33,13 @@ export default class Game {
     this._bounds = Stage.bounds;
     Enemy.setBounds(this._bounds);
     Player.setBounds(this._bounds);
+
+    this._quat = new Quaternion();
+    this._angle = new Euler();
+
+    this.vec1 = new Vector3();
+    this.vec2 = new Vector3();
+    this.vec3 = new Vector3();
 
     this.clock = new Clock();
     this.stage = new Stage();
@@ -126,7 +138,11 @@ export default class Game {
           const hitDelay = enemy.attack();
 
           if (hitDelay && !this.player.hitting) {
-            this.player.hit(enemyPosition, hitDelay);
+            setTimeout(() => {
+              const matrixWorld = enemy.character.matrixWorld;
+              const direction = this.getHitDirection(matrixWorld);
+              this.player.hit(direction);
+            }, hitDelay);
           }
         } else if (next) {
           enemy.scream();
@@ -136,6 +152,37 @@ export default class Game {
       enemy.nextToPlayer = nextToPlayer;
       enemy.attacking = attack;
     }
+  }
+
+  getHitDirection (enemyMatrixWorld) {
+    const player = this.player.character;
+
+    player.updateMatrixWorld(true);
+    this.stage.scene.updateMatrixWorld();
+
+    player.getWorldQuaternion(this._quat);
+    this._angle.setFromQuaternion(this._quat);
+
+    this.vec2.setFromMatrixPosition(enemyMatrixWorld);
+    this.vec3.setFromMatrixPosition(player.matrixWorld);
+    this.vec1.subVectors(this.vec2, this.vec3).normalize();
+
+    const pX = this.vec1.x > 0;
+    const pZ = this.vec1.z > 0;
+
+    const y = this._angle.y;
+    const x0 = !this._angle.x;
+
+    const x = this.vec1.x * PI_2;
+    const xPI = this._angle.x === -Math.PI;
+
+    // const right = (!pX && x0) || (pX && xPI);
+
+    const left = (pX && x0) || (!pX && xPI);
+    const front = (pZ && x0) || (!pZ && xPI);
+    const view = y > (x - PI_3) && y < (x + PI_3);
+
+    return view && front ? 'Front' : left ? 'Left' : 'Right';
   }
 
   onHeadshoot (event) {
