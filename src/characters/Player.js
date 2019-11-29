@@ -28,7 +28,7 @@ export default class Player extends Character {
       this.lastAnimation = 'pistolIdle';
       this.currentAnimation.play();
 
-      // console.log(this.animations);
+      console.log(this.animations);
 
       this.character = new Object3D();
       this.character.add(character);
@@ -334,13 +334,16 @@ export default class Player extends Character {
 
   hit (direction) {
     if (this.hitting) return;
+    const hitDuration = this.hasRifle ? 1000 : 1500;
     const hitAnimation = this.getHitAnimation(direction);
 
     this.currentAnimation.crossFadeTo(this.animations[hitAnimation], 0.1, true);
     this.animations[hitAnimation].play();
-
     if (this.aiming) this.aim(false);
+
+    this.running = false;
     this.hitting = true;
+    this.moving = false;
 
     setTimeout(() => {
       this.setDirection('Idle');
@@ -357,7 +360,7 @@ export default class Player extends Character {
       } else {
         this.idle();
       }
-    }, 1500);
+    }, hitDuration);
   }
 
   addCamera (camera) {
