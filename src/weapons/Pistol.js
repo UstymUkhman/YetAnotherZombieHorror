@@ -10,8 +10,11 @@ const POSITION = new Vector3(-10, -4, 0.25);
 
 export default class Pistol extends Weapon {
   constructor (camera) {
-    super(PISTOL, camera, () => {
-      this.setToPlayer();
+    super(PISTOL, camera, arm => {
+      arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+      arm.position.copy(POSITION);
+      arm.scale.set(13, 13, 13);
+      this.arm = arm;
     });
 
     this.speed = 255000;
@@ -24,17 +27,6 @@ export default class Pistol extends Weapon {
     this.shootSound.loop = false;
     this.shootSound.volume = 1;
     this.shootSound.load();
-  }
-
-  spawnOnStage () {
-    this.arm.scale.set(0.225, 0.225, 0.225);
-    this.arm.rotation.set(0, 0, 0);
-  }
-
-  setToPlayer () {
-    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-    this.arm.position.copy(POSITION);
-    this.arm.scale.set(13, 13, 13);
   }
 
   cancelAim () { }

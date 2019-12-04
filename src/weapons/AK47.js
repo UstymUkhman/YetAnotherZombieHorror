@@ -9,9 +9,20 @@ const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
 
 export default class AK47 extends Weapon {
-  constructor (camera) {
-    super(AK_47, camera, () => {
-      this.spawnOnStage();
+  constructor (camera, onLoad) {
+    super(AK_47, camera, arm => {
+      this.asset = arm.clone(true);
+      this.arm = arm;
+
+      this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+      this.arm.scale.set(0.29, 0.29, 0.29);
+      this.arm.position.copy(POSITION);
+      this.arm.visible = false;
+
+      this.asset.scale.set(0.005, 0.005, 0.005);
+      this.asset.rotation.set(0, 0, 0);
+      this.asset.visible = false;
+      onLoad(this.asset);
     });
 
     this.aimTimeout = null;
@@ -28,14 +39,12 @@ export default class AK47 extends Weapon {
   }
 
   spawnOnStage () {
-    this.arm.scale.set(0.005, 0.005, 0.005);
-    this.arm.rotation.set(0, 0, 0);
+    this.asset.visible = true;
   }
 
   setToPlayer () {
-    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-    this.arm.scale.set(0.29, 0.29, 0.29);
-    this.arm.position.copy(POSITION);
+    this.asset.visible = false;
+    this.arm.visible = true;
   }
 
   aim (aiming, duration) {

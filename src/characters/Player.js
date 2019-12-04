@@ -28,7 +28,7 @@ export default class Player extends Character {
       this.lastAnimation = 'pistolIdle';
       this.currentAnimation.play();
 
-      console.log(this.animations);
+      // console.log(this.animations);
 
       this.character = new Object3D();
       this.character.add(character);
@@ -39,6 +39,7 @@ export default class Player extends Character {
     this._cameraRotation = new Vector3();
 
     this.shakeDirection = 0;
+    this.equipRifle = false;
     this.aimTimeout = null;
     this.shooting = false;
     this.hitting = false;
@@ -49,6 +50,8 @@ export default class Player extends Character {
 
     this.aiming = false;
     this.weapon = null;
+    this.pistol = null;
+    this.ak47 = null;
   }
 
   setWeapon (colliders, weapon, rifle) {
@@ -75,11 +78,23 @@ export default class Player extends Character {
       }, 100);
     }
 
+    rifle ? this.ak47 = weapon : this.pistol = weapon;
+    this.equipRifle = this.hasRifle || rifle;
+
     weapon.targets = colliders;
     this._hand.add(weapon.arm);
 
     this.hasRifle = rifle;
     this.weapon = weapon;
+  }
+
+  changeWeapon () {
+    if (!this.equipRifle) return;
+    const colliders = this.weapon.targets;
+    const weapon = this.hasRifle ? this.pistol : this.ak47;
+
+    weapon.setToPlayer();
+    this.setWeapon(colliders, weapon, !this.hasRifle);
   }
 
   idle () {

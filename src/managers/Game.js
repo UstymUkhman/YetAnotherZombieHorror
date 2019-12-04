@@ -69,7 +69,10 @@ export default class Game {
 
   loadAssets () {
     this.pistol = new Pistol(this.stage.camera);
-    this.ak47 = new AK47(this.stage.camera);
+
+    this.ak47 = new AK47(this.stage.camera, asset => {
+      this.stage.scene.add(asset);
+    });
 
     this.player = new Player(character => {
       this.calls.set(-1, this.player.update.bind(this.player));
@@ -239,13 +242,14 @@ export default class Game {
       delete this.enemies[index];
       this.enemies.splice(index, 1);
 
-      const o = this.enemies.length;
-      const n = Math.min(2 ** this.killed, 64);
+      // const o = this.enemies.length;
+      // const n = Math.min(2 ** this.killed, 64);
 
-      for (let e = o; e < n; e++) {
-        this.spawnEnemy();
-      }
+      // for (let e = o; e < n; e++) {
+      //   this.spawnEnemy();
+      // }
 
+      this.spawnEnemy();
       this.spawnRifle();
     }, 5000);
   }
@@ -264,35 +268,35 @@ export default class Game {
   }
 
   spawnRifle () {
-    const kills = (this.killed - 5) % 10;
-    if (this.player.hasRifle || kills) return;
+    if ((this.killed - 5) % 10) return;
 
     const x = random(-this._bounds.side, this._bounds.side);
     const z = random(-this._bounds.front, this._bounds.front);
 
     this.calls.set(-5, this.rifleRotation.bind(this));
-    this.ak47.arm.position.set(x, 1.75, z);
-    this.stage.scene.add(this.ak47.arm);
+    this.ak47.asset.position.set(x, 1.75, z);
+
+    this.ak47.asset.visible = true;
     this.visibleRifle = true;
   }
 
   rifleRotation () {
-    const rifle = this.ak47.arm;
+    const rifle = this.ak47.asset;
     const distance = rifle.position.distanceTo(this.playerPosition);
 
     rifle.rotation.y -= 0.01;
 
-    if (distance < 2.5) {
+    if (this.visibleRifle && distance < 2.5) {
       const colliders = this.getEnemyColliders();
       this.visibleRifle = false;
       this.calls.delete(-5);
 
       this.ak47.setToPlayer();
-      this.player.setWeapon(colliders, this.ak47, true);
+      // this.ak47.addAmmo();
 
-      // const colliders = this.getEnemyColliders();
-      // this.pistol.setToPlayer();
-      // this.player.setWeapon(colliders, this.pistol, false);
+      if (!this.player.hasRifle) {
+        this.player.setWeapon(colliders, this.ak47, true);
+      }
     }
   }
 

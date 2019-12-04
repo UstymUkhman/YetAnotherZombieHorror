@@ -184,6 +184,11 @@ class Input {
         this.moves[3] = 0;
         break;
 
+      case 69:
+      case 81:
+        this.player.changeWeapon();
+        return;
+
       default:
         return;
     }
