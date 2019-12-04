@@ -1,11 +1,19 @@
 <main id="game">
-  <AimSight />
+  {#if ready}
+    <AimSight />
+  {:else}
+    <Settings on:ready={() => { ready = true }} />
+  {/if}
 </main>
 
 <script>
+  import Settings from '@/ui/Settings';
   import AimSight from '@/ui/AimSight';
+
   import Game from '@/managers/Game';
-  export const game = new Game();
+
+  const game = new Game();
+  let ready = false;
 </script>
 
 <style>
