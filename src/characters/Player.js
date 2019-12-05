@@ -28,8 +28,6 @@ export default class Player extends Character {
       this.lastAnimation = 'pistolIdle';
       this.currentAnimation.play();
 
-      // console.log(this.animations);
-
       this.character = new Object3D();
       this.character.add(character);
       onLoad(this.character);

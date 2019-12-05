@@ -1,4 +1,4 @@
-<div class="aim-sight {expanded} {hidden}">
+<div class="aim-sight" class:expanded={expanded} class:hidden={hidden} transition:fade="{{ duration: 250 }}">
   <div class="line horizontal right"></div>
   <div class="line horizontal left"></div>
 
@@ -7,27 +7,23 @@
 </div>
 
 <script>
+  import { fade } from 'svelte/transition';
   import Events from '@/managers/Events';
   import { onDestroy } from 'svelte';
 
-  Events.add('shoot', animateAimSight);
-  Events.add('run', toggleAimSight);
+  Events.add('run', event => hidden = event.data);
 
-  export let expanded = '';
-  export let hidden = '';
+  Events.add('shoot', event => {
+    setTimeout(() => { expanded = false; }, 100);
+    expanded = event.data;
+  });
 
-  function animateAimSight (event) {
-    expanded = event.data ? 'expanded' : '';
-    setTimeout(() => { expanded = ''; }, 100);
-  }
-
-  function toggleAimSight (event) {
-    hidden = event.data ? 'hidden' : '';
-  }
+  let expanded = false;
+  let hidden = false;
 
   onDestroy(() => {
-    Events.remove('shoot', animateAimSight);
-    Events.remove('run', toggleAimSight);
+    Events.remove('shoot');
+    Events.remove('run');
 	});
 </script>
 

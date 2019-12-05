@@ -19,16 +19,14 @@ import AK47 from '@/weapons/AK47';
 import Stage from '@/Stage';
 
 export default class Game {
-  constructor (/* fps = 60 */) {
+  constructor () {
     this._onHeadshoot = this.onHeadshoot.bind(this);
     this._onBodyHit = this.onBodyHit.bind(this);
-    this._onLoaded = this.onLoaded.bind(this);
     this._onLegHit = this.onLegHit.bind(this);
 
     Events.add('headshoot', this._onHeadshoot);
     Events.add('bodyHit', this._onBodyHit);
     Events.add('legHit', this._onLegHit);
-    Events.add('loaded', this._onLoaded);
 
     this._bounds = Stage.bounds;
     Enemy.setBounds(this._bounds);
@@ -47,17 +45,16 @@ export default class Game {
 
     this.visibleRifle = false;
     this.animations = null;
+    this._paused = false;
+
     this.player = null;
     this.enemy = null;
 
-    // this.frame = Date.now();
-    // this.fps = 1000 / fps;
     this.enemies = [];
     this.enemyID = 0;
     this.killed = 0;
 
     this.createStats();
-    this.loadAssets();
     this.loop();
   }
 
@@ -92,35 +89,38 @@ export default class Game {
     this.enemies.push(enemy);
   }
 
-  onLoaded () {
-    Events.remove('loaded');
-
+  init () {
     setTimeout(() => {
       const colliders = this.getEnemyColliders();
       this.player.setWeapon(colliders, this.pistol, false);
 
+      this.calls.set(-2, this.checkPlayerDistance.bind(this));
+      this.calls.set(-3, this.stage.render.bind(this.stage));
       this.calls.set(-4, Input.update.bind(Input));
+
+      this.playerPosition = this.player.character.position;
+      this.enemies[0].playerPosition = this.playerPosition;
+
       this.player.lastDirections = Input.moves;
       Input.player = this.player;
 
-      this.setCharacters();
+      this.player.update(this.clock.getDelta());
       this.stage.createGrid();
-      this.calls.set(-3, this.stage.render.bind(this.stage));
+      this.stage.fadeIn();
     }, 100);
-  }
-
-  setCharacters () {
-    this.playerPosition = this.player.character.position;
-    this.enemies[0].playerPosition = this.playerPosition;
-
-    this.calls.set(-2, this.checkPlayerDistance.bind(this));
 
     setTimeout(() => {
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
+
       this.enemies[0].fadeIn();
       this.stage.createGrid();
-    }, 100);
+    }, 200);
+  }
+
+  start () {
+    Input.requestPointerLock();
+    this.paused = false;
   }
 
   checkPlayerDistance () {
@@ -312,18 +312,14 @@ export default class Game {
 
   loop () {
     this.stats.begin();
-    // const now = Date.now();
-    // const elapse = now - this.frame;
 
-    // requestAnimationFrame(this.loop.bind(this));
-    // if (elapse < this.fps) return;
+    if (!this._paused) {
+      const calls = this.calls.values();
+      const delta = this.clock.getDelta();
+      for (const call of calls) call(delta);
+    }
 
-    const delta = this.clock.getDelta();
-    const calls = this.calls.values();
-
-    for (const call of calls) call(delta);
     requestAnimationFrame(this.loop.bind(this));
-    // this.frame = now - (elapse % this.fps);
     this.stats.end();
   }
 
@@ -342,5 +338,14 @@ export default class Game {
     delete this.player;
     delete this.stage;
     delete this.stats;
+  }
+
+  set paused (now) {
+    Input.paused = now;
+    this._paused = now;
+  }
+
+  get paused () {
+    return this._paused;
   }
 };

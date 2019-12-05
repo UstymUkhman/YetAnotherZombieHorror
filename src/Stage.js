@@ -5,15 +5,13 @@ import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { AmbientLight } from '@three/lights/AmbientLight';
-import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { ReinhardToneMapping } from '@three/constants';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 import { Color } from '@three/math/Color';
-// import { Fog } from '@three/scenes/Fog';
-import Input from '@/managers/Input';
+import { Fog } from '@three/scenes/Fog';
 
 const GROUND = 0x888888;
 const WHITE = 0xFFFFFF;
@@ -42,7 +40,7 @@ export default class Playground {
   createScene () {
     this.scene = new Scene();
     this.scene.background = new Color(FOG);
-    // this.scene.fog = new Fog(FOG, 1, 33);
+    this.scene.fog = new Fog(FOG, 1, 33);
   }
 
   createCamera () {
@@ -118,24 +116,18 @@ export default class Playground {
     document.body.appendChild(this.element);
   }
 
-  createControls () {
-    this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.orbitControls.target.set(0, 2, 0);
-    this.orbitControls.update();
-  }
-
   createEvents () {
     this._onResize = this.onResize.bind(this);
     window.addEventListener('resize', this._onResize, false);
-    this.element.addEventListener('click', Input.requestPointerLock);
+  }
+
+  fadeIn () {
+    this.element.style.opacity = 1;
+    this.render();
   }
 
   render () {
     this.renderer.render(this.scene, this.camera);
-
-    // if (this.orbitControls) {
-    //   this.orbitControls.update();
-    // }
   }
 
   onResize () {
@@ -149,7 +141,6 @@ export default class Playground {
     window.removeEventListener('resize', this._onResize, false);
     document.body.removeChild(this.renderer.domElement);
 
-    delete this.orbitControls;
     delete this.renderer;
     delete this.camera;
     delete this.scene;

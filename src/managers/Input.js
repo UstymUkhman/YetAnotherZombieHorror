@@ -1,5 +1,6 @@
 import { Elastic, clamp } from '@/utils/number';
 import throttle from 'lodash.throttle';
+import Events from '@/managers/Events';
 
 class Input {
   constructor () {
@@ -16,6 +17,7 @@ class Input {
     this._onMouseDown = this.onMouseDown.bind(this);
     this._onMouseUp = this.onMouseUp.bind(this);
 
+    this._onContextMenu = this.onContextMenu.bind(this);
     this._onKeyDown = this.onKeyDown.bind(this);
     this._onKeyUp = this.onKeyUp.bind(this);
 
@@ -26,6 +28,7 @@ class Input {
     this.moves = [0, 0, 0, 0];
     this.rightTimeout = null;
     this.idleTimeout = null;
+    this.paused = true;
 
     this._mouseDown = false;
     this.mouseRight = null;
@@ -48,6 +51,13 @@ class Input {
   onPointerLockChange (event) {
     event.stopPropagation();
     event.preventDefault();
+
+    const isPaused = this.paused;
+    this.paused = !this.pointerLocked;
+
+    if (this.paused !== isPaused) {
+      Events.dispatch('pause', this.paused);
+    }
   }
 
   onPointerLockError (event) {
@@ -57,12 +67,15 @@ class Input {
   }
 
   onContextMenu (event) {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
+    if (!this.paused) {
+      event.stopPropagation();
+      event.preventDefault();
+      return false;
+    }
   }
 
   onMouseDown (event) {
+    if (this.paused) return;
     event.stopPropagation();
     event.preventDefault();
 
@@ -78,7 +91,7 @@ class Input {
   }
 
   onMouseMove (event) {
-    if (!this.pointerLocked) return;
+    if (this.paused) return;
 
     const maxY = this.player.aiming ? 0.4 : 0.2;
     const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
@@ -89,6 +102,7 @@ class Input {
   }
 
   onMouseUp (event) {
+    if (this.paused) return;
     event.stopPropagation();
     event.preventDefault();
 
@@ -110,6 +124,7 @@ class Input {
   }
 
   onKeyDown (event) {
+    if (this.paused) return;
     // event.stopPropagation();
     // event.preventDefault();
 
@@ -159,6 +174,7 @@ class Input {
   }
 
   onKeyUp (event) {
+    if (this.paused) return;
     // event.stopPropagation();
     // event.preventDefault();
 
@@ -218,7 +234,7 @@ class Input {
     document.addEventListener('pointerlockchange', this._onPointerLockChange, false);
     document.addEventListener('pointerlockerror', this._onPointerLockError, false);
 
-    document.addEventListener('contextmenu', this.onContextMenu, false);
+    document.addEventListener('contextmenu', this._onContextMenu, false);
     document.addEventListener('mousedown', this._onMouseDown, false);
     document.addEventListener('mousemove', this._onMouseMove, false);
     document.addEventListener('mouseup', this._onMouseUp, false);
@@ -231,7 +247,7 @@ class Input {
     document.removeEventListener('pointerlockchange', this._onPointerLockChange, false);
     document.removeEventListener('pointerlockerror', this._onPointerLockError, false);
 
-    document.removeEventListener('contextmenu', this.onContextMenu, false);
+    document.removeEventListener('contextmenu', this._onContextMenu, false);
     document.removeEventListener('mousedown', this._onMouseDown, false);
     document.removeEventListener('mousemove', this._onMouseMove, false);
     document.removeEventListener('mouseup', this._onMouseUp, false);

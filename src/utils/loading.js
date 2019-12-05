@@ -1,31 +1,19 @@
 import { LoadingManager } from '@three/loaders/LoadingManager';
 import Events from '@/managers/Events';
 
-const dispatchEvent = function (loaded, total) {
-  document.dispatchEvent(
-    new CustomEvent('assets:loading', {
-      detail: {
-        loaded: loaded,
-        total: total
-      }
-    })
-  );
-};
-
 const loading = new LoadingManager();
-dispatchEvent(0, 0);
 
 loading.onStart = function (url, toLoad, total) {
+  Events.dispatch('loading', 0);
   console.info('Loading... 0%');
-  dispatchEvent(0, total);
 };
 
 loading.onProgress = function (url, loaded, total) {
   const progress = (loaded * 100 / total).toFixed();
-  if (loaded === total) Events.dispatch('loaded');
 
+  Events.dispatch('loading', progress);
   console.info(`Loading... ${progress}%`);
-  dispatchEvent(loaded, total);
+  if (loaded === total) Events.dispatch('loaded');
 };
 
 loading.onError = function (url) {

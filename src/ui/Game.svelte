@@ -1,19 +1,69 @@
 <main id="game">
-  {#if ready}
-    <AimSight />
+  {#if !ready}
+    <Overlay>
+      <Loading {loading} {loaded} on:close={startGame} />
+    </Overlay>
   {:else}
-    <Settings on:ready={() => { ready = true }} />
+    <HUD visible={!paused} />
+  {/if}
+
+  {#if paused}
+    <Overlay>
+      <Pause on:close={togglePause} />
+    </Overlay>
   {/if}
 </main>
 
 <script>
-  import Settings from '@/ui/Settings';
-  import AimSight from '@/ui/AimSight';
+  import Loading from '@/ui/overlays/Loading';
+  import Pause from '@/ui/overlays/Pause';
+  import HUD from '@/ui/overlays/HUD';
+  import Overlay from '@/ui/Overlay';
 
+  import Events from '@/managers/Events';
   import Game from '@/managers/Game';
 
+  import { onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
+
+  Events.add('loading', event => loading = event.data);
+  Events.add('pause', togglePause);
+
+  Events.add('loaded', event => {
+    Events.remove('loading');
+    Events.remove('loaded');
+
+    loading = 100;
+    loaded = true;
+    game.init();
+  });
+
   const game = new Game();
+  game.paused = true;
+
+  let loaded = false;
+  let loading = 0;
+
+  let paused = false;
   let ready = false;
+
+  function togglePause (event) {
+    paused = !!event.data;
+    game.paused = paused;
+
+    if (!paused) {
+      game.start();
+    }
+  }
+
+  function startGame (event) {
+    paused = false;
+    ready = true;
+    game.start();
+  }
+
+  onDestroy(() => { Events.remove('pause'); });
+  onMount(() => { game.loadAssets(); });
 </script>
 
 <style>
@@ -32,11 +82,11 @@
   font-weight: 400;
   font-size: 16px;
 
-  background-color: #ffffff;
+  background-color: #000000;
   letter-spacing: normal;
   line-height: normal;
   overflow: hidden;
-  color: #000000;
+  color: #ffffff;
 
   height: 100%;
   width: 100%;
@@ -49,8 +99,10 @@
 }
 
 :global(canvas) {
+  transition: opacity 0.5s;
   position: absolute;
   display: block;
+  opacity: 0;
 
   height: 100%;
   width: 100%;
