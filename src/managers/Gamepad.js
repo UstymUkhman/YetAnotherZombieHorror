@@ -1,36 +1,145 @@
+import Input from '@/managers/Input';
+
+const BUTTONS = new Map();
+
+BUTTONS.set(8, 'SELECT');
+BUTTONS.set(9, 'START');
+
+BUTTONS.set(4, 'RUN');
+BUTTONS.set(5, 'CHANGE');
+
+BUTTONS.set(6, 'AIM');
+BUTTONS.set(7, 'SHOOT');
+
 class Gamepad {
   constructor () {
-    this.search();
+    this._index = -1;
+    this._aiming = false;
+    this._gamepad = null;
+    this._shooting = false;
+
+    this._onLost = this.onLost.bind(this);
+    this._onFound = this.onFound.bind(this);
+
+    window.addEventListener('gamepadconnected', this._onFound);
+    window.addEventListener('gamepaddisconnected ', this._onLost);
+  }
+
+  createCustomEvents () {
+    this.rotation = new CustomEvent('rotation');
+    this.shoot = new CustomEvent('shoot');
+    this.aim = new CustomEvent('aim');
+
+    this.rotation.movementX = 0;
+    this.rotation.movementY = 0;
+
+    this.shoot.which = 1;
+    this.aim.which = 3;
+  }
+
+  vibrate (duration) {
+    if (this.props.gamepad.vibrationActuator) {
+      this.props.gamepad.vibrationActuator.playEffect('dual-rumble', {
+        strongMagnitude: 1.0,
+        weakMagnitude: 1.0,
+        duration: duration,
+        startDelat: 0
+      });
+    }
+  }
+
+  update () {
+    this._gamepad = navigator.getGamepads()[this._index];
+    const buttons = this._gamepad.buttons;
+
+    this.updateRotationValues();
+
+    for (let b = 0; b < buttons.length; b++) {
+      const pressed = buttons[b].pressed;
+      const command = BUTTONS.get(b);
+      const value = buttons[b].value;
+
+      switch (command) {
+        case 'START':
+          if (pressed && Input.paused) {
+            Input.requestPointerLock();
+          }
+
+          break;
+
+        case 'SELECT':
+          if (pressed && !Input.paused) {
+            Input.exitPointerLock();
+          }
+
+          break;
+
+        // case 'START':
+        //   break;
+
+        // case 'SELECT':
+        //   break;
+
+        case 'AIM':
+          if (value > 0.75 && !this._aiming) {
+            Input.onMouseDown(this.aim);
+            this._aiming = true;
+          } else if (value < 0.75 && this._aiming) {
+            Input.onMouseUp(this.aim);
+            this._aiming = false;
+          }
+
+          break;
+
+        case 'SHOOT':
+          if (value > 0.75 && !this._shooting) {
+            Input.onMouseDown(this.shoot);
+            this._shooting = true;
+          } else if (value < 0.75 && this._shooting) {
+            Input.onMouseUp(this.shoot);
+            this._shooting = false;
+          }
+
+          break;
+      }
+    }
+
+    requestAnimationFrame(this.update.bind(this));
+  }
+
+  updateRotationValues () {
+    const axes = this._gamepad.axes;
+
+    const x = axes[2] * 5;
+    const y = axes[3] * 5;
+
+    if (Math.abs(x) > 1) {
+      this.rotation.movementX += x;
+    } else {
+      this.rotation.movementX = 0;
+    }
+
+    if (Math.abs(y) > 1) {
+      this.rotation.movementY += y;
+    } else {
+      this.rotation.movementY = 0;
+    }
+
+    Input.onMouseMove(this.rotation);
   }
 
   onFound (event) {
-    this.gamepad = event.detail.controller;
-    console.info(`Gamepad found at index ${this.gamepad.index}.`);
-    console.info(`${this.gamepad.name} is ready!`);
+    console.log(event);
+    this.createCustomEvents();
+    this._index = event.gamepad.index;
+    console.info(`${event.gamepad.id} is ready!`);
+    requestAnimationFrame(this.update.bind(this));
   }
 
   onLost (event) {
-    console.info(`The controller at index ${event.detail.index} has been disconnected.`);
-    console.info(`Currently connected gamepads: ${window.Controller.controllerCount}`);
-
-    this.gamepad = window.Controller.getController(0) || null;
-
-    if (this.gamepad) {
-      console.info(`Now using ${this.gamepad.name} found at index ${this.gamepad.index}.`);
-    }
-  }
-
-  search () {
-    if (window.Controller.supported) {
-      window.addEventListener('gc.controller.found', this.onFound, false);
-      window.addEventListener('gc.controller.lost', this.onLost, false);
-
-      window.Controller.search();
-    }
-  }
-
-  get gamepad () {
-    return this.gamepad;
+    console.log(event);
+    this._gamepad = null;
+    console.info('Gamepad was disconected.');
   }
 };
 

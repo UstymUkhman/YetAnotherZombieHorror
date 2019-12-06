@@ -92,16 +92,16 @@
 
   font-variant-ligatures: none;
   text-size-adjust: 100%;
+  font-weight: normal;
   font-kerning: none;
   font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
 
   background-color: #000000;
   letter-spacing: normal;
   line-height: normal;
+  user-select: none;
   overflow: hidden;
-  color: #ffffff;
+  color: #8a0707;
 
   height: 100%;
   width: 100%;

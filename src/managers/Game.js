@@ -11,6 +11,7 @@ import findIndex from 'lodash.findindex';
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
 
+import Gamepad from '@/managers/Gamepad';
 import Events from '@/managers/Events';
 import Input from '@/managers/Input';
 
@@ -128,8 +129,7 @@ export default class Game {
 
     for (let e = 0; e < length; e++) {
       const enemy = this.enemies[e];
-      const enemyPosition = enemy.character.position;
-      const distance = enemyPosition.distanceTo(this.playerPosition);
+      const distance = enemy.getPlayerDistance();
 
       const attack = enemy.attacking || distance < 1.75;
       const nextToPlayer = enemy.nextToPlayer || distance < 15;
@@ -142,6 +142,7 @@ export default class Game {
 
           if (hitDelay && !this.player.hitting) {
             setTimeout(() => {
+              if (enemy.getPlayerDistance() > 1.75) return;
               const matrixWorld = enemy.character.matrixWorld;
               const direction = this.getHitDirection(matrixWorld);
               this.player.hit(direction);
