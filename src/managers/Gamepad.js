@@ -17,6 +17,7 @@ class Gamepad {
     this._aiming = false;
     this._gamepad = null;
     this._shooting = false;
+    this._moves = [0, 0, 0, 0];
 
     this._onLost = this.onLost.bind(this);
     this._onFound = this.onFound.bind(this);
@@ -28,11 +29,13 @@ class Gamepad {
   createCustomEvents () {
     this.rotation = new CustomEvent('rotation');
     this.shoot = new CustomEvent('shoot');
+    this.move = new CustomEvent('move');
     this.aim = new CustomEvent('aim');
 
     this.rotation.movementX = 0;
     this.rotation.movementY = 0;
 
+    this.move.keyCode = -1;
     this.shoot.which = 1;
     this.aim.which = 3;
   }
@@ -51,8 +54,10 @@ class Gamepad {
   update () {
     this._gamepad = navigator.getGamepads()[this._index];
     const buttons = this._gamepad.buttons;
+    const axes = this._gamepad.axes;
 
-    this.updateRotationValues();
+    this.updateRotationValues(axes[2] * 3, axes[3] * 3);
+    this.updatePositionValues(axes[0], axes[1]);
 
     for (let b = 0; b < buttons.length; b++) {
       const pressed = buttons[b].pressed;
@@ -73,12 +78,6 @@ class Gamepad {
           }
 
           break;
-
-        // case 'START':
-        //   break;
-
-        // case 'SELECT':
-        //   break;
 
         case 'AIM':
           if (value > 0.75 && !this._aiming) {
@@ -107,12 +106,54 @@ class Gamepad {
     requestAnimationFrame(this.update.bind(this));
   }
 
-  updateRotationValues () {
-    const axes = this._gamepad.axes;
+  updatePositionValues (x, y) {
+    const left = x < -0.5;
+    const right = x > 0.5;
+    const forward = y < -0.5;
+    const backward = y > 0.5;
 
-    const x = axes[2] * 5;
-    const y = axes[3] * 5;
+    if (forward && !this._moves[0]) {
+      this._moves[0] = 1;
+      this.move.keyCode = 87;
+      Input.onKeyDown(this.move);
+    } else if (!forward && this._moves[0]) {
+      this._moves[0] = 0;
+      this.move.keyCode = 87;
+      Input.onKeyUp(this.move);
+    }
 
+    if (left && !this._moves[1]) {
+      this._moves[1] = 1;
+      this.move.keyCode = 65;
+      Input.onKeyDown(this.move);
+    } else if (!left && this._moves[1]) {
+      this._moves[1] = 0;
+      this.move.keyCode = 65;
+      Input.onKeyUp(this.move);
+    }
+
+    if (backward && !this._moves[2]) {
+      this._moves[2] = 1;
+      this.move.keyCode = 83;
+      Input.onKeyDown(this.move);
+    } else if (!backward && this._moves[2]) {
+      this._moves[2] = 0;
+      this.move.keyCode = 83;
+      Input.onKeyUp(this.move);
+    }
+
+    if (right && !this._moves[3]) {
+      this._moves[3] = 1;
+      this.move.keyCode = 68;
+      Input.onKeyDown(this.move);
+    } else if (!right && this._moves[3]) {
+      this._moves[3] = 0;
+      this.move.keyCode = 68;
+      Input.onKeyUp(this.move);
+    }
+  }
+
+  updateRotationValues (x, y) {
     if (Math.abs(x) > 1) {
       this.rotation.movementX += x;
     } else {

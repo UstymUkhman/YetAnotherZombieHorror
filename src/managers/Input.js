@@ -125,8 +125,8 @@ class Input {
 
   onKeyDown (event) {
     if (this.paused) return;
-    // event.stopPropagation();
-    // event.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
 
     if (event.keyCode === 16 && this.moves[0] && !this.shift) {
       this.moves[1] = 0;
@@ -175,8 +175,8 @@ class Input {
 
   onKeyUp (event) {
     if (this.paused) return;
-    // event.stopPropagation();
-    // event.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
 
     if (event.keyCode === 16 && this.shift) {
       setTimeout(() => { this.shift = false; }, 150);
