@@ -33,6 +33,8 @@ export default class Enemy extends Character {
     }
 
     this.playerPosition = new Vector3();
+    this.enemyPosition = new Vector3();
+
     this.nextToPlayer = false;
     this.crawlTimeout = null;
     this.gettingHit = false;
@@ -168,7 +170,12 @@ export default class Enemy extends Character {
   setRandomPosition () {
     const z = random(-this.bounds.front, this.bounds.front);
     const x = random(-this.bounds.side, this.bounds.side);
-    this.character.position.set(x, 0, z);
+    this.enemyPosition.set(x, 0, z);
+
+    const distance = this.enemyPosition.distanceTo(this.playerPosition);
+
+    if (distance < 15) return this.setRandomPosition();
+    this.character.position.copy(this.enemyPosition);
   }
 
   /* idle () {
