@@ -4,19 +4,20 @@ const BUTTONS = new Map();
 
 BUTTONS.set(8, 'SELECT');
 BUTTONS.set(9, 'START');
-
 BUTTONS.set(4, 'RUN');
-BUTTONS.set(5, 'CHANGE');
-
 BUTTONS.set(6, 'AIM');
 BUTTONS.set(7, 'SHOOT');
+BUTTONS.set(5, 'CHANGE');
 
 class Gamepad {
   constructor () {
     this._index = -1;
-    this._aiming = false;
     this._gamepad = null;
+
+    this._aiming = false;
+    this._running = false;
     this._shooting = false;
+    this._changing = false;
     this._moves = [0, 0, 0, 0];
 
     this._onLost = this.onLost.bind(this);
@@ -28,14 +29,19 @@ class Gamepad {
 
   createCustomEvents () {
     this.rotation = new CustomEvent('rotation');
+    this.change = new CustomEvent('change');
     this.shoot = new CustomEvent('shoot');
+
     this.move = new CustomEvent('move');
+    this.run = new CustomEvent('run');
     this.aim = new CustomEvent('aim');
 
     this.rotation.movementX = 0;
     this.rotation.movementY = 0;
 
+    this.change.keyCode = 69;
     this.move.keyCode = -1;
+    this.run.keyCode = 16;
     this.shoot.which = 1;
     this.aim.which = 3;
   }
@@ -56,8 +62,8 @@ class Gamepad {
     const buttons = this._gamepad.buttons;
     const axes = this._gamepad.axes;
 
-    this.updateRotationValues(axes[2] * 3, axes[3] * 3);
     this.updatePositionValues(axes[0], axes[1]);
+    this.updateRotationValues(axes[2], axes[3]);
 
     for (let b = 0; b < buttons.length; b++) {
       const pressed = buttons[b].pressed;
@@ -75,6 +81,17 @@ class Gamepad {
         case 'SELECT':
           if (pressed && !Input.paused) {
             Input.exitPointerLock();
+          }
+
+          break;
+
+        case 'RUN':
+          if (pressed && !this._running) {
+            Input.onKeyDown(this.run);
+            this._running = true;
+          } else if (!pressed && this._running) {
+            Input.onKeyUp(this.run);
+            this._running = false;
           }
 
           break;
@@ -97,6 +114,16 @@ class Gamepad {
           } else if (value < 0.75 && this._shooting) {
             Input.onMouseUp(this.shoot);
             this._shooting = false;
+          }
+
+          break;
+
+        case 'CHANGE':
+          if (!pressed && this._changing) {
+            Input.onKeyUp(this.change);
+            this._changing = false;
+          } else if (pressed && !this._changing) {
+            this._changing = true;
           }
 
           break;
@@ -154,13 +181,13 @@ class Gamepad {
   }
 
   updateRotationValues (x, y) {
-    if (Math.abs(x) > 1) {
+    if (Math.abs(x) > 0.5) {
       this.rotation.movementX += x;
     } else {
       this.rotation.movementX = 0;
     }
 
-    if (Math.abs(y) > 1) {
+    if (Math.abs(y) > 0.5) {
       this.rotation.movementY += y;
     } else {
       this.rotation.movementY = 0;
@@ -170,9 +197,9 @@ class Gamepad {
   }
 
   onFound (event) {
-    console.log(event);
     this.createCustomEvents();
     this._index = event.gamepad.index;
+
     console.info(`${event.gamepad.id} is ready!`);
     requestAnimationFrame(this.update.bind(this));
   }

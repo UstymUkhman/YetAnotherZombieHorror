@@ -87,9 +87,10 @@ export default class Player extends Character {
   }
 
   changeWeapon () {
-    if (!this.equipRifle) return;
-    const colliders = this.weapon.targets;
+    if (!this.equipRifle || this.aiming) return;
+
     const weapon = this.hasRifle ? this.pistol : this.ak47;
+    const colliders = this.weapon.targets;
 
     weapon.setToPlayer();
     this.setWeapon(colliders, weapon, !this.hasRifle);
@@ -128,8 +129,7 @@ export default class Player extends Character {
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.hasRifle ? 'rifle' : 'pistol'}${direction}`;
 
-    this.moving = true;
-    this.running = false;
+    // this.moving = true;
 
     if (this.aiming || this.hitting || this.lastAnimation === animation) return;
     if (now - this.moveTime < 150) return;
@@ -145,9 +145,9 @@ export default class Player extends Character {
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
 
-    // this.running = false;
+    this.running = false;
     this.moveTime = now;
-    // this.moving = true;
+    this.moving = true;
 
     setTimeout(() => {
       this.currentAnimation.stop();

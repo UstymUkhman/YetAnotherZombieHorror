@@ -290,9 +290,9 @@ export default class Game {
     if (this.visibleRifle && distance < 2.5) {
       const colliders = this.getEnemyColliders();
       this.visibleRifle = false;
-      this.calls.delete(-5);
 
       this.ak47.setToPlayer();
+      this.calls.delete(-5);
       // this.ak47.addAmmo();
 
       if (!this.player.hasRifle) {
