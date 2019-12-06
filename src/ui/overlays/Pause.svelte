@@ -13,14 +13,8 @@
 </script>
 
 <style>
-.title {
-  text-transform: uppercase;
-  letter-spacing: 3px;
-
+h1 {
   margin: 8vw auto 0;
-  color: #ffffff;
-
-  font-size: 2vw;
   display: table;
 }
 

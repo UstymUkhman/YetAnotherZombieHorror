@@ -88,6 +88,13 @@ module.exports = {
       test: /\.(glsl|vert|frag)$/i,
       loader: 'threejs-glsl-loader'
     }, {
+      test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: path.posix.join('assets', '[name].[ext]')
+        }
+    }, {
       test: /\.(gltf)$/i,
       loader: 'gltf-loader-2'
     }, {

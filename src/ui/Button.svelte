@@ -10,28 +10,26 @@
 
 <style>
 .button {
-  transition: background-color 0.5s, color 0.5s;
-  border: 1px solid #ffffff;
   background-color: #000000;
-
   backface-visibility: hidden;
   text-transform: uppercase;
   pointer-events: all;
 
+  padding: 3px 12px 0;
   text-align: center;
   position: relative;
-  line-height: 35px;
-
-  color: #ffffff;
-  font-size: 20px;
   cursor: pointer;
 
-  height: 35px;
-  width: 100px;
+  height: auto;
+  width: auto;
 }
 
-.button:hover {
-  background-color: #ffffff;
-  color: #000000;
+.button span {
+  transition: color 0.5s;
+  font-size: 1vw;
+}
+
+.button:hover span {
+  color: #8a0707;
 }
 </style>
