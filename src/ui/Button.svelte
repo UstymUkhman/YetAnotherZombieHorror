@@ -14,10 +14,11 @@
   backface-visibility: hidden;
   text-transform: uppercase;
   pointer-events: all;
-
-  padding: 3px 12px 0;
-  text-align: center;
   position: relative;
+
+  padding: 3px 15px 0;
+  text-align: center;
+  min-height: 30px;
   cursor: pointer;
 
   height: auto;
@@ -26,6 +27,8 @@
 
 .button span {
   transition: color 0.5s;
+  line-height: 1.2;
+  margin-top: 4px;
   font-size: 1vw;
 }
 

@@ -28,7 +28,6 @@ export default class Playground {
 
     this.createRenderer();
     this.createEvents();
-    // this.createControls();
   }
 
   setSize () {
@@ -39,8 +38,8 @@ export default class Playground {
 
   createScene () {
     this.scene = new Scene();
-    this.scene.background = new Color(FOG);
     this.scene.fog = new Fog(FOG, 1, 33);
+    this.scene.background = new Color(FOG);
   }
 
   createCamera () {
@@ -48,21 +47,14 @@ export default class Playground {
     this.camera.rotation.set(0, Math.PI, 0);
     this.camera.position.set(-1.5, 3, -3.5);
     this.camera.setFocalLength(25.0);
-
-    // this.camera.position.set(0, 3.5, -5);
-    // this.camera.lookAt(0, 0, 0);
   }
 
   createLights () {
     const directional = new DirectionalLight(WHITE, 0.8);
     const ambient = new AmbientLight(WHITE);
 
-    directional.position.set(0, 10, -50);
-    directional.castShadow = true;
-
     directional.shadow.mapSize.height = 8192;
     directional.shadow.mapSize.width = 8192;
-
     directional.shadow.mapSize.x = 8192;
     directional.shadow.mapSize.y = 8192;
 
@@ -73,6 +65,9 @@ export default class Playground {
 
     directional.shadow.camera.far = 100;
     directional.shadow.camera.near = 1;
+
+    directional.position.set(0, 10, -50);
+    directional.castShadow = true;
 
     this.scene.add(directional);
     this.scene.add(ambient);

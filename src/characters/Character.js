@@ -92,6 +92,12 @@ export default class Character {
     this.speed.z = this.settings.moves[direction][1];
   }
 
+  checkIfAlive () {
+    if (!this.alive) return;
+    this.alive = this.alive && this.health > 0;
+    if (!this.alive) this.death();
+  }
+
   update (delta) {
     this.mixer.update(delta);
 

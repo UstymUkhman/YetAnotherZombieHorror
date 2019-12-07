@@ -9,6 +9,9 @@ import { LoopOnce } from '@three/constants';
 import Events from '@/managers/Events';
 import anime from 'animejs';
 
+const DEATH_CAMERA_ROTATION = new Vector3(Math.PI / 2, Math.PI, 0);
+const DEATH_CAMERA_POSITION = new Vector3(-0.5, 12, -0.5);
+
 const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
 const RUN_CAMERA = new Vector3(-2.5, 3, -7);
 const CAMERA = new Vector3(-1.5, 3, -3.5);
@@ -36,6 +39,7 @@ export default class Player extends Character {
     this._cameraPosition = new Vector3();
     this._cameraRotation = new Vector3();
 
+    this.deathCamera = false;
     this.shakeDirection = 0;
     this.equipRifle = false;
     this.aimTimeout = null;
@@ -50,6 +54,12 @@ export default class Player extends Character {
     this.weapon = null;
     this.pistol = null;
     this.ak47 = null;
+  }
+
+  addCamera (camera) {
+    this._cameraPosition = camera.position;
+    this._cameraRotation = camera.rotation;
+    this.character.add(camera);
   }
 
   setWeapon (colliders, weapon, rifle) {
@@ -345,8 +355,11 @@ export default class Player extends Character {
     return { x: 0, y: 0 };
   }
 
-  hit (direction) {
-    if (this.hitting) return;
+  hit (direction, delay) {
+    const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
+    this.health -= amount;
+
+    if (!this.alive || this.hitting) return;
     const hitDuration = this.hasRifle ? 1000 : 1500;
     const hitAnimation = this.getHitAnimation(direction);
 
@@ -365,7 +378,10 @@ export default class Player extends Character {
       this.currentAnimation = this.animations[hitAnimation];
     }, 100);
 
+    setTimeout(this.checkIfAlive.bind(this), 500);
+
     setTimeout(() => {
+      if (!this.alive) return;
       this.hitting = false;
 
       if (this.moving) {
@@ -374,24 +390,81 @@ export default class Player extends Character {
         this.idle();
       }
     }, hitDuration);
+
+    return this.health <= 0;
   }
 
-  addCamera (camera) {
-    this._cameraPosition = camera.position;
-    this._cameraRotation = camera.rotation;
-    this.character.add(camera);
+  death () {
+    this.currentAnimation.crossFadeTo(this.animations.death, 0.5, true);
+    this.animations.death.play();
+    this._deathCameraAnimation();
+
+    this.shooting = false;
+    this.hitting = false;
+    this.running = false;
+    this.aiming = false;
+    this.moving = false;
+
+    setTimeout(() => {
+      this.setDirection('Idle');
+      this.currentAnimation.stop();
+      this.currentAnimation = this.animations.death;
+    }, 500);
   }
 
-  get hitAmount () {
-    return this.weapon.hit;
+  _deathCameraAnimation () {
+    anime({
+      targets: this.cameraPosition,
+      x: DEATH_CAMERA_POSITION.x,
+      y: DEATH_CAMERA_POSITION.y,
+      easing: 'easeOutQuad',
+      duration: 3000
+    });
+
+    anime({
+      targets: this.cameraPosition,
+      easing: 'easeOutQuad',
+      duration: 1500,
+      z: -5,
+
+      complete: () => {
+        anime({
+          targets: this.cameraPosition,
+          z: DEATH_CAMERA_POSITION.z,
+          easing: 'easeOutQuad',
+          duration: 1500,
+        });
+      }
+    });
+
+    anime({
+      targets: this.cameraRotation,
+      x: DEATH_CAMERA_ROTATION.x,
+      y: DEATH_CAMERA_ROTATION.y,
+      z: DEATH_CAMERA_ROTATION.z,
+      easing: 'easeOutQuad',
+      duration: 3000,
+
+      complete: () => {
+        this.deathCamera = true;
+      }
+    });
   }
 
-  get _idle () {
-    return `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
+  update (delta) {
+    super.update(delta);
+
+    if (this.deathCamera) {
+      this.cameraRotation.z += 0.005;
+    }
   }
 
   getHitAnimation (direction) {
     return `${this.hasRifle ? 'rifle' : 'pistol'}${direction}Hit`;
+  }
+
+  get _idle () {
+    return `${this.hasRifle ? 'rifle' : 'pistol'}Idle`;
   }
 
   get cameraPosition () {
@@ -400,5 +473,9 @@ export default class Player extends Character {
 
   get cameraRotation () {
     return this._cameraRotation;
+  }
+
+  get hitAmount () {
+    return this.weapon.hit;
   }
 };

@@ -46,6 +46,7 @@ export default class Enemy extends Character {
     this.crawling = false;
     this.running = false;
     this.hitTime = null;
+    this.idling = false;
     this.moving = true;
   }
 
@@ -178,24 +179,25 @@ export default class Enemy extends Character {
     return this.character.position.distanceTo(this.playerPosition);
   }
 
-  /* idle () {
+  idle () {
     if (!this.alive) return;
 
     this.currentAnimation.crossFadeTo(this.animations.idle, 0.25, true);
     this.animations.idle.play();
+    this.idling = true;
 
     setTimeout(() => {
       this.moving = false;
       this.running = false;
       this.attacking = false;
 
-      this.lastAnimation = 'idle';
-      this.currentAnimation.stop();
-
       this.setDirection('Idle');
+      this.lastAnimation = 'idle';
+
+      this.currentAnimation.stop();
       this.currentAnimation = this.animations.idle;
     }, 250);
-  } */
+  }
 
   walk () {
     if (!this.alive || this.crawling) return;
@@ -282,10 +284,13 @@ export default class Enemy extends Character {
     setTimeout(() => {
       this.setDirection('Idle');
       this.lastAnimation = attack;
-      this.currentAnimation.stop();
 
+      this.currentAnimation.stop();
       this.currentAnimation = this.animations[attack];
-      setTimeout(() => { this[lastAnimation](); }, delay);
+
+      setTimeout(() => {
+        if (!this.idling) this[lastAnimation]();
+      }, delay);
     }, duration * 1000);
 
     return hitDelay;
@@ -293,7 +298,7 @@ export default class Enemy extends Character {
 
   bodyHit (amount) {
     this.health -= amount;
-    this._checkIfAlive();
+    this.checkIfAlive();
 
     if (this.alive && !this.crawling) {
       const now = Date.now();
@@ -343,7 +348,7 @@ export default class Enemy extends Character {
 
   legHit (amount) {
     this.health -= amount;
-    this._checkIfAlive();
+    this.checkIfAlive();
 
     if (this.alive && !this.crawling) {
       this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
@@ -394,12 +399,6 @@ export default class Enemy extends Character {
       this.setDirection('Crawling');
       this.currentAnimation = this.animations.crawling;
     }, duration * 1000);
-  }
-
-  _checkIfAlive () {
-    if (!this.alive) return;
-    this.alive = this.alive && this.health > 0;
-    if (!this.alive) this.death();
   }
 
   _cancelHit () {

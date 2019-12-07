@@ -125,32 +125,35 @@ export default class Game {
   }
 
   checkPlayerDistance () {
+    if (!this.player.alive) return;
     const length = this.enemies.length;
 
     for (let e = 0; e < length; e++) {
       const enemy = this.enemies[e];
+      if (!enemy.alive) continue;
+
       const distance = enemy.getPlayerDistance();
-
       const attack = enemy.attacking || distance < 1.75;
+
       const nextToPlayer = enemy.nextToPlayer || distance < 15;
+      const next = nextToPlayer && !enemy.nextToPlayer;
 
-      if (enemy.alive) {
-        const next = nextToPlayer && !enemy.nextToPlayer;
+      if (attack) {
+        const hitDelay = enemy.attack();
 
-        if (attack) {
-          const hitDelay = enemy.attack();
+        if (hitDelay && !this.player.hitting) {
+          setTimeout(() => {
+            if (enemy.getPlayerDistance() > 1.75) return;
 
-          if (hitDelay && !this.player.hitting) {
-            setTimeout(() => {
-              if (enemy.getPlayerDistance() > 1.75) return;
-              const matrixWorld = enemy.character.matrixWorld;
-              const direction = this.getHitDirection(matrixWorld);
-              this.player.hit(direction);
-            }, hitDelay);
-          }
-        } else if (next) {
-          enemy.scream();
+            const matrixWorld = enemy.character.matrixWorld;
+            const direction = this.getHitDirection(matrixWorld);
+
+            const dead = this.player.hit(direction, hitDelay);
+            if (dead) return this.stopAllEnemies();
+          }, hitDelay);
         }
+      } else if (next) {
+        enemy.scream();
       }
 
       enemy.nextToPlayer = nextToPlayer;
@@ -187,6 +190,16 @@ export default class Game {
     const view = y > (x - PI_3) && y < (x + PI_3);
 
     return view && front ? 'Front' : left ? 'Left' : 'Right';
+  }
+
+  stopAllEnemies () {
+    this.calls.delete(-2);
+    const length = this.enemies.length;
+
+    for (let e = 0; e < length; e++) {
+      const enemy = this.enemies[e];
+      if (enemy.alive) enemy.idle();
+    }
   }
 
   onHeadshoot (event) {
