@@ -4,7 +4,7 @@
       <Loading {loading} {loaded} on:close={startGame} />
     </Overlay>
   {:else}
-    <HUD visible={!paused} />
+    <HUD visible={!paused && !dead} />
   {/if}
 
   {#if paused}
@@ -12,11 +12,16 @@
       <Pause on:close={togglePause} />
     </Overlay>
   {/if}
+
+  {#if dead}
+    <Dead />
+  {/if}
 </main>
 
 <script>
   import Loading from '@/ui/overlays/Loading';
   import Pause from '@/ui/overlays/Pause';
+  import Dead from '@/ui/overlays/Dead';
   import HUD from '@/ui/overlays/HUD';
   import Overlay from '@/ui/Overlay';
 
@@ -28,6 +33,7 @@
 
   Events.add('loading', event => loading = event.data);
   Events.add('pause', togglePause);
+  Events.add('death', playerDeath);
 
   Events.add('loaded', event => {
     Events.remove('loading');
@@ -46,8 +52,17 @@
 
   let paused = false;
   let ready = false;
+  let dead = false;
+
+  function startGame (event) {
+    paused = false;
+    ready = true;
+    game.start();
+  }
 
   function togglePause (event) {
+    if (dead) return;
+
     paused = !!event.data;
     game.paused = paused;
 
@@ -56,14 +71,16 @@
     }
   }
 
-  function startGame (event) {
-    paused = false;
-    ready = true;
-    game.start();
+  function playerDeath (event) {
+    dead = true;
   }
 
-  onDestroy(() => { Events.remove('pause'); });
   onMount(() => { game.loadAssets(); });
+
+  onDestroy(() => {
+    Events.remove('pause');
+    Events.remove('death');
+  });
 </script>
 
 <style>

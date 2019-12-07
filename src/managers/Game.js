@@ -144,9 +144,10 @@ export default class Game {
         if (hitDelay && !this.player.hitting) {
           setTimeout(() => {
             if (enemy.getPlayerDistance() > 1.75) return;
-
             const matrixWorld = enemy.character.matrixWorld;
             const direction = this.getHitDirection(matrixWorld);
+
+            Gamepad.vibrate(500);
 
             const dead = this.player.hit(direction, hitDelay);
             if (dead) return this.stopAllEnemies();

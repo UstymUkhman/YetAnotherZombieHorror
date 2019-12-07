@@ -11,6 +11,7 @@ BUTTONS.set(5, 'CHANGE');
 
 class Gamepad {
   constructor () {
+    this._raf = null;
     this._index = -1;
     this._gamepad = null;
 
@@ -24,7 +25,15 @@ class Gamepad {
     this._onFound = this.onFound.bind(this);
 
     window.addEventListener('gamepadconnected', this._onFound);
-    window.addEventListener('gamepaddisconnected ', this._onLost);
+    window.addEventListener('gamepaddisconnected', this._onLost);
+  }
+
+  onFound (event) {
+    this.createCustomEvents();
+    this._index = event.gamepad.index;
+
+    console.info(`${event.gamepad.id} is ready!`);
+    this._raf = requestAnimationFrame(this.update.bind(this));
   }
 
   createCustomEvents () {
@@ -44,17 +53,6 @@ class Gamepad {
     this.run.keyCode = 16;
     this.shoot.which = 1;
     this.aim.which = 3;
-  }
-
-  vibrate (duration) {
-    if (this.props.gamepad.vibrationActuator) {
-      this.props.gamepad.vibrationActuator.playEffect('dual-rumble', {
-        strongMagnitude: 1.0,
-        weakMagnitude: 1.0,
-        duration: duration,
-        startDelat: 0
-      });
-    }
   }
 
   update () {
@@ -130,7 +128,7 @@ class Gamepad {
       }
     }
 
-    requestAnimationFrame(this.update.bind(this));
+    this._raf = requestAnimationFrame(this.update.bind(this));
   }
 
   updatePositionValues (x, y) {
@@ -196,18 +194,34 @@ class Gamepad {
     Input.onMouseMove(this.rotation);
   }
 
-  onFound (event) {
-    this.createCustomEvents();
-    this._index = event.gamepad.index;
-
-    console.info(`${event.gamepad.id} is ready!`);
-    requestAnimationFrame(this.update.bind(this));
+  vibrate (duration) {
+    if (this._gamepad && this._gamepad.vibrationActuator) {
+      this._gamepad.vibrationActuator.playEffect('dual-rumble', {
+        strongMagnitude: 1.0,
+        weakMagnitude: 1.0,
+        duration: duration,
+        startDelat: 0
+      });
+    }
   }
 
   onLost (event) {
-    console.log(event);
+    this._index = -1;
     this._gamepad = null;
-    console.info('Gamepad was disconected.');
+
+    this.deleteCustomEvents();
+    cancelAnimationFrame(this._raf);
+    console.info(`${event.gamepad.id} was disconected.`);
+  }
+
+  deleteCustomEvents () {
+    delete this.rotation;
+    delete this.change;
+    delete this.shoot;
+
+    delete this.move;
+    delete this.run;
+    delete this.aim;
   }
 };
 

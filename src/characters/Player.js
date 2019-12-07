@@ -397,7 +397,9 @@ export default class Player extends Character {
   death () {
     this.currentAnimation.crossFadeTo(this.animations.death, 0.5, true);
     this.animations.death.play();
+
     this._deathCameraAnimation();
+    Events.dispatch('death');
 
     this.shooting = false;
     this.hitting = false;

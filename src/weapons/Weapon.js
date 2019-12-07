@@ -1,9 +1,9 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { FrontSide /* , DoubleSide */ } from '@three/constants';
 import { gltfLoader } from '@/utils/assetsLoader';
 import { Raycaster } from '@three/core/Raycaster';
-
 import { Vector2 } from '@three/math/Vector2';
+
+import { FrontSide } from '@three/constants';
 import Events from '@/managers/Events';
 import to from 'await-to-js';
 
@@ -22,7 +22,6 @@ export default class Weapon {
 
     this.targets = [];
     this.damage = 10;
-    // this.arm = null;
   }
 
   load (asset, callback) {
@@ -35,7 +34,6 @@ export default class Weapon {
             child.castShadow = true;
 
             child.material = new MeshPhongMaterial({
-              // side: arm ? FrontSide : DoubleSide,
               map: child.material.map,
               specular: 0x2F2F2F,
               side: FrontSide
@@ -43,7 +41,6 @@ export default class Weapon {
           }
         });
 
-        // if (arm) this.arm = gltf.scene;
         callback(gltf.scene);
       }
     });
@@ -68,8 +65,6 @@ export default class Weapon {
       }, time);
     }
   }
-
-  // update (delta) { }
 
   _getEvent (index) {
     const collider = index % 6;
