@@ -45,9 +45,13 @@ export default class AK47 extends Weapon {
     this.asset.visible = true;
   }
 
-  setToPlayer () {
-    this.asset.visible = false;
+  setToPlayer (remove) {
+    if (remove) this.asset.visible = false;
     this.arm.visible = true;
+  }
+
+  addAmmo () {
+    this.ammo += 30;
   }
 
   aim (aiming, duration) {

@@ -1,4 +1,4 @@
-<div class="rifle">
+<div class="rifle" in:enter out:leave>
   <svg width="450" height="134" xmlns="http://www.w3.org/2000/svg">
     <g>
       <rect fill="none" id="canvas_background" height="136" width="452" y="-1" x="-1"/>
@@ -16,16 +16,61 @@
   </svg>
 </div>
 
+<script>
+  import { quartIn, quartOut } from 'svelte/easing';
+
+  function enter (node, params) {
+    return {
+      delay: 250,
+			duration: 500,
+			easing: quartOut,
+
+      css: (t, u) => {
+        const x = 38 + t * 12;
+        const y = 100 - u * 300;
+
+        console.log(y, x);
+
+        return `
+          transform: scale(${t * 0.4}) translate(-36.5%, ${y}%);
+          transform-origin: ${x}% 50%;
+          opacity: ${t.toFixed(2)};
+        `;
+      }
+		};
+  }
+
+  function leave (node, params) {
+    return {
+      duration: 500,
+      easing: quartIn,
+
+      css: (t, u) => {
+        const x = 50 - u * 12;
+        const y = u * 300 + 100;
+
+        return `
+          transform: scale(${t * 0.4}) translate(-36.5%, ${y}%);
+          transform-origin: ${x}% 50%;
+          opacity: ${t.toFixed(2)};
+        `;
+      }
+    };
+  }
+</script>
+
 <style>
 .rifle {
   transform: scale(0.4) translate(-36.5%, 100%);
+  backface-visibility: hidden;
   transform-origin: 50% 50%;
   position: absolute;
+  opacity: 1;
 }
 
 path {
   fill: transparent;
   stroke-width: 3px;
-  stroke: #ffffff;
+  stroke: #e6e6e6;
 }
 </style>

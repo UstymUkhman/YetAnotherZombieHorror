@@ -6,21 +6,35 @@
   <HealthBar />
 
   <div class="weapon">
-    <Pistol />
-    <!-- <AK47 /> -->
+    {#if !hasRifle}
+      <Pistol />
+    {:else}
+      <AK47 />
+    {/if}
   </div>
 </div>
 
 <script>
   import HealthBar from '@/ui/hud/HealthBar';
   import AimSight from '@/ui/hud/AimSight';
+  import Events from '@/managers/Events';
 
   import Pistol from '@/ui/hud/Pistol';
-  // import AK47 from '@/ui/hud/AK47';
+  import { onDestroy } from 'svelte';
+  import AK47 from '@/ui/hud/AK47';
 
+  Events.add('change', changeWeapon);
+
+  let hasRifle = false;
   export let visible;
 
-  // ∞
+  function changeWeapon (event) {
+    hasRifle = event.data;
+  }
+
+  onDestroy(() => {
+    Events.remove('change');
+  });
 </script>
 
 <style>

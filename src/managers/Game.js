@@ -283,7 +283,7 @@ export default class Game {
   }
 
   spawnRifle () {
-    if ((this.killed - 5) % 10) return;
+    // if ((this.killed - 5) % 10) return;
 
     const x = random(-this._bounds.side, this._bounds.side);
     const z = random(-this._bounds.front, this._bounds.front);
@@ -305,9 +305,9 @@ export default class Game {
       const colliders = this.getEnemyColliders();
       this.visibleRifle = false;
 
-      this.ak47.setToPlayer();
+      this.ak47.setToPlayer(true);
       this.calls.delete(-5);
-      // this.ak47.addAmmo();
+      this.ak47.addAmmo();
 
       if (!this.player.equipRifle) {
         this.player.setWeapon(colliders, this.ak47, true);

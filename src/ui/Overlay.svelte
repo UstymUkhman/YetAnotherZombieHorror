@@ -14,6 +14,7 @@
 
 <style>
 .overlay {
+  pointer-events: none;
   position: absolute;
   display: block;
 

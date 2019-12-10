@@ -72,6 +72,7 @@ export default class Player extends Character {
         this.lastAnimation.replace('rifle', 'pistol');
 
       this._hand.remove(this.weapon.arm);
+      Events.dispatch('change', rifle);
       delete this.weapon;
 
       if (!rifle && !this.animations[animation]) {
@@ -105,7 +106,7 @@ export default class Player extends Character {
     const weapon = this.equipRifle ? this.pistol : this.ak47;
     const colliders = this.weapon.targets;
 
-    weapon.setToPlayer();
+    weapon.setToPlayer(false);
     this.setWeapon(colliders, weapon, !this.equipRifle);
   }
 
