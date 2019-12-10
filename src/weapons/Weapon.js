@@ -52,6 +52,9 @@ export default class Weapon {
     const target = this.target;
     const collider = this.targets[target];
 
+    this.ammo = Math.max(this.ammo - 1, 0);
+    // Events.dispatch('shoot', this.ammo);
+
     this.shootSound.currentTime = 0.0;
     this.shootSound.play();
 

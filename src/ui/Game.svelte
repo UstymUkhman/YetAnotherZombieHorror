@@ -36,11 +36,11 @@
   Events.add('death', playerDeath);
 
   Events.add('loaded', event => {
+    setTimeout(() => { loaded = true; }, 1000);
     Events.remove('loading');
     Events.remove('loaded');
 
     loading = 100;
-    loaded = true;
     game.init();
   });
 

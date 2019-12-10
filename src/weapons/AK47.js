@@ -28,6 +28,9 @@ export default class AK47 extends Weapon {
     this.aimTimeout = null;
     this.speed = 715000;
     this._loadSounds();
+
+    this.magazine = 30;
+    this.ammo = 30;
   }
 
   _loadSounds () {

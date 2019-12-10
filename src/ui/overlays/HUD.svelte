@@ -2,10 +2,25 @@
   <AimSight />
 </div>
 
+<div class="player-info">
+  <HealthBar />
+
+  <div class="weapon">
+    <Pistol />
+    <!-- <AK47 /> -->
+  </div>
+</div>
+
 <script>
+  import HealthBar from '@/ui/hud/HealthBar';
   import AimSight from '@/ui/hud/AimSight';
 
+  import Pistol from '@/ui/hud/Pistol';
+  // import AK47 from '@/ui/hud/AK47';
+
   export let visible;
+
+  // ∞
 </script>
 
 <style>
@@ -29,5 +44,21 @@
 .head-up-display.visible {
   transition: opacity 250ms 250ms;
   opacity: 1;
+}
+
+.player-info {
+  height: 16.667vw;
+  width: 16.667vw;
+
+  position: fixed;
+  display: block;
+
+  bottom: 2vw;
+  right: 3vw;
+}
+
+.weapon {
+  position: absolute;
+  display: block;
 }
 </style>

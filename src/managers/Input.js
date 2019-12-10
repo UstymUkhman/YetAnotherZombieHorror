@@ -205,6 +205,10 @@ class Input {
         this.player.changeWeapon();
         return;
 
+      case 82:
+        this.player.reload();
+        return;
+
       default:
         return;
     }
@@ -273,7 +277,7 @@ class Input {
 
   onMousePress () {
     const recoil = this.player.shoot(this._mouseDown);
-    this._mouseDown = this._mouseDown && this.player.hasRifle;
+    this._mouseDown = this._mouseDown && this.player.equipRifle;
 
     this.rotationY.value += recoil.y;
     this.rotationX.value += recoil.x;

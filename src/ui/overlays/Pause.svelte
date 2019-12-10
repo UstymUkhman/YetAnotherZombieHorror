@@ -14,12 +14,11 @@
 
 <style>
 h1 {
-  margin: 8vw auto 0;
   display: table;
 }
 
 .resume {
-  margin: 250px auto 0;
+  margin: 5vw auto 0;
   display: table;
 }
 </style>

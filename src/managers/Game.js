@@ -107,7 +107,6 @@ export default class Game {
 
       this.player.update(this.clock.getDelta());
       this.stage.createGrid();
-      this.stage.fadeIn();
     }, 100);
 
     setTimeout(() => {
@@ -116,6 +115,7 @@ export default class Game {
 
       this.enemies[0].fadeIn();
       this.stage.createGrid();
+      this.stage.fadeIn();
     }, 200);
   }
 
@@ -257,14 +257,14 @@ export default class Game {
       delete this.enemies[index];
       this.enemies.splice(index, 1);
 
-      // const o = this.enemies.length;
-      // const n = Math.min(2 ** this.killed, 64);
+      const o = this.enemies.length;
+      const n = Math.min(2 ** this.killed, 64);
 
-      // for (let e = o; e < n; e++) {
-      //   this.spawnEnemy();
-      // }
+      for (let e = o; e < n; e++) {
+        this.spawnEnemy();
+      }
 
-      this.spawnEnemy();
+      // this.spawnEnemy();
       this.spawnRifle();
     }, 5000);
   }
@@ -309,7 +309,7 @@ export default class Game {
       this.calls.delete(-5);
       // this.ak47.addAmmo();
 
-      if (!this.player.hasRifle) {
+      if (!this.player.equipRifle) {
         this.player.setWeapon(colliders, this.ak47, true);
       }
     }
