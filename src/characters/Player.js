@@ -365,6 +365,8 @@ export default class Player extends Character {
   }
 
   shoot (now) {
+    if (!this.weapon.magazine) return;
+
     this.shooting = now;
     Events.dispatch('shoot', now);
 
@@ -380,7 +382,8 @@ export default class Player extends Character {
     // this.moving = false;
     // this.running = false;
 
-    if (!this.equipRifle || this.reloading || this.hitting) return;
+    const fullMagazine = this.weapon.magazine >= 30;
+    if (this.reloading || this.hitting || fullMagazine) return;
 
     // const running = this.running;
     // const aiming = this.aiming;
@@ -391,7 +394,7 @@ export default class Player extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations.rifleReload, 0.1, true);
     this.animations.rifleReload.play();
-    this.weapon.reload();
+    this.weapon.startReload();
 
     const running = this.running;
     this.shakeDirection = 0;
@@ -414,15 +417,19 @@ export default class Player extends Character {
     }, 100);
 
     this.reloadTimeout = setTimeout(() => {
-      if (!this.alive) return;
-      this.reloading = false;
+      this.weapon.reload();
 
-      if (this.moving || !this.aiming) {
-        running ? this.run(this.lastDirections, !!this.lastDirections[0]) : this.move(this.lastDirections);
-      } else {
-        this.aiming ? this.aim(true) : this.idle();
-      }
-    }, 3000);
+      setTimeout(() => {
+        if (!this.alive) return;
+        this.reloading = false;
+
+        if (this.moving || !this.aiming) {
+          running ? this.run(this.lastDirections, !!this.lastDirections[0]) : this.move(this.lastDirections);
+        } else {
+          this.aiming ? this.aim(true) : this.idle();
+        }
+      }, 1000);
+    }, 2000);
   }
 
   hit (direction, delay) {

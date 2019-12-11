@@ -33,9 +33,8 @@
     const initialColor = event.data < 50 ? '#f3b800' : '#007000';
     const targetColor = event.data < 50 ? '#8a0707' : '#f3b800';
 
-    circle = size + length / 100 * (100 - event.data);
     color = blend(targetColor, initialColor, event.data / mix);
-    console.log(color, targetColor, initialColor, event.data / mix);
+    circle = size + length / 100 * (100 - event.data);
     health = event.data;
   }
 
@@ -65,9 +64,12 @@
 
 <style>
 .health-container {
-  position: absolute;
+  position: relative;
   display: block;
   margin: auto;
+
+  height: auto;
+  width: 100%;
 
   bottom: 0;
   right: 0;

@@ -6,11 +6,8 @@
   <HealthBar />
 
   <div class="weapon">
-    {#if !hasRifle}
-      <Pistol />
-    {:else}
-      <AK47 />
-    {/if}
+    <Pistol visible={ !hasRifle } />
+    <AK47 visible={ hasRifle } />
   </div>
 </div>
 
@@ -61,18 +58,23 @@
 }
 
 .player-info {
-  height: 16.667vw;
   width: 16.667vw;
+  height: 12vw;
 
   position: fixed;
   display: block;
 
-  bottom: 2vw;
-  right: 3vw;
+  bottom: 3vw;
+  right: 4vw;
 }
 
 .weapon {
   position: absolute;
   display: block;
+
+  height: 100%;
+  width: 100%;
+
+  top: 0;
 }
 </style>

@@ -3,6 +3,7 @@ import SHOOT from '@/assets/weapons/AK47.mp3';
 
 import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
+import Events from '@/managers/Events';
 import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
@@ -29,8 +30,8 @@ export default class AK47 extends Weapon {
     this.speed = 715000;
     this._loadSounds();
 
-    this.magazine = 30;
-    this.ammo = 30;
+    this.magazine = 0;
+    this.ammo = 0;
   }
 
   _loadSounds () {
@@ -51,12 +52,28 @@ export default class AK47 extends Weapon {
   }
 
   addAmmo () {
-    this.ammo += 30;
+    this.ammo = Math.min(this.ammo + 30, 150);
+
+    Events.dispatch('reload', {
+      magazine: this.magazine,
+      ammo: this.ammo
+    });
+  }
+
+  startReload () {
+    this.arm.position.set(POSITION.x, POSITION.y, 0);
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, 0);
   }
 
   reload () {
-    this.arm.position.set(POSITION.x, POSITION.y, 0);
-    this.arm.rotation.set(ROTATION.x, ROTATION.y, 0);
+    const toLoad = 30 - this.magazine;
+    this.ammo = Math.max(this.ammo - toLoad, 0);
+    this.magazine += toLoad;
+
+    Events.dispatch('reload', {
+      magazine: this.magazine,
+      ammo: this.ammo
+    });
   }
 
   cancelReload () {
@@ -77,6 +94,15 @@ export default class AK47 extends Weapon {
   cancelAim () {
     clearTimeout(this.aimTimeout);
     this._resetArmPosition();
+  }
+
+  shoot (player) {
+    super.shoot(player);
+
+    Events.dispatch('reload', {
+      magazine: this.magazine,
+      ammo: this.ammo
+    });
   }
 
   _resetArmPosition () {

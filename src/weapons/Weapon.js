@@ -17,9 +17,11 @@ export default class Weapon {
     this._raycaster.near = NEAR;
     this.load(asset, onLoad);
 
+    this.magazine = Infinity;
     this._camera = camera;
     this._aiming = false;
 
+    this.ammo = Infinity;
     this.targets = [];
     this.damage = 10;
   }
@@ -53,9 +55,7 @@ export default class Weapon {
   shoot (player) {
     const target = this.target;
     const collider = this.targets[target];
-
-    this.ammo = Math.max(this.ammo - 1, 0);
-    // Events.dispatch('shoot', this.ammo);
+    this.magazine = Math.max(this.magazine - 1, 0);
 
     this.shootSound.currentTime = 0.0;
     this.shootSound.play();

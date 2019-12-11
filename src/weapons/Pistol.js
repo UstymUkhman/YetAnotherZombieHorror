@@ -17,8 +17,6 @@ export default class Pistol extends Weapon {
       this.arm = arm;
     });
 
-    this.magazine = Infinity;
-    this.ammo = Infinity;
     this.speed = 255000;
     this._loadSounds();
   }
