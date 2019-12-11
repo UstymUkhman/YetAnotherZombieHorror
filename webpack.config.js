@@ -89,24 +89,20 @@ module.exports = {
       loader: 'threejs-glsl-loader'
     }, {
       test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: path.posix.join('assets', '[name].[ext]')
-        }
+      loader: 'url-loader',
+      options: {
+        limit: 10000,
+        name: path.posix.join('assets', '[name].[ext]')
+      }
     }, {
       test: /\.(gltf)$/i,
       loader: 'gltf-loader-2'
     }, {
-      test: /assets.*\.(bin|png|jpe?g|gif|glb)$/i,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            name: path.posix.join('assets', '[name].[ext]')
-          }
-        }
-      ]
+      test: /\.(bin|png|jpe?g|gif|glb)(\?.*)?$/i,
+      loader: 'file-loader',
+      options: {
+        name: path.posix.join('assets', '[name].[ext]')
+      }
     }, {
       test: /\.(cube)$/i,
       use: [{

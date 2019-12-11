@@ -66,7 +66,7 @@ export default class AK47 extends Weapon {
   }
 
   reload () {
-    const toLoad = 30 - this.magazine;
+    const toLoad = Math.min(30 - this.magazine, this.ammo);
     this.ammo = Math.max(this.ammo - toLoad, 0);
     this.magazine += toLoad;
 

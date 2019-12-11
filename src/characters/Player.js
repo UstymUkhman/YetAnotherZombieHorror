@@ -365,14 +365,14 @@ export default class Player extends Character {
   }
 
   shoot (now) {
-    if (!this.weapon.magazine) return;
+    if (this.weapon.magazine) {
+      this.shooting = now;
+      Events.dispatch('shoot', now);
 
-    this.shooting = now;
-    Events.dispatch('shoot', now);
-
-    if (now) {
-      this.weapon.shoot(this.character.position);
-      return this.weapon.recoil;
+      if (now) {
+        this.weapon.shoot(this.character.position);
+        return this.weapon.recoil;
+      }
     }
 
     return { x: 0, y: 0 };
@@ -382,8 +382,9 @@ export default class Player extends Character {
     // this.moving = false;
     // this.running = false;
 
+    const noAmmo = !this.weapon.ammo;
     const fullMagazine = this.weapon.magazine >= 30;
-    if (this.reloading || this.hitting || fullMagazine) return;
+    if (this.reloading || this.hitting || fullMagazine || noAmmo) return;
 
     // const running = this.running;
     // const aiming = this.aiming;

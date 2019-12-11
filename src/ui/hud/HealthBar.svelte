@@ -1,4 +1,4 @@
-<svg width="{size}" height="{size}" class="health-container">
+<svg width="{size}" height="{size}">
   <circle
     style="stroke-dasharray: {size * 2} {size * 3}; stroke-dashoffset: {-circle};"
     cx="{size / 2}" cy="{size / 2}"
@@ -6,7 +6,6 @@
     stroke-width="{size / 16}"
     bind:this={healthBar}
     class:ready={ready}
-    class="health-bar"
     stroke="{color}"
   />
 </svg>
@@ -44,6 +43,12 @@
 
     circle = +(radius * 2 * Math.PI).toFixed();
     length = circle - size;
+    ready = false;
+
+    if (event) {
+      setTimeout(() => { ready = true; }, 100);
+      setHealth({ data: health });
+    }
   }
 
   onMount(() => {
@@ -63,7 +68,10 @@
 </script>
 
 <style>
-.health-container {
+svg {
+  transform-origin: 50% 50%;
+  transform: rotate(24deg);
+
   position: relative;
   display: block;
   margin: auto;
@@ -77,13 +85,16 @@
   top: 0;
 }
 
-.health-bar.ready {
+circle.ready {
   transition: stroke-dashoffset 0.5s ease-out;
 }
 
-.health-bar {
+circle {
   transform-origin: 50% 50%;
-  transform: rotate(24deg);
+  position: absolute;
   fill: transparent;
+
+  display: block;
+  margin: auto;
 }
 </style>

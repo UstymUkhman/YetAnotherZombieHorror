@@ -6,8 +6,8 @@
   <HealthBar />
 
   <div class="weapon">
-    <Pistol visible={ !hasRifle } />
-    <AK47 visible={ hasRifle } />
+    <Pistol visible={!hasRifle} />
+    <AK47 visible={hasRifle} />
   </div>
 </div>
 
