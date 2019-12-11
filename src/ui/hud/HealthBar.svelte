@@ -20,7 +20,7 @@
   Events.add('hit', setHealth);
 
   let size = window.innerWidth / 6;
-  let color = '#00CC00';
+  let color = '#007000';
   let ready = false;
   let health = 0;
 
@@ -29,12 +29,13 @@
   let circle;
 
   function setHealth (event) {
-    const mix = event.data < 50 ? event.data / 50 : event.data / 200;
-    const initialColor = event.data < 50 ? '#ffd700' : '#00CC00';
-    const targetColor = event.data < 50 ? '#8a0707' : '#ffd700';
+    const mix = event.data === 100 ? 100 : event.data < 50 ? 50 : 200;
+    const initialColor = event.data < 50 ? '#f3b800' : '#007000';
+    const targetColor = event.data < 50 ? '#8a0707' : '#f3b800';
 
     circle = size + length / 100 * (100 - event.data);
-    color = blend(targetColor, initialColor, mix);
+    color = blend(targetColor, initialColor, event.data / mix);
+    console.log(color, targetColor, initialColor, event.data / mix);
     health = event.data;
   }
 

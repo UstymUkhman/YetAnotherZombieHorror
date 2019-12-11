@@ -257,14 +257,14 @@ export default class Game {
       delete this.enemies[index];
       this.enemies.splice(index, 1);
 
-      const o = this.enemies.length;
-      const n = Math.min(2 ** this.killed, 64);
+      // const o = this.enemies.length;
+      // const n = Math.min(2 ** this.killed, 64);
 
-      for (let e = o; e < n; e++) {
-        this.spawnEnemy();
-      }
+      // for (let e = o; e < n; e++) {
+      //   this.spawnEnemy();
+      // }
 
-      // this.spawnEnemy();
+      this.spawnEnemy();
       this.spawnRifle();
     }, 5000);
   }

@@ -46,6 +46,8 @@ export default class Weapon {
     });
   }
 
+  cancelReload () { }
+
   setToPlayer () { }
 
   shoot (player) {

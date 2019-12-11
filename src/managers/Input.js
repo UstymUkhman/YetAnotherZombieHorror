@@ -270,7 +270,9 @@ class Input {
       this.camera.rotation.x = this.rotationY.value;
     }
 
-    if (this._mouseDown && !this.player.hitting) {
+    const blockingAnimations = !this.player.hitting && !this.player.reloading;
+
+    if (this._mouseDown && blockingAnimations) {
       this._onMousePress();
     }
   }

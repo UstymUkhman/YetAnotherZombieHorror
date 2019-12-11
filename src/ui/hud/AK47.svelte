@@ -21,15 +21,12 @@
 
   function enter (node, params) {
     return {
-      delay: 250,
 			duration: 500,
 			easing: quartOut,
 
       css: (t, u) => {
         const x = 38 + t * 12;
         const y = 100 - u * 300;
-
-        console.log(y, x);
 
         return `
           transform: scale(${t * 0.4}) translate(-36.5%, ${y}%);

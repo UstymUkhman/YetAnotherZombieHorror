@@ -17,7 +17,6 @@
 
   function enter (node, params) {
     return {
-      delay: 250,
 			duration: 500,
 			easing: quartOut,
 

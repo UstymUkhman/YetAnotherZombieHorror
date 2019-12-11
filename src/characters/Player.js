@@ -21,9 +21,11 @@ export default class Player extends Character {
     super(PLAYER, config, character => {
       this._hand = character.getObjectByName('swatRightHand');
 
+      this.animations.rifleReload.clampWhenFinished = true;
       this.animations.rifleAim.clampWhenFinished = true;
       this.animations.death.clampWhenFinished = true;
 
+      this.animations.rifleReload.setLoop(LoopOnce);
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
@@ -39,6 +41,7 @@ export default class Player extends Character {
     this._cameraPosition = new Vector3();
     this._cameraRotation = new Vector3();
 
+    this.reloadTimeout = null;
     this.deathCamera = false;
     this.shakeDirection = 0;
     this.equipRifle = false;
@@ -101,8 +104,7 @@ export default class Player extends Character {
   }
 
   changeWeapon () {
-    if (!this.hasRifle || this.aiming) return;
-
+    if (!this.hasRifle || this.aiming || this.reloading) return;
     const weapon = this.equipRifle ? this.pistol : this.ak47;
     const colliders = this.weapon.targets;
 
@@ -116,13 +118,17 @@ export default class Player extends Character {
     const now = Date.now();
 
     if (now - this.idleTime < 150) return;
-    if (this.lastAnimation === this._idle || this.aiming || this.hitting) return;
+    const idle = this.lastAnimation === this._idle;
+    if (this.aiming || this.hitting || this.reloading || idle) return;
 
     this.currentAnimation.crossFadeTo(this.animations[this._idle], 0.1, true);
     this.animations[this._idle].play();
+    // clearTimeout(this.reloadTimeout);
+    // this.weapon.cancelReload();
 
     // this.moving = false;
     // this.running = false;
+    // this.reloading = false;
 
     this.idleTime = now;
     this.shakeDirection = 0;
@@ -142,10 +148,11 @@ export default class Player extends Character {
     const now = Date.now();
     const direction = this.getMoveDirection(...directions);
     const animation = `${this.equipRifle ? 'rifle' : 'pistol'}${direction}`;
+    const sameAnimation = this.lastAnimation === animation;
 
     // this.moving = true;
 
-    if (this.aiming || this.hitting || this.lastAnimation === animation) return;
+    if (this.aiming || this.hitting || /* this.reloading || */ sameAnimation) return;
     if (now - this.moveTime < 150) return;
 
     if (this.running) {
@@ -158,7 +165,10 @@ export default class Player extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
+    clearTimeout(this.reloadTimeout);
+    this.weapon.cancelReload();
 
+    this.reloading = false;
     this.running = false;
     this.moveTime = now;
     this.moving = true;
@@ -188,13 +198,17 @@ export default class Player extends Character {
     this.moving = running;
     this.running = running;
 
-    if (this.aiming || this.hitting) return;
+    if (this.aiming || this.hitting /* || this.reloading */) return;
     const run = `${this.equipRifle ? 'rifle' : 'pistol'}Run`;
 
     // this.moving = running;
     this._runCameraAnimation();
     this.shakeDirection = ~~running;
+
+    clearTimeout(this.reloadTimeout);
     Events.dispatch('run', running);
+    this.weapon.cancelReload();
+    this.reloading = false;
 
     setTimeout(() => {
       this._shakeCameraAnimation();
@@ -284,7 +298,10 @@ export default class Player extends Character {
 
       if (this.lastAnimation !== next) {
         this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+        clearTimeout(this.reloadTimeout);
         this.animations[next].play();
+        this.weapon.cancelReload();
+        this.reloading = false;
 
         this.aimTimeout = setTimeout(() => {
           if (this.lastAnimation !== next) {
@@ -359,7 +376,54 @@ export default class Player extends Character {
     return { x: 0, y: 0 };
   }
 
-  reload () { }
+  reload () {
+    // this.moving = false;
+    // this.running = false;
+
+    if (!this.equipRifle || this.reloading || this.hitting) return;
+
+    // const running = this.running;
+    // const aiming = this.aiming;
+
+    if (this.running) {
+      Events.dispatch('run', false);
+    }
+
+    this.currentAnimation.crossFadeTo(this.animations.rifleReload, 0.1, true);
+    this.animations.rifleReload.play();
+    this.weapon.reload();
+
+    const running = this.running;
+    this.shakeDirection = 0;
+    this.reloading = true;
+    this.running = false;
+    // this.aiming = false;
+
+    if (this.aiming) {
+      this._aimCameraAnimation(false, 400, 0);
+    } else if (running) {
+      this._runCameraAnimation();
+      this._shakeCameraAnimation();
+    }
+
+    setTimeout(() => {
+      this.setDirection('Idle');
+      this.currentAnimation.stop();
+      this.lastAnimation = 'rifleReload';
+      this.currentAnimation = this.animations.rifleReload;
+    }, 100);
+
+    this.reloadTimeout = setTimeout(() => {
+      if (!this.alive) return;
+      this.reloading = false;
+
+      if (this.moving || !this.aiming) {
+        running ? this.run(this.lastDirections, !!this.lastDirections[0]) : this.move(this.lastDirections);
+      } else {
+        this.aiming ? this.aim(true) : this.idle();
+      }
+    }, 3000);
+  }
 
   hit (direction, delay) {
     const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
@@ -374,6 +438,10 @@ export default class Player extends Character {
     this.animations[hitAnimation].play();
     if (this.aiming) this.aim(false);
 
+    clearTimeout(this.reloadTimeout);
+    this.weapon.cancelReload();
+
+    this.reloading = false;
     this.running = false;
     this.hitting = true;
     this.moving = false;
@@ -403,11 +471,14 @@ export default class Player extends Character {
 
   death () {
     this.currentAnimation.crossFadeTo(this.animations.death, 0.5, true);
+    clearTimeout(this.reloadTimeout);
     this.animations.death.play();
+    this.weapon.cancelReload();
 
     this._deathCameraAnimation();
     Events.dispatch('death');
 
+    this.reloading = false;
     this.shooting = false;
     this.hitting = false;
     this.running = false;

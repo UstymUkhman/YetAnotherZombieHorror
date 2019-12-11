@@ -54,6 +54,15 @@ export default class AK47 extends Weapon {
     this.ammo += 30;
   }
 
+  reload () {
+    this.arm.position.set(POSITION.x, POSITION.y, 0);
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, 0);
+  }
+
+  cancelReload () {
+    this._resetArmPosition();
+  }
+
   aim (aiming, duration) {
     if (aiming) {
       this.aimTimeout = setTimeout(() => {
@@ -61,13 +70,16 @@ export default class AK47 extends Weapon {
         this.arm.position.set(POSITION.x, 0, -1);
       }, Math.max(duration, 0));
     } else {
-      this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
-      this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+      this._resetArmPosition();
     }
   }
 
   cancelAim () {
     clearTimeout(this.aimTimeout);
+    this._resetArmPosition();
+  }
+
+  _resetArmPosition () {
     this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
   }
