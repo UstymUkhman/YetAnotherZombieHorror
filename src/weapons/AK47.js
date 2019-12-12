@@ -1,6 +1,3 @@
-import AK_47 from '@/assets/weapons/AK47.glb';
-import SHOOT from '@/assets/weapons/AK47.mp3';
-
 import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Events from '@/managers/Events';
@@ -8,10 +5,11 @@ import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
+const SHOOT = '/assets/sounds/AK47.mp3';
 
 export default class AK47 extends Weapon {
   constructor (camera, onLoad) {
-    super(AK_47, camera, arm => {
+    super('/assets/models/AK47.glb', camera, arm => {
       this.asset = arm.clone(true);
       this.arm = arm;
 

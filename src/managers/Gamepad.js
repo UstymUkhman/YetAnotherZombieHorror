@@ -4,7 +4,7 @@ const BUTTONS = new Map();
 
 BUTTONS.set(8, 'SELECT');
 BUTTONS.set(9, 'START');
-BUTTONS.set(4, 'RUN');
+BUTTONS.set(10, 'RUN');
 BUTTONS.set(6, 'AIM');
 BUTTONS.set(7, 'SHOOT');
 BUTTONS.set(5, 'CHANGE');

@@ -1,16 +1,14 @@
-import PISTOL from '@/assets/weapons/1911.glb';
-import SHOOT from '@/assets/weapons/1911.mp3';
-
 import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2, Math.PI + 0.2, -0.075);
 const POSITION = new Vector3(-10, -4, 0.25);
+const SHOOT = '/assets/sounds/1911.mp3';
 
 export default class Pistol extends Weapon {
   constructor (camera) {
-    super(PISTOL, camera, arm => {
+    super('/assets/models/1911.glb', camera, arm => {
       arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
       arm.position.copy(POSITION);
       arm.scale.set(13, 13, 13);

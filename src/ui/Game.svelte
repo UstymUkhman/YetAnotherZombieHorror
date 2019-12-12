@@ -26,6 +26,7 @@
   import Overlay from '@/ui/Overlay';
 
   import Events from '@/managers/Events';
+  import Music from '@/managers/Music';
   import Game from '@/managers/Game';
 
   import { onDestroy } from 'svelte';
@@ -55,6 +56,7 @@
   let dead = false;
 
   function startGame (event) {
+    Music.toggle(true);
     paused = false;
     ready = true;
     game.start();
@@ -64,6 +66,7 @@
     if (dead) return;
 
     paused = !!event.data;
+    Music.toggle(!paused);
     game.paused = paused;
 
     if (!paused) {
@@ -85,7 +88,7 @@
 
 <style>
 @font-face {
-  src: url('../assets/fonts/FaceYourFears.ttf') format('truetype');
+  src: url('/assets/fonts/FaceYourFears.ttf') format('truetype');
   font-family: 'FaceYourFears';
   font-stretch: normal;
   font-weight: normal;
@@ -93,7 +96,7 @@
 }
 
 @font-face {
-  src: url('../assets/fonts/DrawingBlood.ttf') format('truetype');
+  src: url('/assets/fonts/DrawingBlood.ttf') format('truetype');
   font-family: 'DrawingBlood';
   font-stretch: normal;
   font-weight: normal;

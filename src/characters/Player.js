@@ -1,11 +1,9 @@
-import config from '@/assets/characters/player.json';
-import PLAYER from '@/assets/characters/player.glb';
-
 import { Object3D } from '@three/core/Object3D';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 
+import config from '@/characters/player.json';
 import Events from '@/managers/Events';
 import anime from 'animejs';
 
@@ -18,7 +16,7 @@ const CAMERA = new Vector3(-1.5, 3, -3.5);
 
 export default class Player extends Character {
   constructor (onLoad) {
-    super(PLAYER, config, character => {
+    super('/assets/models/player.glb', config, character => {
       this._hand = character.getObjectByName('swatRightHand');
 
       this.animations.rifleReload.clampWhenFinished = true;
