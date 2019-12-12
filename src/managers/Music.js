@@ -12,12 +12,12 @@ class Music {
   }
 
   load () {
-    for (let track of this.tracks) {
+    for (const track of this.tracks) {
       track.onended = this.onEnd.bind(this);
       track.autoplay = false;
       track.muted = false;
       track.loop = false;
-      track.volume = 1;
+      track.volume = 0.5;
       track.load();
     }
   }

@@ -278,8 +278,9 @@ class Input {
   }
 
   onMousePress () {
+    const empty = !this.player.weapon.magazine;
     const recoil = this.player.shoot(this._mouseDown);
-    this._mouseDown = this._mouseDown && this.player.equipRifle;
+    this._mouseDown = this._mouseDown && this.player.equipRifle && !empty;
 
     this.rotationY.value += recoil.y;
     this.rotationX.value += recoil.x;

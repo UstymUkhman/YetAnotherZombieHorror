@@ -5,13 +5,18 @@ import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
-const SHOOT = '/assets/sounds/AK47.mp3';
 
 export default class AK47 extends Weapon {
   constructor (camera, onLoad) {
-    super('/assets/models/AK47.glb', camera, arm => {
+    const settings = {
+      reload: '/assets/sounds/reload.mp3',
+      empty: '/assets/sounds/empty.mp3',
+      shoot: '/assets/sounds/AK47.mp3',
+      model: '/assets/models/AK47.glb'
+    };
+
+    super(settings, camera, arm => {
       this.asset = arm.clone(true);
-      this.arm = arm;
 
       this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
       this.arm.scale.set(0.29, 0.29, 0.29);
@@ -24,20 +29,11 @@ export default class AK47 extends Weapon {
       onLoad(this.asset);
     });
 
+    this._reloading = false;
     this.aimTimeout = null;
     this.speed = 715000;
-    this._loadSounds();
-
     this.magazine = 0;
     this.ammo = 0;
-  }
-
-  _loadSounds () {
-    this.shootSound = new Audio(SHOOT);
-    this.shootSound.autoplay = false;
-    this.shootSound.loop = false;
-    this.shootSound.volume = 1;
-    this.shootSound.load();
   }
 
   spawnOnStage () {
@@ -49,8 +45,16 @@ export default class AK47 extends Weapon {
     this.arm.visible = true;
   }
 
-  addAmmo () {
-    this.ammo = Math.min(this.ammo + 30, 150);
+  addAmmo (reload = false) {
+    if (reload) {
+      const toLoad = Math.min(30 - this.magazine, this.ammo);
+      setTimeout(() => { this._reloading = false; }, 1000);
+
+      this.ammo = Math.max(this.ammo - toLoad, 0);
+      this.magazine += toLoad;
+    } else {
+      this.ammo = Math.min(this.ammo + 30, 150);
+    }
 
     Events.dispatch('reload', {
       magazine: this.magazine,
@@ -61,21 +65,15 @@ export default class AK47 extends Weapon {
   startReload () {
     this.arm.position.set(POSITION.x, POSITION.y, 0);
     this.arm.rotation.set(ROTATION.x, ROTATION.y, 0);
-  }
 
-  reload () {
-    const toLoad = Math.min(30 - this.magazine, this.ammo);
-    this.ammo = Math.max(this.ammo - toLoad, 0);
-    this.magazine += toLoad;
-
-    Events.dispatch('reload', {
-      magazine: this.magazine,
-      ammo: this.ammo
-    });
+    this._reloading = true;
+    this.sfx.reload.play();
   }
 
   cancelReload () {
+    if (this._reloading) this.sfx.reload.stop();
     this._resetArmPosition();
+    this._reloading = false;
   }
 
   aim (aiming, duration) {

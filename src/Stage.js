@@ -4,6 +4,7 @@ import { DirectionalLight } from '@three/lights/DirectionalLight';
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { AudioListener } from '@three/audio/AudioListener';
 import { AmbientLight } from '@three/lights/AmbientLight';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { ReinhardToneMapping } from '@three/constants';
@@ -26,6 +27,7 @@ export default class Playground {
     this.createLights();
     this.createGround();
 
+    this.createListener();
     this.createRenderer();
     this.createEvents();
   }
@@ -94,6 +96,11 @@ export default class Playground {
     grid.material.opacity = 0.25;
     grid.position.y = 0.0;
     this.scene.add(grid);
+  }
+
+  createListener () {
+    const listener = new AudioListener();
+    this.camera.add(listener);
   }
 
   createRenderer () {

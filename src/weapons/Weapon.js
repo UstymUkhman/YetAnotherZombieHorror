@@ -1,4 +1,7 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { AudioLoader } from '@three/loaders/AudioLoader';
+
 import { gltfLoader } from '@/utils/assetsLoader';
 import { Raycaster } from '@three/core/Raycaster';
 import { Vector2 } from '@three/math/Vector2';
@@ -11,11 +14,12 @@ const AIM_NEAR = 3;
 const NEAR = 4.5;
 
 export default class Weapon {
-  constructor (asset, camera, onLoad = null) {
+  constructor (weapon, camera, onLoad = null) {
     this._raycaster = new Raycaster();
     this._origin = new Vector2(0, 0);
+    this._audio = new AudioLoader();
     this._raycaster.near = NEAR;
-    this.load(asset, onLoad);
+    this.load(weapon, onLoad);
 
     this.magazine = Infinity;
     this._camera = camera;
@@ -24,11 +28,17 @@ export default class Weapon {
     this.ammo = Infinity;
     this.targets = [];
     this.damage = 10;
+
+    this.sfx = {
+      reload: null,
+      shoot: null,
+      empty: null
+    };
   }
 
-  load (asset, callback) {
+  load (weapon, callback) {
     return new Promise(async () => {
-      let [error, gltf] = await to(gltfLoader(asset));
+      let [error, gltf] = await to(gltfLoader(weapon.model));
 
       if (!error) {
         gltf.scene.traverse(child => {
@@ -43,9 +53,29 @@ export default class Weapon {
           }
         });
 
+        this.arm = gltf.scene;
+        this._loadSounds(weapon);
         callback(gltf.scene);
       }
     });
+  }
+
+  _loadSounds (sounds) {
+    const listener = this._camera.children[0];
+    const sfx = Object.keys(this.sfx);
+
+    for (const sound of sfx) {
+      if (sounds.hasOwnProperty(sound)) {
+        const volume = sound === 'shoot' ? 10 : 5;
+
+        this._audio.load(sounds[sound], (buffer) => {
+          this.sfx[sound] = new PositionalAudio(listener);
+					this.sfx[sound].setBuffer(buffer);
+          this.sfx[sound].setVolume(volume);
+					this.arm.add(this.sfx[sound]);
+        });
+      }
+    }
   }
 
   cancelReload () { }
@@ -54,13 +84,19 @@ export default class Weapon {
 
   shoot (player) {
     const target = this.target;
+    const empty = this.magazine === 0;
     const collider = this.targets[target];
     this.magazine = Math.max(this.magazine - 1, 0);
 
-    this.shootSound.currentTime = 0.0;
-    this.shootSound.play();
+    if (empty) {
+      if (this.sfx.empty.isPlaying) this.sfx.empty.stop();
+      this.sfx.empty.play();
+    } else {
+      if (this.sfx.shoot.isPlaying) this.sfx.shoot.stop();
+      this.sfx.shoot.play();
+    }
 
-    if (target > -1) {
+    if (!empty && target > -1) {
       const distance = collider.position.distanceTo(player);
       const time = Math.round(distance / this.speed);
       const event = this._getEvent(target);

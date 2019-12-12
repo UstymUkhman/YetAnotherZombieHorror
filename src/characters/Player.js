@@ -363,17 +363,17 @@ export default class Player extends Character {
   }
 
   shoot (now) {
-    if (this.weapon.magazine) {
-      this.shooting = now;
-      Events.dispatch('shoot', now);
+    this.shooting = now;
+    const recoil = { x: 0, y: 0 };
+    const shooted = this.weapon.magazine > 0;
 
-      if (now) {
-        this.weapon.shoot(this.character.position);
-        return this.weapon.recoil;
-      }
+    if (now) {
+      Events.dispatch('shoot', now);
+      this.weapon.shoot(this.character.position);
+      return shooted ? this.weapon.recoil : recoil;
     }
 
-    return { x: 0, y: 0 };
+    return recoil;
   }
 
   reload () {
@@ -416,7 +416,7 @@ export default class Player extends Character {
     }, 100);
 
     this.reloadTimeout = setTimeout(() => {
-      this.weapon.reload();
+      this.weapon.addAmmo(true);
 
       setTimeout(() => {
         if (!this.alive) return;
@@ -434,6 +434,8 @@ export default class Player extends Character {
   hit (direction, delay) {
     const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
     this.health = Math.max(this.health - amount, 0);
+
+    setTimeout(this.checkIfAlive.bind(this), 500);
     Events.dispatch('hit', this.health);
 
     if (!this.alive || this.hitting) return;
@@ -458,8 +460,6 @@ export default class Player extends Character {
       this.lastAnimation = hitAnimation;
       this.currentAnimation = this.animations[hitAnimation];
     }, 100);
-
-    setTimeout(this.checkIfAlive.bind(this), 500);
 
     setTimeout(() => {
       if (!this.alive) return;
