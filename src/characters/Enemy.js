@@ -17,17 +17,18 @@ const colliderMaterial = new MeshBasicMaterial({ visible: false });
 export default class Enemy extends Character {
   constructor (id, character, animations, onLoad) {
     if (character) {
-      const clone = SkeletonUtils.clone(character);
+      const enemy = SkeletonUtils.clone(character);
       super('/assets/models/enemy.glb', config, null);
 
-      this.createMixer(clone);
-      this.cloneMaterial(clone);
+      this.createMixer(enemy);
+      this.cloneMaterial(enemy);
+
       this.createAnimations(animations);
-      this._setDefaultState(id, clone, animations, null);
+      this._setDefaultState(id, enemy);
     } else {
       super(
         '/assets/models/enemy.glb', config, (character, animations) =>
-          this._setDefaultState(id, character, animations, onLoad)
+          onLoad(character, animations)
       );
     }
 
@@ -49,7 +50,7 @@ export default class Enemy extends Character {
     this.moving = true;
   }
 
-  _setDefaultState (id, character, animations, onLoad) {
+  _setDefaultState (id, character) {
     this.animations.softAttack.clampWhenFinished = true;
     this.animations.hardAttack.clampWhenFinished = true;
 
@@ -84,11 +85,6 @@ export default class Enemy extends Character {
     this._addHeadCollider(character);
     this._addBodyCollider(character);
     this._addLegsCollider(character);
-
-    if (onLoad) {
-      this._mesh.material.opacity = 0;
-      onLoad(character, animations);
-    }
   }
 
   _addHeadCollider (character) {

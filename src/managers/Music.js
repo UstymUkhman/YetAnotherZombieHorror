@@ -17,7 +17,7 @@ class Music {
       track.autoplay = false;
       track.muted = false;
       track.loop = false;
-      track.volume = 0.5;
+      track.volume = 0.1;
       track.load();
     }
   }
@@ -47,7 +47,9 @@ class Music {
     const next = this._index + 1;
     const tracks = this.tracks.length;
 
-    this.tracks[this._index].stop();
+    this.tracks[this._index].pause();
+    this.tracks[this._index].currentTime = 0;
+
     this._index = next === tracks ? 0 : next;
     this.toggle(true);
   }

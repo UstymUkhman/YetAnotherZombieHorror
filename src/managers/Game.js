@@ -1,7 +1,6 @@
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 import { AudioLoader } from '@three/loaders/AudioLoader';
 // import Stats from 'three/examples/js/libs/stats.min';
-import { SkeletonUtils } from '@utils/SkeletonUtils';
 
 import { PI_2, PI_3, random } from '@/utils/number';
 import { Quaternion } from '@three/math/Quaternion';
@@ -48,10 +47,11 @@ export default class Game {
     this.stage = new Stage();
     this.calls = new Map();
 
+    this.playerPosition = null;
     this.visibleRifle = false;
-    this._animations = null;
+    this.animations = null;
     this._paused = false;
-    this._enemySFX = {};
+    this.enemySFX = {};
 
     this.player = null;
     this.enemy = null;
@@ -79,29 +79,28 @@ export default class Game {
 
     this.player = new Player(character => {
       this.calls.set(-1, this.player.update.bind(this.player));
+      this.playerPosition = this.player.character.position;
+      this.enemies[0].playerPosition = this.playerPosition;
+
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
     });
 
-    const enemy = new Enemy(this.enemyID, this.enemy, this._animations, (character, animations) => {
-      this.calls.set(this.enemyID, enemy.update.bind(enemy));
-      // this.enemy = SkeletonUtils.clone(character);
-      this.stage.scene.add(character);
-
-      this._animations = animations;
+    const enemy = new Enemy(this.enemyID, this.enemy, this.animations, (character, animations) => {
+      this.animations = animations;
       this.enemy = character;
-      this._createSFX();
-      this.enemyID++;
+      this.createSFX(enemy);
     });
-
-    this.enemies.push(enemy);
   }
 
-  _createSFX () {
-    const enemySFX = this.enemies[0].settings.sounds;
+  createSFX (enemy) {
     const listener = this.stage.camera.children[0];
     const playerSFX = this.player.settings.sounds;
+    const enemySFX = enemy.settings.sounds;
+
+    const totalSFX = Object.keys(enemySFX).length;
     const audioLoader = new AudioLoader();
+    let loadedSFX = 0;
 
     for (const sfx in playerSFX) {
       audioLoader.load(playerSFX[sfx], (buffer) => {
@@ -110,34 +109,34 @@ export default class Game {
         this.player.sfx[sfx] = sound;
 
         sound.setBuffer(buffer);
-        sound.setVolume(5);
+        sound.setVolume(25);
       });
     }
 
     for (const sfx in enemySFX) {
       audioLoader.load(enemySFX[sfx], (buffer) => {
         const sound = new PositionalAudio(listener);
-        this._enemySFX[sfx] = sound;
+        this.enemySFX[sfx] = sound;
 
         sound.setBuffer(buffer);
-        sound.setVolume(5);
+        sound.setVolume(25);
+
+        if (++loadedSFX === totalSFX) {
+          this.spawnEnemy();
+        }
       });
     }
-
-    this.enemies[0].addSounds(this._enemySFX);
   }
 
   init () {
     setTimeout(() => {
       const colliders = this.getEnemyColliders();
       this.player.setWeapon(colliders, this.pistol, false);
+      this.player.weapon.targets = this.getEnemyColliders();
 
       this.calls.set(-2, this.checkPlayerDistance.bind(this));
       this.calls.set(-3, this.stage.render.bind(this.stage));
       this.calls.set(-4, Input.update.bind(Input));
-
-      this.playerPosition = this.player.character.position;
-      this.enemies[0].playerPosition = this.playerPosition;
 
       this.player.lastDirections = Input.moves;
       Input.player = this.player;
@@ -150,7 +149,6 @@ export default class Game {
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
 
-      this.enemies[0].fadeIn();
       this.stage.createGrid();
       this.stage.fadeIn();
     }, 200);
@@ -307,18 +305,21 @@ export default class Game {
   }
 
   spawnEnemy () {
-    const enemy = new Enemy(this.enemyID, this.enemy, this._animations);
+    const enemy = new Enemy(this.enemyID, this.enemy, this.animations);
     this.calls.set(this.enemyID, enemy.update.bind(enemy));
 
     enemy.playerPosition = this.playerPosition;
-    enemy.addSounds(this._enemySFX);
-    enemy.setRandomPosition();
+    enemy.addSounds(this.enemySFX);
     enemy.fadeIn();
 
     this.enemyID++;
     this.enemies.push(enemy);
     this.stage.scene.add(enemy.character);
-    this.player.weapon.targets = this.getEnemyColliders();
+
+    if (this.player.weapon) {
+      this.player.weapon.targets = this.getEnemyColliders();
+      enemy.setRandomPosition();
+    }
   }
 
   spawnRifle () {

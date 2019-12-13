@@ -6,9 +6,9 @@ const build = require('yargs').argv.env === 'build';
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const HOST = process.env.HOST;
-const PORT = process.env.PORT && Number(process.env.PORT);
 process.env.NODE_ENV = build ? 'production' : 'development';
+const PORT = process.env.PORT && Number(process.env.PORT);
+const HOST = process.env.HOST;
 
 const productionPlugins = [
   new UglifyJsPlugin({

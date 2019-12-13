@@ -121,6 +121,8 @@ export default class Character {
   }
 
   dispose () {
+    const children = this.character.children;
+
     this.rightUpLeg.remove(this.colliders[2]);
     this.leftUpLeg.remove(this.colliders[3]);
     this.rightLeg.remove(this.colliders[4]);
@@ -133,6 +135,10 @@ export default class Character {
 
     for (let c = 0; c < this.colliders.length; c++) {
       this.colliders.splice(c, 1);
+    }
+
+    for (let c = 0; c < children.length; c++) {
+      this.character.remove(children[c]);
     }
 
     for (const animation in this.animations) {
