@@ -15,5 +15,8 @@
     "ForwardRight": [-0.065, 0.065],
     "ForwardLeft": [0.065, 0.065],
     "Forward": [0, 0.1]
+  },
+
+  "sounds": {
   }
 }

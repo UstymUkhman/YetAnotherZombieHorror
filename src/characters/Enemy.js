@@ -26,8 +26,8 @@ export default class Enemy extends Character {
       this._setDefaultState(id, clone, animations, null);
     } else {
       super(
-        '/assets/models/enemy.glb', config, (character, gltfAnimations) =>
-          this._setDefaultState(id, character, gltfAnimations, onLoad)
+        '/assets/models/enemy.glb', config, (character, animations) =>
+          this._setDefaultState(id, character, animations, onLoad)
       );
     }
 
@@ -163,6 +163,14 @@ export default class Enemy extends Character {
     this.leftUpLeg.add(leftUpLegCollider);
     this.rightLeg.add(rightLegCollider);
     this.leftLeg.add(leftLegCollider);
+  }
+
+  addSounds (sounds) {
+    this.sfx = sounds;
+
+    for (const sfx in sounds) {
+      this.character.add(sounds[sfx]);
+    }
   }
 
   setRandomPosition () {
@@ -410,8 +418,10 @@ export default class Enemy extends Character {
   death () {
     const death = this.crawling ? 'crawlDeath' : 'death';
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
+    if (this.sfx.death.isPlaying) this.sfx.death.stop();
     this.animations[death].play();
     this.fadeOut(this.crawling);
+    this.sfx.death.play();
 
     this.attacking = false;
     this.running = false;
@@ -436,8 +446,10 @@ export default class Enemy extends Character {
     }
 
     this.currentAnimation.crossFadeTo(this.animations[death], 0.5, true);
+    if (this.sfx.death.isPlaying) this.sfx.death.stop();
     this.animations[death].play();
     this.fadeOut(crawling);
+    this.sfx.death.play();
 
     this.attacking = false;
     this.running = false;

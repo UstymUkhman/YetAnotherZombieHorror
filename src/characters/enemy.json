@@ -8,5 +8,9 @@
     "Running": [0, 0.07],
     "Falling": [0, 0.015],
     "Crawling": [0, 0.01]
+  },
+
+  "sounds": {
+    "death": "/assets/sounds/death.mp3"
   }
 }
