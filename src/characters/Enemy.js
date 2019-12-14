@@ -8,9 +8,11 @@ import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 
+import ENEMY from '@/assets/models/enemy.glb';
 import config from '@/characters/enemy.json';
 import { random } from '@/utils/number';
 import anime from 'animejs';
+
 
 const colliderMaterial = new MeshBasicMaterial({ visible: false });
 
@@ -18,7 +20,7 @@ export default class Enemy extends Character {
   constructor (id, character, animations, onLoad) {
     if (character) {
       const enemy = SkeletonUtils.clone(character);
-      super('/assets/models/enemy.glb', config, null);
+      super(ENEMY, config, null);
 
       this.createMixer(enemy);
       this.cloneMaterial(enemy);
@@ -27,7 +29,7 @@ export default class Enemy extends Character {
       this._setDefaultState(id, enemy);
     } else {
       super(
-        '/assets/models/enemy.glb', config, (character, animations) =>
+        ENEMY, config, (character, animations) =>
           onLoad(character, animations)
       );
     }

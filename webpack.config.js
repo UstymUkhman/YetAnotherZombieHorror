@@ -78,11 +78,18 @@ module.exports = {
         path.resolve('./node_modules/three/src')
       ]
     }, {
-      test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i,
+      test: /\.(mp4|webm)(\?.*)?$/i,
       loader: 'url-loader',
       options: {
         limit: 10000,
-        name: path.posix.join('assets', '[name].[ext]')
+        name: path.posix.join('assets/music', '[name].[ext]')
+      }
+    }, {
+      test: /\.(ogg|mp3|wav|flac|aac)(\?.*)?$/i,
+      loader: 'url-loader',
+      options: {
+        limit: 10000,
+        name: path.posix.join('assets/sfx', '[name].[ext]')
       }
     }, {
       test: /\.(glsl|vert|frag)$/i,
@@ -92,23 +99,23 @@ module.exports = {
       loader: 'url-loader',
       options: {
         limit: 10000,
-        name: path.posix.join('assets', '[name].[ext]')
+        name: path.posix.join('assets/fonts', '[name].[ext]')
       }
     }, {
       test: /\.(gltf)$/i,
       loader: 'gltf-loader-2'
     }, {
-      test: /\.(bin|png|jpe?g|gif|glb)(\?.*)?$/i,
+      test: /\.(bin|gif|glb)(\?.*)?$/i,
       loader: 'file-loader',
       options: {
-        name: path.posix.join('assets', '[name].[ext]')
+        name: path.posix.join('assets/models', '[name].[ext]')
       }
     }, {
-      test: /\.(cube)$/i,
+      test: /\.(png|jpe?g|cube)$/i,
       use: [{
         loader: 'file-loader',
         options: {
-          name: path.posix.join('assets', '[name].png')
+          name: path.posix.join('assets/img', '[name].png')
         }
       }, {
         loader: 'lut-loader'

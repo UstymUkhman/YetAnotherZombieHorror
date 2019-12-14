@@ -1,6 +1,6 @@
 <div class="pistol">
   {#if visible}
-    <img src="assets/1911.png" alt="Pistol" in:enter out:leave />
+    <img src="assets/img/1911.png" alt="Pistol" in:enter out:leave />
 
     <div class="ammo" transition:fade="{{ duration: 300, delay: 150 }}">
       <span>∞</span>

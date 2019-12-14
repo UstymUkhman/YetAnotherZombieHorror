@@ -1,6 +1,6 @@
 <div class="rifle">
   {#if visible}
-    <img src="assets/AK47.png" alt="AK-47" in:enter out:leave />
+    <img src="assets/img/AK47.png" alt="AK-47" in:enter out:leave />
 
     <div class="ammo" transition:fade="{{ duration: 300, delay: 150 }}">
       <span>{ magazine } / { ammo }</span>

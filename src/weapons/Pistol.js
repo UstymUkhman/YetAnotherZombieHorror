@@ -2,14 +2,17 @@ import { Vector3 } from '@three/math/Vector3';
 import { random } from '@/utils/number';
 import Weapon from '@/weapons/Weapon';
 
+import PISTOL from '@/assets/models/1911.glb';
+import SHOOT from '@/assets/sfx/1911.mp3';
+
 const ROTATION = new Vector3(Math.PI / 2, Math.PI + 0.2, -0.075);
 const POSITION = new Vector3(-10, -4, 0.25);
 
 export default class Pistol extends Weapon {
   constructor (camera) {
     const settings = {
-      model: '/assets/models/1911.glb',
-      shoot: '/assets/sounds/1911.mp3'
+      model: PISTOL,
+      shoot: SHOOT
     };
 
     super(settings, camera, arm => {

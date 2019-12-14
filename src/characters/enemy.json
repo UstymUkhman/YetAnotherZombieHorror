@@ -11,6 +11,6 @@
   },
 
   "sounds": {
-    "death": "/assets/sounds/death.mp3"
+    "death": "assets/sfx/death.mp3"
   }
 }

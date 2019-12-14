@@ -9,12 +9,13 @@ pids
 .vscode
 .DS_Store
 
-node_modules
-public/*.map
-src/assets/*/*
-
 yarn.lock
 .lock-wscript
 yarn-error.lock
 package-lock.json
 .sublime-workspace
+
+node_modules
+public/*.map
+src/assets/*/*
+!src/assets/*/.gitkeep

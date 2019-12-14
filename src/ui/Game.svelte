@@ -88,7 +88,7 @@
 
 <style>
 @font-face {
-  src: url('/assets/fonts/FaceYourFears.ttf') format('truetype');
+  src: url('../assets/fonts/FaceYourFears.ttf') format('truetype');
   font-family: 'FaceYourFears';
   font-stretch: normal;
   font-weight: normal;
@@ -96,7 +96,7 @@
 }
 
 @font-face {
-  src: url('/assets/fonts/DrawingBlood.ttf') format('truetype');
+  src: url('../assets/fonts/DrawingBlood.ttf') format('truetype');
   font-family: 'DrawingBlood';
   font-stretch: normal;
   font-weight: normal;

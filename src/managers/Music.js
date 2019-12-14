@@ -1,9 +1,9 @@
 class Music {
   constructor () {
     this.tracks = [
-      new Audio('/assets/music/zeig-dich.mp3'),
-      new Audio('/assets/music/day-of-the-dead.mp3'),
-      new Audio('/assets/music/haunted.mp3')
+      new Audio('assets/music/zeig-dich.mp3'),
+      new Audio('assets/music/day-of-the-dead.mp3'),
+      new Audio('assets/music/haunted.mp3')
     ];
 
     this._volume = 1;
