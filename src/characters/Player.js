@@ -11,9 +11,9 @@ import anime from 'animejs';
 const DEATH_CAMERA_ROTATION = new Vector3(Math.PI / 2, Math.PI, 0);
 const DEATH_CAMERA_POSITION = new Vector3(-0.5, 12, -0.5);
 
-const AIM_CAMERA = new Vector3(-0.75, 3, -1.25);
-const RUN_CAMERA = new Vector3(-2.5, 3, -7);
-const CAMERA = new Vector3(-1.5, 3, -3.5);
+const AIM_CAMERA = new Vector3(-0.6, 2.85, -1);
+const CAMERA = new Vector3(-1.1, 2.75, -2.5);
+const RUN_CAMERA = new Vector3(-2, 2.5, -5);
 
 export default class Player extends Character {
   constructor (onLoad) {
@@ -237,6 +237,7 @@ export default class Player extends Character {
 
   _runCameraAnimation () {
     const x = this.running ? RUN_CAMERA.x : CAMERA.x;
+    const y = this.running ? RUN_CAMERA.y : CAMERA.y;
     const z = this.running ? RUN_CAMERA.z : CAMERA.z;
 
     const delay = this.running ? 100 : 0;
@@ -247,6 +248,7 @@ export default class Player extends Character {
       duration: 300,
       delay: delay,
       x: x,
+      y: y,
       z: z
     });
   }
@@ -339,6 +341,7 @@ export default class Player extends Character {
     if (this.running && this.moving && !aiming) return;
 
     const x = aiming ? AIM_CAMERA.x : CAMERA.x;
+    const y = aiming ? AIM_CAMERA.y : CAMERA.y;
     const z = aiming ? AIM_CAMERA.z : CAMERA.z;
 
     anime({
@@ -347,6 +350,7 @@ export default class Player extends Character {
       duration: duration,
       delay: delay,
       x: x,
+      y: y,
       z: z
     });
   }

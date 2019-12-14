@@ -1,6 +1,6 @@
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 import { AudioLoader } from '@three/loaders/AudioLoader';
-// import Stats from 'three/examples/js/libs/stats.min';
+import Stats from 'three/examples/js/libs/stats.min';
 
 import { PI_2, PI_3, random } from '@/utils/number';
 import { Quaternion } from '@three/math/Quaternion';
@@ -47,6 +47,7 @@ export default class Game {
     this.stage = new Stage();
     this.calls = new Map();
 
+    this.loadedEnemySFX = false;
     this.playerPosition = null;
     this.visibleRifle = false;
     this.animations = null;
@@ -60,15 +61,15 @@ export default class Game {
     this.enemyID = 0;
     this.killed = 0;
 
-    // this.createStats();
+    this.createStats();
     this.loop();
   }
 
-  /* createStats () {
+  createStats () {
     this.stats = new Stats();
     this.stats.showPanel(0);
     document.body.appendChild(this.stats.domElement);
-  } */
+  }
 
   loadAssets () {
     this.pistol = new Pistol(this.stage.camera);
@@ -80,25 +81,26 @@ export default class Game {
     this.player = new Player(character => {
       this.calls.set(-1, this.player.update.bind(this.player));
       this.playerPosition = this.player.character.position;
-      this.enemies[0].playerPosition = this.playerPosition;
-
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
+
+      if (this.loadedEnemySFX) {
+        this.spawnEnemy();
+      }
     });
 
     const enemy = new Enemy(this.enemyID, this.enemy, this.animations, (character, animations) => {
+      this.createSFX(enemy.settings.sounds);
       this.animations = animations;
       this.enemy = character;
-      this.createSFX(enemy);
     });
   }
 
-  createSFX (enemy) {
+  createSFX (sounds) {
     const listener = this.stage.camera.children[0];
     const playerSFX = this.player.settings.sounds;
-    const enemySFX = enemy.settings.sounds;
 
-    const totalSFX = Object.keys(enemySFX).length;
+    const totalSFX = Object.keys(sounds).length;
     const audioLoader = new AudioLoader();
     let loadedSFX = 0;
 
@@ -113,15 +115,16 @@ export default class Game {
       });
     }
 
-    for (const sfx in enemySFX) {
-      audioLoader.load(enemySFX[sfx], (buffer) => {
+    for (const sfx in sounds) {
+      audioLoader.load(sounds[sfx], (buffer) => {
+        this.loadedEnemySFX = ++loadedSFX === totalSFX;
         const sound = new PositionalAudio(listener);
         this.enemySFX[sfx] = sound;
 
         sound.setBuffer(buffer);
         sound.setVolume(25);
 
-        if (++loadedSFX === totalSFX) {
+        if (this.loadedEnemySFX && this.playerPosition) {
           this.spawnEnemy();
         }
       });
@@ -366,7 +369,7 @@ export default class Game {
   }
 
   loop () {
-    // this.stats.begin();
+    this.stats.begin();
 
     if (!this._paused) {
       const calls = this.calls.values();
@@ -375,7 +378,7 @@ export default class Game {
     }
 
     requestAnimationFrame(this.loop.bind(this));
-    // this.stats.end();
+    this.stats.end();
   }
 
   end () {

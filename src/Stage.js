@@ -46,9 +46,10 @@ export default class Playground {
 
   createCamera () {
     this.camera = new PerspectiveCamera(45, this.ratio, 0.1, 1000);
+    this.camera.position.set(-1.1, 2.75, -2.5);
     this.camera.rotation.set(0, Math.PI, 0);
-    this.camera.position.set(-1.5, 3, -3.5);
     this.camera.setFocalLength(25.0);
+    window.camera = this.camera;
   }
 
   createLights () {

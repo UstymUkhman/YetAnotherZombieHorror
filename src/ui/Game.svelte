@@ -133,22 +133,6 @@
   top: 0;
 }
 
-:global(canvas) {
-  transition: opacity 0.5s;
-  position: absolute;
-  display: block;
-  opacity: 0;
-
-  height: 100%;
-  width: 100%;
-
-  padding: 0;
-  margin: 0;
-
-  left: 0;
-  top: 0;
-}
-
 :global(h1, h2, h3, h4) {
   font-family: 'FaceYourFears', sans-serif;
   letter-spacing: normal;
@@ -184,5 +168,21 @@
 :global(h3) {
   letter-spacing: 0.3rem;
   font-size: 3vw;
+}
+
+:global(body > canvas) {
+  transition: opacity 0.5s;
+  position: absolute;
+  display: block;
+  opacity: 0;
+
+  height: 100%;
+  width: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  left: 0;
+  top: 0;
 }
 </style>
