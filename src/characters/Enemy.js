@@ -502,6 +502,20 @@ export default class Enemy extends Character {
     }
   }
 
+  dispose () {
+    super.dispose();
+
+    delete this.currentAnimation;
+    delete this.playerPosition;
+    delete this.crawlTimeout;
+
+    delete this.hitTimeout;
+    delete this.hitFadeOut;
+    delete this.runTimeout;
+    delete this.hitTime;
+    delete this.mixer;
+  }
+
   get _direction () {
     let direction = this.running ? 'Running' : this.moving ? 'Walking' : 'Idle';
     return this.crawling ? this.gettingHit ? 'Idle' : 'Crawling' : direction;

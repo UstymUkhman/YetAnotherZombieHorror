@@ -554,6 +554,41 @@ export default class Player extends Character {
     return `${this.equipRifle ? 'rifle' : 'pistol'}${direction}Hit`;
   }
 
+  dispose () {
+    const children = this.character.children;
+
+    for (let c = 0; c < children.length; c++) {
+      this.character.remove(children[c]);
+    }
+
+    for (const animation in this.animations) {
+      this.animations[animation].stop();
+      delete this.animations[animation];
+    }
+
+    delete this.currentAnimation;
+    delete this._cameraPosition;
+    delete this._cameraRotation;
+
+    delete this.reloadTimeout;
+    delete this.aimTimeout;
+    delete this.animations;
+    delete this.colliders;
+    delete this.character;
+    delete this.settings;
+    delete this.moveTime;
+    delete this.idleTime;
+    delete this.aimTime;
+
+    delete this.weapon;
+    delete this.pistol;
+    delete this.speed;
+    delete this.mixer;
+    delete this._hand;
+    delete this.ak47;
+    delete this.sfx;
+  }
+
   get _idle () {
     return `${this.equipRifle ? 'rifle' : 'pistol'}Idle`;
   }

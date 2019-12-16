@@ -54,6 +54,15 @@ class Music {
     this.toggle(true);
   }
 
+  dispose () {
+    this.toggle();
+
+    for (let t = 0; t < this.tracks.length; t++) {
+      this.tracks[t].pause();
+      delete this.tracks[t];
+    }
+  }
+
   set volume (value) {
     for (let track of this.tracks) {
       track.volume = value;

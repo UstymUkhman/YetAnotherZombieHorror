@@ -21,6 +21,11 @@ class Input {
     this._onKeyDown = this.onKeyDown.bind(this);
     this._onKeyUp = this.onKeyUp.bind(this);
 
+    this.addEvents();
+    this.init();
+  }
+
+  init () {
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
     this.rotationX.speed = 15;
@@ -37,15 +42,10 @@ class Input {
 
     this.shift = false;
     this.move = '0000';
-    this.addEvents();
   }
 
   requestPointerLock () {
     document.documentElement.requestPointerLock();
-  }
-
-  exitPointerLock () {
-    document.exitPointerLock();
   }
 
   onPointerLockChange (event) {
@@ -64,6 +64,10 @@ class Input {
     event.stopPropagation();
     event.preventDefault();
     console.error(event);
+  }
+
+  exitPointerLock () {
+    document.exitPointerLock();
   }
 
   onContextMenu (event) {
@@ -100,6 +104,19 @@ class Input {
 
     this.rotationY.target = y;
     this.rotationX.target = x;
+  }
+
+  onMousePress () {
+    const empty = !this.player.weapon.magazine;
+    const recoil = this.player.shoot(this._mouseDown);
+    this._mouseDown = this._mouseDown && this.player.equipRifle && !empty;
+
+    this.rotationY.value += recoil.y;
+    this.rotationX.value += recoil.x;
+
+    this.player.character.rotation.y = this.rotationX.value;
+    this.character.rotation.x = this.rotationY.value;
+    this.camera.rotation.x = this.rotationY.value;
   }
 
   onMouseUp (event) {
@@ -284,17 +301,22 @@ class Input {
     }
   }
 
-  onMousePress () {
-    const empty = !this.player.weapon.magazine;
-    const recoil = this.player.shoot(this._mouseDown);
-    this._mouseDown = this._mouseDown && this.player.equipRifle && !empty;
+  dispose () {
+    delete this.rightTimeout;
+    delete this.idleTimeout;
+    delete this.mouseRight;
+    delete this.rotationX;
+    delete this.rotationY;
 
-    this.rotationY.value += recoil.y;
-    this.rotationX.value += recoil.x;
+    delete this._mouseDown;
+    delete this._keyDown;
+    delete this.player;
+    delete this.moves;
 
-    this.player.character.rotation.y = this.rotationX.value;
-    this.character.rotation.x = this.rotationY.value;
-    this.camera.rotation.x = this.rotationY.value;
+    this.removeEvents();
+    delete this.paused;
+    delete this.shift;
+    delete this.move;
   }
 
   get character () {

@@ -130,9 +130,6 @@ export default class Character {
     this.spine.remove(this.colliders[1]);
     this.head.remove(this.colliders[0]);
 
-    clearTimeout(this.crawlTimeout);
-    clearTimeout(this.hitTimeout);
-
     for (let c = 0; c < this.colliders.length; c++) {
       this.colliders.splice(c, 1);
     }
@@ -150,6 +147,9 @@ export default class Character {
     delete this.animations;
     delete this.colliders;
     delete this.character;
+    delete this.settings;
+    delete this.speed;
+    delete this.sfx;
   }
 
   static setBounds (stage) {

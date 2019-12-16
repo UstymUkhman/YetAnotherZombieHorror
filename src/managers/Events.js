@@ -21,6 +21,14 @@ class Events {
     delete this._callbacks[name];
     delete this._events[name];
   }
+
+  dispose () {
+    for (const name in this._events) {
+      document.removeEventListener(name, this._callbacks[name], false);
+      delete this._callbacks[name];
+      delete this._events[name];
+    }
+  }
 };
 
 export default new Events();

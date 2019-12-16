@@ -107,6 +107,7 @@ export default class Playground {
   createRenderer () {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    document.body.appendChild(this.renderer.domElement);
 
     this.renderer.toneMapping = ReinhardToneMapping;
     this.renderer.setSize(this.width, this.height);
@@ -114,9 +115,6 @@ export default class Playground {
     this.renderer.toneMappingExposure = 1.25;
     this.renderer.shadowMap.enabled = true;
     this.renderer.setClearColor(FOG, 1.0);
-
-    this.element = this.renderer.domElement;
-    document.body.appendChild(this.element);
   }
 
   createEvents () {
@@ -125,7 +123,7 @@ export default class Playground {
   }
 
   fadeIn () {
-    this.element.style.opacity = 1;
+    this.renderer.domElement.style.opacity = 1;
     this.render();
   }
 
@@ -140,10 +138,16 @@ export default class Playground {
     this.renderer.setSize(this.width, this.height);
   }
 
-  destroy () {
+  dispose () {
     window.removeEventListener('resize', this._onResize, false);
     document.body.removeChild(this.renderer.domElement);
+    const children = this.scene.children;
 
+    for (let c = 0; c < children.length; c++) {
+      this.scene.remove(children[c]);
+    }
+
+    delete this.camera.children[0];
     delete this.renderer;
     delete this.camera;
     delete this.scene;

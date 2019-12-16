@@ -17,6 +17,7 @@ import Enemy from '@/characters/Enemy';
 import Gamepad from '@/managers/Gamepad';
 import Events from '@/managers/Events';
 import Input from '@/managers/Input';
+import Music from '@/managers/Music';
 
 import Pistol from '@/weapons/Pistol';
 import AK47 from '@/weapons/AK47';
@@ -56,6 +57,7 @@ export default class Game {
 
     this.player = null;
     this.enemy = null;
+    this._raf = null;
 
     this.enemies = [];
     this.enemyID = 0;
@@ -379,25 +381,42 @@ export default class Game {
       for (const call of calls) call(delta);
     }
 
-    requestAnimationFrame(this.loop.bind(this));
     this.stats.end();
+    this._raf = requestAnimationFrame(this.loop.bind(this));
   }
 
   end () {
     document.body.removeChild(this.stats.domElement);
-    // Input.destroy.call(Input);
-    this.player.dispose();
-    this.stage.destroy();
-    this.calls.clear();
+    cancelAnimationFrame(this._raf);
 
     for (let e = 0; e < this.enemies.length; e++) {
       this.enemies[e].dispose();
       delete this.enemies[e];
     }
 
+    Input.dispose.call(Input);
+    this.player.dispose();
+    this.stage.dispose();
+
+    this.calls.clear();
+    Events.dispose();
+    Music.dispose();
+
+    delete this.playerPosition;
+    delete this.animations;
+    delete this.enemySFX;
+    delete this.enemies;
     delete this.player;
+    delete this.enemy;
     delete this.stage;
-    delete this.stats;
+
+    delete this._angle;
+    delete this._quat;
+    delete this._raf;
+
+    delete this.vec1;
+    delete this.vec2;
+    delete this.vec3;
   }
 
   set paused (now) {
