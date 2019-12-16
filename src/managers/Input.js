@@ -75,9 +75,10 @@ class Input {
   }
 
   onMouseDown (event) {
-    if (this.paused) return;
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+
+    if (this.paused || this.dead) return;
 
     if (event.which === 1) {
       const aiming = this.player.running && this.player.aiming;
@@ -91,7 +92,7 @@ class Input {
   }
 
   onMouseMove (event) {
-    if (this.paused) return;
+    if (this.paused || this.dead) return;
 
     const maxY = this.player.aiming ? 0.4 : 0.2;
     const x = this.player.character.rotation.y - (event.movementX || 0) * 0.005;
@@ -102,9 +103,13 @@ class Input {
   }
 
   onMouseUp (event) {
-    if (this.paused) return;
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+
+    if (this.paused || this.dead) {
+      this._mouseDown = false;
+      return;
+    }
 
     if (event.which === 1) {
       this._mouseDown = false;
@@ -124,9 +129,10 @@ class Input {
   }
 
   onKeyDown (event) {
-    if (this.paused) return;
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+
+    if (this.paused || this.dead) return;
 
     if (event.keyCode === 16 && this.moves[0] && !this.shift) {
       this.moves[1] = 0;
@@ -174,9 +180,10 @@ class Input {
   }
 
   onKeyUp (event) {
-    if (this.paused) return;
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+
+    if (this.paused || this.dead) return;
 
     if (event.keyCode === 16 && this.shift) {
       setTimeout(() => { this.shift = false; }, 150);
@@ -300,6 +307,10 @@ class Input {
 
   get pointerLocked () {
     return !!document.pointerLockElement;
+  }
+
+  get dead () {
+    return !this.player.alive;
   }
 };
 

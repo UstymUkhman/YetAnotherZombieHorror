@@ -443,9 +443,9 @@ export default class Player extends Character {
     setTimeout(this.checkIfAlive.bind(this), 500);
     Events.dispatch('hit', this.health);
 
-    if (!this.alive || this.hitting) return;
-    const hitDuration = this.equipRifle ? 1000 : 1500;
+    if (!this.alive || this.hitting) return !this.health;
     const hitAnimation = this.getHitAnimation(direction);
+    const hitDuration = this.equipRifle ? 1000 : 1500;
 
     this.currentAnimation.crossFadeTo(this.animations[hitAnimation], 0.1, true);
     this.animations[hitAnimation].play();
@@ -477,7 +477,7 @@ export default class Player extends Character {
       }
     }, hitDuration);
 
-    return this.health <= 0;
+    return !this.health;
   }
 
   death () {

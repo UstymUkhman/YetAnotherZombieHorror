@@ -1,4 +1,4 @@
-<div class="overlay" transition:fade="{{ duration: 250 }}">
+<div class="overlay" transition:fade="{{ duration: duration, delay: delay || 0 }}">
   <div class="content" class:background={background}>
     <slot />
   </div>
@@ -10,6 +10,8 @@
 
   const dispatch = createEventDispatcher();
   export let background;
+  export let duration;
+  export let delay;
 </script>
 
 <style>
@@ -42,7 +44,6 @@
 
 .content.background {
   background-color: rgba(0, 0, 0, 0.75);
-
   height: 45vw;
   width: 80vw;
 }

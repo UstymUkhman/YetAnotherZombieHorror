@@ -232,12 +232,14 @@ export default class Game {
   }
 
   stopAllEnemies () {
-    this.calls.delete(-2);
-    const length = this.enemies.length;
+    if (this.calls.has(-2)) {
+      setTimeout(Input.exitPointerLock, 5000);
+      const length = this.enemies.length;
+      this.calls.delete(-2);
 
-    for (let e = 0; e < length; e++) {
-      const enemy = this.enemies[e];
-      if (enemy.alive) enemy.idle();
+      for (let e = 0; e < length; e++) {
+        this.enemies[e].idle();
+      }
     }
   }
 

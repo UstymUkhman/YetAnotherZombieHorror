@@ -1,6 +1,6 @@
-<h1 class="title">Pause</h1>
+<h1>Pause</h1>
 
-<div class="resume">
+<div>
   <Button text="Resume" on:click={() => { dispatch('close') }} />
 </div>
 
@@ -17,7 +17,7 @@ h1 {
   display: table;
 }
 
-.resume {
+div {
   margin: 5vw auto 0;
   display: table;
 }

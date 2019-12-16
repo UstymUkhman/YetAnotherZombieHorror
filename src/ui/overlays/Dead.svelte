@@ -1,36 +1,24 @@
-<div class="overlay" transition:fade="{{ duration: 1000, delay: 5000 }}">
-  <h1>You Are Dead</h1>
+<h1>You Are Dead</h1>
+
+<div>
+  <Button text="Restart" on:click={() => { dispatch('') }} />
 </div>
 
 <script>
   import { createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
+  import Button from '@/ui/Button';
+
   const dispatch = createEventDispatcher();
 </script>
 
 <style>
-.overlay {
-  position: absolute;
-  display: block;
-
-  height: 100%;
-  width: 100%;
-
-  padding: 0;
-  margin: 0;
-
-  left: 0;
-  top: 0;
+h1 {
+  display: table;
 }
 
-h1 {
-  transform: translate(-50%, -50%);
-  position: absolute;
-
-  display: block;
-  margin: auto;
-
-  left: 50%;
-  top: 50%;
+div {
+  margin: 5vw auto 0;
+  display: table;
 }
 </style>

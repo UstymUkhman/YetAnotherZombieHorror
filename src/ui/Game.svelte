@@ -1,6 +1,6 @@
 <main id="game">
   {#if !ready}
-    <Overlay>
+    <Overlay duration={250}>
       <Loading {loading} {loaded} on:close={startGame} />
     </Overlay>
   {:else}
@@ -8,13 +8,15 @@
   {/if}
 
   {#if paused}
-    <Overlay>
+    <Overlay duration={250}>
       <Pause on:close={togglePause} />
     </Overlay>
   {/if}
 
   {#if dead}
-    <Dead />
+    <Overlay duration={1000} delay={4000}>
+      <Dead />
+    </Overlay>
   {/if}
 </main>
 
