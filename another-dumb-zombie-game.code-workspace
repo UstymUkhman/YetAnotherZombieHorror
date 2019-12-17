@@ -20,6 +20,9 @@
 			"@three": "three/src",
 			"svelte": "svelte",
 			"@": "/src"
+		},
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": false
 		}
   }
 }

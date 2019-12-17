@@ -190,7 +190,7 @@ export default class Game {
             Gamepad.vibrate(500);
 
             const dead = this.player.hit(direction, hitDelay);
-            if (dead) return this.stopAllEnemies();
+            if (dead) return this.stopAllEnemies(enemy.id);
           }, hitDelay);
         }
       } else if (next) {
@@ -224,8 +224,6 @@ export default class Game {
     const x = this.vec1.x * PI_2;
     const xPI = this._angle.x === -Math.PI;
 
-    // const right = (!pX && x0) || (pX && xPI);
-
     const left = (pX && x0) || (!pX && xPI);
     const front = (pZ && x0) || (!pZ && xPI);
     const view = y > (x - PI_3) && y < (x + PI_3);
@@ -233,14 +231,21 @@ export default class Game {
     return view && front ? 'Front' : left ? 'Left' : 'Right';
   }
 
-  stopAllEnemies () {
+  stopAllEnemies (killer) {
     if (this.calls.has(-2)) {
       setTimeout(Input.exitPointerLock, 5000);
       const length = this.enemies.length;
       this.calls.delete(-2);
 
       for (let e = 0; e < length; e++) {
-        this.enemies[e].idle();
+        const enemy = this.enemies[e];
+        const crawling = enemy.crawling;
+
+        if (enemy.id !== killer) {
+          enemy.fadeOut(crawling);
+        }
+
+        enemy.idle();
       }
     }
   }
@@ -252,7 +257,7 @@ export default class Game {
 
     if (alive) {
       enemy.headshot();
-      this.removeEnemy(event.data);
+      this.killEnemy(event.data);
     }
   }
 
@@ -266,7 +271,7 @@ export default class Game {
       const dead = !enemy.bodyHit(hit);
 
       if (dead) {
-        this.removeEnemy(event.data);
+        this.killEnemy(event.data);
       }
     }
   }
@@ -281,23 +286,16 @@ export default class Game {
       const dead = !enemy.legHit(hit);
 
       if (dead) {
-        this.removeEnemy(event.data);
+        this.killEnemy(event.data);
       }
     }
   }
 
-  removeEnemy (id) {
+  killEnemy (id) {
     setTimeout(() => {
       const index = findIndex(this.enemies, ['id', id]);
-      const enemy = this.enemies[index];
-
-      this.stage.scene.remove(enemy.character);
-      this.calls.delete(enemy.id);
-      enemy.dispose();
+      this.removeEnemy(index);
       this.killed++;
-
-      delete this.enemies[index];
-      this.enemies.splice(index, 1);
 
       const o = this.enemies.length;
       const n = Math.min(2 ** this.killed, 64);
@@ -306,9 +304,21 @@ export default class Game {
         this.spawnEnemy();
       }
 
-      // this.spawnEnemy();
       this.spawnRifle();
     }, 5000);
+  }
+
+  removeEnemy (index) {
+    console.log(index, this.enemies[index]);
+    const enemy = this.enemies[index];
+    if (!enemy) return;
+
+    this.stage.scene.remove(enemy.character);
+    this.calls.delete(enemy.id);
+    enemy.dispose();
+
+    delete this.enemies[index];
+    this.enemies.splice(index, 1);
   }
 
   spawnEnemy () {

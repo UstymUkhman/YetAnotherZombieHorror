@@ -19,6 +19,7 @@ export default class Player extends Character {
   constructor (onLoad) {
     super(PLAYER, config, character => {
       this._hand = character.getObjectByName('swatRightHand');
+      this.currentAnimation = this.animations.pistolIdle;
 
       this.animations.rifleReload.clampWhenFinished = true;
       this.animations.rifleAim.clampWhenFinished = true;
@@ -28,12 +29,11 @@ export default class Player extends Character {
       this.animations.rifleAim.setLoop(LoopOnce);
       this.animations.death.setLoop(LoopOnce);
 
-      this.currentAnimation = this.animations.pistolIdle;
       this.lastAnimation = 'pistolIdle';
-      this.currentAnimation.play();
-
       this.character = new Object3D();
       this.character.add(character);
+
+      this.currentAnimation.play();
       onLoad(this.character);
     });
 
@@ -122,15 +122,8 @@ export default class Player extends Character {
 
     this.currentAnimation.crossFadeTo(this.animations[this._idle], 0.1, true);
     this.animations[this._idle].play();
-    // clearTimeout(this.reloadTimeout);
-    // this.weapon.cancelReload();
-
-    // this.moving = false;
-    // this.running = false;
-    // this.reloading = false;
-
-    this.idleTime = now;
     this.shakeDirection = 0;
+    this.idleTime = now;
 
     this._runCameraAnimation();
     this._shakeCameraAnimation();
@@ -149,9 +142,7 @@ export default class Player extends Character {
     const animation = `${this.equipRifle ? 'rifle' : 'pistol'}${direction}`;
     const sameAnimation = this.lastAnimation === animation;
 
-    // this.moving = true;
-
-    if (this.aiming || this.hitting || /* this.reloading || */ sameAnimation) return;
+    if (this.aiming || this.hitting || sameAnimation) return;
     if (now - this.moveTime < 150) return;
 
     if (this.running) {
@@ -197,10 +188,9 @@ export default class Player extends Character {
     this.moving = running;
     this.running = running;
 
-    if (this.aiming || this.hitting /* || this.reloading */) return;
+    if (this.aiming || this.hitting) return;
     const run = `${this.equipRifle ? 'rifle' : 'pistol'}Run`;
 
-    // this.moving = running;
     this._runCameraAnimation();
     this.shakeDirection = ~~running;
 
@@ -382,15 +372,9 @@ export default class Player extends Character {
   }
 
   reload () {
-    // this.moving = false;
-    // this.running = false;
-
     const noAmmo = !this.weapon.ammo;
     const fullMagazine = this.weapon.magazine >= 30;
     if (this.reloading || this.hitting || fullMagazine || noAmmo) return;
-
-    // const running = this.running;
-    // const aiming = this.aiming;
 
     if (this.running) {
       Events.dispatch('run', false);
@@ -404,7 +388,6 @@ export default class Player extends Character {
     this.shakeDirection = 0;
     this.reloading = true;
     this.running = false;
-    // this.aiming = false;
 
     if (this.aiming) {
       this._aimCameraAnimation(false, 400, 0);
@@ -437,8 +420,8 @@ export default class Player extends Character {
   }
 
   hit (direction, delay) {
-    const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
-    this.health = Math.max(this.health - amount, 0);
+    // const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
+    this.health = 0; // Math.max(this.health - amount, 0);
 
     setTimeout(this.checkIfAlive.bind(this), 500);
     Events.dispatch('hit', this.health);

@@ -198,7 +198,6 @@ export default class Enemy extends Character {
 
       this.setDirection('Idle');
       this.lastAnimation = 'idle';
-
       this.currentAnimation.stop();
       this.currentAnimation = this.animations.idle;
     }, 250);
