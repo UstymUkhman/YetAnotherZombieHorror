@@ -32,8 +32,8 @@
   pointer-events: none;
   position: absolute;
 
-  height: 3.125vw;
-  width: 3.125vw;
+  height: 2.25vw;
+  width: 2.25vw;
 
   display: block;
   margin: auto;
@@ -54,21 +54,21 @@
   display: block;
   margin: auto;
   opacity: 1;
+  left: 1px;
 
   bottom: 0;
   right: 0;
-  left: 0;
   top: 0;
 }
 
 .line.horizontal {
-  height: 2px;
+  height: 1px;
   width: 45%;
 }
 
 .line.vertical {
   height: 45%;
-  width: 2px;
+  width: 1px;
 }
 
 .line.bottom {
@@ -83,7 +83,6 @@
 
 .line.left {
   right: auto;
-  left: 0;
 }
 
 .line.top {

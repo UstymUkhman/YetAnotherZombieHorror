@@ -7,6 +7,7 @@ import { Raycaster } from '@three/core/Raycaster';
 import { Vector2 } from '@three/math/Vector2';
 
 import { FrontSide } from '@three/constants';
+import { random } from '@/utils/number';
 import Events from '@/managers/Events';
 import to from 'await-to-js';
 
@@ -21,7 +22,9 @@ export default class Weapon {
     this._raycaster.near = NEAR;
     this.load(weapon, onLoad);
 
+    this.spread = { x: 0, y: 0 };
     this.magazine = Infinity;
+    this.verticalRecoil = 0;
     this._camera = camera;
     this._aiming = false;
 
@@ -114,9 +117,21 @@ export default class Weapon {
   }
 
   get target () {
+    this._origin.x += random(-this.spread.x, this.spread.x);
+    this._origin.y += random(-this.spread.y, this.spread.y);
+
     this._raycaster.setFromCamera(this._origin, this._camera);
     const colliders = this._raycaster.intersectObjects(this.targets);
     return colliders.length ? this.targets.indexOf(colliders[0].object) : -1;
+  }
+
+  get recoil () {
+    const energy = this.aiming ? 2 : 1;
+
+    return {
+      x: random(-this.spread.x, this.spread.x) / energy,
+      y: this.verticalRecoil / energy
+    };
   }
 
   set aiming (now) {

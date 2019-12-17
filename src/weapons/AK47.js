@@ -1,12 +1,12 @@
 import { Vector3 } from '@three/math/Vector3';
-import { random } from '@/utils/number';
-import Events from '@/managers/Events';
-import Weapon from '@/weapons/Weapon';
-
 import AK_47 from '@/assets/models/AK47.glb';
+
 import RELOAD from '@/assets/sfx/reload.mp3';
 import EMPTY from '@/assets/sfx/empty.mp3';
 import SHOOT from '@/assets/sfx/AK47.mp3';
+
+import Events from '@/managers/Events';
+import Weapon from '@/weapons/Weapon';
 
 const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
@@ -34,11 +34,17 @@ export default class AK47 extends Weapon {
       onLoad(this.asset);
     });
 
+    this.verticalRecoil = -0.03;
     this._reloading = false;
     this.aimTimeout = null;
     this.speed = 715000;
     this.magazine = 0;
     this.ammo = 0;
+
+    this.spread = {
+      x: 0.025,
+      y: 0.025
+    };
   }
 
   spawnOnStage () {
@@ -109,15 +115,6 @@ export default class AK47 extends Weapon {
   _resetArmPosition () {
     this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-  }
-
-  get recoil () {
-    const energy = this.aiming ? 2 : 1;
-
-    return {
-      x: random(-0.02, 0.02) / energy,
-      y: -0.03 / energy
-    };
   }
 
   get hit () {

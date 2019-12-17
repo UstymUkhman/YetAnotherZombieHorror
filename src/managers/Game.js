@@ -309,9 +309,7 @@ export default class Game {
   }
 
   removeEnemy (index) {
-    console.log(index, this.enemies[index]);
     const enemy = this.enemies[index];
-    if (!enemy) return;
 
     this.stage.scene.remove(enemy.character);
     this.calls.delete(enemy.id);

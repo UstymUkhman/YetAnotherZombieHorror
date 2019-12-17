@@ -420,8 +420,8 @@ export default class Player extends Character {
   }
 
   hit (direction, delay) {
-    // const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
-    this.health = 0; // Math.max(this.health - amount, 0);
+    const amount = delay > 750 ? 10 : delay > 500 ? 25 : 50;
+    this.health = Math.max(this.health - amount, 0);
 
     setTimeout(this.checkIfAlive.bind(this), 500);
     Events.dispatch('hit', this.health);
