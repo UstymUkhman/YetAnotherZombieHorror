@@ -238,14 +238,15 @@ export default class Game {
       this.calls.delete(-2);
 
       for (let e = 0; e < length; e++) {
-        const enemy = this.enemies[e];
-        const crawling = enemy.crawling;
+        // const enemy = this.enemies[e];
+        // const crawling = enemy.crawling;
 
-        if (enemy.id !== killer) {
-          enemy.fadeOut(crawling);
-        }
+        // if (enemy.id !== killer) {
+        //   enemy.fadeOut(crawling);
+        // }
 
-        enemy.idle();
+        // enemy.idle();
+        this.enemies[e].idle();
       }
     }
   }

@@ -1,3 +1,4 @@
+import { clamp } from '@/utils/number';
 import Input from '@/managers/Input';
 
 const BUTTONS = new Map();
@@ -7,6 +8,7 @@ BUTTONS.set(9, 'START');
 BUTTONS.set(10, 'RUN');
 BUTTONS.set(6, 'AIM');
 BUTTONS.set(7, 'SHOOT');
+BUTTONS.set(2, 'RELOAD');
 BUTTONS.set(5, 'CHANGE');
 
 class Gamepad {
@@ -19,6 +21,7 @@ class Gamepad {
     this._running = false;
     this._shooting = false;
     this._changing = false;
+    this._reloading = false;
     this._moves = [0, 0, 0, 0];
 
     this._onLost = this.onLost.bind(this);
@@ -38,6 +41,7 @@ class Gamepad {
 
   createCustomEvents () {
     this.rotation = new CustomEvent('rotation');
+    this.reload = new CustomEvent('reload');
     this.change = new CustomEvent('change');
     this.shoot = new CustomEvent('shoot');
 
@@ -48,6 +52,7 @@ class Gamepad {
     this.rotation.movementX = 0;
     this.rotation.movementY = 0;
 
+    this.reload.keyCode = 82;
     this.change.keyCode = 69;
     this.move.keyCode = -1;
     this.run.keyCode = 16;
@@ -112,6 +117,16 @@ class Gamepad {
           } else if (value < 0.75 && this._shooting) {
             Input.onMouseUp(this.shoot);
             this._shooting = false;
+          }
+
+          break;
+
+        case 'RELOAD':
+          if (!pressed && this._reloading) {
+            Input.onKeyUp(this.reload);
+            this._reloading = false;
+          } else if (pressed && !this._reloading) {
+            this._reloading = true;
           }
 
           break;
@@ -191,6 +206,9 @@ class Gamepad {
       this.rotation.movementY = 0;
     }
 
+    this.rotation.movementX = clamp(this.rotation.movementX, -50, 50);
+    this.rotation.movementY = clamp(this.rotation.movementY, -50, 50);
+
     Input.onMouseMove(this.rotation);
   }
 
@@ -216,6 +234,7 @@ class Gamepad {
 
   deleteCustomEvents () {
     delete this.rotation;
+    delete this.reload;
     delete this.change;
     delete this.shoot;
 

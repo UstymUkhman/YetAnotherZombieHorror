@@ -488,7 +488,9 @@ export default class Enemy extends Character {
       opacity: 0,
 
       complete: () => {
-        this.character.visible = false;
+        if (this.character) {
+          this.character.visible = false;
+        }
       }
     });
   }
