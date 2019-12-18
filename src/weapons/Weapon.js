@@ -57,13 +57,13 @@ export default class Weapon {
         });
 
         this.arm = gltf.scene;
-        this._loadSounds(weapon);
+        this.loadSounds(weapon);
         callback(gltf.scene);
       }
     });
   }
 
-  _loadSounds (sounds) {
+  loadSounds (sounds) {
     const listener = this._camera.children[0];
     const sfx = Object.keys(this.sfx);
 
@@ -102,7 +102,7 @@ export default class Weapon {
     if (!empty && target > -1) {
       const distance = collider.position.distanceTo(player);
       const time = Math.round(distance / this.speed);
-      const event = this._getEvent(target);
+      const event = this.getEvent(target);
 
       setTimeout(() => {
         Events.dispatch(event, collider.userData.enemy);
@@ -110,15 +110,26 @@ export default class Weapon {
     }
   }
 
-  _getEvent (index) {
+  getEvent (index) {
     const collider = index % 6;
     return !collider ? 'headshoot' :
       collider === 1 ? 'bodyHit' : 'legHit';
   }
 
+  reset () {
+    this.spread = { x: 0, y: 0 };
+    this.magazine = Infinity;
+    this.verticalRecoil = 0;
+    this._aiming = false;
+
+    this.ammo = Infinity;
+    this.targets = [];
+    this.damage = 10;
+  }
+
   get target () {
-    this._origin.x += random(-this.spread.x, this.spread.x);
-    this._origin.y += random(-this.spread.y, this.spread.y);
+    // this._origin.x += random(-this.spread.x, this.spread.x);
+    // this._origin.y += random(-this.spread.y, this.spread.y);
 
     this._raycaster.setFromCamera(this._origin, this._camera);
     const colliders = this._raycaster.intersectObjects(this.targets);

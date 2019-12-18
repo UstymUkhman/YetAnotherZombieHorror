@@ -22,17 +22,20 @@ export default class AK47 extends Weapon {
 
     super(settings, camera, arm => {
       this.asset = arm.clone(true);
-
-      this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
-      this.arm.scale.set(0.29, 0.29, 0.29);
-      this.arm.position.copy(POSITION);
-      this.arm.visible = false;
-
-      this.asset.scale.set(0.005, 0.005, 0.005);
-      this.asset.rotation.set(0, 0, 0);
-      this.asset.visible = false;
+      this.init();
       onLoad(this.asset);
     });
+  }
+
+  init () {
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+    this.arm.scale.set(0.29, 0.29, 0.29);
+    this.arm.position.copy(POSITION);
+    this.arm.visible = false;
+
+    this.asset.scale.set(0.005, 0.005, 0.005);
+    this.asset.rotation.set(0, 0, 0);
+    this.asset.visible = false;
 
     this.verticalRecoil = -0.03;
     this._reloading = false;
@@ -83,7 +86,7 @@ export default class AK47 extends Weapon {
 
   cancelReload () {
     if (this._reloading) this.sfx.reload.stop();
-    this._resetArmPosition();
+    this.resetArmPosition();
     this._reloading = false;
   }
 
@@ -94,13 +97,13 @@ export default class AK47 extends Weapon {
         this.arm.position.set(POSITION.x, 0, -1);
       }, Math.max(duration, 0));
     } else {
-      this._resetArmPosition();
+      this.resetArmPosition();
     }
   }
 
   cancelAim () {
     clearTimeout(this.aimTimeout);
-    this._resetArmPosition();
+    this.resetArmPosition();
   }
 
   shoot (player) {
@@ -112,9 +115,15 @@ export default class AK47 extends Weapon {
     });
   }
 
-  _resetArmPosition () {
+  resetArmPosition () {
     this.arm.position.set(POSITION.x, POSITION.y, POSITION.z);
     this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+  }
+
+  reset () {
+    clearTimeout(this.aimTimeout);
+    super.reset();
+    this.init();
   }
 
   get hit () {

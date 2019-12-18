@@ -39,7 +39,10 @@ export default class Player extends Character {
 
     this._cameraPosition = new Vector3();
     this._cameraRotation = new Vector3();
+    this.init();
+  }
 
+  init () {
     this.reloadTimeout = null;
     this.deathCamera = false;
     this.shakeDirection = 0;
@@ -537,6 +540,24 @@ export default class Player extends Character {
     return `${this.equipRifle ? 'rifle' : 'pistol'}${direction}Hit`;
   }
 
+  reset () {
+    this.currentAnimation.stop();
+    this._cameraPosition.copy(CAMERA);
+    this._cameraRotation.set(0, Math.PI, 0);
+
+    this.currentAnimation = this.animations.pistolIdle;
+    this.character.position.set(...config.position);
+
+    this.lastAnimation = 'pistolIdle';
+    clearTimeout(this.reloadTimeout);
+    clearTimeout(this.aimTimeout);
+    this.currentAnimation.play();
+    this.setDirection('Idle');
+
+    super.reset();
+    this.init();
+  }
+
   dispose () {
     const children = this.character.children;
 
@@ -548,6 +569,9 @@ export default class Player extends Character {
       this.animations[animation].stop();
       delete this.animations[animation];
     }
+
+    clearTimeout(this.reloadTimeout);
+    clearTimeout(this.aimTimeout);
 
     delete this.currentAnimation;
     delete this._cameraPosition;

@@ -1,4 +1,7 @@
-<div class="overlay" transition:fade="{{ duration: duration, delay: delay || 0 }}">
+<div out:fade="{{ duration: outDuration || duration, delay: outDelay || delay || 0 }}"
+    in:fade="{{ duration: inDuration || duration, delay: inDelay || delay || 0 }}"
+    class="overlay">
+
   <div class="content" class:background={background}>
     <slot />
   </div>
@@ -9,6 +12,11 @@
   import { fade } from 'svelte/transition';
 
   const dispatch = createEventDispatcher();
+  export let outDuration;
+  export let inDuration;
+  export let outDelay;
+  export let inDelay;
+
   export let background;
   export let duration;
   export let delay;

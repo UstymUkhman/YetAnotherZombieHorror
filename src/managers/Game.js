@@ -135,19 +135,9 @@ export default class Game {
 
   init () {
     setTimeout(() => {
-      const colliders = this.getEnemyColliders();
-      this.player.setWeapon(colliders, this.pistol, false);
-      this.player.weapon.targets = this.getEnemyColliders();
-
-      this.calls.set(-2, this.checkPlayerDistance.bind(this));
-      this.calls.set(-3, this.stage.render.bind(this.stage));
-      this.calls.set(-4, Input.update.bind(Input));
-
-      this.player.lastDirections = Input.moves;
-      Input.player = this.player;
-
-      this.player.update(this.clock.getDelta());
+      this.initControlLoops();
       this.stage.createGrid();
+      this.player.update(this.clock.getDelta());
     }, 100);
 
     setTimeout(() => {
@@ -157,6 +147,18 @@ export default class Game {
       this.stage.createGrid();
       this.stage.fadeIn();
     }, 200);
+  }
+
+  initControlLoops () {
+    const colliders = this.getEnemyColliders();
+    this.player.setWeapon(colliders, this.pistol, false);
+
+    this.calls.set(-2, this.checkPlayerDistance.bind(this));
+    this.calls.set(-3, this.stage.render.bind(this.stage));
+    this.calls.set(-4, Input.update.bind(Input));
+
+    this.player.lastDirections = Input.moves;
+    Input.player = this.player;
   }
 
   start () {
@@ -170,7 +172,7 @@ export default class Game {
 
     for (let e = 0; e < length; e++) {
       const enemy = this.enemies[e];
-      if (!enemy.alive) continue;
+      if (!enemy.alive || !this.player.alive) continue;
 
       const distance = enemy.getPlayerDistance();
       const attack = enemy.attacking || distance < 1.75;
@@ -325,6 +327,7 @@ export default class Game {
     this.calls.set(this.enemyID, enemy.update.bind(enemy));
 
     enemy.playerPosition = this.playerPosition;
+    if (!this.player.alive) enemy.idle();
     enemy.addSounds(this.enemySFX);
     enemy.fadeIn();
 
@@ -392,6 +395,50 @@ export default class Game {
 
     this.stats.end();
     this._raf = requestAnimationFrame(this.loop.bind(this));
+  }
+
+  restart () {
+    cancelAnimationFrame(this._raf);
+    this.visibleRifle = false;
+    this._raf = null;
+
+    for (let e = 0; e < this.enemies.length; e++) {
+      this.stage.scene.remove(this.enemies[e].character);
+      this.calls.delete(this.enemies[e].id);
+      this.enemies[e].dispose();
+      delete this.enemies[e];
+    }
+
+    this._quat = new Quaternion();
+    this._angle = new Euler();
+
+    this.vec1.set(0, 0, 0);
+    this.vec2.set(0, 0, 0);
+    this.vec3.set(0, 0, 0);
+
+    this.enemies = [];
+    this.enemyID = 0;
+    this.killed = 0;
+
+    this.player.reset();
+    this.pistol.reset();
+    this.calls.clear();
+    this.ak47.reset();
+
+    Music.toggle(true);
+    this.spawnEnemy();
+
+    Gamepad.init();
+    Input.init();
+
+    this.calls.set(-1, this.player.update.bind(this.player));
+    this.playerPosition = this.player.character.position;
+    Events.dispatch('change', false);
+    Events.dispatch('hit', 100);
+    this.initControlLoops();
+
+    this.start();
+    this.loop();
   }
 
   end () {

@@ -19,6 +19,10 @@ export default class Pistol extends Weapon {
       arm.scale.set(13, 13, 13);
     });
 
+    this.init();
+  }
+
+  init () {
     this.verticalRecoil = -0.02;
     this.speed = 255000;
 
@@ -29,6 +33,15 @@ export default class Pistol extends Weapon {
   }
 
   cancelAim () { }
+
+  reset () {
+    this.arm.rotation.set(ROTATION.x, ROTATION.y, ROTATION.z);
+    this.arm.position.copy(POSITION);
+    this.arm.scale.set(13, 13, 13);
+
+    super.reset();
+    this.init();
+  }
 
   get hit () {
     return 10;

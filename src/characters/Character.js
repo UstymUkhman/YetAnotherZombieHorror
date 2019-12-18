@@ -120,6 +120,14 @@ export default class Character {
     }
   }
 
+  reset () {
+    this.speed = { x: 0, z: 0 };
+    this.running = false;
+    this.moving = false;
+    this.alive = true;
+    this.health = 100;
+  }
+
   dispose () {
     const children = this.character.children;
 

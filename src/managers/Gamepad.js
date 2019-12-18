@@ -13,22 +13,25 @@ BUTTONS.set(5, 'CHANGE');
 
 class Gamepad {
   constructor () {
-    this._raf = null;
+    this.init();
     this._index = -1;
     this._gamepad = null;
-
-    this._aiming = false;
-    this._running = false;
-    this._shooting = false;
-    this._changing = false;
-    this._reloading = false;
-    this._moves = [0, 0, 0, 0];
 
     this._onLost = this.onLost.bind(this);
     this._onFound = this.onFound.bind(this);
 
     window.addEventListener('gamepadconnected', this._onFound);
     window.addEventListener('gamepaddisconnected', this._onLost);
+  }
+
+  init () {
+    this._moves = [0, 0, 0, 0];
+    this._reloading = false;
+    this._changing = false;
+    this._shooting = false;
+    this._running = false;
+    this._aiming = false;
+    this._raf = null;
   }
 
   onFound (event) {

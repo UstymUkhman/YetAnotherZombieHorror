@@ -1,7 +1,7 @@
 <h1>You Are Dead</h1>
 
 <div>
-  <Button text="Restart" on:click={() => { dispatch('') }} />
+  <Button text="Restart" on:click={() => { dispatch('restart') }} />
 </div>
 
 <script>

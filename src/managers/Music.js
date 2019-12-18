@@ -54,6 +54,12 @@ class Music {
     this.toggle(true);
   }
 
+  reset () {
+    this.tracks[this._index].currentTime = 0;
+    this.tracks[this._index].pause();
+    this._index = 0;
+  }
+
   dispose () {
     this.toggle();
 

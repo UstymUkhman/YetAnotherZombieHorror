@@ -14,8 +14,8 @@
   {/if}
 
   {#if dead}
-    <Overlay duration={1000} delay={4000}>
-      <Dead />
+    <Overlay inDuration={1000} inDelay={4000} outDuration={250}>
+      <Dead on:restart={restartGame} />
     </Overlay>
   {/if}
 </main>
@@ -78,6 +78,14 @@
 
   function playerDeath (event) {
     dead = true;
+  }
+
+  function restartGame (event) {
+    paused = false;
+    dead = false;
+
+    Music.reset();
+    game.restart();
   }
 
   onMount(() => { game.loadAssets(); });
