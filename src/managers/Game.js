@@ -189,7 +189,7 @@ export default class Game {
       const next = nextToPlayer && !enemy.nextToPlayer;
 
       if (attack) {
-        const hitDelay = enemy.attack();
+        const hitDelay = enemy.attack(false);
 
         if (hitDelay && !this.player.hitting) {
           setTimeout(() => {
@@ -248,27 +248,18 @@ export default class Game {
       this.calls.delete(-2);
 
       for (let e = 0; e < length; e++) {
-        // const enemy = this.enemies[e];
-        // const crawling = enemy.crawling;
+        const enemy = this.enemies[e];
 
         // if (enemy.id !== killer) {
-        //   enemy.fadeOut(crawling);
+        //   enemy.fadeOut(enemy.crawling);
         // }
 
-        // enemy.idle();
-
-        // console.log(this.enemies[e]);
-        // debugger;
-
-        /* if (this.enemies[e].crawling) {
-          console.log(this.enemies[e].currentAnimation);
-          this.enemies[e].currentAnimation.stop();
+        if (enemy.crawling) {
+          setTimeout(() => {
+            enemy.attack(true);
+          }, 3000);
         } else {
-          this.enemies[e].idle();
-        } */
-
-        if (!this.enemies[e].crawling) {
-          this.enemies[e].idle();
+          enemy.idle();
         }
       }
     }

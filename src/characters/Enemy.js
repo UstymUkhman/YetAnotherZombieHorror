@@ -267,7 +267,7 @@ export default class Enemy extends Character {
     }, 250);
   }
 
-  attack () {
+  attack (eatPlayer) {
     if (!this.alive || this.attacking) return 0;
 
     const hard = this.health > 50 && Math.random() < 0.5;
@@ -298,7 +298,9 @@ export default class Enemy extends Character {
       this.currentAnimation = this.animations[attack];
 
       setTimeout(() => {
-        if (!this.idling) this[lastAnimation]();
+        if (!this.idling && !eatPlayer) {
+          this[lastAnimation]();
+        }
       }, delay);
     }, duration * 1000);
 
@@ -406,12 +408,12 @@ export default class Enemy extends Character {
     this.setDirection('Falling');
 
     this.gettingHit = false;
-    this.attacking = false;
     this.crawling = true;
     this.running = false;
     this.moving = true;
 
     this.crawlTimeout = setTimeout(() => {
+      this.attacking = false;
       this.lastAnimation = 'crawl';
       this.currentAnimation.stop();
 
