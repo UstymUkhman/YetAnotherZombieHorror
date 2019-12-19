@@ -48,9 +48,11 @@ export default class Game {
     this.stage = new Stage();
     this.calls = new Map();
 
+    this.loadedPlayerSFX = false;
     this.loadedEnemySFX = false;
     this.playerPosition = null;
     this.visibleRifle = false;
+
     this.animations = null;
     this._paused = false;
     this.enemySFX = {};
@@ -74,6 +76,9 @@ export default class Game {
   }
 
   loadAssets () {
+    const listener = this.stage.camera.children[0];
+    const audioLoader = new AudioLoader();
+
     this.pistol = new Pistol(this.stage.camera);
 
     this.ak47 = new AK47(this.stage.camera, asset => {
@@ -81,56 +86,59 @@ export default class Game {
     });
 
     this.player = new Player(character => {
+      const sounds = this.player.settings.sounds;
+      const totalSFX = Object.keys(sounds).length;
+      let loadedSFX = 0;
+
       this.calls.set(-1, this.player.update.bind(this.player));
       this.playerPosition = this.player.character.position;
       this.player.addCamera(this.stage.camera);
       this.stage.scene.add(character);
 
-      if (this.loadedEnemySFX) {
-        this.spawnEnemy();
+      for (const sfx in sounds) {
+        audioLoader.load(sounds[sfx], (buffer) => {
+          this.loadedPlayerSFX = ++loadedSFX === totalSFX;
+          const sound = new PositionalAudio(listener);
+          this.player.character.add(sound);
+          this.player.sfx[sfx] = sound;
+
+          sound.setBuffer(buffer);
+          sound.setVolume(10);
+
+          if (this.loadedPlayerSFX && this.loadedEnemySFX) {
+            this.loadedPlayerSFX = false;
+            this.loadedEnemySFX = false;
+            this.spawnEnemy();
+          }
+        });
       }
     });
 
     const enemy = new Enemy(this.enemyID, this.enemy, this.animations, (character, animations) => {
-      this.createSFX(enemy.settings.sounds);
+      const sounds = enemy.settings.sounds;
+      const totalSFX = Object.keys(sounds).length;
+
       this.animations = animations;
       this.enemy = character;
+      let loadedSFX = 0;
+
+      for (const sfx in sounds) {
+        audioLoader.load(sounds[sfx], (buffer) => {
+          this.loadedEnemySFX = ++loadedSFX === totalSFX;
+          const sound = new PositionalAudio(listener);
+          this.enemySFX[sfx] = sound;
+
+          sound.setBuffer(buffer);
+          sound.setVolume(25);
+
+          if (this.loadedPlayerSFX && this.loadedEnemySFX) {
+            this.loadedPlayerSFX = false;
+            this.loadedEnemySFX = false;
+            this.spawnEnemy();
+          }
+        });
+      }
     });
-  }
-
-  createSFX (sounds) {
-    const listener = this.stage.camera.children[0];
-    const playerSFX = this.player.settings.sounds;
-
-    const totalSFX = Object.keys(sounds).length;
-    const audioLoader = new AudioLoader();
-    let loadedSFX = 0;
-
-    for (const sfx in playerSFX) {
-      audioLoader.load(playerSFX[sfx], (buffer) => {
-        const sound = new PositionalAudio(listener);
-        this.player.character.add(sound);
-        this.player.sfx[sfx] = sound;
-
-        sound.setBuffer(buffer);
-        sound.setVolume(25);
-      });
-    }
-
-    for (const sfx in sounds) {
-      audioLoader.load(sounds[sfx], (buffer) => {
-        this.loadedEnemySFX = ++loadedSFX === totalSFX;
-        const sound = new PositionalAudio(listener);
-        this.enemySFX[sfx] = sound;
-
-        sound.setBuffer(buffer);
-        sound.setVolume(25);
-
-        if (this.loadedEnemySFX && this.playerPosition) {
-          this.spawnEnemy();
-        }
-      });
-    }
   }
 
   init () {
@@ -248,7 +256,20 @@ export default class Game {
         // }
 
         // enemy.idle();
-        this.enemies[e].idle();
+
+        // console.log(this.enemies[e]);
+        // debugger;
+
+        /* if (this.enemies[e].crawling) {
+          console.log(this.enemies[e].currentAnimation);
+          this.enemies[e].currentAnimation.stop();
+        } else {
+          this.enemies[e].idle();
+        } */
+
+        if (!this.enemies[e].crawling) {
+          this.enemies[e].idle();
+        }
       }
     }
   }

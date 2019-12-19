@@ -17,7 +17,7 @@ class Music {
       track.autoplay = false;
       track.muted = false;
       track.loop = false;
-      track.volume = 0.1;
+      track.volume = 0; // 0.1;
       track.load();
     }
   }

@@ -434,11 +434,13 @@ export default class Player extends Character {
     const hitDuration = this.equipRifle ? 1000 : 1500;
 
     this.currentAnimation.crossFadeTo(this.animations[hitAnimation], 0.1, true);
+    if (this.sfx.hit.isPlaying) this.sfx.hit.stop();
     this.animations[hitAnimation].play();
     if (this.aiming) this.aim(false);
 
     clearTimeout(this.reloadTimeout);
     this.weapon.cancelReload();
+    this.sfx.hit.play();
 
     this.reloading = false;
     this.running = false;
@@ -474,6 +476,7 @@ export default class Player extends Character {
 
     this._deathCameraAnimation();
     Events.dispatch('death');
+    this.sfx.death.play();
 
     this.reloading = false;
     this.shooting = false;

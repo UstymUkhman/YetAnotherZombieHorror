@@ -13,7 +13,6 @@ import config from '@/characters/enemy.json';
 import { random } from '@/utils/number';
 import anime from 'animejs';
 
-
 const colliderMaterial = new MeshBasicMaterial({ visible: false });
 
 export default class Enemy extends Character {
@@ -236,6 +235,7 @@ export default class Enemy extends Character {
     this.moving = false;
 
     setTimeout(() => {
+      this.sfx.scream.play();
       this.lastAnimation = 'run';
       this.currentAnimation.stop();
       this.currentAnimation = this.animations.scream;
@@ -281,6 +281,11 @@ export default class Enemy extends Character {
     this.currentAnimation.crossFadeTo(this.animations[attack], duration, true);
     this.animations[attack].play();
 
+    if (!this.crawling) {
+      this.stopSounds();
+      this.sfx[attack].play();
+    }
+
     this.attacking = true;
     this.running = false;
     this.moving = false;
@@ -304,47 +309,52 @@ export default class Enemy extends Character {
     this.health -= amount;
     this.checkIfAlive();
 
-    if (this.alive && !this.crawling) {
-      const now = Date.now();
-      const interval = now - this.hitTime;
-      const crossFade = interval < 1250 && interval > 1000;
+    if (this.alive) {
+      this.stopSounds();
+      this.sfx.hit.play();
 
-      if (interval < 500 || crossFade) return this.alive;
+      if (!this.crawling) {
+        const now = Date.now();
+        const interval = now - this.hitTime;
+        const crossFade = interval < 1250 && interval > 1000;
 
-      const setIdle = this.moving || this.running || this.screaming;
-      const direction = this._direction;
+        if (interval < 500 || crossFade) return this.alive;
 
-      clearTimeout(this.runTimeout);
-      this._cancelHit();
+        const setIdle = this.moving || this.running || this.screaming;
+        const direction = this._direction;
 
-      this.screaming = false;
-      this.setDirection('Idle');
-      this.animations.hit.fadeIn(0.1);
+        clearTimeout(this.runTimeout);
+        this._cancelHit();
 
-      if (setIdle) {
-        setTimeout(() => {
-          this.currentAnimation.stop();
-        }, 100);
-      }
+        this.screaming = false;
+        this.setDirection('Idle');
+        this.animations.hit.fadeIn(0.1);
 
-      this.animations.hit.play();
-      this.gettingHit = true;
-      this.hitTime = now;
-
-      this.hitFadeOut = setTimeout(() => {
-        this.animations.hit.fadeOut(0.25);
-      }, 750);
-
-      this.hitTimeout = setTimeout(() => {
-        this.animations.hit.stop();
-        this.gettingHit = false;
-
-        if (setIdle || this.lastAnimation === 'run') {
-          this.currentAnimation = this.animations.hit;
-          this.setDirection(direction);
-          this[this.lastAnimation]();
+        if (setIdle) {
+          setTimeout(() => {
+            this.currentAnimation.stop();
+          }, 100);
         }
-      }, 1000);
+
+        this.animations.hit.play();
+        this.gettingHit = true;
+        this.hitTime = now;
+
+        this.hitFadeOut = setTimeout(() => {
+          this.animations.hit.fadeOut(0.25);
+        }, 750);
+
+        this.hitTimeout = setTimeout(() => {
+          this.animations.hit.stop();
+          this.gettingHit = false;
+
+          if (setIdle || this.lastAnimation === 'run') {
+            this.currentAnimation = this.animations.hit;
+            this.setDirection(direction);
+            this[this.lastAnimation]();
+          }
+        }, 1000);
+      }
     }
 
     return this.alive;
@@ -354,29 +364,34 @@ export default class Enemy extends Character {
     this.health -= amount;
     this.checkIfAlive();
 
-    if (this.alive && !this.crawling) {
-      this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
-      this.animations.falling.play();
+    if (this.alive) {
+      this.stopSounds();
+      this.sfx.hit.play();
 
-      clearTimeout(this.runTimeout);
-      this.gettingHit = true;
-      this._cancelHit();
+      if (!this.crawling) {
+        this.currentAnimation.crossFadeTo(this.animations.falling, 0.1, true);
+        this.animations.falling.play();
 
-      setTimeout(() => {
-        this.moving = true;
-        this.crawling = true;
+        clearTimeout(this.runTimeout);
+        this.gettingHit = true;
+        this._cancelHit();
 
-        this.running = false;
-        this.attacking = false;
+        setTimeout(() => {
+          this.moving = true;
+          this.crawling = true;
 
-        this.setDirection('Idle');
-        this.currentAnimation.stop();
-        this.lastAnimation = 'legHit';
+          this.running = false;
+          this.attacking = false;
 
-        setTimeout(() => { this.gettingHit = false; }, 1500);
-        this.currentAnimation = this.animations.falling;
-        setTimeout(this.crawl.bind(this), 2800);
-      }, 100);
+          this.setDirection('Idle');
+          this.currentAnimation.stop();
+          this.lastAnimation = 'legHit';
+
+          setTimeout(() => { this.gettingHit = false; }, 1500);
+          this.currentAnimation = this.animations.falling;
+          setTimeout(this.crawl.bind(this), 2800);
+        }, 100);
+      }
     }
 
     return this.alive;
@@ -415,7 +430,7 @@ export default class Enemy extends Character {
   death () {
     const death = this.crawling ? 'crawlDeath' : 'death';
     this.currentAnimation.crossFadeTo(this.animations[death], 0.133, true);
-    if (this.sfx.death.isPlaying) this.sfx.death.stop();
+
     this.animations[death].play();
     this.fadeOut(this.crawling);
     this.sfx.death.play();
@@ -443,7 +458,6 @@ export default class Enemy extends Character {
     }
 
     this.currentAnimation.crossFadeTo(this.animations[death], 0.5, true);
-    if (this.sfx.death.isPlaying) this.sfx.death.stop();
     this.animations[death].play();
     this.fadeOut(crawling);
     this.sfx.death.play();
@@ -459,6 +473,14 @@ export default class Enemy extends Character {
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[death];
     }, 500);
+  }
+
+  stopSounds () {
+    if (this.sfx.hardAttack.isPlaying) this.sfx.hardAttack.stop();
+    if (this.sfx.softAttack.isPlaying) this.sfx.softAttack.stop();
+
+    if (this.sfx.scream.isPlaying) this.sfx.scream.stop();
+    if (this.sfx.hit.isPlaying) this.sfx.hit.stop();
   }
 
   fadeIn () {
