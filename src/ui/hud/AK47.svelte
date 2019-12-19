@@ -72,8 +72,8 @@ img {
   backface-visibility: hidden;
   transform-origin: 50% 50%;
 
+  margin: 4.25vw auto 0;
   position: absolute;
-  margin: 5vw auto 0;
 
   display: block;
   width: 56.3%;
@@ -88,7 +88,7 @@ img {
   position: absolute;
 
   display: block;
-  bottom: 2.5vw;
+  bottom: 3.25vw;
   width: 100%;
 }
 

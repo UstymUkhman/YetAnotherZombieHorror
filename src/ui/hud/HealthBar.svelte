@@ -1,6 +1,6 @@
 <svg width="{size}" height="{size}">
   <circle
-    style="stroke-dasharray: {size * 2} {size * 3}; stroke-dashoffset: {-circle};"
+    style="stroke-dasharray: {length} {size * 3}; stroke-dashoffset: {circle};"
     cx="{size / 2}" cy="{size / 2}"
     r="{(size / 2.3).toFixed()}"
     stroke-width="{size / 16}"
@@ -33,7 +33,7 @@
     const targetColor = event.data < 50 ? '#8a0707' : '#f3b800';
 
     color = blend(targetColor, initialColor, event.data / mix);
-    circle = size + length / 100 * (100 - event.data);
+    circle = length / 100 * (100 - event.data);
     health = event.data;
   }
 
@@ -41,9 +41,9 @@
     size = window.innerWidth / 6;
     const radius = healthBar.r.baseVal.value;
 
-    circle = +(radius * 2 * Math.PI).toFixed();
-    length = circle - size;
+    length = size * 1.3625;
     ready = false;
+    circle = 0;
 
     if (event) {
       setTimeout(() => { ready = true; }, 100);
@@ -54,6 +54,7 @@
   onMount(() => {
     window.addEventListener('resize', onResize);
     onResize();
+    setHealth({ data: 0 });
 
     setTimeout(() => {
       setHealth({ data: 100 });
@@ -70,7 +71,7 @@
 <style>
 svg {
   transform-origin: 50% 50%;
-  transform: rotate(24deg);
+  transform: rotate(90deg);
 
   position: relative;
   display: block;
@@ -79,10 +80,8 @@ svg {
   height: auto;
   width: 100%;
 
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
+  bottom: 2vw;
+  top: auto;
 }
 
 circle.ready {

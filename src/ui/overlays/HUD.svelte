@@ -65,7 +65,7 @@
   display: block;
 
   bottom: 3vw;
-  right: 5vw;
+  right: -2vw;
 }
 
 .weapon {
