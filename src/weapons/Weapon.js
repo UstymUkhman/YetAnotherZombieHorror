@@ -128,8 +128,11 @@ export default class Weapon {
   }
 
   get target () {
-    // this._origin.x += random(-this.spread.x, this.spread.x);
-    // this._origin.y += random(-this.spread.y, this.spread.y);
+    const x = this.spread.x / 10;
+    const y = this.spread.y / 10;
+
+    this._origin.x += random(-x, x);
+    this._origin.y += random(-y, y);
 
     this._raycaster.setFromCamera(this._origin, this._camera);
     const colliders = this._raycaster.intersectObjects(this.targets);

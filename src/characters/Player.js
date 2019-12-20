@@ -1,10 +1,9 @@
 import { Object3D } from '@three/core/Object3D';
+import Settings from '@/characters/player.json';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
-import { LoopOnce } from '@three/constants';
 
-import PLAYER from '@/assets/models/player.glb';
-import config from '@/characters/player.json';
+import { LoopOnce } from '@three/constants';
 import Events from '@/managers/Events';
 import anime from 'animejs';
 
@@ -17,7 +16,7 @@ const RUN_CAMERA = new Vector3(-2, 2.5, -5);
 
 export default class Player extends Character {
   constructor (onLoad) {
-    super(PLAYER, config, character => {
+    super(Settings, character => {
       this._hand = character.getObjectByName('swatRightHand');
       this.currentAnimation = this.animations.pistolIdle;
 

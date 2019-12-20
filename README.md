@@ -8,13 +8,9 @@
 
 ## Develop ##
 
+**Copy asset fonts:** from `public/assets/fonts` to `src/ui/fonts`
+
 `yarn`
-
-**Copy all asset files:**
-
-- from `public/assets/models` to `src/assets/models`
-- from `public/assets/fonts` to `src/assets/fonts`
-- from `public/assets/sfx` to `src/assets/sfx`
 
 `yarn start`
 

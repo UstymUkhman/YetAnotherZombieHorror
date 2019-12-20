@@ -1,26 +1,19 @@
 import { Vector3 } from '@three/math/Vector3';
-import AK_47 from '@/assets/models/AK47.glb';
-
-import RELOAD from '@/assets/sfx/reload.mp3';
-import EMPTY from '@/assets/sfx/empty.mp3';
-import SHOOT from '@/assets/sfx/AK47.mp3';
+import Settings from '@/weapons/AK47.json';
 
 import Events from '@/managers/Events';
 import Weapon from '@/weapons/Weapon';
 
-const ROTATION = new Vector3(Math.PI / 2 + 0.2, Math.PI - 0.08, -0.41);
 const POSITION = new Vector3(-26, 1, -5.75);
+const ROTATION = new Vector3(
+  Math.PI / 2 + 0.2,
+  Math.PI - 0.08,
+  -0.41
+);
 
 export default class AK47 extends Weapon {
   constructor (camera, onLoad) {
-    const settings = {
-      reload: RELOAD,
-      empty: EMPTY,
-      shoot: SHOOT,
-      model: AK_47
-    };
-
-    super(settings, camera, arm => {
+    super(Settings, camera, arm => {
       this.asset = arm.clone(true);
       this.init();
       onLoad(this.asset);

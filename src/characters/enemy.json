@@ -1,6 +1,6 @@
 {
   "scale": [1.6, 1.6, 1.6],
-  "position": [0, 0, 30],
+  "position": [0, 0, 28],
 
   "moves": {
     "Idle": [0, 0],
@@ -16,5 +16,7 @@
     "death": "assets/sfx/enemyDeath.mp3",
     "scream": "assets/sfx/scream.mp3",
     "hit": "assets/sfx/enemyHit.mp3"
-  }
+  },
+
+  "model": "assets/models/enemy.glb"
 }

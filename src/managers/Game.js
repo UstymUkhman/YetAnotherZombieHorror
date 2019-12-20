@@ -98,16 +98,17 @@ export default class Game {
       for (const sfx in sounds) {
         audioLoader.load(sounds[sfx], (buffer) => {
           this.loadedPlayerSFX = ++loadedSFX === totalSFX;
+
+          const loaded = this.loadedPlayerSFX && this.loadedEnemySFX;
           const sound = new PositionalAudio(listener);
+
           this.player.character.add(sound);
           this.player.sfx[sfx] = sound;
 
           sound.setBuffer(buffer);
           sound.setVolume(10);
 
-          if (this.loadedPlayerSFX && this.loadedEnemySFX) {
-            this.loadedPlayerSFX = false;
-            this.loadedEnemySFX = false;
+          if (loaded && !this.enemies.length) {
             this.spawnEnemy();
           }
         });
@@ -125,15 +126,15 @@ export default class Game {
       for (const sfx in sounds) {
         audioLoader.load(sounds[sfx], (buffer) => {
           this.loadedEnemySFX = ++loadedSFX === totalSFX;
-          const sound = new PositionalAudio(listener);
-          this.enemySFX[sfx] = sound;
 
+          const loaded = this.loadedPlayerSFX && this.loadedEnemySFX;
+          const sound = new PositionalAudio(listener);
+
+          this.enemySFX[sfx] = sound;
           sound.setBuffer(buffer);
           sound.setVolume(25);
 
-          if (this.loadedPlayerSFX && this.loadedEnemySFX) {
-            this.loadedPlayerSFX = false;
-            this.loadedEnemySFX = false;
+          if (loaded && !this.enemies.length) {
             this.spawnEnemy();
           }
         });

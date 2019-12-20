@@ -2,7 +2,6 @@ import { CubeTextureLoader } from '@three/loaders/CubeTextureLoader';
 import { TextureLoader } from '@three/loaders/TextureLoader';
 import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
-
 import { loading } from '@/utils/loading';
 import { load } from '@/utils/promise';
 

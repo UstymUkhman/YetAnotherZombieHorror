@@ -17,5 +17,5 @@ package-lock.json
 
 node_modules
 public/*.map
-src/assets/*/*
-!src/assets/*/.gitkeep
+src/ui/fonts/*
+!src/ui/fonts/.gitkeep

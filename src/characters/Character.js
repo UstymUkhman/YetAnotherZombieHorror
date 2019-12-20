@@ -12,10 +12,8 @@ const BOUNDS = {
 };
 
 export default class Character {
-  constructor (asset, settings, onLoad) {
-    if (onLoad) this.load(asset, onLoad);
+  constructor (settings, onLoad) {
     this.speed = { x: 0, z: 0 };
-
     this.settings = settings;
     this.character = null;
     this.animations = {};
@@ -27,6 +25,10 @@ export default class Character {
     this.mixer = null;
     this.health = 100;
     this.sfx = { };
+
+    if (onLoad) {
+      this.load(settings.model, onLoad);
+    }
   }
 
   load (asset, callback) {

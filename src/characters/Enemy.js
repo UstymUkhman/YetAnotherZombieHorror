@@ -2,14 +2,12 @@ import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { SkeletonUtils } from '@utils/SkeletonUtils';
+import Settings from '@/characters/enemy.json';
 
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
-
-import ENEMY from '@/assets/models/enemy.glb';
-import config from '@/characters/enemy.json';
 import { random } from '@/utils/number';
 import anime from 'animejs';
 
@@ -19,7 +17,7 @@ export default class Enemy extends Character {
   constructor (id, character, animations, onLoad) {
     if (character) {
       const enemy = SkeletonUtils.clone(character);
-      super(ENEMY, config, null);
+      super(Settings, null);
 
       this.createMixer(enemy);
       this.cloneMaterial(enemy);
@@ -28,7 +26,7 @@ export default class Enemy extends Character {
       this._setDefaultState(id, enemy);
     } else {
       super(
-        ENEMY, config, (character, animations) =>
+        Settings, (character, animations) =>
           onLoad(character, animations)
       );
     }

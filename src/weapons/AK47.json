@@ -1,0 +1,6 @@
+{
+  "model": "assets/models/AK47.glb",
+  "reload": "assets/sfx/reload.mp3",
+  "empty": "assets/sfx/empty.mp3",
+  "shoot": "assets/sfx/AK47.mp3"
+}

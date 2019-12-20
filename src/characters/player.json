@@ -20,5 +20,7 @@
   "sounds": {
     "death": "assets/sfx/playerDeath.mp3",
     "hit": "assets/sfx/playerHit.mp3"
-  }
+  },
+
+  "model": "assets/models/player.glb"
 }
