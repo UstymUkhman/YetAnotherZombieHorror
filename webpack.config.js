@@ -11,32 +11,32 @@ const PORT = process.env.PORT && Number(process.env.PORT);
 const HOST = process.env.HOST;
 
 const productionPlugins = [
-  new UglifyJsPlugin({
-    sourceMap: true,
-    parallel: true,
+  // new UglifyJsPlugin({
+  //   sourceMap: true,
+  //   parallel: true,
 
-    uglifyOptions: {
-      sourceMap: true,
-      parallel: true,
+  //   uglifyOptions: {
+  //     sourceMap: true,
+  //     parallel: true,
 
-      compress: {
-        drop_console: true,
-        conditionals: true,
-        comparisons: true,
-        dead_code: true,
-        if_return: true,
-        join_vars: true,
-        warnings: false,
-        unused: true
-      },
+  //     compress: {
+  //       drop_console: true,
+  //       conditionals: true,
+  //       comparisons: true,
+  //       dead_code: true,
+  //       if_return: true,
+  //       join_vars: true,
+  //       warnings: false,
+  //       unused: true
+  //     },
 
-      output: {
-        comments: false
-      }
-    }
-  }),
+  //     output: {
+  //       comments: false
+  //     }
+  //   }
+  // }),
 
-  new webpack.optimize.ModuleConcatenationPlugin()
+  // new webpack.optimize.ModuleConcatenationPlugin()
 ];
 
 module.exports = {
