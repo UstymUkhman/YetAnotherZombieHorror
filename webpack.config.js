@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const config = require('./package.json');
 
 const build = require('yargs').argv.env === 'build';
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 process.env.NODE_ENV = build ? 'production' : 'development';

@@ -39,13 +39,13 @@
   Events.add('death', playerDeath);
 
   Events.add('loaded', event => {
-    setTimeout(() => { loaded = true; }, 1500);
-    setTimeout(() => { game.init(); }, 500);
+    setTimeout(() => { loaded = true; }, 1000);
+    // setTimeout(() => { game.init(); }, 500);
     Events.remove('loading');
     Events.remove('loaded');
 
     loading = 100;
-    // game.init();
+    game.init();
   });
 
   const game = new Game();

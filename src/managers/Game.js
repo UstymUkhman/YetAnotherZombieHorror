@@ -108,8 +108,6 @@ export default class Game {
           sound.setBuffer(buffer);
           sound.setVolume(10);
 
-          console.log('player', loaded, this.enemies.length);
-
           if (loaded && !this.enemies.length) {
             this.spawnEnemy();
           }
@@ -136,8 +134,6 @@ export default class Game {
           sound.setBuffer(buffer);
           sound.setVolume(25);
 
-          console.log('enemy', loaded, this.enemies.length);
-
           if (loaded && !this.enemies.length) {
             this.spawnEnemy();
           }
@@ -147,19 +143,13 @@ export default class Game {
   }
 
   init () {
-    console.log('init 0');
-
     setTimeout(() => {
-      console.log('init 1');
-
       this.initControlLoops();
       this.stage.createGrid();
       this.player.update(this.clock.getDelta());
     }, 100);
 
     setTimeout(() => {
-      console.log('init 2');
-
       const grid = this.stage.scene.children.length - 1;
       this.stage.scene.remove(this.stage.scene.children[grid]);
 
