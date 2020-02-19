@@ -1,3 +1,4 @@
+import { PCFSoftShadowMap, ReinhardToneMapping } from '@three/constants';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { DirectionalLight } from '@three/lights/DirectionalLight';
@@ -7,7 +8,6 @@ import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { AudioListener } from '@three/audio/AudioListener';
 import { AmbientLight } from '@three/lights/AmbientLight';
 import { GridHelper } from '@three/helpers/GridHelper';
-import { ReinhardToneMapping } from '@three/constants';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
@@ -107,14 +107,17 @@ export default class Playground {
   createRenderer () {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    document.body.appendChild(this.renderer.domElement);
+    this.renderer.setSize(this.width, this.height);
+    this.renderer.setClearColor(FOG, 1.0);
+
+    // this.renderer.shadowMap.type = PCFSoftShadowMap;
+    // this.renderer.shadowMap.autoUpdate = true;
+    // this.renderer.shadowMap.enabled = true;
 
     this.renderer.toneMapping = ReinhardToneMapping;
-    this.renderer.setSize(this.width, this.height);
-
     this.renderer.toneMappingExposure = 1.25;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.setClearColor(FOG, 1.0);
+
+    document.body.appendChild(this.renderer.domElement);
   }
 
   createEvents () {

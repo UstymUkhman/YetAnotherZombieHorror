@@ -185,7 +185,7 @@
   transition: opacity 0.5s;
   position: absolute;
   display: block;
-  opacity: 0;
+  /* opacity: 0; */
 
   height: 100%;
   width: 100%;

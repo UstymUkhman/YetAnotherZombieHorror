@@ -9,7 +9,7 @@
   "scripts": {
     "lint:css": "stylelint **/*.{svelte,html,js,css}",
     "start": "webpack-dev-server --inline --progress",
-    "run": "cd public && npx http-server",
+    "server": "cd public && npx http-server",
     "build": "webpack --env build"
   },
   "dependencies": {

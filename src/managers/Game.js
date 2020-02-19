@@ -143,18 +143,20 @@ export default class Game {
   }
 
   init () {
+    this.stage.render();
+
     setTimeout(() => {
       this.initControlLoops();
-      this.stage.createGrid();
+      // this.stage.createGrid();
       this.player.update(this.clock.getDelta());
     }, 100);
 
     setTimeout(() => {
-      const grid = this.stage.scene.children.length - 1;
-      this.stage.scene.remove(this.stage.scene.children[grid]);
+      // const grid = this.stage.scene.children.length - 1;
+      // this.stage.scene.remove(this.stage.scene.children[grid]);
 
-      this.stage.createGrid();
-      this.stage.fadeIn();
+      // this.stage.createGrid();
+      // this.stage.fadeIn();
     }, 200);
   }
 
