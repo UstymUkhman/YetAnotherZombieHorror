@@ -143,21 +143,14 @@ export default class Game {
   }
 
   init () {
-    this.stage.render();
-
     setTimeout(() => {
       this.initControlLoops();
-      // this.stage.createGrid();
+      this.stage.createGrid();
       this.player.update(this.clock.getDelta());
     }, 100);
 
-    setTimeout(() => {
-      // const grid = this.stage.scene.children.length - 1;
-      // this.stage.scene.remove(this.stage.scene.children[grid]);
-
-      // this.stage.createGrid();
-      // this.stage.fadeIn();
-    }, 200);
+    setTimeout(this.stage.fadeIn.bind(this.stage), 500);
+    setTimeout(this.stage.createGrid.call(this.stage, true), 250);
   }
 
   initControlLoops () {
@@ -403,6 +396,8 @@ export default class Game {
     this.stats.begin();
 
     if (!this._paused) {
+      this.stage.render();
+    } else {
       const calls = this.calls.values();
       const delta = this.clock.getDelta();
       for (const call of calls) call(delta);

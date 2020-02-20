@@ -91,12 +91,18 @@ export default class Playground {
     this.scene.add(ground);
   }
 
-  createGrid () {
+  createGrid (remove = false) {
+    if (remove) this.scene.remove(
+      this.scene.getObjectByName('grid')
+    );
+
     const grid = new GridHelper(100, 50, 0, 0);
     grid.material.transparent = true;
     grid.material.opacity = 0.25;
+
     grid.position.y = 0.0;
     this.scene.add(grid);
+    grid.name = 'grid';
   }
 
   createListener () {

@@ -40,7 +40,6 @@
 
   Events.add('loaded', event => {
     setTimeout(() => { loaded = true; }, 1000);
-    // setTimeout(() => { game.init(); }, 500);
     Events.remove('loading');
     Events.remove('loaded');
 
@@ -185,7 +184,7 @@
   transition: opacity 0.5s;
   position: absolute;
   display: block;
-  /* opacity: 0; */
+  opacity: 0;
 
   height: 100%;
   width: 100%;
