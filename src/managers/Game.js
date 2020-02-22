@@ -141,7 +141,7 @@ export default class Game {
       this.initControlLoops();
       this.createStats();
       this.loop();
-    }, 100);
+    }, 1000);
 
     setTimeout(this.stage.fadeIn.bind(this.stage), 500);
     setTimeout(this.stage.createGrid.call(this.stage, true), 250);

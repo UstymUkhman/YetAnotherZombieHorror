@@ -116,9 +116,9 @@ export default class Playground {
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(FOG, 1.0);
 
-    // this.renderer.shadowMap.type = PCFSoftShadowMap;
-    // this.renderer.shadowMap.autoUpdate = true;
-    // this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
+    this.renderer.shadowMap.autoUpdate = true;
+    this.renderer.shadowMap.enabled = true;
 
     this.renderer.toneMapping = ReinhardToneMapping;
     this.renderer.toneMappingExposure = 1.25;
