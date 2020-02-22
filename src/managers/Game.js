@@ -64,15 +64,6 @@ export default class Game {
     this.enemies = [];
     this.enemyID = 0;
     this.killed = 0;
-
-    this.createStats();
-    this.loop();
-  }
-
-  createStats () {
-    this.stats = new Stats();
-    this.stats.showPanel(0);
-    document.body.appendChild(this.stats.domElement);
   }
 
   loadAssets () {
@@ -144,9 +135,12 @@ export default class Game {
 
   init () {
     setTimeout(() => {
-      this.initControlLoops();
-      this.stage.createGrid();
       this.player.update(this.clock.getDelta());
+      this.stage.createGrid();
+
+      this.initControlLoops();
+      this.createStats();
+      this.loop();
     }, 100);
 
     setTimeout(this.stage.fadeIn.bind(this.stage), 500);
@@ -163,6 +157,12 @@ export default class Game {
 
     this.player.lastDirections = Input.moves;
     Input.player = this.player;
+  }
+
+  createStats () {
+    this.stats = new Stats();
+    this.stats.showPanel(0);
+    document.body.appendChild(this.stats.domElement);
   }
 
   start () {
@@ -395,7 +395,7 @@ export default class Game {
   loop () {
     this.stats.begin();
 
-    if (!this._paused) {
+    if (this._paused) {
       this.stage.render();
     } else {
       const calls = this.calls.values();
