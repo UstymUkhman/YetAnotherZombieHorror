@@ -134,6 +134,8 @@ export default class Game {
   }
 
   init () {
+    setTimeout(this.stage.fadeIn.bind(this.stage), 100);
+
     setTimeout(() => {
       this.player.update(this.clock.getDelta());
       this.stage.createGrid();
@@ -141,10 +143,9 @@ export default class Game {
       this.initControlLoops();
       this.createStats();
       this.loop();
-    }, 1000);
+    }, 500);
 
-    setTimeout(this.stage.fadeIn.bind(this.stage), 500);
-    setTimeout(this.stage.createGrid.call(this.stage, true), 250);
+    this.stage.createGrid(true);
   }
 
   initControlLoops () {

@@ -35,11 +35,11 @@
   import { onMount } from 'svelte';
 
   Events.add('loading', event => loading = event.data);
+  Events.add('death', () => dead = true);
   Events.add('pause', togglePause);
-  Events.add('death', playerDeath);
 
   Events.add('loaded', event => {
-    setTimeout(() => { loaded = true; }, 1000);
+    setTimeout(() => { loaded = true; }, 1500);
     Events.remove('loading');
     Events.remove('loaded');
 
@@ -74,10 +74,6 @@
     if (!paused) {
       game.start();
     }
-  }
-
-  function playerDeath (event) {
-    dead = true;
   }
 
   function restartGame (event) {
@@ -181,7 +177,7 @@
 }
 
 :global(body > canvas) {
-  transition: opacity 0.5s;
+  transition: opacity 1s ease-in 1s;
   position: absolute;
   display: block;
   opacity: 0;

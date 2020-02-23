@@ -1,7 +1,7 @@
 {#if !loaded}
   <div class="loading" transition:fade="{{ duration: 250 }}">
     <h3>Loading...</h3>
-    <h3 class="progress">{ loading }%</h3>
+    <h3>{ loading }%</h3>
   </div>
 {/if}
 
@@ -25,20 +25,15 @@
 <style>
 .loading {
   transform: translate(-50%, -50%);
+  justify-content: space-between;
   position: absolute;
 
-  display: table;
+  min-width: 24vw;
+  display: flex;
   margin: auto;
-  width: 24vw;
 
   left: 50%;
   top: 50%;
-}
-
-.progress {
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 .start {
