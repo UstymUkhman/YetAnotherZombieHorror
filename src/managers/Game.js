@@ -145,7 +145,7 @@ export default class Game {
       this.loop();
     }, 500);
 
-    this.stage.createGrid(true);
+    this.stage.createGrid();
   }
 
   initControlLoops () {

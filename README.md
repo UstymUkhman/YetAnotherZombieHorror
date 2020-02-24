@@ -8,7 +8,7 @@
 
 ## Develop ##
 
-**Copy asset fonts:** from `public/assets/fonts` to `src/ui/fonts`
+`cp public/assets/fonts/* src/ui/fonts/`
 
 `yarn`
 
