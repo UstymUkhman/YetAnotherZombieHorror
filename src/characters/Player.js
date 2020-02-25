@@ -548,7 +548,7 @@ export default class Player extends Character {
     this._cameraRotation.set(0, Math.PI, 0);
 
     this.currentAnimation = this.animations.pistolIdle;
-    this.character.position.set(...config.position);
+    this.character.position.set(...this.settings.position);
 
     this.lastAnimation = 'pistolIdle';
     clearTimeout(this.reloadTimeout);

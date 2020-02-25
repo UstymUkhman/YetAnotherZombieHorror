@@ -16,6 +16,6 @@ package-lock.json
 .sublime-workspace
 
 node_modules
-# public/*.map
+public/*.map
 src/ui/fonts/*
 !src/ui/fonts/.gitkeep
