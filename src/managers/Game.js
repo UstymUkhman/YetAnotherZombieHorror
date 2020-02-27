@@ -134,18 +134,19 @@ export default class Game {
   }
 
   init () {
-    setTimeout(this.stage.fadeIn.bind(this.stage), 100);
+    // setTimeout(this.stage.fadeIn.bind(this.stage), 100);
 
     setTimeout(() => {
       this.player.update(this.clock.getDelta());
-      this.stage.createGrid();
+      // this.stage.createGrid();
 
       this.initControlLoops();
       this.createStats();
       this.loop();
     }, 500);
 
-    this.stage.createGrid();
+    // this.stage.createGrid();
+    this.stage.render();
   }
 
   initControlLoops () {

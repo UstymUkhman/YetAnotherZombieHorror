@@ -180,7 +180,7 @@
   transition: opacity 1s ease-in 1s;
   position: absolute;
   display: block;
-  opacity: 0;
+  /* opacity: 0; */
 
   height: 100%;
   width: 100%;
