@@ -110,16 +110,17 @@ export default class Playground {
 
   createRenderer () {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
+
+    this.renderer.toneMapping = ReinhardToneMapping;
+    this.renderer.toneMappingExposure = 1.25;
+
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.autoUpdate = true;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
+
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(FOG, 1.0);
-
-    // this.renderer.shadowMap.type = PCFSoftShadowMap;
-    // this.renderer.shadowMap.autoUpdate = true;
-    // this.renderer.shadowMap.enabled = true;
-
-    // this.renderer.toneMapping = ReinhardToneMapping;
-    // this.renderer.toneMappingExposure = 1.25;
 
     document.body.appendChild(this.renderer.domElement);
   }
