@@ -48,10 +48,10 @@ export default class Game {
     this.stage = new Stage();
     this.calls = new Map();
 
-    this.loadedPlayerSFX = false;
-    this.loadedEnemySFX = false;
     this.playerPosition = null;
     this.visibleRifle = false;
+    this._playerSFX = false;
+    this._enemySFX = false;
 
     this.animations = null;
     this._paused = false;
@@ -88,20 +88,15 @@ export default class Game {
 
       for (const sfx in sounds) {
         audioLoader.load(sounds[sfx], (buffer) => {
-          this.loadedPlayerSFX = ++loadedSFX === totalSFX;
-
-          const loaded = this.loadedPlayerSFX && this.loadedEnemySFX;
           const sound = new PositionalAudio(listener);
+          this._playerSFX = ++loadedSFX === totalSFX;
 
           this.player.character.add(sound);
           this.player.sfx[sfx] = sound;
-
           sound.setBuffer(buffer);
           sound.setVolume(10);
 
-          if (loaded && !this.enemies.length) {
-            this.spawnEnemy();
-          }
+          this.checkLoadedSFX();
         });
       }
     });
@@ -116,37 +111,33 @@ export default class Game {
 
       for (const sfx in sounds) {
         audioLoader.load(sounds[sfx], (buffer) => {
-          this.loadedEnemySFX = ++loadedSFX === totalSFX;
-
-          const loaded = this.loadedPlayerSFX && this.loadedEnemySFX;
           const sound = new PositionalAudio(listener);
+          this._enemySFX = ++loadedSFX === totalSFX;
 
           this.enemySFX[sfx] = sound;
           sound.setBuffer(buffer);
           sound.setVolume(25);
 
-          if (loaded && !this.enemies.length) {
-            this.spawnEnemy();
-          }
+          this.checkLoadedSFX();
         });
       }
     });
   }
 
-  init () {
-    // setTimeout(this.stage.fadeIn.bind(this.stage), 100);
+  checkLoadedSFX () {
+    const loadedSFX = this._playerSFX && this._enemySFX;
 
-    setTimeout(() => {
+    if (loadedSFX && !this.enemies.length) {
       this.player.update(this.clock.getDelta());
-      // this.stage.createGrid();
+      Events.dispatch('loaded');
+      this.stage.fadeIn();
+      this.spawnEnemy();
 
+      this.stage.createGrid();
       this.initControlLoops();
       this.createStats();
       this.loop();
-    }, 500);
-
-    // this.stage.createGrid();
-    this.stage.render();
+    }
   }
 
   initControlLoops () {
@@ -239,7 +230,7 @@ export default class Game {
     return view && front ? 'Front' : left ? 'Left' : 'Right';
   }
 
-  stopAllEnemies (killer) {
+  stopAllEnemies (/* killer */) {
     if (this.calls.has(-2)) {
       setTimeout(Input.exitPointerLock, 5000);
       const length = this.enemies.length;

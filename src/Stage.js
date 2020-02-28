@@ -111,16 +111,16 @@ export default class Playground {
   createRenderer () {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
 
-    // this.renderer.toneMapping = ReinhardToneMapping;
-    // this.renderer.toneMappingExposure = 1.25;
+    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    this.renderer.setSize(this.width, this.height);
+    this.renderer.setClearColor(FOG, 1.0);
+
+    this.renderer.toneMapping = ReinhardToneMapping;
+    this.renderer.toneMappingExposure = 1.25;
 
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.autoUpdate = true;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
-
-    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setClearColor(FOG, 1.0);
 
     document.body.appendChild(this.renderer.domElement);
   }
@@ -130,10 +130,10 @@ export default class Playground {
     window.addEventListener('resize', this._onResize, false);
   }
 
-  // fadeIn () {
-  //   this.renderer.domElement.style.opacity = 1;
-  //   this.render();
-  // }
+  fadeIn () {
+    this.renderer.domElement.style.opacity = 1;
+    this.render();
+  }
 
   render () {
     this.renderer.render(this.scene, this.camera);

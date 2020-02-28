@@ -13,7 +13,6 @@ loading.onProgress = function (url, loaded, total) {
 
   Events.dispatch('loading', progress);
   console.info(`Loading... ${progress}%`);
-  if (loaded === total) Events.dispatch('loaded');
 };
 
 loading.onError = function (url) {

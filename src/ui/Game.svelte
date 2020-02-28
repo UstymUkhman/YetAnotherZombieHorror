@@ -39,12 +39,10 @@
   Events.add('pause', togglePause);
 
   Events.add('loaded', event => {
-    setTimeout(() => { loaded = true; }, 1500);
+    setTimeout(() => { loaded = true; }, 500);
     Events.remove('loading');
     Events.remove('loaded');
-
     loading = 100;
-    game.init();
   });
 
   const game = new Game();
@@ -177,10 +175,10 @@
 }
 
 :global(body > canvas) {
-  transition: opacity 1s ease-in 1s;
+  transition: opacity 1s ease-in;
   position: absolute;
   display: block;
-  /* opacity: 0; */
+  opacity: 0;
 
   height: 100%;
   width: 100%;
