@@ -189,7 +189,7 @@ export default class Game {
             Gamepad.vibrate(500);
 
             const dead = this.player.hit(direction, hitDelay);
-            if (dead) return this.stopAllEnemies(enemy.id);
+            if (dead) return this.stopAllEnemies();
           }, hitDelay);
         }
       } else if (next) {
@@ -230,7 +230,7 @@ export default class Game {
     return view && front ? 'Front' : left ? 'Left' : 'Right';
   }
 
-  stopAllEnemies (/* killer */) {
+  stopAllEnemies () {
     if (this.calls.has(-2)) {
       setTimeout(Input.exitPointerLock, 5000);
       const length = this.enemies.length;
@@ -238,10 +238,6 @@ export default class Game {
 
       for (let e = 0; e < length; e++) {
         const enemy = this.enemies[e];
-
-        // if (enemy.id !== killer) {
-        //   enemy.fadeOut(enemy.crawling);
-        // }
 
         if (enemy.crawling) {
           setTimeout(() => {

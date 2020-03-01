@@ -3,41 +3,12 @@ const webpack = require('webpack');
 const config = require('./package.json');
 
 const build = require('yargs').argv.env === 'build';
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 process.env.NODE_ENV = build ? 'production' : 'development';
 const PORT = process.env.PORT && Number(process.env.PORT);
 const HOST = process.env.HOST;
-
-const productionPlugins = [
-  new UglifyJsPlugin({
-    sourceMap: true,
-    parallel: true,
-
-    uglifyOptions: {
-      sourceMap: true,
-      parallel: true,
-
-      compress: {
-        drop_console: true,
-        conditionals: true,
-        comparisons: true,
-        dead_code: true,
-        if_return: true,
-        join_vars: true,
-        warnings: false,
-        unused: true
-      },
-
-      output: {
-        comments: false
-      }
-    }
-  }),
-
-  new webpack.optimize.ModuleConcatenationPlugin()
-];
 
 module.exports = {
   devtool: build ? '#source-map' : 'cheap-module-eval-source-map',
@@ -149,7 +120,9 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }),
 
-    ...(build ? productionPlugins : [
+    ...(build ? [
+      new webpack.optimize.ModuleConcatenationPlugin()
+    ] : [
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NamedModulesPlugin(),
       new webpack.NoEmitOnErrorsPlugin()
@@ -174,7 +147,31 @@ module.exports = {
     removeEmptyChunks: true,
     namedModules: true,
     namedChunks: true,
-    minimize: build
+    minimize: build,
+
+    minimizer: [
+      new TerserPlugin({
+        sourceMap: true,
+        parallel: true,
+
+        terserOptions: {
+          toplevel: true,
+
+          parse: {
+            html5_comments: false
+          },
+
+          compress: {
+            keep_infinity: true,
+            drop_console: true
+          },
+
+          output: {
+            comments: false
+          }
+        }
+      })
+    ]
   },
 
   devServer: {
