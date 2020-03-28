@@ -5,7 +5,7 @@
   "description": "Another Dumb Zombie Game",
   "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game",
   "main": "src/main.js",
-  "license": "MIT",
+  "license": "WTFPL",
   "scripts": {
     "lint:css": "stylelint **/*.{svelte,html,js,css}",
     "start": "webpack-dev-server --inline --progress",
@@ -17,7 +17,7 @@
     "await-to-js": "^2.1.1",
     "lodash.findindex": "^4.6.0",
     "lodash.throttle": "^4.1.1",
-    "three": "^0.114.0"
+    "three": "^0.115.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.0",
@@ -38,12 +38,13 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-svelte3": "^2.7.3",
-    "file-loader": "^5.1.0",
+    "file-loader": "^6.0.0",
     "glslify-loader": "^2.0.0",
     "gltf-loader-2": "^0.0.3",
     "lut-loader": "^0.0.2",
     "mini-css-extract-plugin": "^0.9.0",
-    "prettier": "^1.19.1",
+    "minimist": "^1.2.5",
+    "prettier": "^2.0.2",
     "prettier-plugin-svelte": "^0.7.0",
     "serve": "^11.2.0",
     "style-loader": "^1.0.0",
@@ -52,11 +53,14 @@
     "svelte-loader": "^2.13.6",
     "terser-webpack-plugin": "^2.3.5",
     "threejs-glsl-loader": "^1.0.4",
-    "url-loader": "^3.0.0",
+    "url-loader": "^4.0.0",
     "webpack": "^4.40.2",
     "webpack-cli": "^3.3.8",
     "webpack-dev-server": "^3.8.0",
     "webpack-glsl-loader": "^1.0.1"
+  },
+  "resolutions": {
+    "minimist": "^1.2.5"
   },
   "engines": {
     "node": ">= 9.10.0",
