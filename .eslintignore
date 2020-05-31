@@ -1,2 +1,4 @@
-public/**/*.*
-webpack.config.js
+tests/*
+build/*
+public/*
+coverage/*

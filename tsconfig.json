@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "noImplicitAny": true,
+    "module": "esnext",
+    "sourceMap": true,
+
+    "jsx": "preserve",
+    "checkJs": true,
+    "target": "es5",
+    "allowJs": true,
+    "baseUrl": ".",
+    "strict": true,
+
+    "typeRoots": ["node_modules/@types"],
+    "types": ["jest"],
+
+    "paths": {
+      "@postprocessing/*": ["node_modules/three/examples/jsm/postprocessing/*"],
+      "@controls/*": ["node_modules/three/examples/jsm/controls/*"],
+      "@shaders/*": ["node_modules/three/examples/jsm/shaders/*"],
+      "@loaders/*": ["node_modules/three/examples/jsm/loaders/*"],
+      "@utils/*": ["node_modules/three/examples/jsm/utils/*"],
+      "@three/*": ["node_modules/three/src/*"],
+      "@/*": ["src/*"]
+    },
+
+    "lib": [
+      "esnext",
+      "dom"
+    ]
+  },
+
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "public",
+    "build",
+    "app"
+  ]
+}

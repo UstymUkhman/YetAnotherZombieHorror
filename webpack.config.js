@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
 const config = require('./package.json');
@@ -5,6 +6,7 @@ const config = require('./package.json');
 const build = require('yargs').argv.env === 'build';
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 process.env.NODE_ENV = build ? 'production' : 'development';
 const PORT = process.env.PORT && Number(process.env.PORT);
@@ -13,12 +15,12 @@ const HOST = process.env.HOST;
 module.exports = {
   devtool: build ? '#source-map' : 'cheap-module-eval-source-map',
   mode: build ? 'production' : 'development',
-  entry: path.resolve('./src/main.js'),
+  entry: path.resolve('src/index.ts'),
 
   module: {
     rules: [{
       enforce: 'pre',
-      test: /(\.js)$/,
+      test: /\.tsx?$/,
       loader: 'eslint-loader',
       include: [path.resolve('./src')],
 
@@ -27,13 +29,9 @@ module.exports = {
         formatter: require('eslint-friendly-formatter')
       }
     }, {
-      test: /\.svelte$/,
-      loader: 'svelte-loader',
-
-      options: {
-        emitCss: true,
-        hotReload: false,
-      }
+      test: /\.tsx?$/,
+      loader: 'ts-loader',
+      exclude: /node_modules/
     }, {
       test: /\.css$/,
       use: [
@@ -41,29 +39,21 @@ module.exports = {
         'css-loader'
       ]
     }, {
-      test: /\.(js|jsx)$/,
-      loader: 'babel-loader',
-      include: [
-        path.resolve('./src'),
-        path.resolve('./node_modules/webpack-dev-server/client'),
-        path.resolve('./node_modules/three/src')
-      ]
-    }, {
       test: /\.(mp4|webm)(\?.*)?$/i,
       loader: 'url-loader',
       options: {
         limit: 10000,
-        name: path.posix.join('assets/music', '[name].[ext]')
+        name: path.posix.join('assets/videos', '[name].[ext]')
       }
     }, {
       test: /\.(ogg|mp3|wav|flac|aac)(\?.*)?$/i,
       loader: 'url-loader',
       options: {
         limit: 10000,
-        name: path.posix.join('assets/sfx', '[name].[ext]')
+        name: path.posix.join('assets/sounds', '[name].[ext]')
       }
     }, {
-      test: /\.(glsl|vert|frag)$/i,
+      test: /\.(vs|fs|vert|frag|glsl)$/i,
       loader: 'threejs-glsl-loader'
     }, {
       test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
@@ -86,7 +76,7 @@ module.exports = {
       use: [{
         loader: 'file-loader',
         options: {
-          name: path.posix.join('assets/img', '[name].png')
+          name: path.posix.join('assets/images', '[name].png')
         }
       }, {
         loader: 'lut-loader'
@@ -96,11 +86,13 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    mainFields: ['svelte', 'browser', 'module', 'main'],
-    extensions: ['.svelte', '.mjs', '.js', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.json'],
+    mainFields: ['browser', 'module', 'main'],
 
     alias: {
+      '@postprocessing': path.resolve('./node_modules/three/examples/jsm/postprocessing'),
       '@controls': path.resolve('./node_modules/three/examples/jsm/controls'),
+      '@shaders': path.resolve('./node_modules/three/examples/jsm/shaders'),
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
@@ -110,7 +102,7 @@ module.exports = {
 
   plugins: [
     new MiniCssExtractPlugin({
-			filename: 'main.css'
+			filename: 'index.css'
 		}),
 
     new webpack.DefinePlugin({
@@ -138,7 +130,7 @@ module.exports = {
     path: path.resolve('./public'),
     libraryExport: 'default',
     umdNamedDefine: true,
-    filename: 'main.js'
+    filename: 'index.js'
   },
 
   optimization: {

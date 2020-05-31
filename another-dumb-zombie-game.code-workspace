@@ -1,28 +1,22 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
 	"settings": {
 		"svelte.plugin.svelte.enable": true,
 		"git.ignoreLimitWarning": true,
-		"eslint.autoFixOnSave": false,
+		"tslint.typeCheck": true,
+		"tslint.jsEnable": true,
 
-		"eslint.validate": [
-			"javascript", {
-				"language": "svelte",
-				"autoFix": false
-			}
-    ],
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": false
+		},
 
 		"js-import.alias": {
 			"@three": "three/src",
 			"svelte": "svelte",
 			"@": "/src"
-		},
-		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": false
 		}
-  }
+	},
+
+  "folders": [{
+    "path": "."
+	}]
 }

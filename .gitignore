@@ -1,3 +1,4 @@
+tmp
 logs
 *.log
 
@@ -7,15 +8,11 @@ pids
 
 .idea
 .vscode
-.DS_Store
 
-yarn.lock
-.lock-wscript
-yarn-error.lock
-package-lock.json
-.sublime-workspace
-
-node_modules
+build/*.map
+public/*.txt
 public/*.map
-src/ui/fonts/*
-!src/ui/fonts/.gitkeep
+
+coverage/
+node_modules
+.lock-wscript

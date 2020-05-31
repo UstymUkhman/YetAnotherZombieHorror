@@ -1,31 +1,24 @@
 module.exports = {
+  parser: '@typescript-eslint/parser',
   root: true,
 
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'eslint:recommended'
+  ],
+
   parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2019,
-
-    ecmaFeatures: {
-      experimentalObjectRestSpread: true,
-      impliedStrict: true
-    }
+    parser: '@typescript-eslint/parser',
+    sourceType: 'module'
   },
 
-  settings: {
-    'svelte3/ignore-styles': () => {
-      return { ignore: true }
-    }
+  plugins: ['@typescript-eslint'],
+
+  rules: {
+    'generator-star-spacing': 0,
+    'no-debugger': 0,
+    'no-console': 0
   },
-
-  plugins: ['svelte3', 'prettier'],
-  extends: ['prettier'],
-
-  overrides: [{
-    processor: 'svelte3/svelte3',
-    files: ['**/*.svelte']
-  }],
-
-  parser: 'babel-eslint',
 
   globals: {
     navigator: false,
@@ -43,7 +36,6 @@ module.exports = {
 
   env: {
     browser: true,
-    node: true,
-    es6: true
+    node: true
   }
-};
+}
