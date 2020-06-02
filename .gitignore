@@ -9,6 +9,7 @@ pids
 .idea
 .vscode
 
+build/*.js
 build/*.map
 public/*.txt
 public/*.map
