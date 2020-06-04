@@ -4,19 +4,45 @@
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com>",
   "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game#readme",
   "keywords": [],
-  "main": "src/index.ts",
+  "main": "app/main.js",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "start:app": "yarn build:app && electron build/main.js",
+    "start:app": "yarn build:app && electron app/main.js",
     "start:web": "webpack-dev-server --inline --progress",
+    "postinstall": "electron-builder install-app-deps",
     "test:jest": "./node_modules/.bin/jest --notify",
     "lint:js": "eslint src/**/*{.ts,.tsx,.js,.jsx}",
     "lint:css": "stylelint **/*.{svelte,html,css}",
     "test:cover": "yarn test:jest --coverage",
+    "pack:app": "electron-builder --dir",
     "build:web": "webpack --env build",
     "build:app": "tsc --project app",
+    "dist:app": "electron-builder",
     "serve": "npx http-server"
+  },
+  "build": {
+    "appId": "another.dumb.zombie.game",
+    "publish": null,
+    "files": [
+      "app/**/*",
+      "public/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "build",
+      "buildResources": "favicon"
+    },
+    "win": {
+      "target": [{
+        "target": "nsis",
+        "arch": ["x64", "ia32"]
+      }],
+      "publisherName": "Ustym Ukhman",
+      "icon": "favicon/icon-512x512.png",
+      "legalTrademarks": "Ustym Ukhman © 2020"
+    }
   },
   "repository": {
     "type": "git",
@@ -39,6 +65,7 @@
     "@typescript-eslint/parser": "^3.0.2",
     "babel-jest": "^26.0.1",
     "css-loader": "^3.5.3",
+    "electron-builder": "^22.7.0",
     "eslint": "^7.1.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^4.0.2",

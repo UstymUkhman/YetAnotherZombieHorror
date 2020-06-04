@@ -9,10 +9,14 @@ pids
 .idea
 .vscode
 
-build/*.js
-build/*.map
+app/*.js
+app/*.map
+build/**/*
+!build/*.yaml
+
 public/*.txt
 public/*.map
+public/**/*.glb
 
 coverage/
 node_modules

@@ -1,0 +1,21 @@
+directories:
+  output: build
+  buildResources: favicon
+appId: another.dumb.zombie.game
+publish: null
+files:
+  - filter:
+      - app/**/*
+      - public/**/*
+      - node_modules/**/*
+      - package.json
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+  publisherName: Ustym Ukhman
+  icon: favicon/icon-512x512.png
+  legalTrademarks: Ustym Ukhman © 2020
+electronVersion: 9.0.0

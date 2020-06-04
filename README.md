@@ -12,9 +12,9 @@
 
 `yarn`
 
-`yarn start:app`
-
 `yarn start:web`
+
+`yarn start:app`
 
 `yarn lint:js`
 
@@ -24,8 +24,14 @@
 
 ## Build ##
 
-`yarn build:app`
-
 `yarn build:web`
 
+`yarn build:app`
+
 `yarn serve`
+
+## Distribute ##
+
+`yarn pack:app`
+
+`yarn dist:app`
