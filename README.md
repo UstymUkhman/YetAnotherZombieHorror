@@ -6,8 +6,6 @@
 
 `cd another-dumb-zombie-game`
 
-`cp public/assets/fonts/* src/ui/fonts/`
-
 ## Develop ##
 
 `yarn`

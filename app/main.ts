@@ -8,17 +8,16 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 function createWindow() {
   if (mainWindow === null) {
     mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      width: 1600,
+      height: 900,
       frame: false,
 
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-      }
+      /* webPreferences: {
+        preload: path.join(__dirname, './preloader.js'),
+      } */
     });
 
     mainWindow.loadFile(path.join(__dirname, '../public/index.html'));
-    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', () => {
       mainWindow = null;

@@ -27,6 +27,7 @@ export class Elastic {
 }
 
 export const PI = {
+  m2: Math.PI * 2,
   d2: Math.PI / 2,
   d3: Math.PI / 3,
   d4: Math.PI / 4,

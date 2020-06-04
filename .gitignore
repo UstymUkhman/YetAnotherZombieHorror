@@ -9,8 +9,6 @@ pids
 .idea
 .vscode
 
-app/*.js
-app/*.map
 build/**/*
 !build/*.yaml
 

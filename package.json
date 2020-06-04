@@ -4,11 +4,11 @@
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com>",
   "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game#readme",
   "keywords": [],
-  "main": "app/main.js",
+  "main": "build/main.js",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "start:app": "yarn build:app && electron app/main.js",
+    "start:app": "yarn build:app && electron build/main.js",
     "start:web": "webpack-dev-server --inline --progress",
     "postinstall": "electron-builder install-app-deps",
     "test:jest": "./node_modules/.bin/jest --notify",
@@ -25,7 +25,7 @@
     "appId": "another.dumb.zombie.game",
     "publish": null,
     "files": [
-      "app/**/*",
+      "build/**/*",
       "public/**/*",
       "node_modules/**/*",
       "package.json"
@@ -35,13 +35,18 @@
       "buildResources": "favicon"
     },
     "win": {
-      "target": [{
-        "target": "nsis",
-        "arch": ["x64", "ia32"]
-      }],
-      "publisherName": "Ustym Ukhman",
+      "legalTrademarks": "Ustym Ukhman © 2020",
       "icon": "favicon/icon-512x512.png",
-      "legalTrademarks": "Ustym Ukhman © 2020"
+      "publisherName": "Ustym Ukhman",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     }
   },
   "repository": {
@@ -52,6 +57,7 @@
     "url": "https://github.com/UstymUkhman/another-dumb-zombie-game/issues"
   },
   "dependencies": {
+    "@types/animejs": "^3.1.1",
     "@types/lodash": "^4.14.153",
     "animejs": "^3.2.0",
     "three": "^0.117.0"

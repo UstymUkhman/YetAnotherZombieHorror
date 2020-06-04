@@ -3,6 +3,4 @@ declare module "*.json" {
   export default value
 }
 
-declare module 'three/*'
-declare module 'lodash/*'
-declare module 'animejs/*'
+declare module 'three/examples/js/libs/*'

@@ -5,17 +5,17 @@ appId: another.dumb.zombie.game
 publish: null
 files:
   - filter:
-      - app/**/*
+      - build/**/*
       - public/**/*
       - node_modules/**/*
       - package.json
 win:
+  legalTrademarks: Ustym Ukhman © 2020
+  icon: favicon/icon-512x512.png
+  publisherName: Ustym Ukhman
   target:
     - target: nsis
       arch:
         - x64
         - ia32
-  publisherName: Ustym Ukhman
-  icon: favicon/icon-512x512.png
-  legalTrademarks: Ustym Ukhman © 2020
 electronVersion: 9.0.0
