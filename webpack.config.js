@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
 const config = require('./package.json');
+const svelteConfig = require('./svelte.config.js');
 
 const build = require('yargs').argv.env === 'build';
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 process.env.NODE_ENV = build ? 'production' : 'development';
 const PORT = process.env.PORT && Number(process.env.PORT);
@@ -29,14 +28,21 @@ module.exports = {
         formatter: require('eslint-friendly-formatter')
       }
     }, {
+      test: /\.svelte$/,
+      loader: 'svelte-loader',
+      exclude: /node_modules/,
+      options: svelteConfig
+    }, {
       test: /\.tsx?$/,
       loader: 'ts-loader',
       exclude: /node_modules/
     }, {
       test: /\.css$/,
       use: [
-        build ? MiniCssExtractPlugin.loader : 'style-loader',
-        'css-loader'
+        build ? MiniCssExtractPlugin.loader : 'style-loader', {
+          options: { sourceMap: true },
+          loader: 'css-loader'
+        }
       ]
     }, {
       test: /\.(mp4|webm)(\?.*)?$/i,
@@ -86,8 +92,8 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.ts', '.tsx', '.js', '.json'],
-    mainFields: ['browser', 'module', 'main'],
+    extensions: ['.svelte', '.ts', '.tsx', '.js', '.json'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
 
     alias: {
       '@postprocessing': path.resolve('./node_modules/three/examples/jsm/postprocessing'),
@@ -96,13 +102,15 @@ module.exports = {
       '@loaders': path.resolve('./node_modules/three/examples/jsm/loaders'),
       '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
+      '@components': path.resolve('./src/components'),
       '@': path.resolve('./src')
     }
   },
 
   plugins: [
     new MiniCssExtractPlugin({
-			filename: 'index.css'
+      chunkFilename: '[id].css',
+      filename: '[name].css'
 		}),
 
     new webpack.DefinePlugin({

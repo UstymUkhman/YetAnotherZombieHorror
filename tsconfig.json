@@ -7,17 +7,17 @@
     "importHelpers": true,
     "noImplicitAny": true,
     "module": "esnext",
+    "target": "esnext",
+    
     "sourceMap": true,
-
     "jsx": "preserve",
     "checkJs": true,
-    "target": "es5",
     "allowJs": true,
     "baseUrl": ".",
     "strict": true,
 
     "typeRoots": ["node_modules/@types"],
-    "types": ["jest"],
+    "types": ["svelte", "jest"],
 
     "paths": {
       "@postprocessing/*": ["node_modules/three/examples/jsm/postprocessing/*"],

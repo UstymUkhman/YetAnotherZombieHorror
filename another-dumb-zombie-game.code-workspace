@@ -2,21 +2,19 @@
 	"settings": {
 		"svelte.plugin.svelte.enable": true,
 		"git.ignoreLimitWarning": true,
-		"tslint.typeCheck": true,
-		"tslint.jsEnable": true,
 
 		"editor.codeActionsOnSave": {
 			"source.fixAll.eslint": false
 		},
 
 		"js-import.alias": {
+			"@components": "/src/components",
 			"@three": "three/src",
-			"svelte": "svelte",
 			"@": "/src"
 		}
 	},
 
-  "folders": [{
-    "path": "."
+	"folders": [{
+		"path": "."
 	}]
 }
