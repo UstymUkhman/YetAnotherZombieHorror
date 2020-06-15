@@ -2,7 +2,7 @@ const sveltePreprocess = require('svelte-preprocess')
 
 module.exports = {
   emitCss: true,
-  hotReload: true,
+  hotReload: false,
   preprocess: sveltePreprocess({
     typescript: { tsconfigFile: './tsconfig.json' },
     globalStyle: { sourceMap: true }

@@ -1,9 +1,16 @@
-<main id="game">
-  <h1>{ name }</h1>
+<main bind:this={game}>
+  <Close />
 </main>
 
 <script lang="typescript">
-  export const name: string = 'Another Dumb Zombie Game'
+import Close from '@components/CloseButton';
+import Playground from '@/Playground';
+import { onMount } from 'svelte';
+
+let game: HTMLElement;
+const stage = new Playground();
+
+onMount(() => { game.prepend(stage.getScene()); });
 </script>
 
 <style lang="scss">

@@ -1,3 +1,5 @@
-import Playground from '@/Playground';
+import Game from '@components/Game.svelte';
 
-export default new Playground();
+export default new Game({
+  target: document.body
+});

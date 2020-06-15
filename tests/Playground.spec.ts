@@ -1,5 +1,6 @@
 jest.mock('@three/renderers/WebGLRenderer');
 import Playground from '@/Playground';
+jest.spyOn(console, 'warn');
 
 describe('Playground', () => {
   it('Importing Playground', () => {
@@ -62,6 +63,11 @@ describe('Playground', () => {
     _onResize();
 
     expect(_onResize).toHaveBeenCalled();
+  });
+
+  it('Returning Canvas Element', () => {
+    const playground = new Playground();
+    expect(playground.getScene().tagName).toBe('CANVAS');
   });
 
   it('Destroy Playground', () => {

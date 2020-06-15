@@ -1,26 +1,29 @@
 import * as path from 'path';
-import { app, BrowserWindow } from 'electron';
+import { BrowserWindow, app, ipcMain } from 'electron';
 
-let mainWindow: Electron.BrowserWindow | null = null;
+let game: Electron.BrowserWindow | null = null;
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 function createWindow() {
-  if (mainWindow === null) {
-    mainWindow = new BrowserWindow({
-      width: 1600,
-      height: 900,
+  if (game === null) {
+    game = new BrowserWindow({
+      backgroundColor: '#000',
       frame: false,
 
-      /* webPreferences: {
+      height: 900,
+      width: 1600,
+
+      webPreferences: {
         preload: path.join(__dirname, './preloader.js'),
-      } */
+      }
     });
 
-    mainWindow.loadFile(path.join(__dirname, '../public/index.html'));
+    game.loadFile(path.join(__dirname, '../public/index.html'));
+    game.webContents.openDevTools();
 
-    mainWindow.on('closed', () => {
-      mainWindow = null;
+    game.on('closed', () => {
+      game = null;
     });
   }
 }
@@ -32,4 +35,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+ipcMain.on('close', (): void => {
+  game.close();
 });

@@ -92,7 +92,7 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.svelte', '.ts', '.tsx', '.js', '.json'],
+    extensions: ['.svelte', '.mjs', '.ts', '.tsx', '.js', '.json'],
     mainFields: ['svelte', 'browser', 'module', 'main'],
 
     alias: {
@@ -110,7 +110,7 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin({
       chunkFilename: '[id].css',
-      filename: '[name].css'
+      filename: 'index.css'
 		}),
 
     new webpack.DefinePlugin({

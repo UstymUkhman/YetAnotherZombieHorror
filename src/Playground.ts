@@ -9,6 +9,7 @@ import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
 import Stats from 'three/examples/js/libs/stats.min';
+import { WEBGL } from 'three/examples/jsm/WebGL.js';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
@@ -26,8 +27,12 @@ const FOG = 0xA0A0A0;
 
 export default class Playground {
   private raf: number;
+
   private scene = new Scene();
   private stats = new Stats();
+
+  private renderer: WebGLRenderer;
+  private controls: OrbitControls;
 
   private width: number = window.innerWidth;
   private height: number = window.innerHeight;
@@ -35,10 +40,25 @@ export default class Playground {
 
   private camera = new PerspectiveCamera(45, this.ratio, 1, 500);
   private _onResize: EventListenerOrEventListenerObject = () => null;
-  private renderer = new WebGLRenderer({ antialias: true, alpha: false });
-  private controls = new OrbitControls(this.camera, this.renderer.domElement);
 
   public constructor () {
+    const canvas = document.createElement('canvas');
+    const glVersion = WEBGL.isWebGL2Available() ? '2' : '';
+
+    const context = canvas.getContext(
+      `webgl${glVersion}`, { antialias: true, alpha: false }
+    ) as WebGLRenderingContext | WebGL2RenderingContext;
+
+    if (!glVersion) {
+      console.warn(`
+        This environment does not seem to support WebGL 2.
+        WebGL 1 will be used instead.
+      `);
+    }
+
+    this.renderer = new WebGLRenderer({ canvas: canvas, context: context });
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
     this.createScene();
     this.createCamera();
     this.createLights();
@@ -111,7 +131,6 @@ export default class Playground {
 
   private createRenderer (): void {
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    document.body.appendChild(this.renderer.domElement);
     this.renderer.setSize(this.width, this.height);
     this.renderer.shadowMap.enabled = true;
   }
@@ -129,6 +148,10 @@ export default class Playground {
   private createStats (): void {
     this.stats.showPanel(0);
     document.body.appendChild(this.stats.domElement);
+  }
+
+  public getScene (): HTMLCanvasElement {
+    return this.renderer.domElement;
   }
 
   public render (): void {
@@ -149,7 +172,6 @@ export default class Playground {
 
   public destroy (): void {
     window.removeEventListener('resize', this._onResize, false);
-    document.body.removeChild(this.renderer.domElement);
     document.body.removeChild(this.stats.domElement);
     cancelAnimationFrame(this.raf);
 
