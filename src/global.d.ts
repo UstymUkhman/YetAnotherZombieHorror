@@ -3,4 +3,4 @@ declare module "*.json" {
   export default value
 }
 
-declare module 'three/examples/js/libs/*'
+declare module 'three/examples/js/libs/stats.min';

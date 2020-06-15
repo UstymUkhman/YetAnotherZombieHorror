@@ -1,9 +1,12 @@
 <main bind:this={game}>
-  <Close />
+  {#if Game.APP}
+    <Close />
+  {/if}
 </main>
 
 <script lang="typescript">
 import Close from '@components/CloseButton';
+import { Game } from '@/utils/Environment';
 import Playground from '@/Playground';
 import { onMount } from 'svelte';
 
@@ -11,6 +14,8 @@ let game: HTMLElement;
 const stage = new Playground();
 
 onMount(() => { game.prepend(stage.getScene()); });
+
+// export const Game;
 </script>
 
 <style lang="scss">

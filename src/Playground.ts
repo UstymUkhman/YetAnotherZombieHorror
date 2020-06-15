@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="global.d.ts" />
+
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { DirectionalLight } from '@three/lights/DirectionalLight';

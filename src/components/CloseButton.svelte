@@ -1,12 +1,6 @@
-<div id="close-button" on:click|preventDefault|stopPropagation={closeApp}>
+<div id="close-button">
   <h3>&#x2718;</h3>
 </div>
-
-<script lang="typescript">
-export const closeApp = (): void => {
-  window.close();
-}
-</script>
 
 <style lang="scss">
 div#close-button {
