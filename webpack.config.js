@@ -5,6 +5,7 @@ const svelteConfig = require('./svelte.config.js');
 
 const build = require('yargs').argv.env === 'build';
 const TerserPlugin = require('terser-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 process.env.NODE_ENV = build ? 'production' : 'development';
@@ -31,7 +32,11 @@ module.exports = {
       test: /\.svelte$/,
       loader: 'svelte-loader',
       exclude: /node_modules/,
-      options: svelteConfig
+      options: {
+        emitCss: true,
+        ...svelteConfig,
+        hotReload: false
+      }
     }, {
       test: /\.tsx?$/,
       loader: 'ts-loader',
@@ -114,10 +119,17 @@ module.exports = {
 		}),
 
     new webpack.DefinePlugin({
-      BROWSER_SUPPORTS_HTML5: true,
-      PRODUCTION: JSON.stringify(build),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       VERSION: JSON.stringify(config.version),
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      BROWSER_SUPPORTS_HTML5: true,
+      PRODUCTION: build
+    }),
+
+    new CopyWebpackPlugin({
+      patterns: [{
+        to: path.resolve(__dirname, 'public/assets'),
+        from: path.resolve(__dirname, 'src/assets')
+      }]
     }),
 
     ...(build ? [

@@ -20,7 +20,10 @@ function createWindow() {
     });
 
     game.loadFile(path.join(__dirname, '../public/index.html'));
-    game.webContents.openDevTools();
+
+    if (!process.env.PRODUCTION) {
+      game.webContents.openDevTools();
+    }
 
     game.on('closed', () => {
       game = null;

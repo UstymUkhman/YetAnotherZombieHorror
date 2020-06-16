@@ -6,7 +6,7 @@
 
 <script lang="typescript">
 import Close from '@components/CloseButton';
-import { Game } from '@/utils/Environment';
+import { Game } from '@/utils/Platform';
 import Playground from '@/Playground';
 import { onMount } from 'svelte';
 
@@ -14,13 +14,11 @@ let game: HTMLElement;
 const stage = new Playground();
 
 onMount(() => { game.prepend(stage.getScene()); });
-
-// export const Game;
 </script>
 
 <style lang="scss">
 @font-face {
-  src: url('/assets/fonts/FaceYourFears.ttf') format('truetype');
+  src: url('../assets/fonts/FaceYourFears.ttf') format('truetype');
   font-family: 'FaceYourFears';
   font-stretch: normal;
   font-weight: normal;
@@ -28,7 +26,7 @@ onMount(() => { game.prepend(stage.getScene()); });
 }
 
 @font-face {
-  src: url('/assets/fonts/DrawingBlood.ttf') format('truetype');
+  src: url('../assets/fonts/DrawingBlood.ttf') format('truetype');
   font-family: 'DrawingBlood';
   font-stretch: normal;
   font-weight: normal;
@@ -78,7 +76,7 @@ onMount(() => { game.prepend(stage.getScene()); });
   margin: 0;
 }
 
-:global(h5, h5, strong, span, p) {
+:global(h5, h6, strong, span, p) {
   font-family: 'DrawingBlood', sans-serif;
   letter-spacing: 0.2rem;
   line-height: normal;

@@ -1,7 +1,4 @@
-import { Game } from '../src/utils/Environment';
 import { ipcRenderer } from 'electron';
-
-Game.APP = true;
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log(`Node     : ${process.versions.node}`);

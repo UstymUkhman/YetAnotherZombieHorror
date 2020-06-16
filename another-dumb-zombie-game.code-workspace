@@ -8,9 +8,9 @@
 		},
 
 		"js-import.alias": {
-			"@components": "/src/components",
-			"@three": "three/src",
-			"@": "/src"
+			"@three": "./node_modules/three/src",
+			"@components": "./src/components",
+			"@": "./src"
 		}
 	},
 
