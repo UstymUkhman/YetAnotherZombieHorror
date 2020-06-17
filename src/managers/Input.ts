@@ -1,6 +1,6 @@
 // import { Elastic, clamp } from '@/utils/Number';
 // import throttle from 'lodash.throttle';
-// import Events from '@/utils/Events';
+// import Events from '@/managers/Events';
 
 class Input { }
 

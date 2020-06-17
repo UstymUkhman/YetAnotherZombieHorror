@@ -10,8 +10,8 @@ pids
 .vscode
 
 build/**/*
-src/assets/*
 !build/*.yaml
+src/assets/**/
 
 public/*.txt
 public/*.map

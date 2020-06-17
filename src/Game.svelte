@@ -1,12 +1,12 @@
 <main bind:this={game}>
-  {#if Game.APP}
+  {#if Settings.APP}
     <Close />
   {/if}
 </main>
 
 <script lang="typescript">
 import Close from '@components/CloseButton';
-import { Game } from '@/utils/Platform';
+import { Settings } from '@/utils/Settings';
 import Playground from '@/Playground';
 import { onMount } from 'svelte';
 

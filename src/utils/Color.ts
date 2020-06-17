@@ -1,8 +1,4 @@
-type Color = {
-  r: number
-  g: number
-  b: number
-}
+type Color = { r: number, g: number, b: number };
 
 const getColor = (hex: string): Color => {
   const color = parseInt(hex.slice(1), 16);
