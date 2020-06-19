@@ -16,8 +16,10 @@ module.exports = {
 
   rules: {
     'generator-star-spacing': 0,
+    'comma-dangle': 2,
     'no-debugger': 0,
-    'no-console': 0
+    'no-console': 0,
+    'semi': 2
   },
 
   globals: {
@@ -39,4 +41,4 @@ module.exports = {
     node: true,
     es6: true
   }
-}
+};

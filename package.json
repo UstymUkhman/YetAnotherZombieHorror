@@ -8,10 +8,11 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
+    "test:jest": "./node_modules/.bin/jest --notify --silent",
     "start:app": "yarn build:app && electron build/main.js",
     "start:web": "webpack-dev-server --inline --progress",
+    "test:clear": "./node_modules/.bin/jest --clearCache",
     "postinstall": "electron-builder install-app-deps",
-    "test:jest": "./node_modules/.bin/jest --notify",
     "lint:js": "eslint src/**/*{.ts,.tsx,.js,.jsx}",
     "lint:css": "stylelint **/*.{svelte,scss,css}",
     "test:cover": "yarn test:jest --coverage",

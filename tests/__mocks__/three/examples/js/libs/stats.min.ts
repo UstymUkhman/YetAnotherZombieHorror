@@ -1,13 +1,13 @@
 export default class Stats {
+  public domElement: HTMLElement;
+
   constructor () {
     this.domElement = document.createElement('canvas');
   }
 
-  // tslint:disable: no-empty
-  showPanel (panel) { }
+  showPanel () { }
 
   begin () { }
 
   end () { }
-  // tslint:enable: no-empty
 }

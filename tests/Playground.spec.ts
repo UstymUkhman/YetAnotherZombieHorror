@@ -1,6 +1,7 @@
 jest.mock('@three/renderers/WebGLRenderer');
+jest.mock('three/examples/jsm/WebGL');
+
 import Playground from '@/Playground';
-jest.spyOn(console, 'warn');
 
 describe('Playground', () => {
   it('Importing Playground', () => {

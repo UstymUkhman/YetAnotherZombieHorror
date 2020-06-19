@@ -2,13 +2,14 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
     "importHelpers": true,
     "noImplicitAny": true,
+
     "module": "esnext",
     "target": "esnext",
-    
     "sourceMap": true,
     "jsx": "preserve",
     "checkJs": true,

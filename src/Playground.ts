@@ -12,7 +12,7 @@ import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
 import Stats from 'three/examples/js/libs/stats.min';
-import { WEBGL } from 'three/examples/jsm/WebGL.js';
+import { WEBGL } from 'three/examples/jsm/WebGL';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
