@@ -8,6 +8,8 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
+    "pack:app": "electron-builder --dir --config build/builder.yml",
+    "dist:app": "electron-builder --config build/builder.yml",
     "test:jest": "./node_modules/.bin/jest --notify --silent",
     "start:app": "yarn build:app && electron build/main.js",
     "start:web": "webpack-dev-server --inline --progress",
@@ -16,39 +18,9 @@
     "lint:js": "eslint src/**/*{.ts,.tsx,.js,.jsx}",
     "lint:css": "stylelint **/*.{svelte,scss,css}",
     "test:cover": "yarn test:jest --coverage",
-    "pack:app": "electron-builder --dir",
     "build:web": "webpack --env build",
     "build:app": "tsc --project app",
-    "dist:app": "electron-builder",
     "serve": "npx http-server"
-  },
-  "build": {
-    "appId": "another.dumb.zombie.game",
-    "publish": null,
-    "files": [
-      "build/**/*",
-      "public/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "directories": {
-      "output": "build",
-      "buildResources": "favicon"
-    },
-    "win": {
-      "legalTrademarks": "Ustym Ukhman © 2020",
-      "icon": "favicon/favicon-512x512.png",
-      "publisherName": "Ustym Ukhman",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
-      ]
-    }
   },
   "repository": {
     "type": "git",
@@ -65,7 +37,6 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.1",
-    "@types/electron": "^1.6.10",
     "@types/jest": "^25.2.3",
     "@types/node": "12.12.21",
     "@typescript-eslint/eslint-plugin": "^3.0.2",
@@ -73,6 +44,7 @@
     "babel-jest": "^26.0.1",
     "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^3.5.3",
+    "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
     "eslint": "^7.1.0",
     "eslint-friendly-formatter": "^4.0.1",

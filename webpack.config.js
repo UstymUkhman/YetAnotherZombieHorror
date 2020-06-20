@@ -129,6 +129,9 @@ module.exports = {
       patterns: [{
         to: path.resolve(__dirname, 'public/assets'),
         from: path.resolve(__dirname, 'src/assets')
+      }, {
+        to: path.resolve(__dirname, 'public/favicon'),
+        from: path.resolve(__dirname, 'favicon')
       }]
     }),
 

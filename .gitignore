@@ -10,12 +10,13 @@ pids
 .vscode
 
 build/**/*
-!build/*.yaml
+!build/*.yml
 src/assets/**/
 
 public/*.txt
 public/*.map
 public/**/*.glb
+public/favicon/*.png
 
 coverage/
 node_modules
