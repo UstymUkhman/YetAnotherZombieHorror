@@ -1,5 +1,6 @@
 jest.mock('@three/renderers/WebGLRenderer');
 jest.mock('three/examples/jsm/WebGL');
+jest.mock('@/utils/Settings');
 
 import Playground from '@/Playground';
 

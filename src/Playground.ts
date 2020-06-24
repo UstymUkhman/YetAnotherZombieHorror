@@ -11,8 +11,8 @@ import { AmbientLight } from '@three/lights/AmbientLight';
 import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
-import Stats from 'three/examples/js/libs/stats.min';
 import { WEBGL } from 'three/examples/jsm/WebGL';
+import { Settings } from '@/utils/Settings';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
@@ -30,9 +30,7 @@ const FOG = 0xA0A0A0;
 
 export default class Playground {
   private raf: number;
-
   private scene = new Scene();
-  private stats = new Stats();
 
   private renderer: WebGLRenderer;
   private controls: OrbitControls;
@@ -43,6 +41,7 @@ export default class Playground {
 
   private camera = new PerspectiveCamera(45, this.ratio, 1, 500);
   private _onResize: EventListenerOrEventListenerObject = () => null;
+  private stats: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public constructor () {
     const canvas = document.createElement('canvas');
@@ -70,7 +69,13 @@ export default class Playground {
     this.createRenderer();
     this.createControls();
     this.createEvents();
-    this.createStats();
+
+    if (Settings.DEBUG) {
+      import('three/examples/js/libs/stats.min').then((Stats) => {
+        this.stats = new Stats.default();
+        this.createStats();
+      });
+    }
 
     this.raf = requestAnimationFrame(this.render.bind(this));
   }
@@ -158,12 +163,13 @@ export default class Playground {
   }
 
   public render (): void {
-    this.stats.begin();
+    this.stats?.begin();
+
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-
     this.raf = requestAnimationFrame(this.render.bind(this));
-    this.stats.end();
+
+    this.stats?.end();
   }
 
   public onResize (): void {
@@ -175,8 +181,12 @@ export default class Playground {
 
   public destroy (): void {
     window.removeEventListener('resize', this._onResize, false);
-    document.body.removeChild(this.stats.domElement);
     cancelAnimationFrame(this.raf);
+
+    if (this.stats !== null) {
+      document.body.removeChild(this.stats.domElement);
+      delete this.stats;
+    }
 
     this.controls.dispose();
     this.renderer.dispose();
@@ -186,6 +196,5 @@ export default class Playground {
     delete this.renderer;
     delete this.camera;
     delete this.scene;
-    delete this.stats;
   }
 }

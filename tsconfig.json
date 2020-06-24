@@ -9,7 +9,7 @@
     "noImplicitAny": true,
 
     "module": "esnext",
-    "target": "esnext",
+    "target": "es2019",
     "sourceMap": true,
     "jsx": "preserve",
     "checkJs": true,

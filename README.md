@@ -34,4 +34,6 @@
 
 `yarn pack:app`
 
-`yarn dist:app -wl`
+  - **_Linux_:** `yarn dist:app -l`
+
+  - **_Windows_:** `yarn dist:app -w`
