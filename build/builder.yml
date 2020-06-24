@@ -1,0 +1,55 @@
+copyright: Copyright © 2020 Ustym Ukhman
+productName: Another Dumb Zombie Game
+appId: another.dumb.zombie.game
+publish: null
+
+files:
+  - build/**/*
+  - public/**/*
+  - node_modules/**/*
+  - package.json
+
+directories:
+  output: build
+  buildResources: favicon
+
+win:
+  legalTrademarks: Copyright © 2020 Ustym Ukhman
+  icon: favicon/favicon-512x512.png
+  publisherName: Ustym Ukhman
+
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: nsis-web
+      arch:
+        - x64
+        - ia32
+    - target: portable
+      arch:
+        - x64
+        - ia32
+    - target: msi
+      arch:
+        - x64
+        - ia32
+    - target: zip
+      arch:
+        - x64
+        - ia32
+
+linux:
+  icon: favicon/favicon-512x512.png
+  maintainer: Ustym Ukhman
+  category: game
+
+  target:
+    - AppImage
+    - freebsd
+    - tar.xz
+    - tar.gz
+    - snap
+    - deb
+    - zip

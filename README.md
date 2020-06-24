@@ -34,4 +34,4 @@
 
 `yarn pack:app`
 
-`yarn dist:app`
+`yarn dist:app -wl`
