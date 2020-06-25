@@ -3,9 +3,10 @@ const webpack = require('webpack');
 const config = require('./package.json');
 const svelteConfig = require('./svelte.config.js');
 
-const build = require('yargs').argv.env === 'build';
+const app = require('yargs').argv.env === 'app';
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const build = require('yargs').argv.env === 'build' || app;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 process.env.NODE_ENV = build ? 'production' : 'development';
@@ -114,7 +115,7 @@ module.exports = {
 
   plugins: [
     new MiniCssExtractPlugin({
-      chunkFilename: '[id].css',
+      chunkFilename: '[name].css',
       filename: 'index.css'
 		}),
 
@@ -122,7 +123,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       VERSION: JSON.stringify(config.version),
       BROWSER_SUPPORTS_HTML5: true,
-      PRODUCTION: build
+      PRODUCTION: build && !app
     }),
 
     new CopyWebpackPlugin({
@@ -145,14 +146,15 @@ module.exports = {
   ],
 
   output: {
-    globalObject: build ? 'typeof self !== \'undefined\' ? self : this' : 'window',
     libraryTarget: build ? 'umd' : 'var',
     library: build ? config.name : '',
     publicPath: build ? './' : '/',
 
     path: path.resolve('./public'),
+    chunkFilename: '[name].js',
     libraryExport: 'default',
     umdNamedDefine: true,
+    globalObject: 'this',
     filename: 'index.js'
   },
 
@@ -191,21 +193,18 @@ module.exports = {
 
   devServer: {
     contentBase: path.join(__dirname, './public'),
+    watchOptions: { poll: false },
     clientLogLevel: 'warning',
     host: HOST || 'localhost',
     watchContentBase: true,
     port: PORT || 8080,
-    publicPath: '/',
 
+    publicPath: '/',
     compress: true,
     overlay: true,
     quiet: false,
     open: false,
-    hot: true,
-
-    watchOptions: {
-      poll: false,
-    }
+    hot: true
   },
 
   node: {

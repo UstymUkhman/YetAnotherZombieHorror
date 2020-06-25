@@ -71,7 +71,7 @@ export default class Playground {
     this.createEvents();
 
     if (Settings.DEBUG) {
-      import('three/examples/js/libs/stats.min').then((Stats) => {
+      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
         this.stats = new Stats.default();
         this.createStats();
       });
