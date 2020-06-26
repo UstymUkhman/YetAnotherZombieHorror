@@ -1,22 +1,41 @@
-type Color = { r: number, g: number, b: number };
+import { Color as TColor } from '@three/math/Color';
 
-const getColor = (hex: string): Color => {
-  const color = parseInt(hex.slice(1), 16);
+export namespace Color {
+  export type RGB = { r: number, g: number, b: number };
 
-	return {
-    r: (color >> 16) & 255,
-    g: (color >> 8) & 255,
-    b: color & 255
+  export const GROUND = 0x888888;
+  export const WHITE = 0xFFFFFF;
+  export const GREY = 0xA0A0A0;
+  export const RED = 0x8A0707;
+
+  export const blend = (initial: string, target: string, p = 0.5): string => {
+    const iColor: RGB = hexToRGB(initial);
+    const tColor: RGB = hexToRGB(target);
+
+    return '#' + (0x100000000 +
+      (Math.round(((tColor.r - iColor.r) * p) + iColor.r) * 0x10000) +
+      (Math.round(((tColor.g - iColor.g) * p) + iColor.g) * 0x100) +
+      Math.round(((tColor.b - iColor.b) * p) + iColor.b)
+    ).toString(16).slice(3);
   };
-};
 
-export const blend = (initial: string, target: string, p = 0.5): string => {
-	const iColor: Color = getColor(initial);
-	const tColor: Color = getColor(target);
+  export const getClass = (color: number | string): TColor => {
+    return new TColor(color);
+  };
 
-	return '#' + (0x100000000 +
-		(Math.round(((tColor.r - iColor.r) * p) + iColor.r) * 0x10000) +
-		(Math.round(((tColor.g - iColor.g) * p) + iColor.g) * 0x100) +
-		Math.round(((tColor.b - iColor.b) * p) + iColor.b)
-	).toString(16).slice(3);
-};
+  export const rgbToHEX = (rgb: RGB): string => {
+    return `#${(
+      (1 << 24) + (rgb.r << 16) + (rgb.g << 8) + rgb.b
+    ).toString(16).slice(1)}`;
+  };
+
+  export const hexToRGB = (hex: string): RGB => {
+    const color = parseInt(hex.slice(1), 16);
+
+    return {
+      r: (color >> 16) & 255,
+      g: (color >> 8) & 255,
+      b: color & 255
+    };
+  };
+}

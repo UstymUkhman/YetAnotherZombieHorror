@@ -15,6 +15,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
 
   rules: {
+    '@typescript-eslint/no-namespace': 0,
     'generator-star-spacing': 0,
     'comma-dangle': 2,
     'no-debugger': 0,

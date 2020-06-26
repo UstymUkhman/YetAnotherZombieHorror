@@ -15,11 +15,11 @@
     "start:web": "webpack-dev-server --inline --progress",
     "test:clear": "./node_modules/.bin/jest --clearCache",
     "postinstall": "electron-builder install-app-deps",
-    "lint:js": "eslint src/**/*{.ts,.tsx,.js,.jsx}",
+    "build:app": "yarn build:web && tsc --project app",
     "lint:css": "stylelint **/*.{svelte,scss,css}",
+    "lint:js": "eslint src/**/*.{ts,tsx,js,jsx}",
     "test:cover": "yarn test:jest --coverage",
     "build:web": "webpack --env build",
-    "build:app": "tsc --project app",
     "serve": "npx http-server"
   },
   "repository": {

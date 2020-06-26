@@ -16,17 +16,13 @@ import { Settings } from '@/utils/Settings';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
-import { Color } from '@three/math/Color';
 import { Fog } from '@three/scenes/Fog';
+import { Color } from '@/utils/Color';
 
 interface GridMaterial extends Material {
   transparent: boolean
   opacity: number
 }
-
-const GROUND = 0x888888;
-const WHITE = 0xFFFFFF;
-const FOG = 0xA0A0A0;
 
 export default class Playground {
   private raf: number;
@@ -87,8 +83,8 @@ export default class Playground {
   }
 
   private createScene (): void {
-    this.scene.background = new Color(FOG);
-    this.scene.fog = new Fog(FOG, 50, 500);
+    this.scene.background = Color.getClass(Color.GREY);
+    this.scene.fog = new Fog(Color.GREY, 50, 500);
   }
 
   private createCamera (): void {
@@ -97,8 +93,8 @@ export default class Playground {
   }
 
   private createLights (): void {
-    const directional = new DirectionalLight(WHITE, 1);
-    const ambient = new AmbientLight(WHITE);
+    const directional = new DirectionalLight(Color.WHITE, 1);
+    const ambient = new AmbientLight(Color.WHITE);
 
     directional.position.set(-5, 10, 15);
     directional.castShadow = true;
@@ -122,8 +118,8 @@ export default class Playground {
     const ground = new Mesh(
       new BoxGeometry(500, 500, 1),
       new MeshPhongMaterial({
-        depthWrite: false,
-        color: GROUND
+        color: Color.GROUND,
+        depthWrite: false
       })
     );
 
