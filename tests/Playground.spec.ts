@@ -1,15 +1,18 @@
 jest.mock('@three/renderers/WebGLRenderer');
 jest.mock('three/examples/jsm/WebGL');
-jest.mock('@/utils/Settings');
+
+declare const global: any;
+global.PRODUCTION = false;
+global.VERSION = '0.1.0';
 
 import Playground from '@/Playground';
 
 describe('Playground', () => {
-  it('Importing Playground', () => {
+  test('Importing Playground', () => {
     expect(Playground).toBeDefined();
   });
 
-  it('Creating Playground', () => {
+  test('Creating Playground', () => {
     const playground = new Playground();
     expect(playground).toBeInstanceOf(Playground);
 
@@ -47,7 +50,7 @@ describe('Playground', () => {
     expect(_createStats).toHaveBeenCalled();
   });
 
-  it('Rendering Playground', () => {
+  test('Rendering Playground', () => {
     const playground = new Playground();
     const _render = jest.fn();
 
@@ -57,7 +60,7 @@ describe('Playground', () => {
     expect(_render).toHaveBeenCalled();
   });
 
-  it('Resizing Playground', () => {
+  test('Resizing Playground', () => {
     const playground = new Playground();
     const _onResize = jest.fn();
 
@@ -67,12 +70,12 @@ describe('Playground', () => {
     expect(_onResize).toHaveBeenCalled();
   });
 
-  it('Returning Canvas Element', () => {
+  test('Returning Canvas Element', () => {
     const playground = new Playground();
     expect(playground.getScene().tagName).toBe('CANVAS');
   });
 
-  it('Destroy Playground', () => {
+  test('Destroy Playground', () => {
     const playground = new Playground();
     const _destroy = jest.fn();
 

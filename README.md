@@ -20,7 +20,7 @@
 
 `yarn lint:css`
 
-`yarn test:jest`
+`yarn test:run`
 
 ## Build ##
 
