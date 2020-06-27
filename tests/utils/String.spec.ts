@@ -7,14 +7,14 @@ describe('String', () => {
     const replace = 'A game without a game engine';
     const noReplacement = replace;
 
-    expect(replaceAll(replace, 'game', 'car')).toBe(multipleReplacements);
-    expect(replaceAll(replace, 'without', 'with')).toBe(oneReplacement);
-    expect(replaceAll(replace, 'zombie', 'enemy')).toBe(noReplacement);
+    expect(replaceAll(replace, 'game', 'car')).toStrictEqual(multipleReplacements);
+    expect(replaceAll(replace, 'without', 'with')).toStrictEqual(oneReplacement);
+    expect(replaceAll(replace, 'zombie', 'enemy')).toStrictEqual(noReplacement);
   });
 
   test('capitalize', () => {
     const name = 'another dumb zombie game';
     const capitalized = 'Another dumb zombie game';
-    expect(capitalize(name)).toBe(capitalized);
+    expect(capitalize(name)).toStrictEqual(capitalized);
   });
 });

@@ -8,11 +8,11 @@ global.VERSION = '0.1.0';
 import Playground from '@/Playground';
 
 describe('Playground', () => {
-  test('Importing Playground', () => {
+  test('Import', () => {
     expect(Playground).toBeDefined();
   });
 
-  test('Creating Playground', () => {
+  test('Create', () => {
     const playground = new Playground();
     expect(playground).toBeInstanceOf(Playground);
 
@@ -50,7 +50,7 @@ describe('Playground', () => {
     expect(_createStats).toHaveBeenCalled();
   });
 
-  test('Rendering Playground', () => {
+  test('Render', () => {
     const playground = new Playground();
     const _render = jest.fn();
 
@@ -60,7 +60,7 @@ describe('Playground', () => {
     expect(_render).toHaveBeenCalled();
   });
 
-  test('Resizing Playground', () => {
+  test('Resize', () => {
     const playground = new Playground();
     const _onResize = jest.fn();
 
@@ -70,12 +70,12 @@ describe('Playground', () => {
     expect(_onResize).toHaveBeenCalled();
   });
 
-  test('Returning Canvas Element', () => {
+  test('Canvas Element', () => {
     const playground = new Playground();
     expect(playground.getScene().tagName).toBe('CANVAS');
   });
 
-  test('Destroy Playground', () => {
+  test('Destroy', () => {
     const playground = new Playground();
     const _destroy = jest.fn();
 
