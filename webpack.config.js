@@ -109,6 +109,7 @@ module.exports = {
       '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
       '@components': path.resolve('./src/components'),
+      '@assets': path.resolve('./src/assets'),
       '@': path.resolve('./src')
     }
   },

@@ -1,6 +1,6 @@
 type FrozenObject = { [propriety: string]: unknown };
 
-export const deepFreeze = (object: FrozenObject): FrozenObject => {
+const deepFreeze = (object: FrozenObject): FrozenObject => {
   Object.freeze(object);
 
   const proprieties = Object.getOwnPropertyNames(object);
@@ -17,3 +17,5 @@ export const deepFreeze = (object: FrozenObject): FrozenObject => {
 
   return object;
 };
+
+export default deepFreeze;

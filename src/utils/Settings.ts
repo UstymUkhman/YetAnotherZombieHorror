@@ -1,6 +1,6 @@
-import { deepFreeze } from '@/utils/deepFreeze';
-import Player from '@/settings/player.json';
-import Enemy from '@/settings/enemy.json';
+import Player from '@assets/settings/player.json';
+import Enemy from '@assets/settings/enemy.json';
+import deepFreeze from '@/utils/deepFreeze';
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isApp = userAgent.includes('electron');

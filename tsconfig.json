@@ -27,7 +27,8 @@
       "@loaders/*": ["node_modules/three/examples/jsm/loaders/*"],
       "@utils/*": ["node_modules/three/examples/jsm/utils/*"],
       "@three/*": ["node_modules/three/src/*"],
-      "@/components/*": ["src/components/*"],
+      "@components/*": ["src/components/*"],
+      "@assets/*": ["src/assets/*"],
       "@/*": ["src/*"]
     },
 

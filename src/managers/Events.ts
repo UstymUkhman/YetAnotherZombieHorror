@@ -1,8 +1,8 @@
 type GameEvents = { [name: string]: GameEvent };
 type Callbacks = { [name: string]: Callback };
-type Callback = () => void;
+type Callback = (event: GameEvent) => void;
 
-class GameEvent extends CustomEvent<unknown> {
+export class GameEvent extends CustomEvent<unknown> {
   public data: unknown = null;
 
   constructor (name: string) {
@@ -17,16 +17,20 @@ class Events {
   public add (name: string, callback: Callback): void {
     this.callbacks[name] = callback;
     this.events[name] = new GameEvent(name);
-    document.addEventListener(name, callback, false);
+    document.addEventListener(name, callback as EventListener, false);
   }
 
   public dispatch (name: string, data: unknown = null): void {
-    this.events[name].data = data;
-    document.dispatchEvent(this.events[name]);
+    const gameEvent: GameEvent = this.events[name];
+
+    if (gameEvent) {
+      gameEvent.data = data;
+      document.dispatchEvent(gameEvent);
+    }
   }
 
   public remove (name: string): void {
-    document.removeEventListener(name, this.callbacks[name], false);
+    document.removeEventListener(name, this.callbacks[name] as EventListener, false);
     delete this.callbacks[name];
     delete this.events[name];
   }
@@ -38,4 +42,4 @@ class Events {
   }
 }
 
-export default new Events();
+export const GameEvents = new Events();

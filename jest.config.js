@@ -88,7 +88,7 @@ module.exports = {
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/tests/__mocks__/fileMock.js',
-    '\\.(css|less)$': '<rootDir>/tests/__mocks__/styleMock.js',
+    '\\.(css|scss|sass|less)$': '<rootDir>/tests/__mocks__/styleMock.js',
 
     '^@postprocessing/(.*)': '<rootDir>/node_modules/three/examples/jsm/postprocessing/$1',
     '^@controls/(.*)': '<rootDir>/node_modules/three/examples/jsm/controls/$1',
@@ -97,6 +97,7 @@ module.exports = {
     '^@utils/(.*)': '<rootDir>/node_modules/three/examples/jsm/utils/$1',
     '^@three/(.*)': '<rootDir>/node_modules/three/src/$1',
     '@components/(.*)': '<rootDir>/src/components/$1',
+    '@assets/(.*)': '<rootDir>/src/assets/$1',
     '@/(.*)': '<rootDir>/src/$1'
   },
 
