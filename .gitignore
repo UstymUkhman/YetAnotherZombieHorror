@@ -5,6 +5,7 @@ logs
 pids
 *.pid
 *.seed
+*.blend
 
 .idea
 .vscode

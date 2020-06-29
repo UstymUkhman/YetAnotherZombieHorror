@@ -5,9 +5,10 @@
 </main>
 
 <script lang="typescript">
-import Close from '@components/CloseButton';
+import Playground from '@/environment/Playground';
 import { Settings } from '@/utils/Settings';
-import Playground from '@/Playground';
+
+import Close from '@components/CloseButton';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;

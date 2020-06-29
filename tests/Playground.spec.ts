@@ -5,7 +5,7 @@ declare const global: any;
 global.PRODUCTION = false;
 global.VERSION = '0.1.0';
 
-import Playground from '@/Playground';
+import Playground from '@/environment/Playground';
 
 describe('Playground', () => {
   test('Import', () => {

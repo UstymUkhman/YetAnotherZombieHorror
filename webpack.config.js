@@ -194,6 +194,7 @@ module.exports = {
 
   devServer: {
     contentBase: path.join(__dirname, './public'),
+    headers: { 'Content-Encoding': 'none' },
     watchOptions: { poll: false },
     clientLogLevel: 'warning',
     host: HOST || 'localhost',
