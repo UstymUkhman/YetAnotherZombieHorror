@@ -11,7 +11,6 @@ import { AmbientLight } from '@three/lights/AmbientLight';
 import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
-import { WEBGL } from 'three/examples/jsm/WebGL';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
@@ -28,35 +27,17 @@ export default class Playground {
   private raf: number;
   private scene = new Scene();
 
-  private renderer: WebGLRenderer;
-  private controls: OrbitControls;
-
   private width: number = window.innerWidth;
   private height: number = window.innerHeight;
   private ratio: number = this.width / this.height;
 
   private camera = new PerspectiveCamera(45, this.ratio, 1, 500);
   private _onResize: EventListenerOrEventListenerObject = () => null;
+  private renderer = new WebGLRenderer({ antialias: true, alpha: false });
+  private controls = new OrbitControls(this.camera, this.renderer.domElement);
   private stats: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public constructor () {
-    const canvas = document.createElement('canvas');
-    const glVersion = WEBGL.isWebGL2Available() ? '2' : '';
-
-    const context = canvas.getContext(
-      `webgl${glVersion}`, { antialias: true, alpha: false }
-    ) as WebGLRenderingContext | WebGL2RenderingContext;
-
-    if (!glVersion) {
-      console.warn(`
-        This environment does not seem to support WebGL 2.
-        WebGL 1 will be used instead.
-      `);
-    }
-
-    this.renderer = new WebGLRenderer({ canvas: canvas, context: context });
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
     this.createScene();
     this.createCamera();
     this.createLights();

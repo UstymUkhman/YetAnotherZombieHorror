@@ -96,6 +96,11 @@ onMount(() => { game.prepend(stage.getScene()); });
   font-size: 5vw;
 }
 
+:global(h2) {
+  letter-spacing: 0.4rem;
+  font-size: 4vw;
+}
+
 :global(h3) {
   letter-spacing: 0.3rem;
   font-size: 3vw;

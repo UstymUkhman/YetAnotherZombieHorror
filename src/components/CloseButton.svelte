@@ -16,6 +16,7 @@ div#close-button {
 
   h3 {
     position: absolute;
+    font-size: 45px;
     line-height: 1;
 
     right: 2px;
