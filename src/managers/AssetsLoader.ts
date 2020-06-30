@@ -12,22 +12,20 @@ export default class AssetsLoader extends LoadingManager {
   private loading = false;
 
   public async loadGLTF (file: string, callback?: LoadCallback): Promise<GLTFModel> {
-    const gltf = await this.load(file);
-    if (callback) callback(gltf);
-    return gltf;
-  }
-
-  private load (model: string): Promise<GLTFModel> {
-    return new Promise((resolve, reject) => {
-      const onError = (error: ErrorEvent) => reject(error);
-      const onLoad = (result: GLTFModel) => resolve(result);
-
+    return await new Promise((resolve, reject) => {
       const onProgress = (event: ProgressEvent<EventTarget>) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.onProgress((event.target as any).responseURL, event.loaded, event.total);
       };
 
-      this.gltf.load(model, onLoad, onProgress, onError);
+      const onError = (error: ErrorEvent) => reject(error);
+
+      const onLoad = (result: GLTFModel) => {
+        if (callback) callback(result);
+        resolve(result);
+      };
+
+      this.gltf.load(file, onLoad, onProgress, onError);
     });
   }
 

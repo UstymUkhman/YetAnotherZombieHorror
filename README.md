@@ -6,8 +6,6 @@
 
 `cd another-dumb-zombie-game`
 
-`cp -r public/assets/* src/assets/`
-
 ## Develop ##
 
 `yarn`

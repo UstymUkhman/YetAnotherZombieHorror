@@ -1,24 +1,24 @@
 tmp
 logs
-*.log
-
 pids
-*.pid
-*.seed
-*.blend
 
 .idea
+*.log
+*.pid
+*.seed
 .vscode
 
 build/**/*
 !build/*.yml
-src/assets/**/
 
 public/*.txt
 public/*.map
-public/**/*.glb
-public/favicon/*.png
 
+favicon/*
 coverage/
 node_modules
 .lock-wscript
+
+!favicon/.gitkeep
+public/models/*.blend
+src/assets/fonts/*.ttf

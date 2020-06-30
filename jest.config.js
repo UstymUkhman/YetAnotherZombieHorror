@@ -97,7 +97,6 @@ module.exports = {
     '^@utils/(.*)': '<rootDir>/node_modules/three/examples/jsm/utils/$1',
     '^@three/(.*)': '<rootDir>/node_modules/three/src/$1',
     '@components/(.*)': '<rootDir>/src/components/$1',
-    '@assets/(.*)': '<rootDir>/src/assets/$1',
     '@/(.*)': '<rootDir>/src/$1'
   },
 

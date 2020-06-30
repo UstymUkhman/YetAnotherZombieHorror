@@ -11,11 +11,11 @@ files:
 
 directories:
   output: build
-  buildResources: favicon
+  buildResources: public/favicon
 
 win:
   legalTrademarks: Copyright © 2020 Ustym Ukhman
-  icon: favicon/favicon-512x512.png
+  icon: public/favicon/favicon-512x512.png
   publisherName: Ustym Ukhman
 
   target:
@@ -41,7 +41,7 @@ win:
         - ia32
 
 linux:
-  icon: favicon/favicon-512x512.png
+  icon: public/favicon/favicon-512x512.png
   maintainer: Ustym Ukhman
   category: game
 

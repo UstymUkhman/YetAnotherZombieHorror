@@ -12,12 +12,12 @@ import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
 import { WEBGL } from 'three/examples/jsm/WebGL';
-import { Settings } from '@/utils/Settings';
 
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
+import Settings from '@/settings';
 
 interface GridMaterial extends Material {
   transparent: boolean

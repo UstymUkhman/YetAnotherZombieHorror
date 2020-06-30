@@ -6,9 +6,9 @@
 
 <script lang="typescript">
 import Playground from '@/environment/Playground';
-import { Settings } from '@/utils/Settings';
-
 import Close from '@components/CloseButton';
+
+import Settings from '@/settings';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;

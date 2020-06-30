@@ -5,7 +5,6 @@ const svelteConfig = require('./svelte.config.js');
 
 const app = require('yargs').argv.env === 'app';
 const TerserPlugin = require('terser-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const build = require('yargs').argv.env === 'build' || app;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -109,7 +108,6 @@ module.exports = {
       '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
       '@components': path.resolve('./src/components'),
-      '@assets': path.resolve('./src/assets'),
       '@': path.resolve('./src')
     }
   },
@@ -125,16 +123,6 @@ module.exports = {
       VERSION: JSON.stringify(config.version),
       BROWSER_SUPPORTS_HTML5: true,
       PRODUCTION: build && !app
-    }),
-
-    new CopyWebpackPlugin({
-      patterns: [{
-        to: path.resolve(__dirname, 'public/assets'),
-        from: path.resolve(__dirname, 'src/assets')
-      }, {
-        to: path.resolve(__dirname, 'public/favicon'),
-        from: path.resolve(__dirname, 'favicon')
-      }]
     }),
 
     ...(build ? [
