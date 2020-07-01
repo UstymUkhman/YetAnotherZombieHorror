@@ -1,4 +1,4 @@
-declare module "*.json" {
+declare module '*.json' {
   const value:  unknown;
   export default value;
 }
