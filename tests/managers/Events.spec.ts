@@ -1,8 +1,19 @@
-import { GameEvent, GameEvents } from '@/managers/Events';
+import GameEvents, { GameEvent } from '@/managers/GameEvents';
+
+const timestamp = Date.now();
+
+describe('GameEvent', () => {
+  const event = new GameEvent('event');
+  event.data = timestamp;
+
+  test('Create', () => {
+    expect(GameEvent).toBeDefined();
+    expect(event).toBeInstanceOf(CustomEvent);
+    expect(event.data).toStrictEqual(timestamp);
+  });
+});
 
 describe('GameEvents', () => {
-  const timestamp = Date.now();
-
   const gameEvent = new GameEvent('time');
   gameEvent.data = timestamp;
 
@@ -11,7 +22,7 @@ describe('GameEvents', () => {
     expect(event.data).toStrictEqual(timestamp);
   });
 
-  test('Import', () => {
+  test('Create', () => {
     expect(GameEvents).toBeDefined();
   });
 

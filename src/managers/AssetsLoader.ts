@@ -21,8 +21,8 @@ export default class AssetsLoader extends LoadingManager {
   private readonly texture = new TextureLoader(this);
   private readonly gltf = new GLTFLoader(this);
 
-  public gltfModelsBasePath = '/assets/models/';
   public textureBasePath = '/assets/images';
+  public modelBasePath = '/assets/models/';
 
   public cubeTextures = [
     'px.png', 'nx.png',
@@ -71,14 +71,15 @@ export default class AssetsLoader extends LoadingManager {
     return await new Promise((resolve: Resolve<GLTFModel>, reject: Reject) => {
       const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-      this.gltf.setPath(this.gltfModelsBasePath);
+      this.gltf.setPath(this.modelBasePath);
       this.gltf.load(file, promise.onLoad, promise.onProgress, promise.onError);
     });
   }
 
-  public onProgress = (url: string, loaded: number, total: number): void => {
+  public onProgress = (url: string, loaded: number, total: number): string => {
     const progress = (loaded * 100 / total).toFixed();
     console.info(`Loading... ${progress}%`);
+    return progress;
   }
 
   public onError = (url: string): void => {
