@@ -5,16 +5,16 @@
 </main>
 
 <script lang="typescript">
-import Playground from '@/environment/Playground';
 import Close from '@components/CloseButton';
+import Level0 from '@/environment/Level0';
 
 import Settings from '@/settings';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;
-const stage = new Playground();
+const level = new Level0();
 
-onMount(() => { game.prepend(stage.getScene()); });
+onMount(() => { game.prepend(level.canvas); });
 </script>
 
 <style lang="scss">

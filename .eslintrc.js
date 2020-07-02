@@ -17,6 +17,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-namespace': 0,
     'generator-star-spacing': 0,
+    'quotes': [2, 'single'],
     'comma-dangle': 2,
     'no-debugger': 0,
     'no-console': 0,

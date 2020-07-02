@@ -16,6 +16,12 @@ type Group = import('@three/objects/Group').Group;
 type Assets = Texture | CubeTexture | GLTFModel;
 type Reject = (error?: ErrorEvent) => void;
 
+export interface Callbacks {
+  onProgress: (event: ProgressEvent<EventTarget>) => void;
+  onError: (error: ErrorEvent) => void;
+  onLoad: (asset: Assets) => void;
+}
+
 export default class AssetsLoader extends LoadingManager {
   private readonly cubeTexture = new CubeTextureLoader(this);
   private readonly texture = new TextureLoader(this);
@@ -30,7 +36,7 @@ export default class AssetsLoader extends LoadingManager {
     'pz.png', 'nz.png'
   ];
 
-  private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject) {
+  private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
     return {
       onLoad: (asset: Assets) => {
         if (asset instanceof CubeTexture) {

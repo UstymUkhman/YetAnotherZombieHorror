@@ -15,7 +15,7 @@ export class Elastic {
   private target: number;
   public value: number;
 
-  constructor (value: number) {
+  public constructor (value: number) {
     this.target = value;
     this.value = value;
   }

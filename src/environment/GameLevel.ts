@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../global.d.ts" />
-
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { DirectionalLight } from '@three/lights/DirectionalLight';
@@ -8,7 +5,6 @@ import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { AmbientLight } from '@three/lights/AmbientLight';
-import { OrbitControls } from '@controls/OrbitControls';
 import { GridHelper } from '@three/helpers/GridHelper';
 import { Material } from '@three/materials/Material';
 
@@ -16,26 +12,22 @@ import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
-import Settings from '@/settings';
 
 interface GridMaterial extends Material {
   transparent: boolean
   opacity: number
 }
 
-export default class Playground {
-  private raf: number;
-  private scene = new Scene();
+export default class GameLevel {
+  protected readonly scene = new Scene();
 
   private width: number = window.innerWidth;
   private height: number = window.innerHeight;
   private ratio: number = this.width / this.height;
 
-  private camera = new PerspectiveCamera(45, this.ratio, 1, 500);
+  protected camera = new PerspectiveCamera(45, this.ratio, 1, 500);
   private _onResize: EventListenerOrEventListenerObject = () => null;
   private renderer = new WebGLRenderer({ antialias: true, alpha: false });
-  private controls = new OrbitControls(this.camera, this.renderer.domElement);
-  private stats: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   public constructor () {
     this.createScene();
@@ -44,17 +36,7 @@ export default class Playground {
     this.createGround();
 
     this.createRenderer();
-    this.createControls();
     this.createEvents();
-
-    if (Settings.DEBUG) {
-      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
-        this.stats = new Stats.default();
-        this.createStats();
-      });
-    }
-
-    this.raf = requestAnimationFrame(this.render.bind(this));
   }
 
   private setSize (): void {
@@ -120,58 +102,32 @@ export default class Playground {
     this.renderer.shadowMap.enabled = true;
   }
 
-  private createControls (): void {
-    this.controls.target.set(0, 0, 25);
-    this.controls.update();
-  }
-
   private createEvents (): void {
     this._onResize = this.onResize.bind(this);
     window.addEventListener('resize', this._onResize, false);
   }
 
-  private createStats (): void {
-    this.stats.showPanel(0);
-    document.body.appendChild(this.stats.domElement);
-  }
-
-  public getScene (): HTMLCanvasElement {
-    return this.renderer.domElement;
-  }
-
-  public render (): void {
-    this.stats?.begin();
-
-    this.controls.update();
-    this.renderer.render(this.scene, this.camera);
-    this.raf = requestAnimationFrame(this.render.bind(this));
-
-    this.stats?.end();
-  }
-
-  public onResize (): void {
+  private onResize (): void {
     this.setSize();
     this.camera.aspect = this.ratio;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.width, this.height);
   }
 
-  public destroy (): void {
+  protected render (): void {
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  protected destroy (): void {
     window.removeEventListener('resize', this._onResize, false);
-    cancelAnimationFrame(this.raf);
-
-    if (this.stats !== null) {
-      document.body.removeChild(this.stats.domElement);
-      delete this.stats;
-    }
-
-    this.controls.dispose();
     this.renderer.dispose();
     this.scene.dispose();
 
-    delete this.controls;
     delete this.renderer;
     delete this.camera;
-    delete this.scene;
+  }
+
+  public get canvas (): HTMLCanvasElement {
+    return this.renderer.domElement;
   }
 }

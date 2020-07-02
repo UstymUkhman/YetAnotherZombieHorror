@@ -1,9 +1,10 @@
 import { LoadingManager } from '@three/loaders/LoadingManager';
 import { CubeTexture } from '@three/textures/CubeTexture';
 
-import AssetsLoader from '@/managers/AssetsLoader';
+import AssetsLoader, { Callbacks } from '@/managers/AssetsLoader';
 import { Texture } from '@three/textures/Texture';
 import { Group } from '@three/objects/Group';
+import { RGBFormat } from '@three/constants';
 
 describe('AssetsLoader', () => {
   const loader = new AssetsLoader();
@@ -24,6 +25,32 @@ describe('AssetsLoader', () => {
     expect(loader.modelBasePath).toStrictEqual(defaultModelsPath);
     expect(loader.cubeTextures).toStrictEqual(defaultCubeTextures);
     expect(loader.textureBasePath).toStrictEqual(defaultTexturePath);
+  });
+
+  test('getPromiseCallbacks', done => {
+    const loaderPrototype = Object.getPrototypeOf(loader);
+    const getPromiseCallbacks = jest.fn(loaderPrototype.getPromiseCallbacks.bind(loaderPrototype));
+
+    new Promise((resolve, reject) => {
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      expect(callbacks.onLoad(new CubeTexture())).toHaveReturnedWith(undefined);
+    }).then(asset => {
+      expect(asset).toBeInstanceOf(CubeTexture);
+      expect((asset as CubeTexture).format).toStrictEqual(RGBFormat);
+    });
+
+    new Promise((resolve, reject) => {
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      expect(callbacks.onProgress(new ProgressEvent('loading'))).toHaveReturnedWith(undefined);
+    });
+
+    new Promise((resolve, reject) => {
+      const error = new ErrorEvent('loading');
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      expect(callbacks.onError(error)).rejects.toStrictEqual(error);
+    });
+
+    done();
   });
 
   test('loadCubeTexture', done => {
