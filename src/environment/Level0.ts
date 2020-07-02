@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../global.d.ts" />
 
-type PerspectiveCamera = import('@three/cameras/PerspectiveCamera').PerspectiveCamera;
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Stats = typeof import('three/examples/js/libs/stats.min');
 
@@ -44,6 +43,7 @@ export default class Level0 extends GameLevel {
   }
 
   public destroy (): void {
+    cancelAnimationFrame(this.raf);
     super.destroy();
 
     if (Settings.DEBUG) {
