@@ -122,7 +122,7 @@ module.exports = {
 
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      VERSION: JSON.stringify(config.version),
+      BUILD: JSON.stringify(config.version),
       BROWSER_SUPPORTS_HTML5: true,
       PRODUCTION: build && !app
     }),

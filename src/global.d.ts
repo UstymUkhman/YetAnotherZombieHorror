@@ -3,6 +3,6 @@ declare module '*.json' {
   export default value;
 }
 
-declare const VERSION: string;
+declare const BUILD: string;
 declare const PRODUCTION: boolean;
 declare module 'three/examples/js/libs/stats.min';

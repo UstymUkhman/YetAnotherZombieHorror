@@ -8,7 +8,7 @@
 import Close from '@components/CloseButton';
 import Level0 from '@/environment/Level0';
 
-import Settings from '@/settings';
+import { Settings } from '@/settings';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;

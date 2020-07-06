@@ -1,100 +1,105 @@
 import { CubeTextureLoader } from '@three/loaders/CubeTextureLoader';
 import { LoadingManager } from '@three/loaders/LoadingManager';
+
 import { TextureLoader } from '@three/loaders/TextureLoader';
 import { CubeTexture } from '@three/textures/CubeTexture';
+
 import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
 
-export type AnimationClip = import('@three/animation/AnimationClip').AnimationClip;
-export type Texture = import('@three/textures/Texture').Texture;
-export type Group = import('@three/objects/Group').Group;
+export namespace Assets {
+  type AnimationClip = import('@three/animation/AnimationClip').AnimationClip;
+  type GLTFModel = { scene: GLTF, animations?: Array<AnimationClip> };
+  type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
 
-export type GLTFModel = { scene: Group, animations?: Array<AnimationClip> };
-type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
-export type Assets = Texture | CubeTexture | GLTFModel;
-type Reject = (error?: ErrorEvent) => void;
+  type Texture = import('@three/textures/Texture').Texture;
+  export type GLTF = import('@three/objects/Group').Group;
 
-export interface Callbacks {
-  onProgress: (event: ProgressEvent<EventTarget>) => void;
-  onError: (error: ErrorEvent) => void;
-  onLoad: (asset: Assets) => void;
-}
+  type Assets = Texture | CubeTexture | GLTFModel;
+  type Reject = (error: ErrorEvent) => void;
 
-export default class AssetsLoader extends LoadingManager {
-  private readonly cubeTexture = new CubeTextureLoader(this);
-  private readonly texture = new TextureLoader(this);
-  private readonly gltf = new GLTFLoader(this);
-
-  public textureBasePath = '/assets/images';
-  public modelBasePath = '/assets/models/';
-
-  public cubeTextures = [
-    'px.png', 'nx.png',
-    'py.png', 'ny.png',
-    'pz.png', 'nz.png'
-  ];
-
-  private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
-    return {
-      onLoad: (asset: Assets) => {
-        if (asset instanceof CubeTexture) {
-          asset.format = RGBFormat;
-        }
-
-        resolve(asset);
-      },
-
-      onProgress: (event: ProgressEvent<EventTarget>) => this.onProgress(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (event.target as any).responseURL, event.loaded, event.total
-      ),
-
-      onError: (error: ErrorEvent) => reject(error)
-    };
+  export interface Callbacks {
+    onProgress: (event: ProgressEvent<EventTarget>) => void;
+    onLoad: (asset: Assets) => void;
+    onError: Reject;
   }
 
-  public async loadCubeTexture (folder: string): Promise<CubeTexture> {
-    return await new Promise((resolve: Resolve<CubeTexture>, reject: Reject) => {
-      const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+  export class Loader extends LoadingManager {
+    private readonly cubeTexture = new CubeTextureLoader(this);
+    private readonly texture = new TextureLoader(this);
+    private readonly gltf = new GLTFLoader(this);
 
-      this.cubeTexture.setPath(`${this.textureBasePath}/${folder}/`);
-      this.cubeTexture.load(this.cubeTextures, promise.onLoad, promise.onProgress, promise.onError);
-    });
-  }
+    public textureBasePath = './assets/images';
+    public modelBasePath = './assets/models/';
 
-  public async loadTexture (file: string): Promise<Texture> {
-    return await new Promise((resolve: Resolve<Texture>, reject: Reject) => {
-      const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+    public cubeTextures = [
+      'px.png', 'nx.png',
+      'py.png', 'ny.png',
+      'pz.png', 'nz.png'
+    ];
 
-      this.texture.setPath(`${this.textureBasePath}/`);
-      this.texture.load(file, promise.onLoad, promise.onProgress, promise.onError);
-    });
-  }
+    private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
+      return {
+        onLoad: (asset: Assets) => {
+          if (asset instanceof CubeTexture) {
+            asset.format = RGBFormat;
+          }
 
-  public async loadGLTF (file: string): Promise<GLTFModel> {
-    return await new Promise((resolve: Resolve<GLTFModel>, reject: Reject) => {
-      const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+          resolve(asset);
+        },
 
-      this.gltf.setPath(this.modelBasePath);
-      this.gltf.load(file, promise.onLoad, promise.onProgress, promise.onError);
-    });
-  }
+        onProgress: (event: ProgressEvent<EventTarget>) => this.onProgress(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (event.target as any).responseURL, event.loaded, event.total
+        ),
 
-  public onProgress = (url: string, loaded: number, total: number): string => {
-    const progress = (loaded * 100 / total).toFixed();
-    console.info(`Loading... ${progress}%`);
-    return progress;
-  }
+        onError: (error: ErrorEvent) => reject(error)
+      };
+    }
 
-  public onError = (url: string): void => {
-    console.error(`Error occurred loading ${url}.`);
-  }
+    public async loadCubeTexture (folder: string): Promise<CubeTexture> {
+      return await new Promise((resolve: Resolve<CubeTexture>, reject: Reject) => {
+        const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-  public onStart = (): void => {
-    console.info('Loading... 0%');
-  }
+        this.cubeTexture.setPath(`${this.textureBasePath}/${folder}/`);
+        this.cubeTexture.load(this.cubeTextures, promise.onLoad, promise.onProgress, promise.onError);
+      });
+    }
 
-  public onLoad = (): void => {
-    console.info('Loaded!');
+    public async loadTexture (file: string): Promise<Texture> {
+      return await new Promise((resolve: Resolve<Texture>, reject: Reject) => {
+        const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+
+        this.texture.setPath(`${this.textureBasePath}/`);
+        this.texture.load(file, promise.onLoad, promise.onProgress, promise.onError);
+      });
+    }
+
+    public async loadGLTF (file: string): Promise<GLTFModel> {
+      return await new Promise((resolve: Resolve<GLTFModel>, reject: Reject) => {
+        const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+
+        this.gltf.setPath(this.modelBasePath);
+        this.gltf.load(file, promise.onLoad, promise.onProgress, promise.onError);
+      });
+    }
+
+    public onProgress = (url: string, loaded: number, total: number): string => {
+      const progress = (loaded * 100 / total).toFixed();
+      console.info(`Loading... ${progress}%`);
+      return progress;
+    }
+
+    public onError = (url: string): void => {
+      console.error(`Error occurred loading ${url}.`);
+    }
+
+    public onStart = (): void => {
+      console.info('Loading... 0%');
+    }
+
+    public onLoad = (): void => {
+      console.info('Loaded!');
+    }
   }
 }

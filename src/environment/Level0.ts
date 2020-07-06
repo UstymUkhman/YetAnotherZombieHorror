@@ -9,9 +9,9 @@ import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
 import { Vector3 } from '@three/math/Vector3';
 
-import Settings, { level0 } from '@/settings';
 import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
+import { Settings } from '@/settings';
 
 export default class Level0 extends GameLevel {
   private controls?: OrbitControls;
@@ -55,15 +55,13 @@ export default class Level0 extends GameLevel {
   }
 
   private createEnvironment (): void {
-    this.scene.background = Color.getClass(Color.BLACK);
-
-    super.loadLevel(level0.model).then(level => {
-      level.position.copy(level0.position);
-      level.scale.copy(level0.scale);
+    super.loadLevel(Settings.Level0.model).then(level => {
+      level.position.copy(Settings.Level0.position);
+      level.scale.copy(Settings.Level0.scale);
     });
 
     if (!Settings.DEBUG) {
-      this.scene.fog = new Fog(Color.GREY, 50, 500);
+      this.scene.fog = new Fog(Color.GREY, 0.1, 100);
     }
   }
 

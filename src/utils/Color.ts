@@ -5,7 +5,7 @@ export namespace Color {
 
   export const BLACK = 0x000000;
   export const WHITE = 0xFFFFFF;
-  export const GREY = 0xA0A0A0;
+  export const GREY = 0x808080;
   export const RED = 0x8A0707;
 
   export const blend = (initial: string, target: string, p = 0.5): string => {

@@ -1,17 +1,17 @@
 import { LoadingManager } from '@three/loaders/LoadingManager';
 import { CubeTexture } from '@three/textures/CubeTexture';
-
-import AssetsLoader, { Callbacks } from '@/managers/AssetsLoader';
 import { Texture } from '@three/textures/Texture';
+
+import { Assets } from '@/managers/AssetsLoader';
 import { Group } from '@three/objects/Group';
 import { RGBFormat } from '@three/constants';
 
 describe('AssetsLoader', () => {
-  const loader = new AssetsLoader();
+  const loader = new Assets.Loader();
 
   test('Create', () => {
-    const defaultTexturePath = '/assets/images';
-    const defaultModelsPath = '/assets/models/';
+    const defaultTexturePath = './assets/images';
+    const defaultModelsPath = './assets/models/';
 
     const defaultCubeTextures = [
       'px.png', 'nx.png',
@@ -19,7 +19,7 @@ describe('AssetsLoader', () => {
       'pz.png', 'nz.png'
     ];
 
-    expect(AssetsLoader).toBeDefined();
+    expect(Assets.Loader).toBeDefined();
     expect(loader).toBeInstanceOf(LoadingManager);
 
     expect(loader.modelBasePath).toStrictEqual(defaultModelsPath);
@@ -32,7 +32,7 @@ describe('AssetsLoader', () => {
     const getPromiseCallbacks = jest.fn(loaderPrototype.getPromiseCallbacks.bind(loaderPrototype));
 
     new Promise((resolve, reject) => {
-      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
       expect(callbacks.onLoad(new CubeTexture())).toHaveReturnedWith(undefined);
     }).then(asset => {
       expect(asset).toBeInstanceOf(CubeTexture);
@@ -40,13 +40,13 @@ describe('AssetsLoader', () => {
     });
 
     new Promise((resolve, reject) => {
-      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
       expect(callbacks.onProgress(new ProgressEvent('loading'))).toHaveReturnedWith(undefined);
     });
 
     new Promise((resolve, reject) => {
       const error = new ErrorEvent('loading');
-      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
       expect(callbacks.onError(error)).rejects.toStrictEqual(error);
     });
 

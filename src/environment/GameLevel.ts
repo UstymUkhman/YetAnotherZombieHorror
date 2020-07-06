@@ -1,6 +1,6 @@
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
-import AssetsLoader, { Group } from '@/managers/AssetsLoader';
+import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from '@three/scenes/Scene';
 
 export default class GameLevel {
@@ -12,7 +12,7 @@ export default class GameLevel {
   private _onResize: EventListenerOrEventListenerObject = () => null;
   protected camera = new PerspectiveCamera(45, this.ratio, 1, 500);
 
-  private readonly loader = new AssetsLoader();
+  private readonly loader = new Assets.Loader();
   protected readonly scene = new Scene();
 
   public constructor () {
@@ -20,7 +20,7 @@ export default class GameLevel {
     this.createEvents();
   }
 
-  protected async loadLevel (file: string): Promise<Group> {
+  protected async loadLevel (file: string): Promise<Assets.GLTF> {
     const level = await this.loader.loadGLTF(file);
     this.scene.add(level.scene);
     return level.scene;
