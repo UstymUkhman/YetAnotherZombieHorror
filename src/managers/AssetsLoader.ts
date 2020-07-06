@@ -2,18 +2,16 @@ import { CubeTextureLoader } from '@three/loaders/CubeTextureLoader';
 import { LoadingManager } from '@three/loaders/LoadingManager';
 import { TextureLoader } from '@three/loaders/TextureLoader';
 import { CubeTexture } from '@three/textures/CubeTexture';
-
 import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
 
-type AnimationClip = import('@three/animation/AnimationClip').AnimationClip;
-type GLTFModel = { scene: Group, animations?: Array<AnimationClip> };
+export type AnimationClip = import('@three/animation/AnimationClip').AnimationClip;
+export type Texture = import('@three/textures/Texture').Texture;
+export type Group = import('@three/objects/Group').Group;
+
+export type GLTFModel = { scene: Group, animations?: Array<AnimationClip> };
 type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
-
-type Texture = import('@three/textures/Texture').Texture;
-type Group = import('@three/objects/Group').Group;
-
-type Assets = Texture | CubeTexture | GLTFModel;
+export type Assets = Texture | CubeTexture | GLTFModel;
 type Reject = (error?: ErrorEvent) => void;
 
 export interface Callbacks {

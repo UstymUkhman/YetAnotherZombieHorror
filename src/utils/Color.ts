@@ -3,7 +3,7 @@ import { Color as TColor } from '@three/math/Color';
 export namespace Color {
   export type RGB = { r: number, g: number, b: number };
 
-  export const GROUND = 0x888888;
+  export const BLACK = 0x000000;
   export const WHITE = 0xFFFFFF;
   export const GREY = 0xA0A0A0;
   export const RED = 0x8A0707;
