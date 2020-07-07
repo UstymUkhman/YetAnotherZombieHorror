@@ -26,6 +26,11 @@ export default class GameLevel {
     return level.scene;
   }
 
+  protected createSkybox (folder: string): void {
+    this.loader.loadCubeTexture(folder)
+      .then(skybox => this.scene.background = skybox);
+  }
+
   private createRenderer (): void {
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(this.width, this.height);

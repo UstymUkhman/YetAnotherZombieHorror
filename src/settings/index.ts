@@ -17,6 +17,7 @@ export namespace Settings {
   export const Level0 = deepFreeze({
     position: new Vector3(...Level0Data.position),
     scale: new Vector3(...Level0Data.scale),
+    skybox: Level0Data.skybox,
     model: Level0Data.model
   });
 

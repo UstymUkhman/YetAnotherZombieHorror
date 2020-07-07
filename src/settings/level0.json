@@ -1,5 +1,6 @@
 {
   "position": [0, 6.66, 18],
   "scale": [100, 100, 100],
-  "model": "level0.glb"
+  "model": "level0.glb",
+  "skybox": "level0"
 }

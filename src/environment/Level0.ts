@@ -55,6 +55,8 @@ export default class Level0 extends GameLevel {
   }
 
   private createEnvironment (): void {
+    super.createSkybox(Settings.Level0.skybox);
+
     super.loadLevel(Settings.Level0.model).then(level => {
       level.position.copy(Settings.Level0.position as Vector3);
       level.scale.copy(Settings.Level0.scale as Vector3);

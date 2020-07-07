@@ -10,9 +10,9 @@ import { RGBFormat } from '@three/constants';
 export namespace Assets {
   export type Animations = Array<import('@three/animation/AnimationClip').AnimationClip>;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
-  type GLTFModel = { scene: GLTF, animations?: Animations };
 
-  type Texture = import('@three/textures/Texture').Texture;
+  export type GLTFModel = { scene: GLTF, animations?: Animations };
+  export type Texture = import('@three/textures/Texture').Texture;
   export type GLTF = import('@three/objects/Group').Group;
 
   type Assets = Texture | CubeTexture | GLTFModel;
