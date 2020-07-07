@@ -10,21 +10,8 @@ describe('AssetsLoader', () => {
   const loader = new Assets.Loader();
 
   test('Create', () => {
-    const defaultTexturePath = './assets/images';
-    const defaultModelsPath = './assets/models/';
-
-    const defaultCubeTextures = [
-      'px.png', 'nx.png',
-      'py.png', 'ny.png',
-      'pz.png', 'nz.png'
-    ];
-
     expect(Assets.Loader).toBeDefined();
     expect(loader).toBeInstanceOf(LoadingManager);
-
-    expect(loader.modelBasePath).toStrictEqual(defaultModelsPath);
-    expect(loader.cubeTextures).toStrictEqual(defaultCubeTextures);
-    expect(loader.textureBasePath).toStrictEqual(defaultTexturePath);
   });
 
   test('getPromiseCallbacks', done => {

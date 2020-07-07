@@ -56,8 +56,8 @@ export default class Level0 extends GameLevel {
 
   private createEnvironment (): void {
     super.loadLevel(Settings.Level0.model).then(level => {
-      level.position.copy(Settings.Level0.position);
-      level.scale.copy(Settings.Level0.scale);
+      level.position.copy(Settings.Level0.position as Vector3);
+      level.scale.copy(Settings.Level0.scale as Vector3);
     });
 
     if (!Settings.DEBUG) {

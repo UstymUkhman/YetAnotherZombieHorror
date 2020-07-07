@@ -8,9 +8,9 @@ import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
 
 export namespace Assets {
-  type AnimationClip = import('@three/animation/AnimationClip').AnimationClip;
-  type GLTFModel = { scene: GLTF, animations?: Array<AnimationClip> };
+  export type Animations = Array<import('@three/animation/AnimationClip').AnimationClip>;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
+  type GLTFModel = { scene: GLTF, animations?: Animations };
 
   type Texture = import('@three/textures/Texture').Texture;
   export type GLTF = import('@three/objects/Group').Group;
@@ -29,10 +29,10 @@ export namespace Assets {
     private readonly texture = new TextureLoader(this);
     private readonly gltf = new GLTFLoader(this);
 
-    public textureBasePath = './assets/images';
-    public modelBasePath = './assets/models/';
+    private readonly textureBasePath = './assets/images';
+    private readonly modelBasePath = './assets/models/';
 
-    public cubeTextures = [
+    private readonly cubeTextures = [
       'px.png', 'nx.png',
       'py.png', 'ny.png',
       'pz.png', 'nz.png'

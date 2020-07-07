@@ -31,7 +31,7 @@ describe('Settings', () => {
   });
 
   test('Frozen', () => {
-    expect(() => { Settings.Level0.scale.x = 0; }).toThrow(TypeError);
+    expect(Object.isFrozen(Settings.Level0.scale)).toStrictEqual(true);
     expect(() => { delete (Settings.Player as any).scale; }).toThrow(TypeError);
     expect(() => { (Settings.Enemy as any).position = [0, 0, 0]; }).toThrow(TypeError);
   });
