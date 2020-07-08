@@ -8,6 +8,7 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 function createWindow() {
   if (game === null) {
     game = new BrowserWindow({
+      fullscreen: !!process.env.PRODUCTION,
       backgroundColor: '#000',
       frame: false,
 
