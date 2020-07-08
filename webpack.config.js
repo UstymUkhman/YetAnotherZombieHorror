@@ -17,7 +17,7 @@ const HOST = process.env.HOST;
 module.exports = {
   devtool: build ? '#source-map' : 'cheap-module-eval-source-map',
   mode: build ? 'production' : 'development',
-  entry: path.resolve('src/main.ts'),
+  entry: path.resolve('./src/main.ts'),
 
   module: {
     rules: [{
@@ -27,8 +27,8 @@ module.exports = {
       include: [path.resolve('./src')],
 
       options: {
-        emitWarning: !build,
-        formatter: require('eslint-friendly-formatter')
+        formatter: require('eslint-friendly-formatter'),
+        emitWarning: !build
       }
     }, {
       test: /\.svelte$/,
@@ -44,9 +44,12 @@ module.exports = {
       loader: 'ts-loader',
       exclude: /node_modules/
     }, {
-      test: /\.css$/,
+      test: /\.s?css$/,
       use: [
-        build ? MiniCssExtractPlugin.loader : 'style-loader', {
+        !build ? 'style-loader' : {
+          loader: MiniCssExtractPlugin.loader,
+          options: { publicPath: '../' }
+        }, {
           options: { sourceMap: true },
           loader: 'css-loader'
         }
@@ -116,8 +119,8 @@ module.exports = {
 
   plugins: [
     new MiniCssExtractPlugin({
-      chunkFilename: '[name].css',
-      filename: 'index.css'
+      chunkFilename: 'styles/[name].css',
+      filename: 'styles/index.css'
 		}),
 
     new webpack.DefinePlugin({
@@ -138,15 +141,16 @@ module.exports = {
 
   output: {
     libraryTarget: build ? 'umd' : 'var',
+    chunkFilename: 'scripts/[name].js',
     library: build ? config.name : '',
-    publicPath: build ? './' : '/',
-
     path: path.resolve('./public'),
-    chunkFilename: '[name].js',
+
+    publicPath: build ? './' : '/',
+    filename: 'scripts/index.js',
     libraryExport: 'default',
+
     umdNamedDefine: true,
-    globalObject: 'this',
-    filename: 'index.js'
+    globalObject: 'this'
   },
 
   optimization: {
@@ -187,11 +191,12 @@ module.exports = {
     headers: { 'Content-Encoding': 'none' },
     watchOptions: { poll: false },
     clientLogLevel: 'warning',
+
     host: HOST || 'localhost',
     watchContentBase: true,
     port: PORT || 8080,
-
     publicPath: '/',
+
     compress: true,
     overlay: true,
     quiet: false,

@@ -18,21 +18,7 @@ onMount(() => { game.prepend(level.canvas); });
 </script>
 
 <style lang="scss">
-@font-face {
-  src: url('assets/fonts/FaceYourFears.ttf') format('truetype');
-  font-family: 'FaceYourFears';
-  font-stretch: normal;
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  src: url('assets/fonts/DrawingBlood.ttf') format('truetype');
-  font-family: 'DrawingBlood';
-  font-stretch: normal;
-  font-weight: normal;
-  font-style: normal;
-}
+@import 'scss/fonts';
 
 :global(html, body) {
   -webkit-text-rendering: optimizeLegibility;

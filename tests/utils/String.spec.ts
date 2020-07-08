@@ -1,4 +1,4 @@
-import { replaceAll, capitalize } from '@/utils/String';
+import { replaceAll, capitalize, camelCase } from '@/utils/String';
 
 describe('String', () => {
   test('replaceAll', () => {
@@ -16,5 +16,11 @@ describe('String', () => {
     const name = 'another dumb zombie game';
     const capitalized = 'Another dumb zombie game';
     expect(capitalize(name)).toStrictEqual(capitalized);
+  });
+
+  test('camelCase', () => {
+    const name = 'AnotherDumbZombieGame';
+    const camelCased = 'anotherDumbZombieGame';
+    expect(camelCase(name)).toStrictEqual(camelCased);
   });
 });
