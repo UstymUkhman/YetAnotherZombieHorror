@@ -1,19 +1,18 @@
 import * as path from 'path';
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app, screen, ipcMain } from 'electron';
 
-let game: Electron.BrowserWindow | null = null;
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
-function createWindow() {
+const PRODUCTION = process.env.ENVIRONMENT !== 'development';
+let game: Electron.BrowserWindow | null = null;
+
+function createWindow(): void {
   if (game === null) {
     game = new BrowserWindow({
-      fullscreen: !!process.env.PRODUCTION,
       backgroundColor: '#000',
+      fullscreen: PRODUCTION,
       frame: false,
-
-      height: 900,
-      width: 1600,
 
       webPreferences: {
         preload: path.join(__dirname, './preloader.js')
@@ -21,16 +20,31 @@ function createWindow() {
     });
 
     game.loadFile(path.join(__dirname, '../public/index.html'));
-
-    if (!process.env.PRODUCTION) {
-      game.webContents.openDevTools();
-    }
+    if (!PRODUCTION) game.webContents.openDevTools();
 
     game.on('closed', () => {
       game = null;
     });
   }
 }
+
+app.whenReady().then(() => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const ratio = PRODUCTION ? 100 : 83.33333333333333;
+
+  const gameHeight = Math.round(height / 100 * ratio);
+  const gameWidth = Math.round(width / 100 * ratio);
+
+  const marginTop = (height - gameHeight) / 2;
+  const marginLeft = (width - gameWidth) / 2;
+
+  game.setBounds({
+    height: gameHeight,
+    width: gameWidth,
+    x: marginLeft,
+    y: marginTop
+  });
+});
 
 app.on('ready', createWindow);
 app.on('activate', createWindow);

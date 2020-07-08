@@ -15,7 +15,8 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "start:app": "webpack --env app && tsc --project app && electron build/main.js",
+    "start:app": "webpack --env app && tsc --project app && yarn build:dev",
+    "build:dev": "cross-env ENVIRONMENT=development electron build/main.js",
     "pack:app": "electron-builder --dir --config build/builder.yml",
     "dist:app": "electron-builder --config build/builder.yml",
     "test:watch": "./node_modules/.bin/jest --watch --silent",
@@ -50,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^3.0.2",
     "@typescript-eslint/parser": "^3.0.2",
     "babel-jest": "^26.0.1",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.5.3",
     "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
