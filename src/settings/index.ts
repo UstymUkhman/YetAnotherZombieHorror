@@ -7,6 +7,17 @@ import deepFreeze from '@/utils/deepFreeze';
 
 /* eslint-disable no-undef */
 export namespace Settings {
+  export type Animations = { [key in Animation]: Array<number> }
+  export type Animation = PlayerAnimations | EnemyAnimations;
+  export type Character = typeof Player | typeof Enemy;
+  export type Sounds = { [key in Sound]: string };
+  export type Sound = PlayerSounds | EnemySounds;
+
+  type PlayerAnimations = keyof typeof Player.animations;
+  type EnemyAnimations = keyof typeof Enemy.animations;
+  type PlayerSounds = keyof typeof Player.sounds;
+  type EnemySounds = keyof typeof Enemy.sounds;
+
   const userAgent = navigator.userAgent.toLowerCase();
   const isApp = userAgent.includes('electron');
 
