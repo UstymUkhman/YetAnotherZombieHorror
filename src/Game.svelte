@@ -19,6 +19,7 @@ onMount(() => { game.prepend(level.canvas); });
 
 <style lang="scss">
 @import 'scss/fonts';
+@import 'scss/variables';
 
 :global(html, body) {
   -webkit-text-rendering: optimizeLegibility;
@@ -33,12 +34,12 @@ onMount(() => { game.prepend(level.canvas); });
   font-kerning: none;
   font-style: normal;
 
-  background-color: #ffffff;
+  background-color: $black;
   letter-spacing: normal;
   line-height: normal;
   user-select: none;
   overflow: hidden;
-  color: #8a0707;
+  color: $red;
 
   height: 100%;
   width: 100%;
@@ -56,8 +57,8 @@ onMount(() => { game.prepend(level.canvas); });
   line-height: normal;
 
   position: relative;
-  color: #8a0707;
   display: block;
+  color: $red;
 
   padding: 0;
   margin: 0;
@@ -69,8 +70,8 @@ onMount(() => { game.prepend(level.canvas); });
   line-height: normal;
 
   position: relative;
-  color: #e6e6e6;
   display: block;
+  color: $grey;
 
   padding: 0;
   margin: 0;

@@ -6,11 +6,12 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 const PRODUCTION = process.env.ENVIRONMENT !== 'development';
 let game: Electron.BrowserWindow | null = null;
+const screenRatio = PRODUCTION ? 1 : 0.9;
 
 function createWindow(): void {
   if (game === null) {
     game = new BrowserWindow({
-      backgroundColor: '#000',
+      backgroundColor: '#000000',
       fullscreen: PRODUCTION,
       frame: false,
 
@@ -30,10 +31,9 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  const ratio = PRODUCTION ? 100 : 83.33333333333333;
 
-  const gameHeight = Math.round(height / 100 * ratio);
-  const gameWidth = Math.round(width / 100 * ratio);
+  const gameHeight = Math.round(height * screenRatio);
+  const gameWidth = Math.round(width * screenRatio);
 
   const marginTop = (height - gameHeight) / 2;
   const marginLeft = (width - gameWidth) / 2;

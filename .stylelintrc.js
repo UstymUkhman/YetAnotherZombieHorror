@@ -6,6 +6,7 @@ module.exports = {
     'block-closing-brace-newline-after': null,
     'declaration-empty-line-before': null,
     'selector-no-qualifying-type': null,
+    'function-comma-space-after': null,
     'comment-empty-line-before': null,
     'at-rule-empty-line-before': null,
     'number-no-trailing-zeros': null,
@@ -22,12 +23,8 @@ module.exports = {
       ]
     }],
 
-    'selector-pseudo-element-no-unknown': [true, {
-      ignorePseudoElements: ['global'],
-    }],
-
     'selector-pseudo-class-no-unknown': [true, {
-      ignorePseudoClasses: ['global']
+      ignorePseudoClasses: ['global', 'export']
     }]
   }
 }
