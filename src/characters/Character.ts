@@ -2,25 +2,28 @@ type AnimationAction = import('@three/animation/AnimationAction').AnimationActio
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 
-import { Assets } from '@/managers/AssetsLoader';
-import { camelCase } from '@/utils/string';
-// import { clamp } from '@/utils/number';
-import { Settings } from '@/settings';
-
-type LoadCallback = (character: Assets.GLTFModel) => void
-type Actions = { [name: string]: AnimationAction }
+type CharacterAnimations = import('@/settings').Settings.Animations;
+type CharacterAnimation = import('@/settings').Settings.Animation;
+type CharacterSettings = import('@/settings').Settings.Character;
+// type CharacterSounds = import('@/settings').Settings.Sounds;
+type BoundsSettings = import('@/settings').Settings.Bounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
+type Actions = { [name: string]: AnimationAction };
 type Mesh = import('@three/objects/Mesh').Mesh;
+
+import { Assets } from '@/managers/AssetsLoader';
+import { camelCase } from '@/utils/String';
+// import { clamp } from '@/utils/number';
 
 export default class Character {
   protected character: Assets.GLTF | null = null;
   private readonly loader = new Assets.Loader();
   private mixer: AnimationMixer | null = null;
 
-  private settings: Settings.Character;
   private animations: Actions = {};
-  // private sounds: Settings.Sounds;
+  private settings: CharacterSettings;
+  // private sounds: CharacterSounds;
   private speed = { x: 0, z: 0 };
 
   private running = false;
@@ -28,12 +31,11 @@ export default class Character {
   private health = 100;
   private alive = true;
 
-  public constructor (settings: Settings.Character, onLoad?: LoadCallback) {
+  public constructor (settings: CharacterSettings) {
     this.settings = settings;
-    if (onLoad) this.load(onLoad);
   }
 
-  private async load (callback: LoadCallback): Promise<Assets.GLTFModel> {
+  protected async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
 
     character.scene.position.copy(this.settings.position as Vector3);
@@ -45,7 +47,7 @@ export default class Character {
       this.createAnimations(character);
     }
 
-    callback(character);
+    this.character = character.scene;
     return character;
   }
 
@@ -69,7 +71,7 @@ export default class Character {
     });
   }
 
-  private createAnimations (model: Assets.GLTFModel): void {
+  protected createAnimations (model: Assets.GLTFModel): void {
     const animations = model.animations as Assets.Animations;
     this.mixer = new AnimationMixer(model.scene);
 
@@ -79,8 +81,8 @@ export default class Character {
     }
   }
 
-  private setAnimation (animation: Settings.Animation): void {
-    const animations = this.settings.animations as Settings.Animations;
+  protected setAnimation (animation: CharacterAnimation): void {
+    const animations = this.settings.animations as CharacterAnimations;
 
     this.speed.x = animations[animation][0];
     this.speed.z = animations[animation][1];
@@ -152,5 +154,13 @@ export default class Character {
 
     this.health = 100;
     this.alive = true;
+  }
+
+  public set bounds (bounds: BoundsSettings) {
+    this.bounds = bounds;
+  }
+
+  public  get bounds (): BoundsSettings {
+    return this.bounds;
   }
 }
