@@ -1,5 +1,5 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UstymUkhman/another-dumb-zombie-game/Check%20commit%20message%20style/master)
 ![GitHub deployments](https://img.shields.io/github/deployments/UstymUkhman/another-dumb-zombie-game/github-pages)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UstymUkhman/another-dumb-zombie-game/Check%20commit%20message%20style/master)
 ![GitHub repo size](https://img.shields.io/github/repo-size/UstymUkhman/another-dumb-zombie-game)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/another-dumb-zombie-game)
 ![GitHub](https://img.shields.io/github/license/UstymUkhman/another-dumb-zombie-game)

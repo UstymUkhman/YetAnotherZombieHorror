@@ -2,6 +2,8 @@
   {#if Settings.APP}
     <Close />
   {/if}
+
+  <Map bounds={Settings.Level0.bounds} />
 </main>
 
 <script lang="typescript">
@@ -9,6 +11,7 @@ import Close from '@components/CloseButton';
 import Level0 from '@/environment/Level0';
 
 import { Settings } from '@/settings';
+import Map from '@components/Map';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;
