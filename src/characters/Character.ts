@@ -21,8 +21,8 @@ export default class Character {
   private readonly loader = new Assets.Loader();
   private mixer: AnimationMixer | null = null;
 
-  private animations: Actions = {};
   private settings: CharacterSettings;
+  private animations: Actions = {};
   // private sounds: CharacterSounds;
   private speed = { x: 0, z: 0 };
 

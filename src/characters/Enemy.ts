@@ -8,15 +8,17 @@ import Character from '@/characters/Character';
 import { Settings } from '@/settings';
 
 export default class Enemy extends Character {
-  public constructor (id: number, character?: GLTF, animations?: Animations, onLoad?: LoadCallback) {
+  public constructor (id: number, character?: GLTF, animations?: Animations) {
     super(Settings.Enemy);
 
-    if (character === undefined) {
-      super.load().then(character => (onLoad as LoadCallback)(character));
-    } else {
+    if (character !== undefined) {
       const scene = SkeletonUtils.clone(character) as GLTF;
       super.createAnimations({ scene, animations });
       super.setCharacterMaterial(scene, 0);
     }
+  }
+
+  public async load (): Promise<GLTFModel> {
+    return await super.load();
   }
 }
