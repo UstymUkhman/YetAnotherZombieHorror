@@ -21,8 +21,8 @@ onMount(() => { game.prepend(level.canvas); });
 </script>
 
 <style lang="scss">
-@import 'scss/fonts';
-@import 'scss/variables';
+@import 'src/scss/fonts';
+@import 'src/scss/variables';
 
 :global(html, body) {
   -webkit-text-rendering: optimizeLegibility;
