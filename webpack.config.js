@@ -45,8 +45,7 @@ module.exports = {
       exclude: /node_modules/
     }, {
       test: /\.s?css$/,
-      use: [
-        !build ? 'style-loader' : {
+      use: !build ? ['style-loader', 'css-loader', 'sass-loader'] : [{
           loader: MiniCssExtractPlugin.loader,
           options: { publicPath: '../' }
         }, {

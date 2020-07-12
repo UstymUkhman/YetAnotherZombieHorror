@@ -1,31 +1,55 @@
 <canvas bind:this={map}></canvas>
 
 <script lang="typescript">
+import { clone, min, max } from '@/utils/Array';
+import { black } from '@/scss/variables.scss';
 import { onMount } from 'svelte';
 
 let map: HTMLCanvasElement;
-export let bounds;
+export let bounds: Array<Array<number>>;
+
+function getNormalizedBounds (): Array<Array<number>> {
+  let X = bounds.map((coords: Array<number>) => coords[0]);
+  let Z = bounds.map((coords: Array<number>) => coords[1]);
+
+  const cBounds = clone(bounds);
+  const minX = Math.abs(min(X));
+  const minZ = Math.abs(min(Z));
+
+  for (let b = 0; b < cBounds.length; b++) {
+    cBounds[b][0] += minX;
+    cBounds[b][1] += minZ;
+  }
+
+  X = cBounds.map((coords: Array<number>) => coords[0]);
+  Z = cBounds.map((coords: Array<number>) => coords[1]);
+
+  map.height = max(Z) + 1;
+  map.width = max(X) + 1;
+
+  return cBounds;
+}
 
 function drawBounds (): void {
-  const context: CanvasRenderingContext2D = map.getContext('2d');
-  context.clearRect(0, 0, context.width, context.height);
-  context.moveTo(bounds[0][0], bounds[0][1]);
+  const nBounds = getNormalizedBounds();
+  const context = map.getContext('2d') as CanvasRenderingContext2D;
 
-  context.strokeStyle = '#000000';
-  context.lineWidth = 1;
+  context.strokeStyle = black;
+  context.lineWidth = 2;
   context.beginPath();
 
-  for (let b = 1; b < bounds.length; b++) {    
-    context.lineTo(bounds[b][0], bounds[b][1]);
+  context.clearRect(0, 0, map.width, map.height);
+  context.moveTo(nBounds[0][0], nBounds[0][1]);
+
+  for (let b = 1; b < nBounds.length; b++) {
+    context.lineTo(nBounds[b][0], nBounds[b][1]);
   }
 
   context.closePath();
   context.stroke();
 }
 
-onMount(() => {
-
-});
+onMount(drawBounds);
 </script>
 
 <style lang="scss">
