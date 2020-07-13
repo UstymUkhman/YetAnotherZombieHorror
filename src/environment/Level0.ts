@@ -10,7 +10,7 @@ import GameLevel from '@/environment/GameLevel';
 import { Vector3 } from '@three/math/Vector3';
 
 import { Fog } from '@three/scenes/Fog';
-// import Enemy from '@/characters/Enemy';
+import Enemy from '@/characters/Enemy';
 import { Color } from '@/utils/Color';
 import { Settings } from '@/settings';
 
@@ -58,14 +58,14 @@ export default class Level0 extends GameLevel {
   private createEnvironment (): void {
     super.createSkybox(Settings.Level0.skybox);
 
-    // super.loadLevel(Settings.Level0.model).then(level => {
-    //   level.position.copy(Settings.Level0.position as Vector3);
-    //   level.scale.copy(Settings.Level0.scale as Vector3);
-    // });
+    super.loadLevel(Settings.Level0.model).then(level => {
+      level.position.copy(Settings.Level0.position as Vector3);
+      level.scale.copy(Settings.Level0.scale as Vector3);
+    });
 
-    // new Enemy(0).load().then(
-    //   character => this.scene.add(character.scene)
-    // );
+    new Enemy(0).load().then(
+      character => this.scene.add(character.scene)
+    );
 
     if (!Settings.DEBUG) {
       this.scene.fog = new Fog(Color.GREY, 0.1, 100);

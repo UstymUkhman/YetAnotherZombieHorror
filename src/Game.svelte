@@ -3,10 +3,15 @@
     <Close />
   {/if}
 
-  <Map bounds={Settings.Level0.bounds} />
+  <Map
+    bounds={Settings.Level0.bounds}
+    position={playerPosition}
+    scale={1}
+  />
 </main>
 
 <script lang="typescript">
+import { Vector3 } from '@three/math/Vector3';
 import Close from '@components/CloseButton';
 import Level0 from '@/environment/Level0';
 
@@ -16,15 +21,17 @@ import { onMount } from 'svelte';
 
 let game: HTMLElement;
 const level = new Level0();
+let playerPosition = new Vector3();
 
 onMount(() => { game.prepend(level.canvas); });
 </script>
 
-<style lang="scss">
-@import 'src/scss/fonts';
-@import 'src/scss/variables';
+<style lang="scss" global>
+@import '@scss/variables';
+@import '@scss/fonts';
 
-:global(html, body) {
+html,
+body {
   -webkit-text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
@@ -54,7 +61,10 @@ onMount(() => { game.prepend(level.canvas); });
   top: 0;
 }
 
-:global(h1, h2, h3, h4) {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'FaceYourFears', sans-serif;
   letter-spacing: normal;
   line-height: normal;
@@ -67,7 +77,11 @@ onMount(() => { game.prepend(level.canvas); });
   margin: 0;
 }
 
-:global(h5, h6, strong, span, p) {
+p,
+h5,
+h6,
+span,
+strong {
   font-family: 'DrawingBlood', sans-serif;
   letter-spacing: 0.2rem;
   line-height: normal;
@@ -80,23 +94,23 @@ onMount(() => { game.prepend(level.canvas); });
   margin: 0;
 }
 
-:global(h1) {
+h1 {
   text-transform: uppercase;
   letter-spacing: 0.5rem;
   font-size: 5vw;
 }
 
-:global(h2) {
+h2 {
   letter-spacing: 0.4rem;
   font-size: 4vw;
 }
 
-:global(h3) {
+h3 {
   letter-spacing: 0.3rem;
   font-size: 3vw;
 }
 
-:global(body > canvas) {
+body > canvas {
   position: absolute;
   display: block;
 
