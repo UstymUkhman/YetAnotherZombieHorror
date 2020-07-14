@@ -1,5 +1,6 @@
 <div>
   <canvas bind:this={map} style="transform: {canvasTransform};"></canvas>
+  <Player rotation={rotation} />
 </div>
 
 <script lang="typescript">
@@ -7,14 +8,16 @@ type Vector3 = import('@three/math/Vector3').Vector3;
 
 import { clone, min, max } from '@/utils/Array';
 import { black } from '@scss/variables.scss';
+import Player from '@components/Player';
 import { onMount } from 'svelte';
 
-const SCALE = 5;
+const SCALE = 10;
 const PADDING = 1;
 const OFFSET = PADDING * SCALE / 2;
 
 export let bounds: Array<Array<number>>;
 export let position: Vector3;
+export let rotation: number;
 export let scale: number;
 
 let maxCoords: Array<number>;

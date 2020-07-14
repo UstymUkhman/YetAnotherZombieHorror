@@ -6,6 +6,7 @@
   <Map
     bounds={Settings.Level0.bounds}
     position={playerPosition}
+    rotation={playerRotation}
     scale={1}
   />
 </main>
@@ -20,6 +21,7 @@ import Map from '@components/Map';
 import { onMount } from 'svelte';
 
 let game: HTMLElement;
+let playerRotation = 0;
 const level = new Level0();
 let playerPosition = new Vector3();
 
