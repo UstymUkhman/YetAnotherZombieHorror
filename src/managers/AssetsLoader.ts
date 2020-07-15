@@ -3,6 +3,7 @@ import { LoadingManager } from '@three/loaders/LoadingManager';
 
 import { TextureLoader } from '@three/loaders/TextureLoader';
 import { CubeTexture } from '@three/textures/CubeTexture';
+import { AudioLoader } from '@three/loaders/AudioLoader';
 
 import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
@@ -15,7 +16,7 @@ export namespace Assets {
   export type Texture = import('@three/textures/Texture').Texture;
   export type GLTF = import('@three/objects/Group').Group;
 
-  type Assets = Texture | CubeTexture | GLTFModel;
+  type Assets = Texture | CubeTexture | GLTFModel | AudioBuffer;
   type Reject = (error: ErrorEvent) => void;
 
   export interface Callbacks {
@@ -28,9 +29,11 @@ export namespace Assets {
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);
     private readonly gltf = new GLTFLoader(this);
+    private readonly audio = new AudioLoader();
 
     private readonly textureBasePath = './assets/images';
     private readonly modelBasePath = './assets/models/';
+    private readonly audioBasePath = './assets/sounds/';
 
     private readonly cubeTextures = [
       'px.png', 'nx.png',
@@ -81,6 +84,15 @@ export namespace Assets {
 
         this.gltf.setPath(this.modelBasePath);
         this.gltf.load(file, promise.onLoad, promise.onProgress, promise.onError);
+      });
+    }
+
+    public async loadAudio (file: string): Promise<AudioBuffer> {
+      return await new Promise((resolve: Resolve<AudioBuffer>, reject: Reject) => {
+        const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
+
+        this.audio.setPath(this.audioBasePath);
+        this.audio.load(file, promise.onLoad, promise.onProgress, promise.onError);
       });
     }
 

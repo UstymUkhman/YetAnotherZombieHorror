@@ -4,8 +4,8 @@
   "model": "player.glb",
 
   "sounds": {
-    "death": "assets/sfx/playerDeath.mp3",
-    "hit": "assets/sfx/playerHit.mp3"
+    "death": "playerDeath.mp3",
+    "hit": "playerHit.mp3"
   },
 
   "animations": {
