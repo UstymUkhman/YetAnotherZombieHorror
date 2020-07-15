@@ -21,4 +21,12 @@ export default class Enemy extends Character {
   public async load (): Promise<GLTFModel> {
     return await super.load();
   }
+
+  public update (delta: number): void {
+    super.update(delta);
+
+    /* if (super.alive && super.character) {
+      super.character.lookAt(this.playerPosition);
+    } */
+  }
 }

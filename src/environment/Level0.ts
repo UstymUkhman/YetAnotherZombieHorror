@@ -4,20 +4,19 @@
 type PerspectiveCamera = import('@three/cameras/PerspectiveCamera').PerspectiveCamera;
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Stats = typeof import('three/examples/js/libs/stats.min');
+type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
 import { Vector3 } from '@three/math/Vector3';
 
 import { Fog } from '@three/scenes/Fog';
-import Enemy from '@/characters/Enemy';
 import { Color } from '@/utils/Color';
 import { Settings } from '@/settings';
 
 export default class Level0 extends GameLevel {
   private controls?: OrbitControls;
   private stats?: Stats = null;
-  private raf: number;
 
   public constructor () {
     super();
@@ -39,8 +38,6 @@ export default class Level0 extends GameLevel {
     this.setCamera(new Vector3(0, 10, -50));
     this.createEnvironment();
     this.createLights();
-
-    this.raf = requestAnimationFrame(this.render.bind(this));
   }
 
   private setCamera (position: Vector3): void {
@@ -63,10 +60,6 @@ export default class Level0 extends GameLevel {
       level.scale.copy(Settings.Level0.scale as Vector3);
     });
 
-    new Enemy(0).load().then(
-      character => this.scene.add(character.scene)
-    );
-
     if (!Settings.DEBUG) {
       this.scene.fog = new Fog(Color.GREY, 0.1, 100);
     }
@@ -76,18 +69,20 @@ export default class Level0 extends GameLevel {
     this.scene.add(new AmbientLight(Color.WHITE));
   }
 
+  public addModel (model: GLTF): void {
+    this.scene.add(model);
+  }
+
   public render (): void {
     this.stats?.begin();
 
     super.render();
     this.controls?.update();
-    this.raf = requestAnimationFrame(this.render.bind(this));
 
     this.stats?.end();
   }
 
   public destroy (): void {
-    cancelAnimationFrame(this.raf);
     super.destroy();
 
     if (Settings.DEBUG) {

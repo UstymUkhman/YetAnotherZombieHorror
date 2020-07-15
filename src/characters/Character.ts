@@ -6,7 +6,7 @@ type CharacterAnimations = import('@/settings').Settings.Animations;
 type CharacterAnimation = import('@/settings').Settings.Animation;
 type CharacterSettings = import('@/settings').Settings.Character;
 // type CharacterSounds = import('@/settings').Settings.Sounds;
-type BoundsSettings = import('@/settings').Settings.Bounds;
+// type BoundsSettings = import('@/settings').Settings.Bounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
@@ -27,9 +27,9 @@ export default class Character {
   private speed = { x: 0, z: 0 };
 
   private running = false;
+  protected alive = true;
   private moving = false;
   private health = 100;
-  private alive = true;
 
   public constructor (settings: CharacterSettings) {
     this.settings = settings;
@@ -75,9 +75,9 @@ export default class Character {
     const animations = model.animations as Assets.Animations;
     this.mixer = new AnimationMixer(model.scene);
 
-    for (let c = 0; c < animations.length; c++) {
-      const clip = camelCase(animations[c].name);
-      this.animations[clip] = this.mixer.clipAction(animations[c]);
+    for (let a = 0; a < animations.length; a++) {
+      const clip = camelCase(animations[a].name);
+      this.animations[clip] = this.mixer.clipAction(animations[a]);
     }
   }
 
@@ -109,7 +109,7 @@ export default class Character {
     }
   }
 
-  public checkIfAlive (): void {
+  protected checkIfAlive (): void {
     if (!this.alive) return;
     this.alive = this.alive && this.health > 0;
     // if (!this.alive) this.death();
@@ -156,11 +156,11 @@ export default class Character {
     this.alive = true;
   }
 
-  public set bounds (bounds: BoundsSettings) {
+  /* public set bounds (bounds: BoundsSettings) {
     this.bounds = bounds;
   }
 
-  public  get bounds (): BoundsSettings {
+  public get bounds (): BoundsSettings {
     return this.bounds;
-  }
+  } */
 }

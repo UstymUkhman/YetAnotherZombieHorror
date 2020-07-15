@@ -1,4 +1,4 @@
-<main bind:this={game}>
+<main bind:this={main}>
   {#if Settings.APP}
     <Close />
   {/if}
@@ -14,18 +14,18 @@
 <script lang="typescript">
 import { Vector3 } from '@three/math/Vector3';
 import Close from '@components/CloseButton';
-import Level0 from '@/environment/Level0';
+import GameLoop from '@/managers/GameLoop';
 
 import { Settings } from '@/settings';
 import Map from '@components/Map';
 import { onMount } from 'svelte';
 
-let game: HTMLElement;
+let main: HTMLElement;
 let playerRotation = 0;
-const level = new Level0();
+const game = new GameLoop();
 let playerPosition = new Vector3();
 
-onMount(() => { game.prepend(level.canvas); });
+onMount(() => { main.prepend(game.scene); });
 </script>
 
 <style lang="scss" global>
