@@ -25,7 +25,10 @@ let playerRotation = 0;
 const game = new GameLoop();
 let playerPosition = new Vector3();
 
-onMount(() => { main.prepend(game.scene); });
+onMount(() => {
+  main.prepend(game.scene);
+  game.pause = false;
+});
 </script>
 
 <style lang="scss" global>

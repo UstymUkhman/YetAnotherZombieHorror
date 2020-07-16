@@ -8,8 +8,11 @@ import Character from '@/characters/Character';
 import { Settings } from '@/settings';
 
 export default class Enemy extends Character {
-  public constructor (id: number, character?: GLTF, animations?: Animations) {
+  private id: number;
+
+  public constructor (id = 0, character?: GLTF, animations?: Animations) {
     super(Settings.Enemy);
+    this.id = id;
 
     if (character !== undefined) {
       const scene = SkeletonUtils.clone(character) as GLTF;
