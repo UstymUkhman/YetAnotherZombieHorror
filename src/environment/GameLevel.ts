@@ -1,5 +1,6 @@
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
+import { AudioListener } from '@three/audio/AudioListener';
 import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from '@three/scenes/Scene';
 
@@ -16,6 +17,7 @@ export default class GameLevel {
   protected readonly scene = new Scene();
 
   public constructor () {
+    this.createAudioListener();
     this.createRenderer();
     this.createEvents();
   }
@@ -29,6 +31,11 @@ export default class GameLevel {
   protected createSkybox (folder: string): void {
     this.loader.loadCubeTexture(folder)
       .then(skybox => this.scene.background = skybox);
+  }
+
+  private createAudioListener (): void {
+    const listener = new AudioListener();
+    this.camera.add(listener);
   }
 
   private createRenderer (): void {
@@ -67,6 +74,10 @@ export default class GameLevel {
 
     delete this.renderer;
     delete this.camera;
+  }
+
+  public get audioListener (): AudioListener {
+    return this.camera.children[0] as AudioListener;
   }
 
   public get canvas (): HTMLCanvasElement {

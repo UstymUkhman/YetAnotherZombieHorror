@@ -1,10 +1,12 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { AnimationMixer } from '@three/animation/AnimationMixer';
-
+type AudioListener = import('@three/audio/AudioListener').AudioListener;
 type CharacterAnimations = import('@/settings').Settings.Animations;
 type CharacterAnimation = import('@/settings').Settings.Animation;
 type CharacterSettings = import('@/settings').Settings.Character;
+
+import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { AnimationMixer } from '@three/animation/AnimationMixer';
+import { PositionalAudio } from '@three/audio/PositionalAudio';
 // type CharacterSounds = import('@/settings').Settings.Sounds;
 // type BoundsSettings = import('@/settings').Settings.Bounds;
 
@@ -17,12 +19,12 @@ import { camelCase } from '@/utils/String';
 // import { clamp } from '@/utils/number';
 
 export default class Character {
-  protected character: Assets.GLTF | null = null;
   private readonly loader = new Assets.Loader();
   private mixer: AnimationMixer | null = null;
+  private model: Assets.GLTF | null = null;
 
   private settings: CharacterSettings;
-  private animations: Actions = {};
+  protected animations: Actions = {};
   // private sounds: CharacterSounds;
   private speed = { x: 0, z: 0 };
 
@@ -35,7 +37,7 @@ export default class Character {
     this.settings = settings;
   }
 
-  protected async load (): Promise<Assets.GLTFModel> {
+  public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
 
     character.scene.position.copy(this.settings.position as Vector3);
@@ -47,7 +49,7 @@ export default class Character {
       this.createAnimations(character);
     }
 
-    this.character = character.scene;
+    this.model = character.scene;
     return character;
   }
 
@@ -88,21 +90,25 @@ export default class Character {
     this.speed.z = animations[animation][1];
   }
 
+  protected createAudio (listener: AudioListener): PositionalAudio {
+    return new PositionalAudio(listener);
+  }
+
   protected update (delta: number): void {
     this.mixer?.update(delta);
 
-    if (this.moving && this.character) {
-      this.character.translateX(this.speed.x);
-      this.character.translateZ(this.speed.z);
+    if (this.moving && this.model) {
+      this.model.translateX(this.speed.x);
+      this.model.translateZ(this.speed.z);
 
-      // this.character.position.z = clamp(
-      //   this.character.position.z,
+      // this.model.position.z = clamp(
+      //   this.model.position.z,
       //   -BOUNDS.front,
       //   BOUNDS.front
       // );
 
-      // this.character.position.x = clamp(
-      //   this.character.position.x,
+      // this.model.position.x = clamp(
+      //   this.model.position.x,
       //   -BOUNDS.side,
       //   BOUNDS.side
       // );
@@ -116,7 +122,7 @@ export default class Character {
   }
 
   public dispose (): void {
-    const children = this.character?.children;
+    const children = this.model?.children;
 
     // this.rightUpLeg.remove(this.colliders[2]);
     // this.leftUpLeg.remove(this.colliders[3]);
@@ -130,7 +136,7 @@ export default class Character {
     // }
 
     for (let c = 0; children && c < children.length; c++) {
-      this.character?.remove(children[c]);
+      this.model?.remove(children[c]);
     }
 
     for (const animation in this.animations) {
@@ -141,7 +147,7 @@ export default class Character {
 
     delete this.animations;
     // delete this.colliders;
-    delete this.character;
+    delete this.model;
     delete this.settings;
     // delete this.sounds;
     delete this.speed;

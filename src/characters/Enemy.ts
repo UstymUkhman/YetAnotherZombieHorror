@@ -1,7 +1,5 @@
-type Animations = import('@/managers/AssetsLoader').Assets.Animations;
 type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-type LoadCallback = (character: GLTFModel) => void;
 
 import { SkeletonUtils } from '@utils/SkeletonUtils';
 import Character from '@/characters/Character';
@@ -10,19 +8,15 @@ import { Settings } from '@/settings';
 export default class Enemy extends Character {
   private id: number;
 
-  public constructor (id = 0, character?: GLTF, animations?: Animations) {
+  public constructor (id = 0, model?: GLTFModel) {
     super(Settings.Enemy);
     this.id = id;
 
-    if (character !== undefined) {
-      const scene = SkeletonUtils.clone(character) as GLTF;
-      super.createAnimations({ scene, animations });
+    if (model !== undefined) {
+      const scene = SkeletonUtils.clone(model.scene) as GLTF;
       super.setCharacterMaterial(scene, 0);
+      super.createAnimations(model);
     }
-  }
-
-  public async load (): Promise<GLTFModel> {
-    return await super.load();
   }
 
   public update (delta: number): void {

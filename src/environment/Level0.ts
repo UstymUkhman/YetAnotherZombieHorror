@@ -5,6 +5,7 @@ type PerspectiveCamera = import('@three/cameras/PerspectiveCamera').PerspectiveC
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
+type Object3D = import('@three/core/Object3D').Object3D;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
@@ -69,7 +70,7 @@ export default class Level0 extends GameLevel {
     this.scene.add(new AmbientLight(Color.WHITE));
   }
 
-  public addModel (model: GLTF): void {
+  public addModel (model: GLTF | Object3D): void {
     this.scene.add(model);
   }
 
