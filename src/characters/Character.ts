@@ -20,13 +20,13 @@ import { camelCase } from '@/utils/String';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
-  private mixer: AnimationMixer | null = null;
-  private model: Assets.GLTF | null = null;
-
   private settings: CharacterSettings;
   protected animations: Actions = {};
+
   // private sounds: CharacterSounds;
+  private mixer?: AnimationMixer;
   private speed = { x: 0, z: 0 };
+  private model?: Assets.GLTF;
 
   private running = false;
   protected alive = true;

@@ -14,10 +14,12 @@ import { Vector3 } from '@three/math/Vector3';
 import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
 import { Settings } from '@/settings';
+import Music from '@/managers/Music';
 
 export default class Level0 extends GameLevel {
+  private music = new Music(Settings.Level0.music);
   private controls?: OrbitControls;
-  private stats?: Stats = null;
+  private stats?: Stats;
 
   public constructor () {
     super();
@@ -84,6 +86,8 @@ export default class Level0 extends GameLevel {
   }
 
   public destroy (): void {
+    this.music.destroy();
+    delete this.music;
     super.destroy();
 
     if (Settings.DEBUG) {

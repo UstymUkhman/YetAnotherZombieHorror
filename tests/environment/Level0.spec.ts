@@ -1,4 +1,5 @@
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
+import { Object3D } from '@three/core/Object3D';
 
 jest.mock('@three/renderers/WebGLRenderer');
 jest.mock('three/examples/jsm/WebGL');
@@ -19,6 +20,12 @@ describe('Level0', () => {
 
   test('getCamera', () => {
     expect(level.getCamera()).toBeInstanceOf(PerspectiveCamera);
+  });
+
+  test('addModel', () => {
+    const addModel = jest.fn(level.addModel.bind(level));
+    addModel(new Object3D());
+    expect(addModel).toHaveReturnedWith(undefined);
   });
 
   test('render', () => {

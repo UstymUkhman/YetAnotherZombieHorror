@@ -1,4 +1,5 @@
 import GameLevel from '@/environment/GameLevel';
+jest.mock('@three/audio/AudioListener');
 
 describe('Level0', () => {
   const level = new GameLevel();
@@ -13,6 +14,10 @@ describe('Level0', () => {
 
     onResize();
     expect(onResize).toHaveReturnedWith(undefined);
+  });
+
+  test('audioListener', () => {
+    expect(level.audioListener).toBeUndefined();
   });
 
   test('canvas', () => {

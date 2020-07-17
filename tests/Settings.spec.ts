@@ -1,4 +1,5 @@
 import { Vector3 } from '@three/math/Vector3';
+import Level0 from '@/settings/level0.json';
 import Player from '@/settings/player.json';
 import Enemy from '@/settings/enemy.json';
 
@@ -15,19 +16,69 @@ describe('Settings', () => {
     expect(typeof Settings.VERSION).toStrictEqual('string');
   });
 
-  test('Characters', () => {
-    const playerPosition = new Vector3(...Player.position);
-    const enemyScale = new Vector3(...Enemy.scale);
+  test('Level0', () => {
+    const levelScale = new Vector3(...Level0.scale);
+    const levelPosition = new Vector3(...Level0.position);
 
-    expect(Object.keys(Settings.Player.animations).length).toBeGreaterThan(0);
-    expect(Settings.Player.position).toStrictEqual(playerPosition);
+    expect(Settings.Level0.model).toStrictEqual('level0.glb');
+    expect(Settings.Level0.music).toStrictEqual('level0.mp3');
+    expect(Settings.Level0.skybox).toStrictEqual('level0');
+
+    expect(Settings.Level0.scale).toBeInstanceOf(Vector3);
+    expect(Settings.Level0.scale).toStrictEqual(levelScale);
+
+    expect(Settings.Level0.position).toBeInstanceOf(Vector3);
+    expect(Settings.Level0.position).toStrictEqual(levelPosition);
+
+    expect(Settings.Level0.bounds.length).toBeGreaterThan(2);
+
+    Settings.Level0.bounds.forEach(
+      bound => expect(bound.length).toStrictEqual(2)
+    );
+  });
+
+  test('Player', () => {
+    const playerScale = new Vector3(...Player.scale);
+    const playerPosition = new Vector3(...Player.position);
+    const animationKeys = Object.keys(Settings.Player.animations);
+
+    expect(Settings.Player.scale).toBeInstanceOf(Vector3);
+    expect(Settings.Player.scale).toStrictEqual(playerScale);
+
     expect(Settings.Player.model).toStrictEqual('player.glb');
+
     expect(Settings.Player.position).toBeInstanceOf(Vector3);
+    expect(Settings.Player.position).toStrictEqual(playerPosition);
+
+    expect(Object.keys(Settings.Player.sounds).length).toBeGreaterThan(0);
+    expect(animationKeys.length).toBeGreaterThan(0);
+
+    for (const animation of animationKeys) {
+      const name = animation as keyof typeof Player.animations;
+      expect(Settings.Player.animations[name].length).toStrictEqual(2);
+    }
+  });
+
+  test('Enemy', () => {
+    const enemyScale = new Vector3(...Enemy.scale);
+    const enemyPosition = new Vector3(...Enemy.position);
+    const animationKeys = Object.keys(Settings.Enemy.animations);
+
+    expect(Settings.Enemy.scale).toBeInstanceOf(Vector3);
+    expect(Settings.Enemy.scale).toStrictEqual(enemyScale);
+
+    expect(Settings.Enemy.model).toStrictEqual('enemy.glb');
+
+    expect(Settings.Enemy.position).toBeInstanceOf(Vector3);
+    expect(Settings.Enemy.position).toStrictEqual(enemyPosition);
 
     expect(Object.keys(Settings.Enemy.sounds).length).toBeGreaterThan(0);
-    expect(Settings.Enemy.model).toStrictEqual('enemy.glb');
-    expect(Settings.Enemy.scale).toStrictEqual(enemyScale);
-    expect(Settings.Enemy.scale).toBeInstanceOf(Vector3);
+    expect(animationKeys.length).toBeGreaterThan(0);
+
+    for (const animation of animationKeys) {
+      const name = animation as keyof typeof Enemy.animations;
+      expect(Settings.Enemy.animations[name].length).toStrictEqual(2);
+    }
   });
 
   test('Frozen', () => {

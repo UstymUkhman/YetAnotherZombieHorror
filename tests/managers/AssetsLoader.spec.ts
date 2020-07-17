@@ -67,6 +67,14 @@ describe('AssetsLoader', () => {
     done();
   });
 
+  test('loadAudio', done => {
+    loader.loadAudio('scream.mp3').then(audio => {
+      expect(audio).toBeInstanceOf(AudioBuffer);
+    });
+
+    done();
+  });
+
   test('onProgress', () => {
     const onProgress = jest.fn(loader.onProgress);
     onProgress('', 1, 1);

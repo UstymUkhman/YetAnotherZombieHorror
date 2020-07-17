@@ -8,9 +8,9 @@ import Character from '@/characters/Character';
 import { Settings } from '@/settings';
 
 export default class Player extends Character {
-  private currentAnimation: AnimationAction | null = null;
-  private camera: ThirtPersonCamera | null = null;
-  private hand: Object3D | undefined;
+  private currentAnimation?: AnimationAction;
+  private camera?: ThirtPersonCamera;
+  private hand?: Object3D;
 
   private lastAnimation = 'pistolIdle';
   private character = new Object3D();

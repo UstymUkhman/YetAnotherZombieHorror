@@ -8,9 +8,9 @@ import Enemy from '@/characters/Enemy';
 import { Settings } from '@/settings';
 
 export default class GameLoop {
-  private enemyAssets: EnemyAssets | null = null;
   private readonly loader = new Assets.Loader();
-  private raf: number | void = undefined;
+  private enemyAssets?: EnemyAssets;
+  private raf?: number | void;
 
   private player = new Player();
   private level = new Level0();

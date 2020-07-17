@@ -34,7 +34,8 @@ export namespace Settings {
     scale: new Vector3(...Level0Data.scale),
     bounds: Level0Data.bounds,
     skybox: Level0Data.skybox,
-    model: Level0Data.model
+    model: Level0Data.model,
+    music: Level0Data.music
   });
 
   export const Player = deepFreeze({
