@@ -9,7 +9,7 @@ module.exports = {
 
     scss: { importer: [url => {
       return url.indexOf('@scss') ? url : {
-        file: url.replace('@scss', path.resolve('./src/scss'))
+        file: url.replace('@scss', path.resolve('./src/components/scss'))
       };
     }]}
   })

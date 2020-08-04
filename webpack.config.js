@@ -112,7 +112,7 @@ module.exports = {
       '@utils': path.resolve('./node_modules/three/examples/jsm/utils'),
       '@three': path.resolve('./node_modules/three/src'),
       '@components': path.resolve('./src/components'),
-      '@scss': path.resolve('./src/scss'),
+      '@scss': path.resolve('./src/components/scss'),
       '@': path.resolve('./src')
     }
   },

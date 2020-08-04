@@ -10,7 +10,7 @@
 		"js-import.alias": {
 			"@three": "./node_modules/three/src",
 			"@components": "./src/components",
-			"@scss": "./src/scss",
+			"@scss": "./src/components/scss",
 			"@": "./src"
 		}
 	},
