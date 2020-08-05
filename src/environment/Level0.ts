@@ -51,10 +51,6 @@ export default class Level0 extends GameLevel {
     }
   }
 
-  public getCamera (): PerspectiveCamera {
-    return this.camera;
-  }
-
   private createEnvironment (): void {
     super.createSkybox(Settings.Level0.skybox);
 
@@ -74,6 +70,10 @@ export default class Level0 extends GameLevel {
 
   public addModel (model: GLTF | Object3D): void {
     this.scene.add(model);
+  }
+
+  public getCamera (): PerspectiveCamera {
+    return this.camera;
   }
 
   public render (): void {

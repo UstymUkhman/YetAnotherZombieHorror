@@ -7,6 +7,10 @@ import { Object3D } from '@three/core/Object3D';
 import Character from '@/characters/Character';
 import { Settings } from '@/settings';
 
+// import Rifle from '@/weapons/Rifle';
+import Pistol from '@/weapons/Pistol';
+type Weapon = Pistol /* | Rifle */;
+
 export default class Player extends Character {
   private currentAnimation?: AnimationAction;
   private camera?: ThirtPersonCamera;
@@ -14,6 +18,7 @@ export default class Player extends Character {
 
   private lastAnimation = 'pistolIdle';
   private character = new Object3D();
+  private weapon?: Weapon;
 
   public constructor () {
     super(Settings.Player);
@@ -38,6 +43,14 @@ export default class Player extends Character {
       audio.setBuffer(sound);
       audio.setVolume(10);
     });
+  }
+
+  public setWeapon (weapon: Weapon): void {
+    if (!weapon.model) return;
+
+    // this.weapon.targets = colliders;
+    this.hand?.add(weapon.model);
+    this.weapon = weapon;
   }
 
   public update (delta: number): void {

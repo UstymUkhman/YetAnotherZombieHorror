@@ -6,6 +6,7 @@ import Level0 from '@/environment/Level0';
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
 import { Settings } from '@/settings';
+import Pistol from '@/weapons/Pistol';
 
 export default class GameLoop {
   private readonly loader = new Assets.Loader();
@@ -14,19 +15,23 @@ export default class GameLoop {
 
   private player = new Player();
   private level = new Level0();
+
+  private pistol = new Pistol(this.level.getCamera());
+
   private paused = true;
 
   public constructor () {
-    this.loadAssets().then(assets => this.enemyAssets = assets);
+    this.loadCharacters().then(assets => this.enemyAssets = assets);
   }
 
-  private async loadAssets (): Promise<EnemyAssets> {
+  private async loadCharacters (): Promise<EnemyAssets> {
     const character = await this.player.loadCharacter();
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
     const audioListener = this.level.audioListener;
 
     this.player.addSounds(playerSounds, audioListener);
+    this.player.setWeapon(this.pistol);
     this.level.addModel(character);
     return enemyAssets;
   }
