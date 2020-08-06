@@ -1,5 +1,9 @@
+import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
+
 import Level0 from '@/settings/level0.json';
+import Pistol from '@/settings/pistol.json';
+
 import Player from '@/settings/player.json';
 import Enemy from '@/settings/enemy.json';
 
@@ -79,6 +83,38 @@ describe('Settings', () => {
       const name = animation as keyof typeof Enemy.animations;
       expect(Settings.Enemy.animations[name].length).toStrictEqual(2);
     }
+  });
+
+  test('Pistol', () => {
+    const pistolPosition = new Vector3(...Pistol.position);
+    const pistolRotation = new Vector3(...Pistol.rotation);
+    const pistolSpread = new Vector2(...Pistol.spread);
+    const pistolRecoil = new Vector2(...Pistol.recoil);
+    const pistolScale = new Vector3(...Pistol.scale);
+
+    expect(Object.keys(Settings.Pistol.sounds).length).toBeGreaterThan(0);
+
+    expect(Settings.Pistol.position).toStrictEqual(pistolPosition);
+    expect(Settings.Pistol.position).toBeInstanceOf(Vector3);
+
+    expect(Settings.Pistol.rotation).toStrictEqual(pistolRotation);
+    expect(Settings.Pistol.rotation).toBeInstanceOf(Vector3);
+
+    expect(Settings.Pistol.scale).toStrictEqual(pistolScale);
+    expect(Settings.Pistol.scale).toBeInstanceOf(Vector3);
+
+    expect(Settings.Pistol.spread).toStrictEqual(pistolSpread);
+    expect(Settings.Pistol.spread).toBeInstanceOf(Vector2);
+
+    expect(Settings.Pistol.recoil).toStrictEqual(pistolRecoil);
+    expect(Settings.Pistol.recoil).toBeInstanceOf(Vector2);
+
+    expect(Settings.Pistol.magazine).toStrictEqual(Infinity);
+    expect(Settings.Pistol.model).toStrictEqual('1911.glb');
+    expect(Settings.Pistol.ammo).toStrictEqual(Infinity);
+
+    expect(Settings.Pistol.damage).toBeGreaterThan(0);
+    expect(Settings.Pistol.speed).toBeGreaterThan(0);
   });
 
   test('Frozen', () => {

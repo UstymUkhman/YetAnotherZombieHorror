@@ -59,7 +59,7 @@ export default class Character {
       const material = childMesh.material as MeshPhongMaterial;
 
       if (childMesh.isMesh) {
-        child.castShadow = true;
+        childMesh.castShadow = true;
 
         childMesh.material = new MeshPhongMaterial({
           map: material.map,

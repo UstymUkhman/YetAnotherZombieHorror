@@ -45,12 +45,12 @@ export default class Player extends Character {
     });
   }
 
-  public setWeapon (weapon: Weapon): void {
-    if (!weapon.model) return;
+  public setPistol (pistol: Pistol): void {
+    if (!pistol.model) return;
 
     // this.weapon.targets = colliders;
-    this.hand?.add(weapon.model);
-    this.weapon = weapon;
+    this.hand?.add(pistol.model);
+    this.weapon = pistol;
   }
 
   public update (delta: number): void {

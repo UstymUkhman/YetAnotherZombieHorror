@@ -31,7 +31,7 @@ export default class GameLoop {
     const audioListener = this.level.audioListener;
 
     this.player.addSounds(playerSounds, audioListener);
-    this.player.setWeapon(this.pistol);
+    this.player.setPistol(this.pistol);
     this.level.addModel(character);
     return enemyAssets;
   }

@@ -1,13 +1,15 @@
 type PerspectiveCamera = import('@three/cameras/PerspectiveCamera').PerspectiveCamera;
-// type AudioListener = import('@three/audio/AudioListener').AudioListener;
+type AudioListener = import('@three/audio/AudioListener').AudioListener;
 type WeaponSettings = import('@/settings').Settings.Weapon;
 // type Vector2 = import('@three/math/Vector2').Vector2;
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Mesh = import('@three/objects/Mesh').Mesh;
 
-// import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { PositionalAudio } from '@three/audio/PositionalAudio';
 import { Raycaster } from '@three/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
+import { FrontSide } from '@three/constants';
 
 export default class Weapon {
   private readonly loader = new Assets.Loader();
@@ -37,6 +39,22 @@ export default class Weapon {
 
   private async load (): Promise<Assets.GLTF> {
     this.weapon = (await this.loader.loadGLTF(this.settings.model)).scene;
+    this.addSounds(Object.keys(this.settings.sounds), await this.loadSounds());
+
+    this.weapon.traverse(child => {
+      const childMesh = child as Mesh;
+      const material = childMesh.material as MeshPhongMaterial;
+
+      if (childMesh.isMesh) {
+        childMesh.castShadow = true;
+
+        childMesh.material = new MeshPhongMaterial({
+          specular: 0x2F2F2F,
+          map: material.map,
+          side: FrontSide
+        });
+      }
+    });
 
     this.weapon.rotation.setFromVector3(this.settings.rotation as Vector3);
     this.weapon.position.copy(this.settings.position as Vector3);
@@ -45,17 +63,25 @@ export default class Weapon {
     return this.weapon;
   }
 
+  private addSounds (names: Array<string>, sounds: Array<AudioBuffer>): void {
+    const listener = this.camera.children[0] as AudioListener;
+
+    sounds.forEach((sound, s) => {
+      const volume = names[s] === 'shoot' ? 10 : 5;
+      const audio = new PositionalAudio(listener);
+
+      this.weapon?.add(audio);
+      audio.setVolume(volume);
+      audio.setBuffer(sound);
+    });
+  }
+
   private async loadSounds (): Promise<Array<AudioBuffer>> {
     return await Promise.all(
       Object.values(this.settings.sounds)
         .map(this.loader.loadAudio.bind(this.loader))
     );
   }
-
-  /* private addSounds (sounds: Array<AudioBuffer>): void {
-    const listener = this.camera.children[0] as AudioListener;
-    sounds.forEach(sound => {});
-  } */
 
   public get model (): Assets.GLTF | undefined {
     return this.weapon;
