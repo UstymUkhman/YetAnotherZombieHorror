@@ -15,9 +15,11 @@ import { Settings } from '@/settings';
 
 describe('Settings', () => {
   test('Constants', () => {
-    expect(Settings.APP).toStrictEqual(false);
-    expect(Settings.DEBUG).toStrictEqual(true);
+    expect(typeof Settings.colliders).toStrictEqual('boolean');
     expect(typeof Settings.VERSION).toStrictEqual('string');
+
+    expect(Settings.DEBUG).toStrictEqual(true);
+    expect(Settings.APP).toStrictEqual(false);
   });
 
   test('Level0', () => {

@@ -36,13 +36,7 @@ export default class Player extends Character {
   }
 
   public addSounds (sounds: Array<AudioBuffer>, listener: AudioListener): void {
-    sounds.forEach(sound => {
-      const audio = super.createAudio(listener);
-      this.character.add(audio);
-
-      audio.setBuffer(sound);
-      audio.setVolume(10);
-    });
+    sounds.forEach(sound => this.character.add(super.createAudio(sound, listener)));
   }
 
   public setPistol (pistol: Pistol): void {

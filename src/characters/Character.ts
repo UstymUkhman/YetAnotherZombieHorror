@@ -90,8 +90,13 @@ export default class Character {
     this.speed.z = animations[animation][1];
   }
 
-  protected createAudio (listener: AudioListener): PositionalAudio {
-    return new PositionalAudio(listener);
+  protected createAudio (sound: AudioBuffer, listener: AudioListener, volume = 10): PositionalAudio {
+    const audio = new PositionalAudio(listener);
+
+    audio.setVolume(volume);
+    audio.setBuffer(sound);
+
+    return audio;
   }
 
   protected update (delta: number): void {

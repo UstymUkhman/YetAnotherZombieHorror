@@ -10,13 +10,13 @@ import { Vector3 } from '@three/math/Vector3';
 import deepFreeze from '@/utils/deepFreeze';
 
 export namespace Settings {
-  export type Animations = { [key in Animation]: Array<number> }
+  export type Animations = { [key in Animation]: Array<number> };
+  export type PlayerAnimations = keyof typeof Player.animations;
+  export type EnemyAnimations = keyof typeof Enemy.animations;
+
   export type Animation = PlayerAnimations | EnemyAnimations;
   export type Character = typeof Player | typeof Enemy;
   export type Weapon = typeof Pistol /* | typeof Rifle */;
-
-  type PlayerAnimations = keyof typeof Player.animations;
-  type EnemyAnimations = keyof typeof Enemy.animations;
 
   export type Sounds = { [key in Sound]: string };
   export type Sound = PlayerSounds | EnemySounds;
@@ -31,6 +31,7 @@ export namespace Settings {
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
   export const DEBUG = !PRODUCTION;
+  export const colliders = true;
   export const APP = isApp;
   /* eslint-enable no-undef */
 
