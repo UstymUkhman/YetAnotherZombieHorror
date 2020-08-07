@@ -1,5 +1,3 @@
-type PerspectiveCamera = import('@three/cameras/PerspectiveCamera').PerspectiveCamera;
-type AudioListener = import('@three/audio/AudioListener').AudioListener;
 type WeaponSettings = import('@/settings').Settings.Weapon;
 // type Vector2 = import('@three/math/Vector2').Vector2;
 type Vector3 = import('@three/math/Vector3').Vector3;
@@ -7,6 +5,8 @@ type Mesh = import('@three/objects/Mesh').Mesh;
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
+
+import { /* object, */ listener } from '@/managers/Camera';
 import { Raycaster } from '@three/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
 import { FrontSide } from '@three/constants';
@@ -14,8 +14,6 @@ import { FrontSide } from '@three/constants';
 export default class Weapon {
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
-
-  private readonly camera: PerspectiveCamera;
   private readonly settings: WeaponSettings;
 
   // private readonly spread: Vector2;
@@ -27,13 +25,13 @@ export default class Weapon {
   private readonly near = 4.5;
   private aiming = false;
 
-  constructor (settings: WeaponSettings, camera: PerspectiveCamera) {
+  constructor (settings: WeaponSettings) {
     // this.spread = settings.spread as Vector2;
     // this.recoil = settings.recoil as Vector2;
 
     this.raycaster.near = this.near;
     this.settings = settings;
-    this.camera = camera;
+
     this.load();
   }
 
@@ -64,8 +62,6 @@ export default class Weapon {
   }
 
   private addSounds (names: Array<string>, sounds: Array<AudioBuffer>): void {
-    const listener = this.camera.children[0] as AudioListener;
-
     sounds.forEach((sound, s) => {
       const volume = names[s] === 'shoot' ? 10 : 5;
       const audio = new PositionalAudio(listener);

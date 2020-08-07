@@ -13,10 +13,9 @@ export default class GameLoop {
   private enemyAssets?: EnemyAssets;
   private raf?: number | void;
 
+  private pistol = new Pistol();
   private player = new Player();
   private level = new Level0();
-
-  private pistol = new Pistol(this.level.getCamera());
 
   private paused = true;
 
@@ -28,9 +27,8 @@ export default class GameLoop {
     const character = await this.player.loadCharacter();
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
-    const audioListener = this.level.audioListener;
 
-    this.player.addSounds(playerSounds, audioListener);
+    this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);
     this.level.addModel(character);
     return enemyAssets;

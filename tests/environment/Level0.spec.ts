@@ -1,13 +1,8 @@
-import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
-import { Object3D } from '@three/core/Object3D';
-
-jest.mock('@three/renderers/WebGLRenderer');
-jest.mock('three/examples/jsm/WebGL');
-
 declare const global: any;
 global.PRODUCTION = false;
 global.BUILD = '0.1.0';
 
+import { Object3D } from '@three/core/Object3D';
 import Level0 from '@/environment/Level0';
 
 describe('Level0', () => {
@@ -16,10 +11,6 @@ describe('Level0', () => {
   test('Create', () => {
     expect(Level0).toBeDefined();
     expect(level).toBeInstanceOf(Level0);
-  });
-
-  test('getCamera', () => {
-    expect(level.getCamera()).toBeInstanceOf(PerspectiveCamera);
   });
 
   test('addModel', () => {

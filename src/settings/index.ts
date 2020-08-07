@@ -28,10 +28,12 @@ export namespace Settings {
   const userAgent = navigator.userAgent.toLowerCase();
   const isApp = userAgent.includes('electron');
 
+  export const freeCamera = false;
+  export const colliders = true;
+
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
   export const DEBUG = !PRODUCTION;
-  export const colliders = true;
   export const APP = isApp;
   /* eslint-enable no-undef */
 

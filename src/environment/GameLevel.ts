@@ -1,23 +1,17 @@
-import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
-import { AudioListener } from '@three/audio/AudioListener';
 import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from '@three/scenes/Scene';
+import { object } from '@/managers/Camera';
 
 export default class GameLevel {
-  private width: number = window.innerWidth;
-  private height: number = window.innerHeight;
-  private ratio: number = this.width / this.height;
-
   private renderer = new WebGLRenderer({ antialias: true, alpha: false });
-  private _onResize: EventListenerOrEventListenerObject = () => null;
-  protected camera = new PerspectiveCamera(45, this.ratio, 1, 500);
+  private readonly onResize = this.setRenderSize.bind(this);
 
   private readonly loader = new Assets.Loader();
   protected readonly scene = new Scene();
+  protected camera = object;
 
   public constructor () {
-    this.createAudioListener();
     this.createRenderer();
     this.createEvents();
   }
@@ -33,33 +27,18 @@ export default class GameLevel {
       .then(skybox => this.scene.background = skybox);
   }
 
-  private createAudioListener (): void {
-    const listener = new AudioListener();
-    this.camera.add(listener);
-  }
-
   private createRenderer (): void {
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.enabled = true;
+    this.setRenderSize();
+  }
+
+  private setRenderSize (): void {
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   private createEvents (): void {
-    this._onResize = this.onResize.bind(this);
-    window.addEventListener('resize', this._onResize, false);
-  }
-
-  private onResize (): void {
-    this.setSize();
-    this.camera.aspect = this.ratio;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height);
-  }
-
-  private setSize (): void {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.ratio = this.width / this.height;
+    window.addEventListener('resize', this.onResize, false);
   }
 
   protected render (): void {
@@ -67,17 +46,13 @@ export default class GameLevel {
   }
 
   protected destroy (): void {
-    window.removeEventListener('resize', this._onResize, false);
+    window.removeEventListener('resize', this.onResize, false);
 
     this.renderer.dispose();
     this.scene.dispose();
 
     delete this.renderer;
     delete this.camera;
-  }
-
-  public get audioListener (): AudioListener {
-    return this.camera.children[0] as AudioListener;
   }
 
   public get canvas (): HTMLCanvasElement {

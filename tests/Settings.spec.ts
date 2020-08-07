@@ -17,6 +17,7 @@ describe('Settings', () => {
   test('Constants', () => {
     expect(typeof Settings.colliders).toStrictEqual('boolean');
     expect(typeof Settings.VERSION).toStrictEqual('string');
+    expect(Settings.freeCamera).toStrictEqual(false);
 
     expect(Settings.DEBUG).toStrictEqual(true);
     expect(Settings.APP).toStrictEqual(false);

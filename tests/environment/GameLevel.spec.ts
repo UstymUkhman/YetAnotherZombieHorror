@@ -1,5 +1,8 @@
+declare const global: any;
+global.PRODUCTION = false;
+global.BUILD = '0.1.0';
+
 import GameLevel from '@/environment/GameLevel';
-jest.mock('@three/audio/AudioListener');
 
 describe('Level0', () => {
   const level = new GameLevel();
@@ -8,16 +11,12 @@ describe('Level0', () => {
     expect(level).toBeInstanceOf(GameLevel);
   });
 
-  test('onResize', () => {
+  test('setRenderSize', () => {
     const levelPrototype = Object.getPrototypeOf(level);
-    const onResize = jest.fn(levelPrototype.onResize.bind(level));
+    const setRenderSize = jest.fn(levelPrototype.setRenderSize.bind(level));
 
-    onResize();
-    expect(onResize).toHaveReturnedWith(undefined);
-  });
-
-  test('audioListener', () => {
-    expect(level.audioListener).toBeUndefined();
+    setRenderSize();
+    expect(setRenderSize).toHaveReturnedWith(undefined);
   });
 
   test('canvas', () => {
