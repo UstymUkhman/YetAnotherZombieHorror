@@ -15,7 +15,7 @@ const PORT = process.env.PORT && Number(process.env.PORT);
 const HOST = process.env.HOST;
 
 module.exports = {
-  devtool: build ? '#source-map' : 'cheap-module-eval-source-map',
+  devtool: build ? false : 'cheap-module-eval-source-map',
   mode: build ? 'production' : 'development',
   entry: path.resolve('./src/main.ts'),
 

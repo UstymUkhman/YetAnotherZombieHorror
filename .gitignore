@@ -8,18 +8,13 @@ pids
 *.seed
 .vscode
 
+coverage/
 build/**/*
 !build/*.yml
-
-public/*.txt
-public/*.map
-public/**/*.mp3
-
-favicon/*
-coverage/
 node_modules
 .lock-wscript
 
-!favicon/.gitkeep
-public/models/*.blend
-src/assets/fonts/*.ttf
+public/**/*.txt
+public/**/*.map
+public/**/*.mp3
+public/**/*.blend

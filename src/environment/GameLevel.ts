@@ -47,12 +47,7 @@ export default class GameLevel {
 
   protected destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
-
     this.renderer.dispose();
-    this.scene.dispose();
-
-    delete this.renderer;
-    delete this.camera;
   }
 
   public get canvas (): HTMLCanvasElement {

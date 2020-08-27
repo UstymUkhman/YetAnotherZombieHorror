@@ -44,9 +44,6 @@ class Camera {
 
   public destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
-
-    delete this.audioListener;
-    delete this.camera;
   }
 
   public get listener (): AudioListener {

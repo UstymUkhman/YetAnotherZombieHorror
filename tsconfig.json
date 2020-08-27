@@ -18,7 +18,7 @@
     "strict": true,
 
     "typeRoots": ["node_modules/@types"],
-    "types": ["svelte", "jest"],
+    "types": ["svelte", "jest", "node"],
 
     "paths": {
       "@postprocessing/*": ["node_modules/three/examples/jsm/postprocessing/*"],

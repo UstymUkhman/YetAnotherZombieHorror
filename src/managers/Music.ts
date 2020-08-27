@@ -32,7 +32,6 @@ export default class Music {
   public destroy (): void {
     this.track.currentTime = 0;
     this.toggle(false);
-    delete this.track;
   }
 
   public set volume (volume: number) {

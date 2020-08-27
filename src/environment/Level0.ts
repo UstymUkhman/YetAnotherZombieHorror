@@ -79,7 +79,6 @@ export default class Level0 extends GameLevel {
 
   public destroy (): void {
     this.music.destroy();
-    delete this.music;
     super.destroy();
 
     if (Settings.DEBUG) {

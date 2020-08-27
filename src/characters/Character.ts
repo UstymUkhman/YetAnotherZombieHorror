@@ -150,12 +150,9 @@ export default class Character {
       delete this.animations[animation];
     }
 
-    delete this.animations;
     // delete this.colliders;
-    delete this.model;
-    delete this.settings;
     // delete this.sounds;
-    delete this.speed;
+    delete this.model;
   }
 
   public reset (): void {

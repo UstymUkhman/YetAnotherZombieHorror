@@ -51,9 +51,8 @@ describe('Camera', () => {
   });
 
   test('destroy', () => {
-    Camera.destroy();
-
-    expect(Camera.listener).toStrictEqual(undefined);
-    expect(Camera.object).toStrictEqual(undefined);
+    const destroy = jest.fn(Camera.destroy.bind(Camera));
+    destroy();
+    expect(destroy).toHaveReturnedWith(undefined);
   });
 });

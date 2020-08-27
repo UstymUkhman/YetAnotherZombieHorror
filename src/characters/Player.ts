@@ -3,6 +3,7 @@ type AnimationAction = import('@three/animation/AnimationAction').AnimationActio
 import { Object3D } from '@three/core/Object3D';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
+import { Euler } from '@three/math/Euler';
 import Camera from '@/managers/Camera';
 
 import { Settings } from '@/settings';
@@ -10,7 +11,15 @@ import Pistol from '@/weapons/Pistol';
 // import Rifle from '@/weapons/Rifle';
 type Weapon = Pistol /* | Rifle */;
 
+type Location = {
+  position: Vector3
+  rotation: Euler
+};
+
 export default class Player extends Character {
+  private readonly currentPosition = new Vector3();
+  private readonly currentRotation = new Euler();
+
   private readonly cameraPosition = new Vector3();
   private readonly cameraRotation = new Vector3();
 
@@ -31,6 +40,9 @@ export default class Player extends Character {
 
     this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
+
+    this.currentPosition.copy(this.character.position);
+    this.currentRotation.copy(this.character.rotation);
 
     this.currentAnimation.play();
     this.character.add(model);
@@ -56,5 +68,20 @@ export default class Player extends Character {
     /* if (this.deathCamera) {
       this.cameraRotation.z += 0.005;
     } */
+  }
+
+  public get location (): Location {
+    return {
+      position: this.currentPosition,
+      rotation: this.currentRotation
+    };
+  }
+
+  public get position (): Vector3 {
+    return this.currentPosition;
+  }
+
+  public get rotation (): Euler {
+    return this.currentRotation;
   }
 }
