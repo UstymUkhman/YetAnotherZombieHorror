@@ -1,7 +1,7 @@
 <div style="transform: rotate({rotation}deg);"></div>
 
 <script lang="typescript">
-export let rotation: number;
+  export let rotation: number;
 </script>
 
 <style lang="scss">
@@ -16,8 +16,8 @@ div {
   margin: auto;
   padding: 0;
 
-  height: 20px;
-  width: 20px;
+  height: 1.5vw;
+  width: 1.5vw;
 
   bottom: 0;
   right: 0;

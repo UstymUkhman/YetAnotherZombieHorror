@@ -29,7 +29,8 @@ export namespace Settings {
   const isApp = userAgent.includes('electron');
 
   export const freeCamera = false;
-  export const colliders = true;
+  export const colliders = false;
+  export const hitBoxes = false;
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
@@ -43,9 +44,10 @@ export namespace Settings {
 
     bounds: Level0Data.bounds,
     skybox: Level0Data.skybox,
-
     model: Level0Data.model,
-    music: Level0Data.music
+    music: Level0Data.music,
+
+    depth: Level0Data.depth
   });
 
   export const Player = deepFreeze({

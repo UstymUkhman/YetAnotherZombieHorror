@@ -16,9 +16,10 @@ import { Settings } from '@/settings';
 describe('Settings', () => {
   test('Constants', () => {
     expect(typeof Settings.colliders).toStrictEqual('boolean');
+    expect(typeof Settings.hitBoxes).toStrictEqual('boolean');
     expect(typeof Settings.VERSION).toStrictEqual('string');
-    expect(Settings.freeCamera).toStrictEqual(false);
 
+    expect(Settings.freeCamera).toStrictEqual(false);
     expect(Settings.DEBUG).toStrictEqual(true);
     expect(Settings.APP).toStrictEqual(false);
   });
@@ -30,6 +31,7 @@ describe('Settings', () => {
     expect(Settings.Level0.model).toStrictEqual('level0.glb');
     expect(Settings.Level0.music).toStrictEqual('level0.mp3');
     expect(Settings.Level0.skybox).toStrictEqual('level0');
+    expect(Settings.Level0.depth).toStrictEqual(100);
 
     expect(Settings.Level0.scale).toBeInstanceOf(Vector3);
     expect(Settings.Level0.scale).toStrictEqual(levelScale);

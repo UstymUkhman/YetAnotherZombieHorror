@@ -4,21 +4,15 @@ type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
 
-import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { SkeletonUtils } from '@utils/SkeletonUtils';
 
+import { HitBoxMaterial } from '@/utils/Material';
 import Character from '@/characters/Character';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { Settings } from '@/settings';
-import { Color } from '@/utils/Color';
-
-const colliderMaterial = new MeshBasicMaterial({
-  visible: Settings.colliders,
-  color: Color.RED
-});
 
 export default class Enemy extends Character {
   private lastAnimation: Settings.EnemyAnimations = 'Idle';
@@ -82,7 +76,7 @@ export default class Enemy extends Character {
 
     const headCollider = new Mesh(
       new BoxGeometry(18, 20, 20),
-      colliderMaterial.clone()
+      HitBoxMaterial.clone()
     );
 
     headCollider.position.y += 5;
@@ -98,7 +92,7 @@ export default class Enemy extends Character {
 
     const bodyCollider = new Mesh(
       CapsuleGeometry(20, 50),
-      colliderMaterial.clone()
+      HitBoxMaterial.clone()
     );
 
     bodyCollider.rotation.x -= Math.PI / 2;
@@ -118,12 +112,12 @@ export default class Enemy extends Character {
 
     const upperLeg = new Mesh(
       new BoxGeometry(16, 50, 15),
-      colliderMaterial.clone()
+      HitBoxMaterial.clone()
     );
 
     const lowerLeg = new Mesh(
       new BoxGeometry(10, 50, 10),
-      colliderMaterial.clone()
+      HitBoxMaterial.clone()
     );
 
     lowerLeg.userData.enemy = this.id;

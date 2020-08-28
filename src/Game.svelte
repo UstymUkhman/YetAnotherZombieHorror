@@ -4,31 +4,45 @@
   {/if}
 
   <Map
+    playerRotation={location.rotation.y}
+    playerPosition={location.position}
     bounds={Settings.Level0.bounds}
-    position={playerPosition}
-    rotation={playerRotation}
-    scale={1}
+    scale={scale}
+    zoom={1}
   />
 </main>
 
 <script lang="typescript">
-import { Vector3 } from '@three/math/Vector3';
-import Close from '@components/CloseButton';
-import GameLoop from '@/managers/GameLoop';
+  import { Vector3 } from '@three/math/Vector3';
+  import { onMount, onDestroy } from 'svelte';
+  import Close from '@components/CloseButton';
+  import GameLoop from '@/managers/GameLoop';
 
-import { Settings } from '@/settings';
-import Map from '@components/Map';
-import { onMount } from 'svelte';
+  import { Settings } from '@/settings';
+  import Map from '@components/Map';
 
-let main: HTMLElement;
-let playerRotation = 0;
-const game = new GameLoop();
-let playerPosition = new Vector3();
+  let main: HTMLElement;
+  export let scale: number;
 
-onMount(() => {
-  main.prepend(game.scene);
-  game.pause = false;
-});
+  const game = new GameLoop();
+  const location = game.playerLocation;
+
+  window.addEventListener('resize', updateScale);
+
+  function updateScale () {
+    scale = window.innerWidth / 175;
+  }
+
+  onMount(() => {
+    main.prepend(game.scene);
+    game.pause = false;
+    updateScale();
+  });
+
+  onDestroy(() => {
+    game.pause = true;
+    game.destroy();
+  });
 </script>
 
 <style lang="scss" global>

@@ -43,6 +43,7 @@ export default class Level0 extends GameLevel {
       });
     }
 
+    this.camera.far = Settings.Level0.depth;
     this.createEnvironment();
     this.createLights();
   }
@@ -64,7 +65,7 @@ export default class Level0 extends GameLevel {
     this.scene.add(new AmbientLight(Color.WHITE));
   }
 
-  public addModel (model: GLTF | Object3D): void {
+  public addObject (model: GLTF | Object3D): void {
     this.scene.add(model);
   }
 

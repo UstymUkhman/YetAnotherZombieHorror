@@ -4,89 +4,92 @@
 </div>
 
 <script lang="typescript">
-type Vector3 = import('@three/math/Vector3').Vector3;
+  type Vector3 = import('@three/math/Vector3').Vector3;
+  import { clone, min, max } from '@/utils/Array';
+  import { black } from '@scss/variables.scss';
+  import Player from '@components/Player';
 
-import { clone, min, max } from '@/utils/Array';
-import { black } from '@scss/variables.scss';
-import Player from '@components/Player';
-import { onMount } from 'svelte';
+  export let bounds: Array<Array<number>>;
+  export let playerPosition: Vector3;
+  export let playerRotation: number;
 
-const SCALE = 10;
-const PADDING = 1;
-const OFFSET = PADDING * SCALE / 2;
+  let maxCoords: Array<number>;
+  let minCoords: Array<number>;
 
-export let bounds: Array<Array<number>>;
-export let position: Vector3;
-export let rotation: number;
-export let scale: number;
+  let canvasTransform: string;
+  let map: HTMLCanvasElement;
 
-let maxCoords: Array<number>;
-let minCoords: Array<number>;
+  export let scale: number;
+  export let zoom: number;
+  let rotation: number;
+  let offset: number;
+  const PADDING = 1;
 
-let canvasTransform: string;
-let map: HTMLCanvasElement;
+  function getNormalizedBounds (): Array<Array<number>> {
+    const scaleMapBounds = (coord: Array<number>): Array<number> => [coord[0] * scale, coord[1] * scale];
+    const cBounds = clone(bounds).map(bound => scaleMapBounds(bound));
 
-function setCoords (): void {
-  minCoords = [
-    Math.abs(min(bounds.map((coords: Array<number>) => coords[0]))) + PADDING,
-    Math.abs(min(bounds.map((coords: Array<number>) => coords[1]))) + PADDING
-  ];
+    for (let b = 0; b < cBounds.length; b++) {
+      cBounds[b][0] += scale * minCoords[0];
+      cBounds[b][1] += scale * minCoords[1];
+    }
 
-  maxCoords = [
-    max(bounds.map((coords: Array<number>) => coords[0])),
-    max(bounds.map((coords: Array<number>) => coords[1]))
-  ];
-}
+    const X = cBounds.map((coords: Array<number>) => coords[0]);
+    const Z = cBounds.map((coords: Array<number>) => coords[1]);
 
-function getNormalizedBounds (): Array<Array<number>> {
-  const scaleMapBounds = (coord: Array<number>): Array<number> => [coord[0] * SCALE, coord[1] * SCALE];
-  const cBounds = clone(bounds).map(bound => scaleMapBounds(bound));
+    map.height = max(Z) + PADDING * 2;
+    map.width = max(X) + PADDING * 2;
 
-  for (let b = 0; b < cBounds.length; b++) {
-    cBounds[b][0] += SCALE * minCoords[0];
-    cBounds[b][1] += SCALE * minCoords[1];
+    return cBounds;
   }
 
-  const X = cBounds.map((coords: Array<number>) => coords[0]);
-  const Z = cBounds.map((coords: Array<number>) => coords[1]);
+  function centerPosition (): void {
+    const x = (playerPosition.x - maxCoords[0]) * scale - offset;
+    const y = (playerPosition.z - maxCoords[1]) * scale - offset;
 
-  map.height = max(Z) + PADDING * 2;
-  map.width = max(X) + PADDING * 2;
-
-  return cBounds;
-}
-
-function drawBounds (): void {
-  const nBounds = getNormalizedBounds();
-  const context = map.getContext('2d') as CanvasRenderingContext2D;
-
-  context.strokeStyle = black;
-  context.lineWidth = 1;
-  context.beginPath();
-
-  context.clearRect(0, 0, map.width, map.height);
-  context.moveTo(nBounds[0][0], nBounds[0][1]);
-
-  for (let b = 1; b < nBounds.length; b++) {
-    context.lineTo(nBounds[b][0], nBounds[b][1]);
+    canvasTransform = `translate(${x}px, ${y}px) scale3d(-${zoom}, -${zoom}, 1)`;
   }
 
-  context.closePath();
-  context.stroke();
-}
+  function drawBounds (): void {
+    const nBounds = getNormalizedBounds();
+    const context = map.getContext('2d') as CanvasRenderingContext2D;
 
-function centerPosition (): void {
-  const x = (position.x - maxCoords[0]) * SCALE - OFFSET;
-  const y = (position.z - maxCoords[1]) * SCALE - OFFSET;
+    context.strokeStyle = black;
+    context.lineWidth = 1;
+    context.beginPath();
 
-  canvasTransform = `translate(${x}px, ${y}px) scale3d(-${scale}, -${scale}, 1)`;
-}
+    context.clearRect(0, 0, map.width, map.height);
+    context.moveTo(nBounds[0][0], nBounds[0][1]);
 
-onMount(() => {
-  setCoords();
-  drawBounds();
-  centerPosition();
-});
+    for (let b = 1; b < nBounds.length; b++) {
+      context.lineTo(nBounds[b][0], nBounds[b][1]);
+    }
+
+    context.closePath();
+    context.stroke();
+  }
+
+  (function (): void {
+    minCoords = [
+      Math.abs(min(bounds.map((coords: Array<number>) => coords[0]))) + PADDING,
+      Math.abs(min(bounds.map((coords: Array<number>) => coords[1]))) + PADDING
+    ];
+
+    maxCoords = [
+      max(bounds.map((coords: Array<number>) => coords[0])),
+      max(bounds.map((coords: Array<number>) => coords[1]))
+    ];
+  })();
+
+  $: rotation = playerRotation;
+
+  $: ((scale) => {
+    if (!map || !scale) return;
+    offset = PADDING * scale / 2;
+
+    drawBounds();
+    centerPosition();
+  })(scale);
 </script>
 
 <style lang="scss">
@@ -108,8 +111,8 @@ div {
   width: 10vw;
 
   padding: 2vw;
-  bottom: 1vw;
-  left: 1vw;
+  bottom: 2vw;
+  right: 2vw;
 
   canvas {
     position: absolute;

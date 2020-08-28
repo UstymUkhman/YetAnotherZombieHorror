@@ -11,12 +11,12 @@ import Pistol from '@/weapons/Pistol';
 // import Rifle from '@/weapons/Rifle';
 type Weapon = Pistol /* | Rifle */;
 
-type Location = {
+export type Location = {
   position: Vector3
   rotation: Euler
 };
 
-export default class Player extends Character {
+export class Player extends Character {
   private readonly currentPosition = new Vector3();
   private readonly currentRotation = new Euler();
 

@@ -14,9 +14,9 @@ describe('Level0', () => {
   });
 
   test('addModel', () => {
-    const addModel = jest.fn(level.addModel.bind(level));
-    addModel(new Object3D());
-    expect(addModel).toHaveReturnedWith(undefined);
+    const addObject = jest.fn(level.addObject.bind(level));
+    addObject(new Object3D());
+    expect(addObject).toHaveReturnedWith(undefined);
   });
 
   test('render', () => {

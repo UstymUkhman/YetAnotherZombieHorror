@@ -1,4 +1,4 @@
-import GameEvents, { GameEvent } from '@/managers/GameEvents';
+import { GameEvents, GameEvent } from '@/managers/GameEvents';
 
 const timestamp = Date.now();
 

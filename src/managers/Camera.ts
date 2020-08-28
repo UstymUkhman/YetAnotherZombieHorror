@@ -10,7 +10,7 @@ class Camera {
   private readonly onResize = this.updateAspectRatio.bind(this);
 
   private ratio: number = window.innerWidth / window.innerHeight;
-  private camera = new PerspectiveCamera(45, this.ratio, 0.1, 500);
+  private camera = new PerspectiveCamera(45, this.ratio);
 
   constructor () {
     this.addAudioListener();

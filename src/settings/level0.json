@@ -4,6 +4,7 @@
   "model": "level0.glb",
   "music": "level0.mp3",
   "skybox": "level0",
+  "depth": 100,
 
   "bounds": [
     [ 63,  52],
