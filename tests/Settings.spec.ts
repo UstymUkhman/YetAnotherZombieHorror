@@ -31,6 +31,7 @@ describe('Settings', () => {
     expect(Settings.Level0.model).toStrictEqual('level0.glb');
     expect(Settings.Level0.music).toStrictEqual('level0.mp3');
     expect(Settings.Level0.skybox).toStrictEqual('level0');
+    expect(Settings.Level0.height).toStrictEqual(10);
     expect(Settings.Level0.depth).toStrictEqual(100);
 
     expect(Settings.Level0.scale).toBeInstanceOf(Vector3);

@@ -5,11 +5,11 @@
 
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
+  type Bounds = import('@/settings').Settings.Bounds;
   import { clone, min, max } from '@/utils/Array';
   import { black } from '@scss/variables.scss';
   import Player from '@components/Player';
 
-  export let bounds: Array<Array<number>>;
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
@@ -19,13 +19,15 @@
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 
+  export let bounds: Bounds;
   export let scale: number;
   export let zoom: number;
+
   let rotation: number;
   let offset: number;
   const PADDING = 1;
 
-  function getNormalizedBounds (): Array<Array<number>> {
+  function getNormalizedBounds (): Bounds {
     const scaleMapBounds = (coord: Array<number>): Array<number> => [coord[0] * scale, coord[1] * scale];
     const cBounds = clone(bounds).map(bound => scaleMapBounds(bound));
 

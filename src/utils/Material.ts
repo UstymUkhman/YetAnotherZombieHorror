@@ -5,7 +5,7 @@ import { Color } from '@/utils/Color';
 
 export const ColliderMaterial = new MeshBasicMaterial({
   visible: Settings.colliders,
-  color: Color.WHITE,
+  color: Color.GREY,
   transparent: true,
   depthWrite: false,
   opacity: 0.5

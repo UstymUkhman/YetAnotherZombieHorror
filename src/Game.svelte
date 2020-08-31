@@ -13,7 +13,6 @@
 </main>
 
 <script lang="typescript">
-  import { Vector3 } from '@three/math/Vector3';
   import { onMount, onDestroy } from 'svelte';
   import Close from '@components/CloseButton';
   import GameLoop from '@/managers/GameLoop';

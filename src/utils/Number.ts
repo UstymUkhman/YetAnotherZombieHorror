@@ -1,4 +1,4 @@
-import { Vector3 } from '@three/math/Vector3';
+type Vector3 = import('@three/math/Vector3').Vector3;
 
 export const smoothstep = (min: number, max: number, value: number): number => Math.max(0, Math.min(1, (value - min) / (max - min)));
 export const near = (p: Vector3, c: Vector3, r = 1): boolean => Math.pow(p.x - c.x, 2) + Math.pow(p.z - c.z, 2) < Math.pow(r, 2);

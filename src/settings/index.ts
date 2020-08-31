@@ -47,6 +47,7 @@ export namespace Settings {
     model: Level0Data.model,
     music: Level0Data.music,
 
+    height: Level0Data.height,
     depth: Level0Data.depth
   });
 

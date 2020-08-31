@@ -26,10 +26,16 @@ export default class GameLoop {
   private paused = true;
 
   public constructor () {
+    this.addEventListeners();
     this.loadCharacters().then(assets => this.enemyAssets = assets);
 
-    this.addEventListeners();
-    this.physics.addLevel();
+    this.physics.addGround(Settings.Level0.bounds);
+
+    this.physics.addBounds(
+      Settings.Level0.height,
+      Settings.Level0.position.y,
+      Settings.Level0.bounds
+    );
   }
 
   private async loadCharacters (): Promise<EnemyAssets> {

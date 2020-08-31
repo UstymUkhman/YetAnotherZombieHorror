@@ -8,7 +8,6 @@ import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 // type CharacterSounds = import('@/settings').Settings.Sounds;
-// type BoundsSettings = import('@/settings').Settings.Bounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
@@ -105,18 +104,6 @@ export default class Character {
     if (this.moving && this.model) {
       this.model.translateX(this.speed.x);
       this.model.translateZ(this.speed.z);
-
-      // this.model.position.z = clamp(
-      //   this.model.position.z,
-      //   -BOUNDS.front,
-      //   BOUNDS.front
-      // );
-
-      // this.model.position.x = clamp(
-      //   this.model.position.x,
-      //   -BOUNDS.side,
-      //   BOUNDS.side
-      // );
     }
   }
 
@@ -163,12 +150,4 @@ export default class Character {
     this.health = 100;
     this.alive = true;
   }
-
-  /* public set bounds (bounds: BoundsSettings) {
-    this.bounds = bounds;
-  }
-
-  public get bounds (): BoundsSettings {
-    return this.bounds;
-  } */
 }
