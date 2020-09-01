@@ -6,20 +6,22 @@
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
   type Bounds = import('@/settings').Settings.Bounds;
-  import { clone, min, max } from '@/utils/Array';
+
+  import { cloneBounds, max } from '@/utils/Array';
   import { black } from '@scss/variables.scss';
+  import Level0 from '@/environment/Level0';
   import Player from '@components/Player';
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
-  let maxCoords: Array<number>;
-  let minCoords: Array<number>;
+  const minCoords = Level0.minCoords.map(coord => Math.abs(coord) + PADDING);
+  const maxCoords: Level0.maxCoords;
+  const bounds = Level0.bounds;
 
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 
-  export let bounds: Bounds;
   export let scale: number;
   export let zoom: number;
 
@@ -28,19 +30,16 @@
   const PADDING = 1;
 
   function getNormalizedBounds (): Bounds {
-    const scaleMapBounds = (coord: Array<number>): Array<number> => [coord[0] * scale, coord[1] * scale];
-    const cBounds = clone(bounds).map(bound => scaleMapBounds(bound));
+    const scaleBounds = (coord: Array<number>): Array<number> => [coord[0] * scale, coord[1] * scale];
+    const cBounds = cloneBounds(bounds).map(bound => scaleBounds(bound));
 
     for (let b = 0; b < cBounds.length; b++) {
       cBounds[b][0] += scale * minCoords[0];
       cBounds[b][1] += scale * minCoords[1];
     }
 
-    const X = cBounds.map((coords: Array<number>) => coords[0]);
-    const Z = cBounds.map((coords: Array<number>) => coords[1]);
-
-    map.height = max(Z) + PADDING * 2;
-    map.width = max(X) + PADDING * 2;
+    map.height = max(cBounds.map((coords: Array<number>) => coords[1])) + PADDING * 2;
+    map.width = max(cBounds.map((coords: Array<number>) => coords[0])) + PADDING * 2;
 
     return cBounds;
   }
@@ -70,18 +69,6 @@
     context.closePath();
     context.stroke();
   }
-
-  (function (): void {
-    minCoords = [
-      Math.abs(min(bounds.map((coords: Array<number>) => coords[0]))) + PADDING,
-      Math.abs(min(bounds.map((coords: Array<number>) => coords[1]))) + PADDING
-    ];
-
-    maxCoords = [
-      max(bounds.map((coords: Array<number>) => coords[0])),
-      max(bounds.map((coords: Array<number>) => coords[1]))
-    ];
-  })();
 
   $: rotation = playerRotation;
 

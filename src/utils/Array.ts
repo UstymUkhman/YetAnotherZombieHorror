@@ -1,4 +1,6 @@
-export const clone = (a: Array<Array<number>>): Array<Array<number>> => JSON.parse(JSON.stringify(a));
+type Bounds = import('@/settings').Settings.Bounds;
+
+export const cloneBounds = (bounds: Bounds): Bounds => JSON.parse(JSON.stringify(bounds));
 
 export const min = (a: Array<number>): number => {
   let l = a.length, m = Infinity;

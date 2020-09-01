@@ -1,14 +1,10 @@
 <main bind:this={main}>
-  {#if Settings.APP}
-    <Close />
-  {/if}
+  {#if Settings.APP}<Close />{/if}
 
   <Map
     playerRotation={location.rotation.y}
     playerPosition={location.position}
-    bounds={Settings.Level0.bounds}
-    scale={scale}
-    zoom={1}
+    scale={scale} zoom={1}
   />
 </main>
 

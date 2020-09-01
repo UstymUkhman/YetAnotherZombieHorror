@@ -1,9 +1,9 @@
-import { clone, min, max } from '@/utils/Array';
+import { cloneBounds, min, max } from '@/utils/Array';
 import Level0 from '@/settings/level0.json';
 
 describe('Array', () => {
-  test('clone', () => {
-    expect(clone(Level0.bounds)).toStrictEqual(Level0.bounds);
+  test('cloneBounds', () => {
+    expect(cloneBounds(Level0.bounds)).toStrictEqual(Level0.bounds);
   });
 
   test('min', () => {

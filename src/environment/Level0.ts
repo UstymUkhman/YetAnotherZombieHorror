@@ -2,13 +2,14 @@
 /// <reference path="../global.d.ts" />
 
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
-type Stats = typeof import('three/examples/js/libs/stats.min');
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
+type Coords = Readonly<Array<number>>;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
+import { min, max } from '@/utils/Array';
 import { Fog } from '@three/scenes/Fog';
 
 import { Color } from '@/utils/Color';
@@ -18,18 +19,9 @@ import Music from '@/managers/Music';
 export default class Level0 extends GameLevel {
   private music = new Music(Settings.Level0.music);
   private controls?: OrbitControls;
-  private stats?: Stats;
 
   public constructor () {
     super();
-
-    if (Settings.DEBUG) {
-      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
-        this.stats = new Stats.default();
-        this.stats.showPanel(0);
-        document.body.appendChild(this.stats.domElement);
-      });
-    }
 
     if (Settings.freeCamera) {
       import(/* webpackChunkName: "orbit-controls" */ '@controls/OrbitControls').then((Controls) => {
@@ -70,12 +62,8 @@ export default class Level0 extends GameLevel {
   }
 
   public render (): void {
-    this.stats?.begin();
-
-    super.render();
     this.controls?.update();
-
-    this.stats?.end();
+    super.render();
   }
 
   public destroy (): void {
@@ -83,11 +71,42 @@ export default class Level0 extends GameLevel {
     super.destroy();
 
     if (Settings.DEBUG) {
-      document.body.removeChild(this.stats.domElement);
       this.controls?.dispose();
-
       delete this.controls;
-      delete this.stats;
     }
+  }
+
+  public static get minCoords (): Array<number> {
+    return [
+      min(Level0.bounds.map((coords: Coords) => coords[0])),
+      min(Level0.bounds.map((coords: Coords) => coords[1]))
+    ];
+  }
+
+  public static get maxCoords (): Array<number> {
+    return [
+      max(Level0.bounds.map((coords: Coords) => coords[0])),
+      max(Level0.bounds.map((coords: Coords) => coords[1]))
+    ];
+  }
+
+  public static get bounds (): Settings.Bounds {
+    return Settings.Level0.bounds;
+  }
+
+  public static get position (): Vector3 {
+    return Settings.Level0.position as Vector3;
+  }
+
+  public static get scale (): Vector3 {
+    return Settings.Level0.scale as Vector3;
+  }
+
+  public static get height (): number {
+    return Settings.Level0.height;
+  }
+
+  public static get depth (): number {
+    return Settings.Level0.depth;
   }
 }

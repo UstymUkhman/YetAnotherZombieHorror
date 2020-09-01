@@ -1,6 +1,8 @@
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
-import { GameEvents, GameEvent } from '@/managers/GameEvents';
+type Stats = typeof import('three/examples/js/libs/stats.min');
 type Object3D = import('@three/core/Object3D').Object3D;
+
+import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Player, Location } from '@/characters/Player';
 import { Assets } from '@/managers/AssetsLoader';
 
@@ -15,7 +17,6 @@ import Pistol from '@/weapons/Pistol';
 export default class GameLoop {
   private readonly loader = new Assets.Loader();
   private enemyAssets?: EnemyAssets;
-  private raf?: number | void;
 
   private physics = new Physics();
   private pistol = new Pistol();
@@ -23,19 +24,24 @@ export default class GameLoop {
   private level = new Level0();
   private clock = new Clock();
 
+  private raf?: number | void;
   private paused = true;
+  private stats?: Stats;
 
   public constructor () {
     this.addEventListeners();
     this.loadCharacters().then(assets => this.enemyAssets = assets);
 
-    this.physics.addGround(Settings.Level0.bounds);
+    this.physics.addBounds(Level0.height, Level0.position.y, Level0.bounds);
+    this.physics.addGround(Level0.minCoords, Level0.maxCoords);
 
-    this.physics.addBounds(
-      Settings.Level0.height,
-      Settings.Level0.position.y,
-      Settings.Level0.bounds
-    );
+    if (Settings.DEBUG) {
+      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
+        this.stats = new Stats.default();
+        this.stats.showPanel(0);
+        document.body.appendChild(this.stats.domElement);
+      });
+    }
   }
 
   private async loadCharacters (): Promise<EnemyAssets> {
@@ -76,21 +82,35 @@ export default class GameLoop {
   }
 
   private update (): void {
+    this.stats?.begin();
+
     this.raf = requestAnimationFrame(this.update.bind(this));
     const delta = this.clock.getDelta();
 
     this.player.update(delta);
     this.physics.update();
     this.level.render();
+
+    this.stats?.end();
   }
 
   public destroy (): void {
     cancelAnimationFrame(this.raf as number);
+    this.physics.destroy();
     this.level.destroy();
+
+    if (Settings.DEBUG) {
+      document.body.removeChild(this.stats.domElement);
+      delete this.stats;
+    }
   }
 
   public get playerLocation (): Location {
     return this.player.location;
+  }
+
+  public get scene (): HTMLCanvasElement {
+    return this.level.canvas;
   }
 
   public set pause (pause: boolean) {
@@ -103,9 +123,5 @@ export default class GameLoop {
 
   public get pause (): boolean {
     return this.paused;
-  }
-
-  public get scene (): HTMLCanvasElement {
-    return this.level.canvas;
   }
 }

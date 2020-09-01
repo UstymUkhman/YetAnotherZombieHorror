@@ -1,9 +1,10 @@
-import { BoxGeometry } from '@three/geometries/BoxGeometry';
 type BoundsSettings = import('@/settings').Settings.Bounds;
+
+import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { ColliderMaterial } from '@/utils/Material';
 import { GameEvents } from '@/managers/GameEvents';
-
 import { Vector3 } from '@three/math/Vector3';
+
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
 import APE from 'APE/build/APE.Rigid.min';
@@ -70,27 +71,17 @@ export default class Physics {
     }
   }
 
-  public addGround (bounds: BoundsSettings): void {
-    let minX = Infinity, minZ = Infinity;
-    let maxX = -Infinity, maxZ = -Infinity;
-
-    for (const b in bounds) {
-      const x = bounds[b][0];
-      const z = bounds[b][1];
-
-      if (x < minX) minX = x;
-      else if (x > maxX) maxX = x;
-
-      if (z < minZ) minZ = z;
-      else if (z > maxZ) maxZ = z;
-    }
-
-    this.sizeVector.set(Math.abs(minX - maxX), 0.01, Math.abs(minZ - maxZ));
-    this.positionVector.set((minX + maxX) / 2, 0, (minZ + maxZ) / 2);
+  public addGround (min: Array<number>, max: Array<number>): void {
+    this.sizeVector.set(Math.abs(min[0] - max[0]), 0.01, Math.abs(min[1] - max[1]));
+    this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
     this.addStaticBox();
   }
 
   public update (): void {
     APE.update();
+  }
+
+  public destroy (): void {
+    APE.destroy();
   }
 }
