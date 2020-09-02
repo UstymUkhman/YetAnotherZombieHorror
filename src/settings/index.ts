@@ -1,9 +1,8 @@
 import Level0Data from '@/settings/level0.json';
+import PistolData from '@/settings/pistol.json';
 
 import PlayerData from '@/settings/player.json';
 import EnemyData from '@/settings/enemy.json';
-
-import PistolData from '@/settings/pistol.json';
 
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';

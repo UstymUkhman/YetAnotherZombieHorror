@@ -1,48 +1,60 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type AudioListener = import('@three/audio/AudioListener').AudioListener;
+
 type CharacterAnimations = import('@/settings').Settings.Animations;
 type CharacterAnimation = import('@/settings').Settings.Animation;
 type CharacterSettings = import('@/settings').Settings.Character;
-
-import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { AnimationMixer } from '@three/animation/AnimationMixer';
-import { PositionalAudio } from '@three/audio/PositionalAudio';
 // type CharacterSounds = import('@/settings').Settings.Sounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
-type Mesh = import('@three/objects/Mesh').Mesh;
 
+import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { AnimationMixer } from '@three/animation/AnimationMixer';
+import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { BoxGeometry } from '@three/geometries/BoxGeometry';
+
+import { ColliderMaterial } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
+import { Group } from '@three/objects/Group';
 import { camelCase } from '@/utils/String';
+import { Mesh } from '@three/objects/Mesh';
 // import { clamp } from '@/utils/number';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
-  private settings: CharacterSettings;
   protected animations: Actions = {};
-
+  protected object = new Group();
   // private sounds: CharacterSounds;
+
   private mixer?: AnimationMixer;
   private speed = { x: 0, z: 0 };
   private model?: Assets.GLTF;
+  private capsule: Mesh;
 
   private running = false;
   protected alive = true;
   private moving = false;
   private health = 100;
 
-  public constructor (settings: CharacterSettings) {
-    this.settings = settings;
+  public constructor (private settings: CharacterSettings) {
+    this.capsule = new Mesh(
+      new BoxGeometry(0.5, settings.scale.y, 0.5),
+      ColliderMaterial
+    );
   }
 
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
+    const offsetY = this.settings.scale.y / -2;
 
-    character.scene.position.copy(this.settings.position as Vector3);
-    character.scene.scale.copy(this.settings.scale as Vector3);
+    this.object.position.copy(this.settings.position as Vector3);
+    this.object.scale.copy(this.settings.scale as Vector3);
+    character.scene.position.set(0, offsetY, 0);
 
     this.setCharacterMaterial(character.scene);
+    this.capsule.add(character.scene);
+    this.object.add(this.capsule);
 
     if (character.animations) {
       this.createAnimations(character);
@@ -149,5 +161,9 @@ export default class Character {
 
     this.health = 100;
     this.alive = true;
+  }
+
+  public get collider (): Mesh {
+    return this.capsule;
   }
 }

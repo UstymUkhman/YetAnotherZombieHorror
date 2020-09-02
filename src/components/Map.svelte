@@ -16,7 +16,7 @@
   export let playerRotation: number;
 
   const minCoords = Level0.minCoords.map(coord => Math.abs(coord) + PADDING);
-  const maxCoords: Level0.maxCoords;
+  const maxCoords = Level0.maxCoords;
   const bounds = Level0.bounds;
 
   let canvasTransform: string;

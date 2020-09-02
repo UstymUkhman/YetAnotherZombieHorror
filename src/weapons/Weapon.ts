@@ -14,7 +14,6 @@ import { FrontSide } from '@three/constants';
 export default class Weapon {
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
-  private readonly settings: WeaponSettings;
 
   // private readonly spread: Vector2;
   // private readonly recoil: Vector2;
@@ -25,13 +24,11 @@ export default class Weapon {
   private readonly near = 4.5;
   private aiming = false;
 
-  constructor (settings: WeaponSettings) {
+  constructor (private readonly settings: WeaponSettings) {
     // this.spread = settings.spread as Vector2;
     // this.recoil = settings.recoil as Vector2;
 
     this.raycaster.near = this.near;
-    this.settings = settings;
-
     this.load();
   }
 

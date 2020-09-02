@@ -77,7 +77,12 @@ export default class Physics {
     this.addStaticBox();
   }
 
+  public addCollider (collider: Mesh): void {
+    APE.Dynamic.addCapsule(collider, 100);
+  }
+
   public update (): void {
+    APE.Dynamic.update();
     APE.update();
   }
 

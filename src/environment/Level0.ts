@@ -2,7 +2,6 @@
 /// <reference path="../global.d.ts" />
 
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
-type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Coords = Readonly<Array<number>>;
@@ -57,7 +56,7 @@ export default class Level0 extends GameLevel {
     this.scene.add(new AmbientLight(Color.WHITE));
   }
 
-  public addObject (model: GLTF | Object3D): void {
+  public addObject (model: Object3D): void {
     this.scene.add(model);
   }
 

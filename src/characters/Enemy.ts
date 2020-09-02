@@ -18,7 +18,7 @@ export default class Enemy extends Character {
   private lastAnimation: Settings.EnemyAnimations = 'Idle';
   private currentAnimation!: AnimationAction;
 
-  private colliders: Array<Mesh> = [];
+  private hitBoxes: Array<Mesh> = [];
   private character!: GLTF;
   private head?: Object3D;
   private id: number;
@@ -62,49 +62,49 @@ export default class Enemy extends Character {
     super.setAnimation(this.lastAnimation);
 
     this.currentAnimation.play();
-    this.createColliders();
+    this.createHitBoxes();
   }
 
-  private createColliders (): void {
-    this.addHeadCollider();
-    this.addBodyCollider();
-    this.addLegsCollider();
+  private createHitBoxes (): void {
+    this.addHeadHitBox();
+    this.addBodyHitBox();
+    this.addLegsHitBox();
   }
 
-  private addHeadCollider (): void {
+  private addHeadHitBox (): void {
     this.head = this.character.getObjectByName('Head') as Object3D;
 
-    const headCollider = new Mesh(
+    const headHitBox = new Mesh(
       new BoxGeometry(18, 20, 20),
       HitBoxMaterial.clone()
     );
 
-    headCollider.position.y += 5;
-    headCollider.position.z += 3;
+    headHitBox.position.y += 5;
+    headHitBox.position.z += 3;
 
-    headCollider.userData.enemy = this.id;
-    this.colliders.push(headCollider);
-    this.head.add(headCollider);
+    headHitBox.userData.enemy = this.id;
+    this.hitBoxes.push(headHitBox);
+    this.head.add(headHitBox);
   }
 
-  private addBodyCollider (): void {
+  private addBodyHitBox (): void {
     const spine = this.character.getObjectByName('Spine') as Object3D;
 
-    const bodyCollider = new Mesh(
+    const bodyHitBox = new Mesh(
       CapsuleGeometry(20, 50),
       HitBoxMaterial.clone()
     );
 
-    bodyCollider.rotation.x -= Math.PI / 2;
-    bodyCollider.position.y += 15;
-    bodyCollider.position.z += 5;
+    bodyHitBox.rotation.x -= Math.PI / 2;
+    bodyHitBox.position.y += 15;
+    bodyHitBox.position.z += 5;
 
-    bodyCollider.userData.enemy = this.id;
-    this.colliders.push(bodyCollider);
-    spine.add(bodyCollider);
+    bodyHitBox.userData.enemy = this.id;
+    this.hitBoxes.push(bodyHitBox);
+    spine.add(bodyHitBox);
   }
 
-  private addLegsCollider (): void {
+  private addLegsHitBox (): void {
     const rightUpLeg = this.character.getObjectByName('RightUpLeg') as Object3D;
     const leftUpLeg = this.character.getObjectByName('LeftUpLeg') as Object3D;
     const rightLeg = this.character.getObjectByName('RightLeg') as Object3D;
@@ -127,27 +127,27 @@ export default class Enemy extends Character {
     lowerLeg.position.z -= 2.5;
     upperLeg.position.y -= 20;
 
-    const rightUpLegCollider = upperLeg.clone();
-    const leftUpLegCollider = upperLeg.clone();
-    const rightLegCollider = lowerLeg.clone();
-    const leftLegCollider = lowerLeg.clone();
+    const rightUpLegHitBox = upperLeg.clone();
+    const leftUpLegHitBox = upperLeg.clone();
+    const rightLegHitBox = lowerLeg.clone();
+    const leftLegHitBox = lowerLeg.clone();
 
-    rightUpLegCollider.position.x += 1;
-    leftUpLegCollider.position.x -= 1;
+    rightUpLegHitBox.position.x += 1;
+    leftUpLegHitBox.position.x -= 1;
 
-    this.colliders.push(rightUpLegCollider);
-    this.colliders.push(leftUpLegCollider);
-    this.colliders.push(rightLegCollider);
-    this.colliders.push(leftLegCollider);
+    this.hitBoxes.push(rightUpLegHitBox);
+    this.hitBoxes.push(leftUpLegHitBox);
+    this.hitBoxes.push(rightLegHitBox);
+    this.hitBoxes.push(leftLegHitBox);
 
-    rightUpLeg.add(rightUpLegCollider);
-    leftUpLeg.add(leftUpLegCollider);
-    rightLeg.add(rightLegCollider);
-    leftLeg.add(leftLegCollider);
+    rightUpLeg.add(rightUpLegHitBox);
+    leftUpLeg.add(leftUpLegHitBox);
+    rightLeg.add(rightLegHitBox);
+    leftLeg.add(leftLegHitBox);
   }
 
   public addSounds (sounds: Array<AudioBuffer>, listener: AudioListener): void {
-    sounds.forEach(sound => this.character.add(super.createAudio(sound, listener)));
+    sounds.forEach(sound => this.object.add(super.createAudio(sound, listener)));
   }
 
   public update (delta: number): void {

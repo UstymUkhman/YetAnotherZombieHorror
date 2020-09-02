@@ -1,6 +1,6 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
+type Object3D = import('@three/core/Object3D').Object3D;
 
-import { Object3D } from '@three/core/Object3D';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { Euler } from '@three/math/Euler';
@@ -25,14 +25,13 @@ export class Player extends Character {
 
   private currentAnimation?: AnimationAction;
   private lastAnimation = 'pistolIdle';
-  private character = new Object3D();
 
   private hand?: Object3D;
   private weapon?: Weapon;
 
   public constructor () {
     super(Settings.Player);
-    Camera.setTo(this.character);
+    Camera.setTo(this.object);
   }
 
   public async loadCharacter (): Promise<Object3D> {
@@ -41,17 +40,16 @@ export class Player extends Character {
     this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
 
-    this.currentPosition.copy(this.character.position);
-    this.currentRotation.copy(this.character.rotation);
+    this.currentPosition.copy(this.object.position);
+    this.currentRotation.copy(this.object.rotation);
 
     this.currentAnimation.play();
-    this.character.add(model);
-    return this.character;
+    return this.object;
   }
 
   public addSounds (sounds: Array<AudioBuffer>): void {
     const listener = Camera.listener;
-    sounds.forEach(sound => this.character.add(super.createAudio(sound, listener)));
+    sounds.forEach(sound => this.object.add(super.createAudio(sound, listener)));
   }
 
   public setPistol (pistol: Pistol): void {

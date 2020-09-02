@@ -49,6 +49,8 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
+    this.physics.addCollider(this.player.collider);
+
     this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);
     this.level.addObject(character);
@@ -78,7 +80,7 @@ export default class GameLoop {
   }
 
   private addGameObject (event: GameEvent): void {
-    this.level.addObject(event.data as Assets.GLTF | Object3D);
+    this.level.addObject(event.data as Object3D);
   }
 
   private update (): void {
