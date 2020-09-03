@@ -16,7 +16,6 @@ import { BoxGeometry } from '@three/geometries/BoxGeometry';
 
 import { ColliderMaterial } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
-import { Group } from '@three/objects/Group';
 import { camelCase } from '@/utils/String';
 import { Mesh } from '@three/objects/Mesh';
 // import { clamp } from '@/utils/number';
@@ -24,13 +23,12 @@ import { Mesh } from '@three/objects/Mesh';
 export default class Character {
   private readonly loader = new Assets.Loader();
   protected animations: Actions = {};
-  protected object = new Group();
   // private sounds: CharacterSounds;
 
   private mixer?: AnimationMixer;
   private speed = { x: 0, z: 0 };
   private model?: Assets.GLTF;
-  private capsule: Mesh;
+  protected object: Mesh;
 
   private running = false;
   protected alive = true;
@@ -39,7 +37,7 @@ export default class Character {
 
   public constructor (private settings: CharacterSettings) {
     const { x, y, z } = settings.collider;
-    this.capsule = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
+    this.object = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
   }
 
   public async load (): Promise<Assets.GLTFModel> {
@@ -50,8 +48,7 @@ export default class Character {
     this.object.scale.copy(this.settings.scale as Vector3);
 
     this.setCharacterMaterial(character.scene);
-    this.capsule.add(character.scene);
-    this.object.add(this.capsule);
+    this.object.add(character.scene);
 
     if (character.animations) {
       this.createAnimations(character);
@@ -161,6 +158,6 @@ export default class Character {
   }
 
   public get collider (): Mesh {
-    return this.capsule;
+    return this.object;
   }
 }

@@ -33,7 +33,7 @@ class Camera {
   }
 
   private setCamera (): void {
-    this.camera.position.set(-1.1, 2.75, -2.5);
+    this.camera.position.set(-0.625, 0.625, -1.5);
     this.camera.rotation.set(0, Math.PI, 0);
     this.camera.setFocalLength(25.0);
   }

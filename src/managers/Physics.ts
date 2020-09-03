@@ -1,7 +1,7 @@
 type BoundsSettings = import('@/settings').Settings.Bounds;
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
-import { TransparentMaterial } from '@/utils/Material';
+import { ColliderMaterial } from '@/utils/Material';
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector3 } from '@three/math/Vector3';
 
@@ -21,11 +21,7 @@ export default class Physics {
 
   private addStaticBox (): void {
     const { x, y, z } = this.sizeVector;
-
-    const box = new Mesh(
-      new BoxGeometry(x, y, z),
-      TransparentMaterial
-    );
+    const box = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
 
     box.position.copy(this.positionVector);
     box.rotation.copy(this.rotationVector);
@@ -46,8 +42,8 @@ export default class Physics {
       const x1 = x0 - bounds[b + 1][0];
       const z1 = z0 - bounds[b + 1][1];
 
-      const px = (x1 / -2 + x0) * 0.56;
-      const pz = (z1 / -2 + z0) * 0.56;
+      const px = x1 / -2 + x0;
+      const pz = z1 / -2 + z0;
 
       let w = Math.abs(x1);
       let d = Math.abs(z1);
@@ -64,8 +60,8 @@ export default class Physics {
         deeper ? d = length : w = length;
       }
 
-      w = (w < d ? 0.01 : w) * 0.56;
-      d = (d < w ? 0.01 : d) * 0.56;
+      w = w < d ? 0.01 : w;
+      d = d < w ? 0.01 : d;
 
       this.positionVector.set(px, py, pz);
       this.sizeVector.set(w, height, d);
@@ -74,14 +70,8 @@ export default class Physics {
   }
 
   public addGround (min: Array<number>, max: Array<number>): void {
-    const sx = Math.abs(min[0] - max[0]) * 0.56;
-    const sz = Math.abs(min[1] - max[1]) * 0.56;
-
-    const px = (min[0] + max[0]) / 2 * 0.56;
-    const pz = (min[1] + max[1]) / 2 * 0.56;
-
-    this.positionVector.set(px, 0, pz);
-    this.sizeVector.set(sx, 0.01, sz);
+    this.sizeVector.set(Math.abs(min[0] - max[0]), 0.01, Math.abs(min[1] - max[1]));
+    this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
     this.addStaticBox();
   }
 

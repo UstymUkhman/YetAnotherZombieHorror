@@ -38,9 +38,9 @@ describe('Camera', () => {
 
   test('position', () => {
     expect(Camera.position).toBeInstanceOf(Vector3);
-    expect(Camera.position.x).toStrictEqual(-1.1);
-    expect(Camera.position.y).toStrictEqual(2.75);
-    expect(Camera.position.z).toStrictEqual(-2.5);
+    expect(Camera.position.x).toStrictEqual(-0.625);
+    expect(Camera.position.y).toStrictEqual(0.625);
+    expect(Camera.position.z).toStrictEqual(-1.5);
   });
 
   test('rotation', () => {
