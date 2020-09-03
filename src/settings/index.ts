@@ -52,18 +52,24 @@ export namespace Settings {
 
   export const Player = deepFreeze({
     position: new Vector3(...PlayerData.position),
-    scale: new Vector3(...PlayerData.scale),
-    animations:  PlayerData.animations,
+    collider: new Vector3(...PlayerData.collider),
 
+    offset: new Vector3(...PlayerData.offset),
+    scale: new Vector3(...PlayerData.scale),
+
+    animations:  PlayerData.animations,
     sounds: PlayerData.sounds,
     model: PlayerData.model
   });
 
   export const Enemy = deepFreeze({
     position: new Vector3(...EnemyData.position),
-    scale: new Vector3(...EnemyData.scale),
-    animations:  EnemyData.animations,
+    collider: new Vector3(...EnemyData.collider),
 
+    offset: new Vector3(...EnemyData.offset),
+    scale: new Vector3(...EnemyData.scale),
+
+    animations:  EnemyData.animations,
     sounds: EnemyData.sounds,
     model: EnemyData.model
   });
@@ -71,6 +77,7 @@ export namespace Settings {
   export const Pistol = deepFreeze({
     magazine: PistolData.magazine < 0 ? Infinity : PistolData.magazine,
     ammo: PistolData.ammo < 0 ? Infinity : PistolData.ammo,
+
     position: new Vector3(...PistolData.position),
     rotation: new Vector3(...PistolData.rotation),
 

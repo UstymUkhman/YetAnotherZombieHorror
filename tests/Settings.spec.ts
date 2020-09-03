@@ -25,12 +25,14 @@ describe('Settings', () => {
   });
 
   test('Level0', () => {
-    const levelScale = new Vector3(...Level0.scale);
     const levelPosition = new Vector3(...Level0.position);
+    const levelScale = new Vector3(...Level0.scale);
 
     expect(Settings.Level0.model).toStrictEqual('level0.glb');
     expect(Settings.Level0.music).toStrictEqual('level0.mp3');
+
     expect(Settings.Level0.skybox).toStrictEqual('level0');
+
     expect(Settings.Level0.height).toStrictEqual(10);
     expect(Settings.Level0.depth).toStrictEqual(100);
 
@@ -48,17 +50,27 @@ describe('Settings', () => {
   });
 
   test('Player', () => {
-    const playerScale = new Vector3(...Player.scale);
-    const playerPosition = new Vector3(...Player.position);
     const animationKeys = Object.keys(Settings.Player.animations);
+
+    const playerPosition = new Vector3(...Player.position);
+    const playerCollider = new Vector3(...Player.collider);
+
+    const playerOffset = new Vector3(...Player.offset);
+    const playerScale = new Vector3(...Player.scale);
 
     expect(Settings.Player.scale).toBeInstanceOf(Vector3);
     expect(Settings.Player.scale).toStrictEqual(playerScale);
 
     expect(Settings.Player.model).toStrictEqual('player.glb');
 
+    expect(Settings.Player.offset).toBeInstanceOf(Vector3);
+    expect(Settings.Player.offset).toStrictEqual(playerOffset);
+
     expect(Settings.Player.position).toBeInstanceOf(Vector3);
     expect(Settings.Player.position).toStrictEqual(playerPosition);
+
+    expect(Settings.Player.collider).toBeInstanceOf(Vector3);
+    expect(Settings.Player.collider).toStrictEqual(playerCollider);
 
     expect(Object.keys(Settings.Player.sounds).length).toBeGreaterThan(0);
     expect(animationKeys.length).toBeGreaterThan(0);
@@ -70,17 +82,27 @@ describe('Settings', () => {
   });
 
   test('Enemy', () => {
-    const enemyScale = new Vector3(...Enemy.scale);
-    const enemyPosition = new Vector3(...Enemy.position);
     const animationKeys = Object.keys(Settings.Enemy.animations);
+
+    const enemyPosition = new Vector3(...Enemy.position);
+    const enemyCollider = new Vector3(...Enemy.collider);
+
+    const enemyOffset = new Vector3(...Enemy.offset);
+    const enemyScale = new Vector3(...Enemy.scale);
 
     expect(Settings.Enemy.scale).toBeInstanceOf(Vector3);
     expect(Settings.Enemy.scale).toStrictEqual(enemyScale);
 
     expect(Settings.Enemy.model).toStrictEqual('enemy.glb');
 
+    expect(Settings.Enemy.offset).toBeInstanceOf(Vector3);
+    expect(Settings.Enemy.offset).toStrictEqual(enemyOffset);
+
     expect(Settings.Enemy.position).toBeInstanceOf(Vector3);
     expect(Settings.Enemy.position).toStrictEqual(enemyPosition);
+
+    expect(Settings.Enemy.collider).toBeInstanceOf(Vector3);
+    expect(Settings.Enemy.collider).toStrictEqual(enemyCollider);
 
     expect(Object.keys(Settings.Enemy.sounds).length).toBeGreaterThan(0);
     expect(animationKeys.length).toBeGreaterThan(0);
@@ -94,6 +116,7 @@ describe('Settings', () => {
   test('Pistol', () => {
     const pistolPosition = new Vector3(...Pistol.position);
     const pistolRotation = new Vector3(...Pistol.rotation);
+
     const pistolSpread = new Vector2(...Pistol.spread);
     const pistolRecoil = new Vector2(...Pistol.recoil);
     const pistolScale = new Vector3(...Pistol.scale);

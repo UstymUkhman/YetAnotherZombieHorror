@@ -38,19 +38,16 @@ export default class Character {
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
-    this.capsule = new Mesh(
-      new BoxGeometry(0.5, settings.scale.y, 0.5),
-      ColliderMaterial
-    );
+    const { x, y, z } = settings.collider;
+    this.capsule = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
   }
 
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
-    const offsetY = this.settings.scale.y / -2;
 
+    character.scene.position.copy(this.settings.offset as Vector3);
     this.object.position.copy(this.settings.position as Vector3);
     this.object.scale.copy(this.settings.scale as Vector3);
-    character.scene.position.set(0, offsetY, 0);
 
     this.setCharacterMaterial(character.scene);
     this.capsule.add(character.scene);
