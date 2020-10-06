@@ -45,24 +45,4 @@ describe('Level0', () => {
   test('bounds', () => {
     expect(Level0.bounds).toStrictEqual(Level0Data.bounds);
   });
-
-  test('position', () => {
-    expect(Level0.position.x).toStrictEqual(Level0Data.position[0]);
-    expect(Level0.position.y).toStrictEqual(Level0Data.position[1]);
-    expect(Level0.position.z).toStrictEqual(Level0Data.position[2]);
-  });
-
-  test('scale', () => {
-    expect(Level0.scale.x).toStrictEqual(Level0Data.scale[0]);
-    expect(Level0.scale.y).toStrictEqual(Level0Data.scale[1]);
-    expect(Level0.scale.z).toStrictEqual(Level0Data.scale[2]);
-  });
-
-  test('height', () => {
-    expect(Level0.height).toStrictEqual(Level0Data.height);
-  });
-
-  test('depth', () => {
-    expect(Level0.depth).toStrictEqual(Level0Data.depth);
-  });
 });

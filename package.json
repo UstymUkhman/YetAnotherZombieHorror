@@ -3,17 +3,24 @@
   "description": "Another Dumb Zombie Game",
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com>",
   "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game#readme",
-  "keywords": [
-    "Dumb",
-    "Zombie",
-    "Game",
-    "Ustym",
-    "Ukhman",
-    "Ustym Ukhman"
-  ],
   "main": "build/main.js",
   "version": "0.1.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game/issues",
+    "email": "ustym.ukhman@gmail.com"
+  },
+  "keywords": [
+    "game",
+    "webgl",
+    "zombie",
+    "threejs",
+    "zombie-survival-shooter"
+  ],
   "scripts": {
     "start:app": "webpack --env app && tsc --project app && yarn build:dev",
     "build:dev": "cross-env ENVIRONMENT=development electron build/main.js",
@@ -30,13 +37,6 @@
     "test:cover": "yarn test:jest --coverage",
     "build:web": "webpack --env build",
     "serve": "npx http-server"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game.git"
-  },
-  "bugs": {
-    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game/issues"
   },
   "dependencies": {
     "@types/animejs": "^3.1.2",

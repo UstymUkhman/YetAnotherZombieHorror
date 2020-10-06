@@ -9,6 +9,7 @@ type Coords = Readonly<Array<number>>;
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
 import { min, max } from '@/utils/Array';
+import Physics from '@/managers/Physics';
 import { Fog } from '@three/scenes/Fog';
 
 import { Color } from '@/utils/Color';
@@ -36,6 +37,7 @@ export default class Level0 extends GameLevel {
 
     this.camera.far = Settings.Level0.depth;
     this.createEnvironment();
+    this.createColliders();
     this.createLights();
   }
 
@@ -50,6 +52,13 @@ export default class Level0 extends GameLevel {
     if (!Settings.DEBUG) {
       this.scene.fog = new Fog(Color.GREY, 0.1, 100);
     }
+  }
+
+  private createColliders (): void {
+    const { height, position } = Settings.Level0;
+
+    Physics.addGround(Level0.minCoords, Level0.maxCoords);
+    Physics.addBounds(height, position.y, Level0.bounds);
   }
 
   private createLights (): void {
@@ -91,21 +100,5 @@ export default class Level0 extends GameLevel {
 
   public static get bounds (): Settings.Bounds {
     return Settings.Level0.bounds;
-  }
-
-  public static get position (): Vector3 {
-    return Settings.Level0.position as Vector3;
-  }
-
-  public static get scale (): Vector3 {
-    return Settings.Level0.scale as Vector3;
-  }
-
-  public static get height (): number {
-    return Settings.Level0.height;
-  }
-
-  public static get depth (): number {
-    return Settings.Level0.depth;
   }
 }

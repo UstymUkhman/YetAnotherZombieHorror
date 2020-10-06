@@ -10,7 +10,7 @@ import { Euler } from '@three/math/Euler';
 import APE from 'APE/build/APE.Rigid.min';
 import { PI } from '@/utils/Number';
 
-export default class Physics {
+class Physics {
   private readonly positionVector = new Vector3();
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
@@ -88,3 +88,5 @@ export default class Physics {
     APE.destroy();
   }
 }
+
+export default new Physics();

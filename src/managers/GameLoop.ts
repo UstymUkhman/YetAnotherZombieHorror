@@ -18,7 +18,6 @@ export default class GameLoop {
   private readonly loader = new Assets.Loader();
   private enemyAssets?: EnemyAssets;
 
-  private physics = new Physics();
   private pistol = new Pistol();
   private player = new Player();
   private level = new Level0();
@@ -31,9 +30,6 @@ export default class GameLoop {
   public constructor () {
     this.addEventListeners();
     this.loadCharacters().then(assets => this.enemyAssets = assets);
-
-    this.physics.addBounds(Level0.height, Level0.position.y, Level0.bounds);
-    this.physics.addGround(Level0.minCoords, Level0.maxCoords);
 
     if (Settings.DEBUG) {
       import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
@@ -49,11 +45,12 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
-    this.physics.addCollider(this.player.collider);
+    Physics.addCollider(this.player.collider);
 
     this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);
     this.level.addObject(character);
+
     return enemyAssets;
   }
 
@@ -90,16 +87,16 @@ export default class GameLoop {
     const delta = this.clock.getDelta();
 
     this.player.update(delta);
-    this.physics.update();
     this.level.render();
+    Physics.update();
 
     this.stats?.end();
   }
 
   public destroy (): void {
     cancelAnimationFrame(this.raf as number);
-    this.physics.destroy();
     this.level.destroy();
+    Physics.destroy();
 
     if (Settings.DEBUG) {
       document.body.removeChild(this.stats.domElement);

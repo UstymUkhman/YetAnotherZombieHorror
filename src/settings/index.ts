@@ -41,7 +41,9 @@ export namespace Settings {
     position: new Vector3(...Level0Data.position),
     scale: new Vector3(...Level0Data.scale),
 
+    sidewalk: Level0Data.sidewalk,
     bounds: Level0Data.bounds,
+
     skybox: Level0Data.skybox,
     model: Level0Data.model,
     music: Level0Data.music,
