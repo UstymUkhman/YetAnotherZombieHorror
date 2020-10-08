@@ -18,7 +18,6 @@ import { ColliderMaterial } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
 import { camelCase } from '@/utils/String';
 import { Mesh } from '@three/objects/Mesh';
-// import { clamp } from '@/utils/number';
 
 export default class Character {
   private readonly loader = new Assets.Loader();

@@ -37,7 +37,6 @@ export default class Level0 extends GameLevel {
 
     this.camera.far = Settings.Level0.depth;
     this.createEnvironment();
-    this.createColliders();
     this.createLights();
   }
 
@@ -54,15 +53,18 @@ export default class Level0 extends GameLevel {
     }
   }
 
-  private createColliders (): void {
-    const { height, position } = Settings.Level0;
-
-    Physics.addGround(Level0.minCoords, Level0.maxCoords);
-    Physics.addBounds(height, position.y, Level0.bounds);
-  }
-
   private createLights (): void {
     this.scene.add(new AmbientLight(Color.WHITE));
+  }
+
+  public createColliders (): void {
+    const { height, position } = Settings.Level0;
+
+    Physics.createGround(Level0.minCoords, Level0.maxCoords);
+    Physics.createBounds(Level0.bounds, height, position.y);
+
+    // Sidewalk:
+    // Physics.createBounds(Settings.Level0.sidewalk, 0.216, -0.322);
   }
 
   public addObject (model: Object3D): void {

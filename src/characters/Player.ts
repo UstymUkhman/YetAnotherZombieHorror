@@ -26,12 +26,15 @@ export class Player extends Character {
   private currentAnimation?: AnimationAction;
   private lastAnimation = 'pistolIdle';
 
-  private hand?: Object3D;
   private weapon?: Weapon;
+  private hand?: Object3D;
 
   public constructor () {
     super(Settings.Player);
-    Camera.setTo(this.object);
+
+    if (!Settings.freeCamera) {
+      Camera.setTo(this.object);
+    }
   }
 
   public async loadCharacter (): Promise<Object3D> {

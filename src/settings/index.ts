@@ -19,7 +19,9 @@ export namespace Settings {
 
   export type Sounds = { [key in Sound]: string };
   export type Sound = PlayerSounds | EnemySounds;
-  export type Bounds = typeof Level0.bounds;
+
+  export type Bound = Readonly<Array<number>>;
+  export type Bounds = Readonly<Array<Bound>>;
 
   type PlayerSounds = keyof typeof Player.sounds;
   type EnemySounds = keyof typeof Enemy.sounds;
@@ -27,9 +29,9 @@ export namespace Settings {
   const userAgent = navigator.userAgent.toLowerCase();
   const isApp = userAgent.includes('electron');
 
-  export const freeCamera = false;
-  export const colliders = false;
-  export const hitBoxes = false;
+  export const freeCamera = true; // false;
+  export const colliders = true; // false;
+  export const hitBoxes = true; // false;
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;

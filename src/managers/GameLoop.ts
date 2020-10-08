@@ -29,6 +29,7 @@ export default class GameLoop {
 
   public constructor () {
     this.addEventListeners();
+    this.level.createColliders();
     this.loadCharacters().then(assets => this.enemyAssets = assets);
 
     if (Settings.DEBUG) {
@@ -45,7 +46,7 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
-    Physics.addCollider(this.player.collider);
+    Physics.createCollider(this.player.collider);
 
     this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);

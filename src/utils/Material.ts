@@ -18,3 +18,11 @@ export const HitBoxMaterial = new MeshBasicMaterial({
   color: Color.RED,
   opacity: 0.33
 });
+
+export const NoMaterial = new MeshBasicMaterial({
+  color: Color.BLACK,
+  transparent: true,
+  depthWrite: false,
+  visible: false,
+  opacity: 0.0
+});
