@@ -14,6 +14,12 @@ import { PI } from '@/utils/Number';
 
 const MIN_SIZE = 0.01;
 
+type BoundsOptions = {
+  borders: Bounds,
+  height: number,
+  y: number,
+};
+
 class Physics {
   private readonly positionVector = new Vector3();
   private readonly rotationVector = new Euler();
@@ -21,6 +27,11 @@ class Physics {
 
   constructor () {
     APE.init();
+  }
+
+  private borderOverflow (border: Vector3) {
+    const { x, z } = this.positionVector;
+    return Math.abs(x) > Math.abs(border.x) && Math.abs(z) > Math.abs(border.z);
   }
 
   private createBound (current: Bound, next: Bound, h: number, y = 0): void {
@@ -74,11 +85,30 @@ class Physics {
     this.createStaticBox(NoMaterial);
   }
 
-  public createBounds (bounds: Bounds, height: number, y: number): void {
-    const area = bounds.concat([bounds[0]]);
+  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+    const borderPosition = new Vector3();
 
-    for (let b = 0; b < bounds.length; b++) {
-      this.createBound(area[b], area[b + 1], height, y);
+    const border = bounds.borders.concat([bounds.borders[0]]);
+    const walk = sidewalk.borders.concat([sidewalk.borders[0]]);
+
+    for (let b = 0; b < bounds.borders.length; b++) {
+      this.createBound(border[b], border[b + 1], bounds.height, bounds.y);
+      this.createStaticBox(ColliderMaterial);
+
+      borderPosition.copy(this.positionVector);
+      this.createBound(walk[b], walk[b + 1], sidewalk.height, sidewalk.y);
+
+      if (this.borderOverflow(borderPosition)) continue;
+
+      const distance = this.positionVector.distanceTo(borderPosition) / 2 * 0.9;
+      this.createStaticBox(ColliderMaterial);
+
+      this.positionVector.x -= (this.positionVector.x - borderPosition.x) / 2;
+      this.positionVector.z -= (this.positionVector.z - borderPosition.z) / 2;
+
+      if (this.sizeVector.z === MIN_SIZE) this.sizeVector.setZ(distance);
+      else if (this.sizeVector.x === MIN_SIZE) this.sizeVector.setX(distance);
+
       this.createStaticBox(ColliderMaterial);
     }
   }
