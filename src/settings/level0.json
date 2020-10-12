@@ -1,9 +1,12 @@
 {
-  "position": [0, 4.565, 13.5],
+  "position": [0, 4.98, 13.5],
+  "sidewalkHeight": 0.216,
   "scale": [75, 75, 75],
+
   "model": "level0.glb",
   "music": "level0.mp3",
   "skybox": "level0",
+
   "height": 10,
   "depth": 100,
 

@@ -58,13 +58,15 @@ export default class Level0 extends GameLevel {
   }
 
   public createColliders (): void {
-    const { height, position } = Settings.Level0;
+    const { position, height, sidewalkHeight } = Settings.Level0;
     Physics.createGround(Level0.minCoords, Level0.maxCoords);
 
     Physics.createBounds({
       borders: Level0.bounds, y: position.y, height
     }, {
-      borders: Settings.Level0.sidewalk, height: 0.216, y: -0.322
+      borders: Settings.Level0.sidewalk,
+      height: sidewalkHeight, // / Math.sin(Math.PI / 6);
+      y: sidewalkHeight / 2
     });
   }
 

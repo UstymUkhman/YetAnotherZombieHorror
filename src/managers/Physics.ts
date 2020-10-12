@@ -100,15 +100,20 @@ class Physics {
 
       if (this.borderOverflow(borderPosition)) continue;
 
-      const distance = this.positionVector.distanceTo(borderPosition) / 2 * 0.9;
+      // const { y } = this.rotationVector;
+      const horizontal = this.sizeVector.z === MIN_SIZE;
+      const distance = this.positionVector.distanceTo(borderPosition) / 2 * 0.95;
+
+      // if (horizontal) this.rotationVector.x = Math.PI / 6;
+      // else this.rotationVector.z = Math.PI / 6;
+
       this.createStaticBox(ColliderMaterial);
+      // this.rotationVector.set(0, y, 0);
 
       this.positionVector.x -= (this.positionVector.x - borderPosition.x) / 2;
       this.positionVector.z -= (this.positionVector.z - borderPosition.z) / 2;
 
-      if (this.sizeVector.z === MIN_SIZE) this.sizeVector.setZ(distance);
-      else if (this.sizeVector.x === MIN_SIZE) this.sizeVector.setX(distance);
-
+      horizontal ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
       this.createStaticBox(ColliderMaterial);
     }
   }

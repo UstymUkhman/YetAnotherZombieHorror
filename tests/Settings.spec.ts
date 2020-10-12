@@ -42,6 +42,7 @@ describe('Settings', () => {
     expect(Settings.Level0.position).toBeInstanceOf(Vector3);
     expect(Settings.Level0.position).toStrictEqual(levelPosition);
 
+    expect(Settings.Level0.sidewalkHeight).toBeLessThan(Settings.Level0.height);
     expect(Settings.Level0.bounds.length).toBeGreaterThan(2);
 
     Settings.Level0.bounds.forEach(

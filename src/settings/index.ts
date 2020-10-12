@@ -29,9 +29,9 @@ export namespace Settings {
   const userAgent = navigator.userAgent.toLowerCase();
   const isApp = userAgent.includes('electron');
 
-  export const freeCamera = true; // false;
-  export const colliders = true; // false;
-  export const hitBoxes = true; // false;
+  export const freeCamera = false;
+  export const colliders = false;
+  export const hitBoxes = false;
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
@@ -41,6 +41,7 @@ export namespace Settings {
 
   export const Level0 = deepFreeze({
     position: new Vector3(...Level0Data.position),
+    sidewalkHeight: Level0Data.sidewalkHeight,
     scale: new Vector3(...Level0Data.scale),
 
     sidewalk: Level0Data.sidewalk,
