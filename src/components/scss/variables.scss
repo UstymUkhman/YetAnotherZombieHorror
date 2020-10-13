@@ -29,12 +29,3 @@ $white             : rgb(255, 255, 255);
 $grey              : rgb(128, 128, 128);
 $red               : rgb(138, 7, 7);
 $black             : rgb(0, 0, 0);
-
-/* stylelint-disable property-no-unknown */
-:export {
-  black: $black;
-  white: $white;
-  grey: $grey;
-  red: $red;
-}
-/* stylelint-enable property-no-unknown */

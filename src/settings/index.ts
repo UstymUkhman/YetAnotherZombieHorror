@@ -9,6 +9,8 @@ import { Vector3 } from '@three/math/Vector3';
 import deepFreeze from '@/utils/deepFreeze';
 
 export namespace Settings {
+  const isApp = navigator.userAgent.toLowerCase().includes('electron');
+
   export type Animations = { [key in Animation]: Array<number> };
   export type PlayerAnimations = keyof typeof Player.animations;
   export type EnemyAnimations = keyof typeof Enemy.animations;
@@ -20,14 +22,11 @@ export namespace Settings {
   export type Sounds = { [key in Sound]: string };
   export type Sound = PlayerSounds | EnemySounds;
 
-  export type Bound = Readonly<Array<number>>;
-  export type Bounds = Readonly<Array<Bound>>;
-
   type PlayerSounds = keyof typeof Player.sounds;
   type EnemySounds = keyof typeof Enemy.sounds;
 
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isApp = userAgent.includes('electron');
+  export type Bounds = Readonly<Array<Bound>>;
+  export type Bound = Readonly<Array<number>>;
 
   export const freeCamera = false;
   export const colliders = false;

@@ -8,9 +8,9 @@
   type Bounds = import('@/settings').Settings.Bounds;
 
   import { cloneBounds, max } from '@/utils/Array';
-  import { black } from '@scss/variables.scss';
   import Level0 from '@/environment/Level0';
   import Player from '@components/Player';
+  import { Color } from '@/utils/Color';
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
@@ -25,6 +25,7 @@
   export let scale: number;
   export let zoom: number;
 
+  const { BLACK } = Color;
   let rotation: number;
   let offset: number;
   const PADDING = 1;
@@ -55,7 +56,7 @@
     const nBounds = getNormalizedBounds();
     const context = map.getContext('2d') as CanvasRenderingContext2D;
 
-    context.strokeStyle = black;
+    context.strokeStyle = BLACK;
     context.lineWidth = 1;
     context.beginPath();
 
