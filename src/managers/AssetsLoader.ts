@@ -5,6 +5,8 @@ import { TextureLoader } from '@three/loaders/TextureLoader';
 import { CubeTexture } from '@three/textures/CubeTexture';
 import { AudioLoader } from '@three/loaders/AudioLoader';
 
+import { GameEvents } from '@/managers/GameEvents';
+import { MathUtils } from '@three/math/MathUtils';
 import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
 
@@ -34,6 +36,8 @@ export namespace Assets {
     private readonly textureBasePath = './assets/images';
     private readonly modelBasePath = './assets/models/';
     private readonly audioBasePath = './assets/sounds/';
+
+    private readonly uuid = MathUtils.generateUUID();
 
     private readonly cubeTextures = [
       'px.png', 'nx.png',
@@ -96,22 +100,25 @@ export namespace Assets {
       });
     }
 
-    public onProgress = (url: string, loaded: number, total: number): string => {
-      const progress = (loaded * 100 / total).toFixed();
-      console.info(`Loading... ${progress}%`);
-      return progress;
+    public onProgress = (url: string, loaded: number, total: number): void => {
+      const progress = loaded * 100 / total;
+
+      GameEvents.dispatch('is:loading', {
+        uuid: this.uuid,
+        progress
+      });
+    }
+
+    public onStart = (): void => {
+      GameEvents.dispatch('start:loading', this.uuid);
     }
 
     public onError = (url: string): void => {
       console.error(`Error occurred loading ${url}.`);
     }
 
-    public onStart = (): void => {
-      console.info('Loading... 0%');
-    }
-
     public onLoad = (): void => {
-      console.info('Loaded!');
+      GameEvents.dispatch('end:loading', this.uuid);
     }
   }
 }

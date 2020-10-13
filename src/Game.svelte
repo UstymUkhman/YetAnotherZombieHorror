@@ -1,6 +1,8 @@
 <main bind:this={main}>
   {#if Settings.APP}<Close />{/if}
 
+  {#if loading}<Loader />{/if}
+
   <Map
     playerRotation={location.rotation.y}
     playerPosition={location.position}
@@ -11,13 +13,16 @@
 <script lang="typescript">
   import { onMount, onDestroy } from 'svelte';
   import Close from '@components/CloseButton';
+
   import GameLoop from '@/managers/GameLoop';
+  import Loader from '@components/Loader';
 
   import { Settings } from '@/settings';
   import Map from '@components/Map';
 
   let main: HTMLElement;
-  export let scale: number;
+  let loading = true;
+  let scale: number;
 
   const game = new GameLoop();
   const location = game.playerLocation;
