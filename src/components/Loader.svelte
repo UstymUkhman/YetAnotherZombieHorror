@@ -1,33 +1,47 @@
-<div>
-  <h1>{Math.floor(lastProgress * 100)}</h1>
-</div>
+<h1>{Math.floor(progress * 100)}</h1>
 
 <script lang="typescript">
   import { GameEvents, GameEvent } from '@/managers/GameEvents';
+  import { createEventDispatcher } from 'svelte';
   import { clamp } from '@/utils/Number';
 
+  const dispatch = createEventDispatcher();
   const assets = new Map();
-  let totalProgress = 0;
-  let lastProgress = 0;
-  let loadedAssets = 0;
+
+  type ProgressData = {
+    progress: number,
+    uuid: string
+  };
+
+  let progress = 0;
+  let loaded = 0;
+  let total = 0;
 
   function onStart (event: GameEvent): void {
     assets.set(event.data, 0);
   }
 
   function onProgress (event: GameEvent): void {
-    const { uuid, progress } = event.data;
+    const loading = event.data as ProgressData;
 
-    assets.set(uuid, progress);
-    assets.forEach(load => totalProgress += load);
+    assets.set(loading.uuid, loading.progress);
+    assets.forEach(load => total += load);
 
-    totalProgress /= assets.size * 100;
-    lastProgress = clamp(totalProgress, lastProgress, 0.99);
+    total /= assets.size * 100;
+    progress = clamp(total, progress, 0.99);
   }
 
   function onLoad (event: GameEvent): void {
     assets.set(event.data, 100);
-    loadedAssets++;
+
+    if (assets.size === ++loaded) {
+      GameEvents.remove('start:loading');
+      GameEvents.remove('end:loading');
+      GameEvents.remove('is:loading');
+
+      dispatch('loaded');
+      progress = 1;
+    }
   }
 
   GameEvents.add('start:loading', onStart);
@@ -38,29 +52,13 @@
 <style lang="scss">
 @import '@scss/variables';
 
-div {
+h1 {
+  text-align: center;
   position: absolute;
-  display: block;
 
-  height: 100%;
+  display: block;
   width: 100%;
 
-  padding: 0;
-  margin: 0;
-
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-
-  h1 {
-    text-align: center;
-    position: absolute;
-
-    display: block;
-    width: 100%;
-
-    top: 45%;
-  }
+  top: 45%;
 }
 </style>

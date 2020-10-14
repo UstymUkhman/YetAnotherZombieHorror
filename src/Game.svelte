@@ -1,7 +1,11 @@
 <main bind:this={main}>
   {#if Settings.APP}<Close />{/if}
 
-  {#if loading}<Loader />{/if}
+  {#if loading}
+    <div class="loading" transition:fade>
+      <Loader on:loaded={onLoad} />
+    </div>
+  {/if}
 
   <Map
     playerRotation={location.rotation.y}
@@ -15,6 +19,7 @@
   import Close from '@components/CloseButton';
 
   import GameLoop from '@/managers/GameLoop';
+  import { fade } from 'svelte/transition';
   import Loader from '@components/Loader';
 
   import { Settings } from '@/settings';
@@ -29,8 +34,12 @@
 
   window.addEventListener('resize', updateScale);
 
-  function updateScale () {
+  function updateScale (): void {
     scale = window.innerWidth / 175;
+  }
+
+  function onLoad (): void {
+    loading = false;
   }
 
   onMount(() => {
@@ -139,6 +148,22 @@ body > canvas {
   padding: 0;
   margin: 0;
 
+  left: 0;
+  top: 0;
+}
+
+div.loading {
+  position: absolute;
+  display: block;
+
+  height: 100%;
+  width: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  bottom: 0;
+  right: 0;
   left: 0;
   top: 0;
 }
