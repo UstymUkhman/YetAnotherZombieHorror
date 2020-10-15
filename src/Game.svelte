@@ -1,11 +1,9 @@
 <main bind:this={main}>
   {#if Settings.APP}<Close />{/if}
 
-  {#if loading}
-    <div class="loading" transition:fade>
-      <Loader on:loaded={onLoad} />
-    </div>
-  {/if}
+  {#if loading}<Loader on:loaded={onLoad} />{/if}
+
+  {#if !loading && game.pause}<Pause on:start={onStart} />{/if}
 
   <Map
     playerRotation={location.rotation.y}
@@ -19,8 +17,8 @@
   import Close from '@components/CloseButton';
 
   import GameLoop from '@/managers/GameLoop';
-  import { fade } from 'svelte/transition';
   import Loader from '@components/Loader';
+  import Pause from '@components/Pause';
 
   import { Settings } from '@/settings';
   import Map from '@components/Map';
@@ -38,13 +36,16 @@
     scale = window.innerWidth / 175;
   }
 
+  function onStart (): void {
+    game.pause = false;
+  }
+
   function onLoad (): void {
     loading = false;
   }
 
   onMount(() => {
     main.prepend(game.scene);
-    game.pause = false;
     updateScale();
   });
 
@@ -109,7 +110,8 @@ p,
 h5,
 h6,
 span,
-strong {
+strong,
+button {
   font-family: 'DrawingBlood', sans-serif;
   letter-spacing: 0.2rem;
   line-height: normal;
@@ -125,16 +127,20 @@ strong {
 h1 {
   text-transform: uppercase;
   letter-spacing: 0.5rem;
+
+  line-height: 5vw;
   font-size: 5vw;
 }
 
 h2 {
   letter-spacing: 0.4rem;
+  line-height: 4vw;
   font-size: 4vw;
 }
 
 h3 {
   letter-spacing: 0.3rem;
+  line-height: 3vw;
   font-size: 3vw;
 }
 
@@ -148,22 +154,6 @@ body > canvas {
   padding: 0;
   margin: 0;
 
-  left: 0;
-  top: 0;
-}
-
-div.loading {
-  position: absolute;
-  display: block;
-
-  height: 100%;
-  width: 100%;
-
-  padding: 0;
-  margin: 0;
-
-  bottom: 0;
-  right: 0;
   left: 0;
   top: 0;
 }

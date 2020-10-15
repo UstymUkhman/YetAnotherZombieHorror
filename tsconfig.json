@@ -42,8 +42,9 @@
     "src/**/*",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "src/**/*.svelte",
+    "tests/**/*.tsx",
+    "tests/**/*.ts"
   ],
 
   "exclude": [

@@ -78,7 +78,7 @@ describe('AssetsLoader', () => {
   test('onProgress', () => {
     const onProgress = jest.fn(loader.onProgress);
     onProgress('', 1, 1);
-    expect(onProgress).toHaveReturnedWith('100');
+    expect(onProgress).toHaveReturnedWith(undefined);
   });
 
   test('onError', () => {

@@ -1,6 +1,9 @@
 import { GameEvents } from '@/managers/GameEvents';
-import { Elastic /*, clamp */ } from '@/utils/number';
+import { Elastic /*, clamp */ } from '@/utils/Number';
 import { throttle } from 'lodash';
+
+const enum Direction { UP, RIGHT, DOWN, LEFT }
+type Directions = { [way in Direction]: number };
 
 class Input {
   private readonly mousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
@@ -15,10 +18,17 @@ class Input {
   private readonly keyDown = this.onKeyDown.bind(this);
   private readonly keyUp = this.onKeyUp.bind(this);
 
+  private moves: Directions = [0, 0, 0, 0];
+
   private rotationX = new Elastic(0);
   private rotationY = new Elastic(0);
 
+  private rightTimeout?: number;
+  private idleTimeout?: number;
+
   private paused = true;
+  private shift = false;
+  private move = '0000';
 
   constructor () {
     this.addEvents();
@@ -29,6 +39,19 @@ class Input {
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
     this.rotationX.speed = 15;
+
+    this.rightTimeout = undefined;
+    this.idleTimeout = undefined;
+    this.moves = [0, 0, 0, 0];
+
+    // this._mouseDown = false;
+    // this.mouseRight = null;
+    // this._keyDown = null;
+    // this.player = null;
+
+    this.paused = true;
+    this.shift = false;
+    this.move = '0000';
   }
 
   private onMousePress (event: MouseEvent): void {
@@ -61,11 +84,11 @@ class Input {
     event.preventDefault();
   }
 
-  private requestPointerLock (): void {
+  public requestPointerLock (): void {
     document.documentElement.requestPointerLock();
   }
 
-  private exitPointerLock (): void {
+  public exitPointerLock (): void {
     document.exitPointerLock();
   }
 
@@ -119,6 +142,32 @@ class Input {
 
     document.removeEventListener('keydown', this.keyDown, false);
     document.removeEventListener('keyup', this.keyUp, false);
+  }
+
+  public update (delta: number): void {
+    // if (!this.player.alive) return;
+
+    this.rotationX.update(delta);
+    this.rotationY.update(delta);
+
+    // this.player.character.rotation.y = this.rotationX.value;
+    // this.character.rotation.x = this.rotationY.value;
+    // this.camera.rotation.x = this.rotationY.value;
+
+    // this._mouseDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
+  }
+
+  public dispose (): void {
+    delete this.rightTimeout;
+    delete this.idleTimeout;
+
+    // delete this.mouseRight;
+    // delete this._mouseDown;
+    // delete this._keyDown;
+    // delete this.player;
+    // delete this.moves;
+
+    this.removeEvents();
   }
 
   private get pointerLocked (): boolean {

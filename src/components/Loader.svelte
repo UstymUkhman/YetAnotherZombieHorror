@@ -1,8 +1,15 @@
-<h1>{Math.floor(progress * 100)}</h1>
+<div class="screen" transition:fade>
+  <div class="progress">
+    <h1>Loading...</h1>
+    <h1>{Math.floor(progress * 100)}</h1>
+  </div>
+</div>
 
 <script lang="typescript">
   import { GameEvents, GameEvent } from '@/managers/GameEvents';
   import { createEventDispatcher } from 'svelte';
+
+  import { fade } from 'svelte/transition';
   import { clamp } from '@/utils/Number';
 
   const dispatch = createEventDispatcher();
@@ -35,11 +42,10 @@
     assets.set(event.data, 100);
 
     if (assets.size === ++loaded) {
+      setTimeout(dispatch('loaded'), 500);
       GameEvents.remove('start:loading');
       GameEvents.remove('end:loading');
       GameEvents.remove('is:loading');
-
-      dispatch('loaded');
       progress = 1;
     }
   }
@@ -52,13 +58,42 @@
 <style lang="scss">
 @import '@scss/variables';
 
-h1 {
-  text-align: center;
-  position: absolute;
+div.screen {
+  background-color: $black;
+  justify-content: center;
 
-  display: block;
+  align-items: center;
+  position: absolute;
+  display: flex;
+
+  height: 100%;
   width: 100%;
 
-  top: 45%;
+  padding: 0;
+  margin: 0;
+
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+
+  div.progress {
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+
+    position: absolute;
+    line-height: 5vw;
+    display: flex;
+
+    width: 36.6vw;
+    margin: auto;
+    height: 5vw;
+
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+  }
 }
 </style>

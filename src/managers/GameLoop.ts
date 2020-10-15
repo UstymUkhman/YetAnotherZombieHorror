@@ -13,6 +13,7 @@ import Physics from '@/managers/Physics';
 import Enemy from '@/characters/Enemy';
 import { Settings } from '@/settings';
 import Pistol from '@/weapons/Pistol';
+import Input from '@/managers/Input';
 
 export default class GameLoop {
   private readonly loader = new Assets.Loader();
@@ -119,6 +120,10 @@ export default class GameLoop {
     this.raf = this.paused
       ? cancelAnimationFrame(this.raf as number)
       : requestAnimationFrame(this.update.bind(this));
+
+    this.paused
+      ? !Settings.freeCamera && Input.exitPointerLock()
+      : !Settings.freeCamera && Input.requestPointerLock();
   }
 
   public get pause (): boolean {
