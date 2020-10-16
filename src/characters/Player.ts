@@ -191,8 +191,6 @@ export class Player extends Character {
   }
 
   public setPistol (pistol: Pistol): void {
-    if (!pistol.model) return;
-
     // this.weapon.targets = colliders;
     this.hand?.add(pistol.model);
     this.weapon = pistol;

@@ -1,15 +1,19 @@
 import Level0Data from '@/settings/level0.json';
 import PistolData from '@/settings/pistol.json';
+import RifleData from '@/settings/rifle.json';
 
 import PlayerData from '@/settings/player.json';
 import EnemyData from '@/settings/enemy.json';
 
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
+
 import deepFreeze from '@/utils/deepFreeze';
+import { Euler } from '@three/math/Euler';
 
 export namespace Settings {
   const isApp = navigator.userAgent.toLowerCase().includes('electron');
+  const getAmmo = (value: number) => value < 0 ? Infinity : value;
 
   export type Animations = { [key in Animation]: Array<number> };
   export type PlayerAnimations = keyof typeof Player.animations;
@@ -17,7 +21,7 @@ export namespace Settings {
 
   export type Animation = PlayerAnimations | EnemyAnimations;
   export type Character = typeof Player | typeof Enemy;
-  export type Weapon = typeof Pistol /* | typeof Rifle */;
+  export type Weapon = typeof Pistol | typeof Rifle;
 
   export type Sounds = { [key in Sound]: string };
   export type Sound = PlayerSounds | EnemySounds;
@@ -54,6 +58,41 @@ export namespace Settings {
     depth: Level0Data.depth
   });
 
+  export const Pistol = deepFreeze({
+    position: new Vector3(...PistolData.position),
+    rotation: new Euler(...PistolData.rotation),
+
+    spread: new Vector2(...PistolData.spread),
+    recoil: new Vector2(...PistolData.recoil),
+    scale: new Vector3(...PistolData.scale),
+
+    magazine: getAmmo(PistolData.magazine),
+    ammo: getAmmo(PistolData.ammo),
+
+    sounds: PistolData.sounds,
+    damage: PistolData.damage,
+    speed: PistolData.speed,
+    model: PistolData.model
+  });
+
+  export const Rifle = deepFreeze({
+    worldScale: new Vector3(...RifleData.worldScale),
+    position: new Vector3(...RifleData.position),
+    rotation: new Euler(...RifleData.rotation),
+
+    spread: new Vector2(...RifleData.spread),
+    recoil: new Vector2(...RifleData.recoil),
+    scale: new Vector3(...RifleData.scale),
+
+    magazine: getAmmo(RifleData.magazine),
+    ammo: getAmmo(RifleData.ammo),
+
+    sounds: RifleData.sounds,
+    damage: RifleData.damage,
+    speed: RifleData.speed,
+    model: RifleData.model
+  });
+
   export const Player = deepFreeze({
     position: new Vector3(...PlayerData.position),
     collider: new Vector3(...PlayerData.collider),
@@ -76,22 +115,5 @@ export namespace Settings {
     animations:  EnemyData.animations,
     sounds: EnemyData.sounds,
     model: EnemyData.model
-  });
-
-  export const Pistol = deepFreeze({
-    magazine: PistolData.magazine < 0 ? Infinity : PistolData.magazine,
-    ammo: PistolData.ammo < 0 ? Infinity : PistolData.ammo,
-
-    position: new Vector3(...PistolData.position),
-    rotation: new Vector3(...PistolData.rotation),
-
-    spread: new Vector2(...PistolData.spread),
-    recoil: new Vector2(...PistolData.recoil),
-    scale: new Vector3(...PistolData.scale),
-
-    sounds: PistolData.sounds,
-    damage: PistolData.damage,
-    speed: PistolData.speed,
-    model: PistolData.model
   });
 }

@@ -1,15 +1,17 @@
+import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { /* object, */ listener } from '@/managers/Camera';
+
 type WeaponSettings = import('@/settings').Settings.Weapon;
 // type Vector2 = import('@three/math/Vector2').Vector2;
 type Vector3 = import('@three/math/Vector3').Vector3;
-type Mesh = import('@three/objects/Mesh').Mesh;
 
-import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { PositionalAudio } from '@three/audio/PositionalAudio';
-
-import { /* object, */ listener } from '@/managers/Camera';
 import { Raycaster } from '@three/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
 import { FrontSide } from '@three/constants';
+
+type Mesh = import('@three/objects/Mesh').Mesh;
+type Euler = import('@three/math/Euler').Euler;
 
 export default class Weapon {
   private readonly loader = new Assets.Loader();
@@ -51,8 +53,8 @@ export default class Weapon {
       }
     });
 
-    this.weapon.rotation.setFromVector3(this.settings.rotation as Vector3);
     this.weapon.position.copy(this.settings.position as Vector3);
+    this.weapon.rotation.copy(this.settings.rotation as Euler);
     this.weapon.scale.copy(this.settings.scale as Vector3);
 
     return this.weapon;
@@ -92,8 +94,8 @@ export default class Weapon {
     this.enemies = colliders;
   }
 
-  public get model (): Assets.GLTF | undefined {
-    return this.weapon;
+  public get model (): Assets.GLTF {
+    return this.weapon as Assets.GLTF;
   }
 
   public get damage (): number {

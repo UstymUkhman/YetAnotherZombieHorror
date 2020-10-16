@@ -48,9 +48,7 @@ class Camera {
   }
 
   public shakeAnimation (isRunning: RunCheck, delay = 0): void {
-    // const speed = this.shake || !Player.running ? 250 : 500;
     const speed = this.shake || !isRunning() ? 250 : 500;
-
     const torque = this.shake * 0.025;
     const oscillation = this.shake;
 
