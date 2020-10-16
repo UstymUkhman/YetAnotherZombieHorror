@@ -29,8 +29,8 @@ export default class Enemy extends Character {
 
     if (model !== undefined) {
       this.character = SkeletonUtils.clone(model.scene) as GLTF;
-      super.setCharacterMaterial(this.character, 0);
-      super.createAnimations(model);
+      this.setCharacterMaterial(this.character, 0);
+      this.createAnimations(model);
       this.setDefaultState();
     }
   }
@@ -59,7 +59,7 @@ export default class Enemy extends Character {
     this.animations.hit.setLoop(LoopOnce, 0);
 
     this.currentAnimation = this.animations.idle;
-    super.setAnimation(this.lastAnimation);
+    this.setAnimation(this.lastAnimation);
 
     this.currentAnimation.play();
     this.createHitBoxes();
@@ -147,14 +147,14 @@ export default class Enemy extends Character {
   }
 
   public addSounds (sounds: Array<AudioBuffer>, listener: AudioListener): void {
-    sounds.forEach(sound => this.object.add(super.createAudio(sound, listener)));
+    sounds.forEach(sound => this.object.add(this.createAudio(sound, listener)));
   }
 
   public update (delta: number): void {
     super.update(delta);
 
-    /* if (super.alive && super.character) {
-      super.character.lookAt(this.playerPosition);
+    /* if (this.alive && this.character) {
+      this.character.lookAt(this.playerPosition);
     } */
   }
 }

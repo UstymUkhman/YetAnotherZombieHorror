@@ -24,7 +24,7 @@ export default class Weapon {
   private readonly near = 4.5;
   private aiming = false;
 
-  constructor (private readonly settings: WeaponSettings) {
+  public constructor (private readonly settings: WeaponSettings) {
     // this.spread = settings.spread as Vector2;
     // this.recoil = settings.recoil as Vector2;
 
@@ -76,13 +76,8 @@ export default class Weapon {
     );
   }
 
-  public get model (): Assets.GLTF | undefined {
-    return this.weapon;
-  }
-
-  public set targets (colliders: Array<Mesh>) {
-    this.enemies = colliders;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public cancelReload (): void { }
 
   protected set aim (aiming: boolean) {
     this.raycaster.near = aiming ? this.aimNear : this.near;
@@ -91,6 +86,14 @@ export default class Weapon {
 
   protected get aim (): boolean {
     return this.aiming;
+  }
+
+  public set targets (colliders: Array<Mesh>) {
+    this.enemies = colliders;
+  }
+
+  public get model (): Assets.GLTF | undefined {
+    return this.weapon;
   }
 
   public get damage (): number {

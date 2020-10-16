@@ -4,10 +4,7 @@ global.BUILD = '0.1.0';
 
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import Camera, { object, listener } from '@/managers/Camera';
-
 import { Object3D } from '@three/core/Object3D';
-import { Vector3 } from '@three/math/Vector3';
-import { Euler } from '@three/math/Euler';
 
 describe('Camera', () => {
   test('updateAspectRatio', () => {
@@ -34,20 +31,6 @@ describe('Camera', () => {
     expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
     expect(Camera.object.fov).toBeCloseTo(55.4, 1);
     expect(Camera.object).toStrictEqual(object);
-  });
-
-  test('position', () => {
-    expect(Camera.position).toBeInstanceOf(Vector3);
-    expect(Camera.position.x).toStrictEqual(-0.625);
-    expect(Camera.position.y).toStrictEqual(0.625);
-    expect(Camera.position.z).toStrictEqual(-1.5);
-  });
-
-  test('rotation', () => {
-    expect(Camera.rotation).toBeInstanceOf(Euler);
-    expect(Camera.rotation.x).toStrictEqual(0);
-    expect(Camera.rotation.y).toStrictEqual(Math.PI);
-    expect(Camera.rotation.z).toStrictEqual(0);
   });
 
   test('destroy', () => {

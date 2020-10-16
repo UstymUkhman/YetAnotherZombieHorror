@@ -16,7 +16,7 @@
   const assets = new Map();
 
   type ProgressData = {
-    progress: number,
+    progress: number
     uuid: string
   };
 

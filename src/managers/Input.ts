@@ -2,10 +2,11 @@ import { GameEvents } from '@/managers/GameEvents';
 import { Elastic /*, clamp */ } from '@/utils/Number';
 import { throttle } from 'lodash';
 
-const enum Direction { UP, RIGHT, DOWN, LEFT }
-type Directions = { [way in Direction]: number };
+type Player = import('@/characters/Player').Player;
+export const enum Direction { UP, RIGHT, DOWN, LEFT }
+export type Directions = { [way in Direction]: number };
 
-class Input {
+export default class Input {
   private readonly mousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
   private readonly pointerLockChange = this.onPointerLockChange.bind(this);
   private readonly pointerLockError = this.onPointerLockError.bind(this);
@@ -26,16 +27,21 @@ class Input {
   private rightTimeout?: number;
   private idleTimeout?: number;
 
+  // this._mouseDown = false;
+  // this.mouseRight = null;
+  // this._keyDown = null;
+  // this.player = null;
+
   private paused = true;
   private shift = false;
   private move = '0000';
 
-  constructor () {
+  public constructor (private player: Player) {
+    this.rotationX.speed = 15;
     this.addEvents();
-    this.init();
   }
 
-  private init (): void {
+  /* private init (): void {
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
     this.rotationX.speed = 15;
@@ -52,7 +58,7 @@ class Input {
     this.paused = true;
     this.shift = false;
     this.move = '0000';
-  }
+  } */
 
   private onMousePress (event: MouseEvent): void {
     event.stopPropagation();
@@ -84,14 +90,6 @@ class Input {
     event.preventDefault();
   }
 
-  public requestPointerLock (): void {
-    document.documentElement.requestPointerLock();
-  }
-
-  public exitPointerLock (): void {
-    document.exitPointerLock();
-  }
-
   private onPointerLockChange (event: Event): void {
     event.stopPropagation();
     event.preventDefault();
@@ -110,7 +108,7 @@ class Input {
     console.error(event);
   }
 
-  private onContextMenu (event: Event): void | boolean {
+  private onContextMenu (event: Event): boolean | void {
     if (!this.paused) {
       event.stopPropagation();
       event.preventDefault();
@@ -144,6 +142,14 @@ class Input {
     document.removeEventListener('keyup', this.keyUp, false);
   }
 
+  public requestPointerLock (): void {
+    document.documentElement.requestPointerLock();
+  }
+
+  public exitPointerLock (): void {
+    document.exitPointerLock();
+  }
+
   public update (delta: number): void {
     // if (!this.player.alive) return;
 
@@ -174,5 +180,3 @@ class Input {
     return !!document.pointerLockElement;
   }
 }
-
-export default new Input();

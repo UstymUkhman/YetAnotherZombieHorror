@@ -16,13 +16,15 @@ import Pistol from '@/weapons/Pistol';
 import Input from '@/managers/Input';
 
 export default class GameLoop {
-  private readonly loader = new Assets.Loader();
-  private enemyAssets?: EnemyAssets;
+  private clock = new Clock();
+  private level = new Level0();
 
   private pistol = new Pistol();
   private player = new Player();
-  private level = new Level0();
-  private clock = new Clock();
+
+  private enemyAssets?: EnemyAssets;
+  private readonly loader = new Assets.Loader();
+  private readonly input = new Input(this.player);
 
   private raf?: number | void;
   private paused = true;
@@ -122,8 +124,8 @@ export default class GameLoop {
       : requestAnimationFrame(this.update.bind(this));
 
     this.paused
-      ? !Settings.freeCamera && Input.exitPointerLock()
-      : !Settings.freeCamera && Input.requestPointerLock();
+      ? !Settings.freeCamera && this.input.exitPointerLock()
+      : !Settings.freeCamera && this.input.requestPointerLock();
   }
 
   public get pause (): boolean {

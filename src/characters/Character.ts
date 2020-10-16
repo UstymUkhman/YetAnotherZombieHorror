@@ -29,32 +29,15 @@ export default class Character {
   private model?: Assets.GLTF;
   protected object: Mesh;
 
-  private running = false;
+  protected running = false;
+  protected moving = false;
+
   protected alive = true;
-  private moving = false;
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
     const { x, y, z } = settings.collider;
     this.object = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
-  }
-
-  public async load (): Promise<Assets.GLTFModel> {
-    const character = await this.loader.loadGLTF(this.settings.model);
-
-    character.scene.position.copy(this.settings.offset as Vector3);
-    this.object.position.copy(this.settings.position as Vector3);
-    this.object.scale.copy(this.settings.scale as Vector3);
-
-    this.setCharacterMaterial(character.scene);
-    this.object.add(character.scene);
-
-    if (character.animations) {
-      this.createAnimations(character);
-    }
-
-    this.model = character.scene;
-    return character;
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -116,6 +99,24 @@ export default class Character {
     if (!this.alive) return;
     this.alive = this.alive && this.health > 0;
     // if (!this.alive) this.death();
+  }
+
+  public async load (): Promise<Assets.GLTFModel> {
+    const character = await this.loader.loadGLTF(this.settings.model);
+
+    character.scene.position.copy(this.settings.offset as Vector3);
+    this.object.position.copy(this.settings.position as Vector3);
+    this.object.scale.copy(this.settings.scale as Vector3);
+
+    this.setCharacterMaterial(character.scene);
+    this.object.add(character.scene);
+
+    if (character.animations) {
+      this.createAnimations(character);
+    }
+
+    this.model = character.scene;
+    return character;
   }
 
   public dispose (): void {
