@@ -26,38 +26,38 @@ export default class Input {
 
   private rightTimeout?: number;
   private idleTimeout?: number;
+  private downTime?: number;
 
   // this._mouseDown = false;
   // this.mouseRight = null;
-  // this._keyDown = null;
-  // this.player = null;
 
   private paused = true;
   private shift = false;
   private move = '0000';
 
-  public constructor (private player: Player) {
+  public constructor (private readonly player: Player) {
     this.rotationX.speed = 15;
     this.addEvents();
   }
 
-  /* private init (): void {
+  /* private init (player: Player): void {
     this.rotationX = new Elastic(0);
     this.rotationY = new Elastic(0);
     this.rotationX.speed = 15;
 
     this.rightTimeout = undefined;
     this.idleTimeout = undefined;
+    this.downTime = undefined;
     this.moves = [0, 0, 0, 0];
 
     // this._mouseDown = false;
     // this.mouseRight = null;
-    // this._keyDown = null;
-    // this.player = null;
+    // this.player = player;
 
     this.paused = true;
     this.shift = false;
     this.move = '0000';
+    this.addEvents();
   } */
 
   private onMousePress (event: MouseEvent): void {
@@ -83,23 +83,123 @@ export default class Input {
   private onKeyDown (event: KeyboardEvent): void {
     event.stopPropagation();
     event.preventDefault();
+
+    if (this.paused || this.player.dead) return;
+
+    if (event.code === 'ShiftLeft' && this.moves[0] && !this.shift) {
+      this.moves[Direction.RIGHT] = 0;
+      this.moves[Direction.DOWN] = 0;
+      this.moves[Direction.LEFT] = 0;
+
+      this.player.run(this.moves, true);
+      this.downTime = Date.now();
+      this.shift = true;
+      return;
+    }
+
+    switch (event.code) {
+      case 'KeyW':
+        this.moves[Direction.UP] = 1;
+        this.moves[Direction.DOWN] = 0;
+        break;
+
+      case 'KeyD':
+        this.moves[Direction.RIGHT] = 1;
+        this.moves[Direction.LEFT] = 0;
+        break;
+
+      case 'KeyS':
+          this.moves[Direction.DOWN] = 1;
+          this.moves[Direction.UP] = 0;
+          break;
+
+      case 'KeyA':
+        this.moves[Direction.RIGHT] = 0;
+        this.moves[Direction.LEFT] = 1;
+        break;
+
+      default:
+        return;
+    }
+
+    const move = Object.values(this.moves).join('');
+
+    if (this.move !== move) {
+      this.player.move(this.moves);
+      this.downTime = Date.now();
+      this.move = move;
+    }
   }
 
   private onKeyUp (event: KeyboardEvent): void {
     event.stopPropagation();
     event.preventDefault();
+
+    if (this.paused || this.player.dead) return;
+
+    if (event.code === 'ShiftLeft' && this.shift) {
+      setTimeout(() => { this.shift = false; }, 150);
+      this.player.run(this.moves, false);
+    }
+
+    switch (event.code) {
+      case 'KeyW':
+        this.moves[Direction.UP] = 0;
+        break;
+
+      case 'KeyD':
+        this.moves[Direction.RIGHT] = 0;
+        break;
+
+      case 'KeyS':
+        this.moves[Direction.DOWN] = 0;
+        break;
+
+      case 'KeyA':
+        this.moves[Direction.LEFT] = 0;
+        break;
+
+      case 'KeyQ':
+      case 'KeyE':
+        this.player.changeWeapon();
+        return;
+
+      // case 'KeyR':
+      //   this.player.reload();
+      //   return;
+
+      default:
+        return;
+    }
+
+    const move = Object.values(this.moves).join('');
+
+    if (move === '0000') {
+      setTimeout(
+        this.player.idle.bind(this.player), Math.max(
+          150 - (Date.now() - (this.downTime as number)), 0
+        )
+      );
+
+      clearTimeout(this.idleTimeout);
+      this.move = move;
+      return;
+    }
+
+    if (this.move !== move) {
+      this.idleTimeout = setTimeout(() => {
+        this.player.move(this.moves);
+        this.move = move;
+      }, 100) as unknown as number;
+    }
   }
 
   private onPointerLockChange (event: Event): void {
     event.stopPropagation();
     event.preventDefault();
 
-    const isPaused = this.paused;
     this.paused = !this.pointerLocked;
-
-    if (this.paused !== isPaused) {
-      GameEvents.dispatch('pause', this.paused);
-    }
+    GameEvents.dispatch('pause', this.paused);
   }
 
   private onPointerLockError (event: Event): void {
@@ -169,7 +269,7 @@ export default class Input {
 
     // delete this.mouseRight;
     // delete this._mouseDown;
-    // delete this._keyDown;
+    // delete this.downTime;
     // delete this.player;
     // delete this.moves;
 

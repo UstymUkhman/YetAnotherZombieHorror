@@ -49,7 +49,7 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
-    Physics.createCollider(this.player.collider);
+    Physics.createCollider(this.player.collider, 90);
 
     this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);

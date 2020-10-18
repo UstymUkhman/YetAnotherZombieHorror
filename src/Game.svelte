@@ -1,9 +1,15 @@
 <main bind:this={main}>
-  {#if Settings.APP}<Close />{/if}
+  {#if Settings.APP}
+    <Close />
+  {/if}
 
-  {#if loading}<Loader on:loaded={onLoad} />{/if}
+  {#if loading}
+    <Loader on:loaded={onLoad} />
+  {/if}
 
-  {#if !loading && game.pause}<Pause on:start={onStart} />{/if}
+  {#if !loading && game.pause}
+    <Pause on:start={() => togglePause(false)} />
+  {/if}
 
   <Map
     playerRotation={location.rotation.y}
@@ -13,6 +19,8 @@
 </main>
 
 <script lang="typescript">
+  import { GameEvents } from '@/managers/GameEvents';
+
   import { onMount, onDestroy } from 'svelte';
   import Close from '@components/CloseButton';
 
@@ -31,13 +39,16 @@
   const location = game.playerLocation;
 
   window.addEventListener('resize', updateScale);
+  GameEvents.add('pause', event => togglePause(event.data as boolean));
+
+  function togglePause (paused: boolean): void {
+    if (game.pause !== paused) {
+      game.pause = paused;
+    }
+  }
 
   function updateScale (): void {
     scale = window.innerWidth / 175;
-  }
-
-  function onStart (): void {
-    game.pause = false;
   }
 
   function onLoad (): void {

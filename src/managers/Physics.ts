@@ -15,17 +15,26 @@ import { PI } from '@/utils/Number';
 const MIN_SIZE = 0.01;
 
 type BoundsOptions = {
-  borders: Bounds,
-  height: number,
-  y: number,
+  borders: Bounds
+  height: number
+  y: number
+};
+
+type Direction = {
+  x: number
+  z: number
 };
 
 class Physics {
+  private readonly colliders: Map<string, Mesh> = new Map();
+
+  private readonly movementVector = new Vector3();
   private readonly positionVector = new Vector3();
+
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
 
-  constructor () {
+  public constructor () {
     APE.init();
   }
 
@@ -118,8 +127,28 @@ class Physics {
     }
   }
 
-  public createCollider (collider: Mesh): void {
-    APE.Dynamic.addBox(collider, 100);
+  public createCollider (collider: Mesh, mass: number): void {
+    this.colliders.set(collider.uuid, collider);
+    APE.Dynamic.addBox(collider, mass);
+  }
+
+  public move (collider: Mesh, direction: Direction): void {
+    const body = this.colliders.get(collider.uuid);
+    this.movementVector.set(direction.x, 0, direction.z).multiplyScalar(10);
+
+    APE.Dynamic.setLinearVelocity(body, this.movementVector);
+
+    console.log('Physics.move');
+  }
+
+  public stop (collider: Mesh): void {
+    const body = this.colliders.get(collider.uuid);
+    this.movementVector.set(0, 0, 0).multiplyScalar(10);
+
+    APE.Dynamic.setAngularVelocity(body, this.movementVector);
+    APE.Dynamic.setLinearVelocity(body, this.movementVector);
+
+    console.log('Physics.stop');
   }
 
   public update (): void {

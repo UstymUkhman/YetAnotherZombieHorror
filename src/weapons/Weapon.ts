@@ -78,8 +78,7 @@ export default class Weapon {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public cancelReload (): void { }
+  public cancelReload (): void { return; }
 
   protected set aim (aiming: boolean) {
     this.raycaster.near = aiming ? this.aimNear : this.near;

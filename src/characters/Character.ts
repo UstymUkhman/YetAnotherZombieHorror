@@ -16,8 +16,10 @@ import { BoxGeometry } from '@three/geometries/BoxGeometry';
 
 import { ColliderMaterial } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
+
 import { camelCase } from '@/utils/String';
 import { Mesh } from '@three/objects/Mesh';
+import Physics from '@/managers/Physics';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
@@ -33,6 +35,7 @@ export default class Character {
   protected moving = false;
 
   protected alive = true;
+  private still = false;
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
@@ -89,9 +92,14 @@ export default class Character {
   protected update (delta: number): void {
     this.mixer?.update(delta);
 
-    if (this.moving && this.model) {
-      this.model.translateX(this.speed.x);
-      this.model.translateZ(this.speed.z);
+    if (this.moving) {
+      Physics.move(this.object, this.speed);
+      this.still = false;
+    }
+
+    else if (!this.still) {
+      Physics.stop(this.object);
+      this.still = true;
     }
   }
 
@@ -159,5 +167,9 @@ export default class Character {
 
   public get collider (): Mesh {
     return this.object;
+  }
+
+  public get dead (): boolean {
+    return !this.alive;
   }
 }

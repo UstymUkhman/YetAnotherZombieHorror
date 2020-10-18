@@ -74,7 +74,7 @@ export class Player extends Character {
     return this.running && !this.aiming;
   }
 
-  private idle () {
+  public idle (): void {
     const idle = this.getWeaponAnimation('Idle');
     const idling = this.lastAnimation === idle;
 
@@ -130,7 +130,7 @@ export class Player extends Character {
     }, 100);
   }
 
-  private run (directions: Directions, running: boolean): void {
+  public run (directions: Directions, running: boolean): void {
     this.moving = this.running = running;
     if (this.aiming || this.hitting) return;
     const run = this.getWeaponAnimation('Run');
@@ -194,6 +194,15 @@ export class Player extends Character {
     // this.weapon.targets = colliders;
     this.hand?.add(pistol.model);
     this.weapon = pistol;
+  }
+
+  public changeWeapon (): void {
+    if (!this.hasRifle || this.aiming || this.reloading) return;
+    // const weapon = this.equipRifle ? this.pistol : this.ak47;
+    // const colliders = this.weapon.targets;
+
+    // weapon.setToPlayer(false);
+    // this.setWeapon(colliders, weapon, !this.equipRifle);
   }
 
   public update (delta: number): void {
