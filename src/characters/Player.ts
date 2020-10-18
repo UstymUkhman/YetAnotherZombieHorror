@@ -219,4 +219,8 @@ export class Player extends Character {
       rotation: this.currentRotation
     };
   }
+
+  public get aimMode (): boolean {
+    return this.aiming;
+  }
 }

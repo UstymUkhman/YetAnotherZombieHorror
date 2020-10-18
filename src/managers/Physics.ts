@@ -36,6 +36,7 @@ class Physics {
 
   public constructor () {
     APE.init();
+    APE.Static.friction = 0.0;
   }
 
   private borderOverflow (border: Vector3) {
@@ -132,23 +133,17 @@ class Physics {
     APE.Dynamic.addBox(collider, mass);
   }
 
-  public move (collider: Mesh, direction: Direction): void {
-    const body = this.colliders.get(collider.uuid);
-    this.movementVector.set(direction.x, 0, direction.z).multiplyScalar(10);
-
-    APE.Dynamic.setLinearVelocity(body, this.movementVector);
-
-    console.log('Physics.move');
+  public move (uuid: string, direction: Direction): void {
+    this.movementVector.set(direction.x, 0, direction.z);
+    APE.Dynamic.setLinearVelocity(this.colliders.get(uuid), this.movementVector);
   }
 
-  public stop (collider: Mesh): void {
-    const body = this.colliders.get(collider.uuid);
-    this.movementVector.set(0, 0, 0).multiplyScalar(10);
+  public stop (uuid: string): void {
+    const body = this.colliders.get(uuid);
+    this.movementVector.set(0, 0, 0);
 
     APE.Dynamic.setAngularVelocity(body, this.movementVector);
     APE.Dynamic.setLinearVelocity(body, this.movementVector);
-
-    console.log('Physics.stop');
   }
 
   public update (): void {

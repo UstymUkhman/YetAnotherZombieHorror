@@ -33,8 +33,8 @@ export namespace Settings {
   export type Bound = Readonly<Array<number>>;
 
   export const freeCamera = false;
-  export const colliders = true;
-  export const hitBoxes = true;
+  export const colliders = false;
+  export const hitBoxes = false;
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;

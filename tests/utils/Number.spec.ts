@@ -58,6 +58,7 @@ describe('Number', () => {
   test('Elastic', () => {
     const num = new Elastic(1);
     expect(num.value).toStrictEqual(1);
+    expect(num.target).toStrictEqual(1);
 
     num.value = 2;
     num.update();

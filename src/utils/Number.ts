@@ -11,7 +11,7 @@ export const random = (min: number, max: number): number => Math.random() * (max
 export const lerp = (v0: number, v1: number, t: number): number => v0 + t * (v1 - v0);
 
 export class Elastic {
-  private target: number;
+  public target: number;
   public value: number;
   public speed = 10;
 

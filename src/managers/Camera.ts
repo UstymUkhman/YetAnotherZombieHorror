@@ -8,9 +8,9 @@ type RunCheck = () => boolean;
 
 import anime from 'animejs';
 
-const DEFAULT = new Vector3(-0.625, 0.625, -1.5);
+const DEFAULT = new Vector3(-0.625, 1.5, -1.5);
 // const AIM = new Vector3(-0.6, 2.85, -1);
-const RUN = new Vector3(-1.135, 0.5, -3);
+const RUN = new Vector3(-1.135, 1.25, -3);
 
 class Camera {
   private audioListener = new AudioListener();
@@ -96,11 +96,11 @@ class Camera {
     return this.audioListener;
   }
 
-  private get position (): Vector3 {
+  public get position (): Vector3 {
     return this.camera.position;
   }
 
-  private get rotation (): Euler {
+  public get rotation (): Euler {
     return this.camera.rotation;
   }
 }

@@ -1,5 +1,6 @@
 import { GameEvents } from '@/managers/GameEvents';
-import { Elastic /*, clamp */ } from '@/utils/Number';
+import { Elastic, clamp } from '@/utils/Number';
+import Camera from '@/managers/Camera';
 import { throttle } from 'lodash';
 
 type Player = import('@/characters/Player').Player;
@@ -71,8 +72,16 @@ export default class Input {
   }
 
   private onMouseMove (event: MouseEvent): void {
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+    if (this.paused) return;
+
+    const maxY = this.player.aimMode ? 0.4 : 0.2;
+    const x = this.player.collider.rotation.y - (event.movementX || 0) * 0.005;
+    const y = clamp(Camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, maxY);
+
+    this.rotationX.target = x;
+    this.rotationY.target = y;
   }
 
   private onMouseUp (event: MouseEvent): void {
@@ -81,10 +90,9 @@ export default class Input {
   }
 
   private onKeyDown (event: KeyboardEvent): void {
-    event.stopPropagation();
     event.preventDefault();
-
-    if (this.paused || this.player.dead) return;
+    event.stopPropagation();
+    if (this.paused) return;
 
     if (event.code === 'ShiftLeft' && this.moves[0] && !this.shift) {
       this.moves[Direction.RIGHT] = 0;
@@ -132,10 +140,9 @@ export default class Input {
   }
 
   private onKeyUp (event: KeyboardEvent): void {
-    event.stopPropagation();
     event.preventDefault();
-
-    if (this.paused || this.player.dead) return;
+    event.stopPropagation();
+    if (this.paused) return;
 
     if (event.code === 'ShiftLeft' && this.shift) {
       setTimeout(() => { this.shift = false; }, 150);

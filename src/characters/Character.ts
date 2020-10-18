@@ -33,14 +33,23 @@ export default class Character {
 
   protected running = false;
   protected moving = false;
-
   protected alive = true;
+
   private still = false;
   private health = 100;
+  private uuid: string;
 
   public constructor (private settings: CharacterSettings) {
-    const { x, y, z } = settings.collider;
-    this.object = new Mesh(new BoxGeometry(x, y, z), ColliderMaterial);
+    this.object = new Mesh(
+      new BoxGeometry(
+        settings.collider.x,
+        settings.collider.y,
+        settings.collider.z
+      ),
+      ColliderMaterial
+    );
+
+    this.uuid = this.object.uuid;
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -93,12 +102,12 @@ export default class Character {
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(this.object, this.speed);
+      Physics.move(this.uuid, this.speed);
       this.still = false;
     }
 
     else if (!this.still) {
-      Physics.stop(this.object);
+      Physics.stop(this.uuid);
       this.still = true;
     }
   }
