@@ -37,7 +37,6 @@ export default class Character {
 
   private still = false;
   private health = 100;
-  private uuid: string;
 
   public constructor (private settings: CharacterSettings) {
     this.object = new Mesh(
@@ -48,8 +47,6 @@ export default class Character {
       ),
       ColliderMaterial
     );
-
-    this.uuid = this.object.uuid;
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -99,15 +96,16 @@ export default class Character {
   }
 
   protected update (delta: number): void {
+    const { uuid } = this.object;
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(this.uuid, this.speed);
+      Physics.move(uuid, this.speed);
       this.still = false;
     }
 
     else if (!this.still) {
-      Physics.stop(this.uuid);
+      Physics.stop(uuid);
       this.still = true;
     }
   }

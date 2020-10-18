@@ -1,4 +1,5 @@
 type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
+type Player = import('@/characters/Player').Player;
 type Bounds = import('@/settings').Settings.Bounds;
 type Bound = import('@/settings').Settings.Bound;
 
@@ -28,15 +29,23 @@ type Direction = {
 class Physics {
   private readonly colliders: Map<string, Mesh> = new Map();
 
+  private readonly angularFactor = new Vector3(0, 1, 0);
+  private readonly linearFactor = new Vector3(1, 0, 1);
+
   private readonly movementVector = new Vector3();
   private readonly positionVector = new Vector3();
 
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
 
+  private player!: Mesh;
+
   public constructor () {
     APE.init();
+    APE.Static.margin = 0.0;
+    APE.Dynamic.margin = 0.0;
     APE.Static.friction = 0.0;
+    APE.Dynamic.friction = 0.0;
   }
 
   private borderOverflow (border: Vector3) {
@@ -129,8 +138,11 @@ class Physics {
   }
 
   public createCollider (collider: Mesh, mass: number): void {
-    this.colliders.set(collider.uuid, collider);
     APE.Dynamic.addBox(collider, mass);
+    this.colliders.set(collider.uuid, collider);
+
+    APE.Dynamic.setLinearFactor(collider, this.linearFactor);
+    APE.Dynamic.setAngularFactor(collider, this.angularFactor);
   }
 
   public move (uuid: string, direction: Direction): void {
@@ -138,12 +150,22 @@ class Physics {
     APE.Dynamic.setLinearVelocity(this.colliders.get(uuid), this.movementVector);
   }
 
+  /* public rotatePlayer (rotation: number): void {
+    this.rotationVector.set(0, rotation, 0);
+    APE.Dynamic.setAngularVelocity(this.player, this.rotationVector);
+  } */
+
   public stop (uuid: string): void {
-    const body = this.colliders.get(uuid);
     this.movementVector.set(0, 0, 0);
+    const body = this.colliders.get(uuid);
 
     APE.Dynamic.setAngularVelocity(body, this.movementVector);
     APE.Dynamic.setLinearVelocity(body, this.movementVector);
+  }
+
+  public setPlayer (player: Player): void {
+    this.createCollider(player.collider, 90);
+    this.player = player.collider;
   }
 
   public update (): void {

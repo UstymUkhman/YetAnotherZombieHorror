@@ -223,4 +223,8 @@ export class Player extends Character {
   public get aimMode (): boolean {
     return this.aiming;
   }
+
+  public get uuid (): string {
+    return this.object.uuid;
+  }
 }
