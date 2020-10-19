@@ -96,17 +96,16 @@ export default class Character {
   }
 
   protected update (delta: number): void {
-    const { uuid } = this.object;
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(uuid, this.speed);
+      Physics.move(this.speed);
       this.still = false;
     }
 
     else if (!this.still) {
-      Physics.stop(uuid);
       this.still = true;
+      Physics.stop();
     }
   }
 

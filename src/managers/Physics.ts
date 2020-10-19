@@ -1,4 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
+type Quaternion = import('@three/math/Quaternion').Quaternion;
+
 type Player = import('@/characters/Player').Player;
 type Bounds = import('@/settings').Settings.Bounds;
 type Bound = import('@/settings').Settings.Bound;
@@ -10,10 +14,24 @@ import { Vector3 } from '@three/math/Vector3';
 
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
-import APE from 'APE/build/APE.Rigid.min';
 import { PI } from '@/utils/Number';
+import Ammo from 'ammo.js';
 
+const ZERO_MASS = 0.0;
 const MIN_SIZE = 0.01;
+const GRAVITY = -9.81;
+
+namespace Bullet {
+  export type vector3 = Vector3;
+
+  export type World = {
+    addRigidBody: (body: any, group?: number, mask?: number) => void
+    stepSimulation: (timeStep: number, maxSubSteps?: number) => void
+
+    setGravity: (gravity: Vector3) => void
+    __destroy__: () => void
+  }
+}
 
 type BoundsOptions = {
   borders: Bounds
@@ -27,25 +45,84 @@ type Direction = {
 };
 
 class Physics {
-  private readonly colliders: Map<string, Mesh> = new Map();
+  private readonly boxes: Map<string, {mesh: Mesh, body: any}> = new Map();
 
-  private readonly angularFactor = new Vector3(0, 1, 0);
-  private readonly linearFactor = new Vector3(1, 0, 1);
+  private readonly angularVelocity = new Ammo.btVector3();
+  private readonly linearVelocity = new Ammo.btVector3();
+  private readonly transform = new Ammo.btTransform();
 
-  private readonly movementVector = new Vector3();
   private readonly positionVector = new Vector3();
-
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
 
-  private player!: Mesh;
+  private world: Bullet.World;
+  private paused = false;
+  private player: any;
 
   public constructor () {
-    APE.init();
-    APE.Static.margin = 0.0;
-    APE.Dynamic.margin = 0.0;
-    APE.Static.friction = 0.0;
-    APE.Dynamic.friction = 0.0;
+    const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+
+    this.world = new Ammo.btDiscreteDynamicsWorld(
+      new Ammo.btCollisionDispatcher(collisionConfiguration),
+      new Ammo.btDbvtBroadphase(),
+      new Ammo.btSequentialImpulseConstraintSolver(),
+      collisionConfiguration
+    );
+
+    this.world.setGravity(new Ammo.btVector3(0.0, GRAVITY, 0.0));
+  }
+
+  private createRigidBody (shape: any, mass: number, position: Vector3, quaternion: Quaternion): any {
+    const transform = new Ammo.btTransform();
+
+    transform.setIdentity();
+    transform.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
+    transform.setRotation(new Ammo.btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+
+    const inertia = new Ammo.btVector3(0.0, 0.0, 0.0);
+    const motion = new Ammo.btDefaultMotionState(transform);
+    if (mass > ZERO_MASS) shape.calculateLocalInertia(mass, inertia);
+
+    const body = new Ammo.btRigidBody(new Ammo.btRigidBodyConstructionInfo(mass, motion, shape, inertia));
+
+    body.setDamping(0.0, 0.0);
+    body.setRestitution(0.0);
+    body.setFriction(0.5);
+
+    return body;
+  }
+
+  private createStaticBox (material: MeshBasicMaterial): void {
+    const { x, y, z } = this.sizeVector;
+    const box = new Mesh(new BoxGeometry(x, y, z), material);
+
+    box.position.copy(this.positionVector);
+    box.rotation.copy(this.rotationVector);
+
+    const shape = new Ammo.btBoxShape(new Ammo.btVector3(x / 2.0, y / 2.0, z / 2.0));
+    const body = this.createRigidBody(shape, ZERO_MASS, box.position, box.quaternion);
+
+    this.world.addRigidBody(body, 2, 0xFFFF);
+    GameEvents.dispatch('add:object', box);
+  }
+
+  private createDynamicBox (mesh: Mesh, mass: number): void {
+    const { width, height, depth } = (mesh.geometry as BoxGeometry).parameters;
+    const shape = new Ammo.btBoxShape(new Ammo.btVector3(width / 2.0, height / 2.0, depth / 2.0));
+    const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
+
+    body.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
+    body.setLinearFactor(new Ammo.btVector3(1.0, 0.0, 1.0));
+
+    this.world.addRigidBody(body, 128, 0xFFFF);
+    this.boxes.set(mesh.uuid, { mesh, body });
+    GameEvents.dispatch('add:object', mesh);
+  }
+
+  public createGround (min: Array<number>, max: Array<number>): void {
+    this.sizeVector.set(Math.abs(min[0] - max[0]), MIN_SIZE, Math.abs(min[1] - max[1]));
+    this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
+    this.createStaticBox(NoMaterial);
   }
 
   private borderOverflow (border: Vector3) {
@@ -87,23 +164,6 @@ class Physics {
     this.sizeVector.set(w, h, d);
   }
 
-  private createStaticBox (material: MeshBasicMaterial): void {
-    const { x, y, z } = this.sizeVector;
-    const box = new Mesh(new BoxGeometry(x, y, z), material);
-
-    box.position.copy(this.positionVector);
-    box.rotation.copy(this.rotationVector);
-
-    GameEvents.dispatch('add:object', box);
-    APE.Static.addBox(box);
-  }
-
-  public createGround (min: Array<number>, max: Array<number>): void {
-    this.sizeVector.set(Math.abs(min[0] - max[0]), MIN_SIZE, Math.abs(min[1] - max[1]));
-    this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
-    this.createStaticBox(NoMaterial);
-  }
-
   public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
     const borderPosition = new Vector3();
 
@@ -137,45 +197,64 @@ class Physics {
     }
   }
 
-  public createCollider (collider: Mesh, mass: number): void {
-    APE.Dynamic.addBox(collider, mass);
-    this.colliders.set(collider.uuid, collider);
-
-    APE.Dynamic.setLinearFactor(collider, this.linearFactor);
-    APE.Dynamic.setAngularFactor(collider, this.angularFactor);
-  }
-
-  public move (uuid: string, direction: Direction): void {
-    this.movementVector.set(direction.x, 0, direction.z);
-    APE.Dynamic.setLinearVelocity(this.colliders.get(uuid), this.movementVector);
-  }
-
-  /* public rotatePlayer (rotation: number): void {
-    this.rotationVector.set(0, rotation, 0);
-    APE.Dynamic.setAngularVelocity(this.player, this.rotationVector);
-  } */
-
-  public stop (uuid: string): void {
-    this.movementVector.set(0, 0, 0);
-    const body = this.colliders.get(uuid);
-
-    APE.Dynamic.setAngularVelocity(body, this.movementVector);
-    APE.Dynamic.setLinearVelocity(body, this.movementVector);
-  }
-
   public setPlayer (player: Player): void {
-    this.createCollider(player.collider, 90);
-    this.player = player.collider;
+    this.createDynamicBox(player.collider, 90);
+    this.player = this.boxes.get(player.collider.uuid)?.body;
   }
 
-  public update (): void {
-    APE.Dynamic.update();
-    APE.update();
+  public move (direction: Direction): void {
+    this.linearVelocity.setValue(direction.x, 0, direction.z);
+    this.player.setLinearVelocity(this.linearVelocity);
+  }
+
+  public rotate (rotation: number): void {
+    this.angularVelocity.setValue(0.0, rotation, 0.0);
+    this.player.setAngularVelocity(this.angularVelocity);
+    this.player.activate();
+  }
+
+  public stop (): void {
+    if (!this.player) return;
+
+    this.linearVelocity.setValue(0.0, 0.0, 0.0);
+    this.angularVelocity.setValue(0.0, 0.0, 0.0);
+
+    this.player.setAngularVelocity(this.angularVelocity);
+    this.player.setLinearVelocity(this.linearVelocity);
+  }
+
+  public update (delta: number): void {
+    this.world.stepSimulation(delta);
+
+    this.boxes.forEach(box => {
+      const { mesh, body } = box;
+      const motionState = body.getMotionState();
+
+      if (motionState) {
+        motionState.getWorldTransform(this.transform);
+
+        const origin = this.transform.getOrigin();
+        const rotation = this.transform.getRotation();
+
+        mesh.position.set(origin.x(), origin.y(), origin.z());
+        mesh.quaternion.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
+      }
+    });
   }
 
   public destroy (): void {
-    APE.destroy();
+    this.world.__destroy__();
+    this.boxes.clear();
+  }
+
+  public set pause (pause: boolean) {
+    this.paused = pause;
+  }
+
+  public get pause (): boolean {
+    return this.paused;
   }
 }
 
 export default new Physics();
+/* eslint-enable @typescript-eslint/no-explicit-any */

@@ -93,8 +93,8 @@ export default class GameLoop {
     this.player.update(delta);
     this.input.update(delta);
 
+    Physics.update(delta);
     this.level.render();
-    Physics.update();
 
     this.stats?.end();
   }

@@ -41,7 +41,7 @@
   "dependencies": {
     "@types/animejs": "^3.1.2",
     "@types/lodash": "^4.14.161",
-    "APE": "UstymUkhman/APE",
+    "ammo.js": "^0.0.10",
     "animejs": "^3.2.0",
     "three": "^0.121.1"
   },
