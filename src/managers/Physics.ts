@@ -87,7 +87,7 @@ class Physics {
 
     body.setDamping(0.0, 0.0);
     body.setRestitution(0.0);
-    body.setFriction(0.5);
+    body.setFriction(0.0);
 
     return body;
   }
@@ -208,9 +208,10 @@ class Physics {
   }
 
   public rotate (rotation: number): void {
+    if (!this.player) return;
+
     this.angularVelocity.setValue(0.0, rotation, 0.0);
     this.player.setAngularVelocity(this.angularVelocity);
-    this.player.activate();
   }
 
   public stop (): void {

@@ -1,5 +1,6 @@
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
+import { Euler } from '@three/math/Euler';
 
 import Level0 from '@/settings/level0.json';
 import Pistol from '@/settings/pistol.json';
@@ -116,7 +117,7 @@ describe('Settings', () => {
 
   test('Pistol', () => {
     const pistolPosition = new Vector3(...Pistol.position);
-    const pistolRotation = new Vector3(...Pistol.rotation);
+    const pistolRotation = new Euler(...Pistol.rotation);
 
     const pistolSpread = new Vector2(...Pistol.spread);
     const pistolRecoil = new Vector2(...Pistol.recoil);
@@ -128,7 +129,7 @@ describe('Settings', () => {
     expect(Settings.Pistol.position).toBeInstanceOf(Vector3);
 
     expect(Settings.Pistol.rotation).toStrictEqual(pistolRotation);
-    expect(Settings.Pistol.rotation).toBeInstanceOf(Vector3);
+    expect(Settings.Pistol.rotation).toBeInstanceOf(Euler);
 
     expect(Settings.Pistol.scale).toStrictEqual(pistolScale);
     expect(Settings.Pistol.scale).toBeInstanceOf(Vector3);

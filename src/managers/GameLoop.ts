@@ -91,11 +91,10 @@ export default class GameLoop {
     const delta = this.clock.getDelta();
 
     this.player.update(delta);
-    this.input.update(delta);
-
     Physics.update(delta);
-    this.level.render();
+    this.input.update();
 
+    this.level.render();
     this.stats?.end();
   }
 

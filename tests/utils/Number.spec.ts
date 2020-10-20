@@ -1,4 +1,4 @@
-import { smoothstep, near, mix, map, randomInt, clamp, random, lerp, Elastic, PI } from '@/utils/Number';
+import { smoothstep, near, mix, map, randomInt, clamp, random, lerp, PI } from '@/utils/Number';
 import { Vector3 } from '@three/math/Vector3';
 
 describe('Number', () => {
@@ -53,19 +53,6 @@ describe('Number', () => {
     expect(lerp(1, 2, 0)).toStrictEqual(1);
     expect(lerp(1, 2, 0.5)).toStrictEqual(1.5);
     expect(lerp(1, 2, 1)).toStrictEqual(2);
-  });
-
-  test('Elastic', () => {
-    const num = new Elastic(1);
-    expect(num.value).toStrictEqual(1);
-    expect(num.target).toStrictEqual(1);
-
-    num.value = 2;
-    num.update();
-    expect(num.value).toBeCloseTo(1.83);
-
-    num.update();
-    expect(num.value).toBeCloseTo(1.69);
   });
 
   test('PI', () => {

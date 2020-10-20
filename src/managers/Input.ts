@@ -1,6 +1,8 @@
 import { GameEvents } from '@/managers/GameEvents';
-import { Elastic, clamp } from '@/utils/Number';
-import Camera from '@/managers/Camera';
+import { Vector2 } from '@three/math/Vector2';
+
+import Physics from '@/managers/Physics';
+// import Camera from '@/managers/Camera';
 import { throttle } from 'lodash';
 
 type Player = import('@/characters/Player').Player;
@@ -20,10 +22,10 @@ export default class Input {
   private readonly keyDown = this.onKeyDown.bind(this);
   private readonly keyUp = this.onKeyUp.bind(this);
 
+  private readonly rotation = new Vector2();
   private moves: Directions = [0, 0, 0, 0];
 
-  private rotationX = new Elastic(0);
-  private rotationY = new Elastic(0);
+  // private rotationY = new Elastic(0);
 
   private rightTimeout?: number;
   private idleTimeout?: number;
@@ -37,14 +39,12 @@ export default class Input {
   private move = '0000';
 
   public constructor (private readonly player: Player) {
-    this.rotationX.speed = 15;
     this.addEvents();
   }
 
   /* private init (player: Player): void {
-    this.rotationX = new Elastic(0);
-    this.rotationY = new Elastic(0);
-    this.rotationX.speed = 15;
+    this.rotation.setScalar(0);
+    this.rotationY.set(0);
 
     this.rightTimeout = undefined;
     this.idleTimeout = undefined;
@@ -76,12 +76,12 @@ export default class Input {
     event.stopPropagation();
     if (this.paused) return;
 
-    const maxY = this.player.aimMode ? 0.4 : 0.2;
-    const x = this.player.collider.rotation.y - (event.movementX || 0) * 0.005;
-    const y = clamp(Camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, maxY);
+    // const maxY = this.player.aimMode ? 0.4 : 0.2;
+    // const x = this.player.collider.rotation.y - (event.movementX || 0) * 0.005;
+    // const y = clamp(Camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, maxY);
 
-    this.rotationX.target = x;
-    this.rotationY.target = y;
+    this.rotation.set(event.movementX, event.movementY);
+    this.rotation.multiplyScalar(-0.5);
   }
 
   private onMouseUp (event: MouseEvent): void {
@@ -257,15 +257,15 @@ export default class Input {
     document.exitPointerLock();
   }
 
-  public update (delta: number): void {
+  public update (): void {
     // if (!this.player.alive) return;
+    // this.rotationY.update(delta);
 
-    this.rotationX.update(delta);
-    this.rotationY.update(delta);
-
-    // this.player.character.rotation.y = this.rotationX.value;
     // this.character.rotation.x = this.rotationY.value;
     // this.camera.rotation.x = this.rotationY.value;
+
+    Physics.rotate(this.rotation.x);
+    this.rotation.setScalar(0);
 
     // this._mouseDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
   }
