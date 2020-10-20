@@ -107,6 +107,7 @@ class Camera {
 
 const camera = new Camera();
 
-export const listener = camera.listener;
-export const object = camera.object;
 export default camera;
+export const object = camera.object;
+export const listener = camera.listener;
+export const getWorldDirection = object.getWorldDirection.bind(object);

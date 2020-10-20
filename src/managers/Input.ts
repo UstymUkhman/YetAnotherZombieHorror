@@ -1,8 +1,6 @@
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector2 } from '@three/math/Vector2';
-
 import Physics from '@/managers/Physics';
-// import Camera from '@/managers/Camera';
 import { throttle } from 'lodash';
 
 type Player = import('@/characters/Player').Player;
@@ -25,8 +23,6 @@ export default class Input {
   private readonly rotation = new Vector2();
   private moves: Directions = [0, 0, 0, 0];
 
-  // private rotationY = new Elastic(0);
-
   private rightTimeout?: number;
   private idleTimeout?: number;
   private downTime?: number;
@@ -44,7 +40,6 @@ export default class Input {
 
   /* private init (player: Player): void {
     this.rotation.setScalar(0);
-    this.rotationY.set(0);
 
     this.rightTimeout = undefined;
     this.idleTimeout = undefined;
@@ -74,13 +69,11 @@ export default class Input {
   private onMouseMove (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
+
     if (this.paused) return;
+    const { movementX, movementY } = event;
 
-    // const maxY = this.player.aimMode ? 0.4 : 0.2;
-    // const x = this.player.collider.rotation.y - (event.movementX || 0) * 0.005;
-    // const y = clamp(Camera.rotation.x + (event.movementY || 0) * 0.005, -0.1, maxY);
-
-    this.rotation.set(event.movementX, event.movementY);
+    this.rotation.set(movementX, movementY);
     this.rotation.multiplyScalar(-0.5);
   }
 
@@ -259,11 +252,8 @@ export default class Input {
 
   public update (): void {
     // if (!this.player.alive) return;
-    // this.rotationY.update(delta);
 
-    // this.character.rotation.x = this.rotationY.value;
-    // this.camera.rotation.x = this.rotationY.value;
-
+    // this.player.tilt(this.rotation.y);
     Physics.rotate(this.rotation.x);
     this.rotation.setScalar(0);
 

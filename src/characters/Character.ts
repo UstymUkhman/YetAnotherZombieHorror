@@ -99,8 +99,9 @@ export default class Character {
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(this.speed);
+      // Physics.move(this.speed);
       this.still = false;
+      Physics.move();
     }
 
     else if (!this.still) {

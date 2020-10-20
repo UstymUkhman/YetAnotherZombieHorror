@@ -9,6 +9,7 @@ type Bound = import('@/settings').Settings.Bound;
 
 import { ColliderMaterial, NoMaterial } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { getWorldDirection } from '@/managers/Camera';
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector3 } from '@three/math/Vector3';
 
@@ -51,6 +52,7 @@ class Physics {
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
+  private readonly directionVector = new Vector3();
   private readonly positionVector = new Vector3();
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
@@ -202,8 +204,14 @@ class Physics {
     this.player = this.boxes.get(player.collider.uuid)?.body;
   }
 
-  public move (direction: Direction): void {
-    this.linearVelocity.setValue(direction.x, 0, direction.z);
+  public move (/* direction: Direction */): void {
+    const rotation = getWorldDirection(this.directionVector);
+    const theta = Math.atan2(rotation.x, rotation.z);
+
+    const x = Math.sin(theta) * 5;
+    const z = Math.cos(theta) * 5;
+
+    this.linearVelocity.setValue(x, 0, z);
     this.player.setLinearVelocity(this.linearVelocity);
   }
 

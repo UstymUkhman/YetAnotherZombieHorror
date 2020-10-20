@@ -1,6 +1,7 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type Object3D = import('@three/core/Object3D').Object3D;
 
+import Camera /*, { object as cameraObject } */ from '@/managers/Camera';
 import { Direction, Directions } from '@/managers/Input';
 import { GameEvents } from '@/managers/GameEvents';
 
@@ -8,7 +9,7 @@ import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { Euler } from '@three/math/Euler';
 
-import Camera from '@/managers/Camera';
+// import { clamp } from '@/utils/Number';
 import { Settings } from '@/settings';
 
 import Pistol from '@/weapons/Pistol';
@@ -73,6 +74,11 @@ export class Player extends Character {
   private isRunning (): boolean {
     return this.running && !this.aiming;
   }
+
+  /* public tilt (rotation: number): void {
+    const y = clamp(Camera.rotation.x + rotation / -400, -0.1, ~~this.aiming * 0.2 + 0.2);
+    cameraObject.rotation.x = this.model.rotation.x = y;
+  } */
 
   public idle (): void {
     const idle = this.getWeaponAnimation('Idle');
@@ -220,9 +226,9 @@ export class Player extends Character {
     };
   }
 
-  public get aimMode (): boolean {
+  /* public get aimMode (): boolean {
     return this.aiming;
-  }
+  } */
 
   public get uuid (): string {
     return this.object.uuid;
