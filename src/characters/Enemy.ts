@@ -8,10 +8,10 @@ import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { SkeletonUtils } from '@utils/SkeletonUtils';
 
-import { HitBoxMaterial } from '@/utils/Material';
 import Character from '@/characters/Character';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
+import { HitBox } from '@/utils/Material';
 import { Settings } from '@/settings';
 
 export default class Enemy extends Character {
@@ -76,7 +76,7 @@ export default class Enemy extends Character {
 
     const headHitBox = new Mesh(
       new BoxGeometry(18, 20, 20),
-      HitBoxMaterial.clone()
+      HitBox.clone()
     );
 
     headHitBox.position.y += 5;
@@ -92,7 +92,7 @@ export default class Enemy extends Character {
 
     const bodyHitBox = new Mesh(
       CapsuleGeometry(20, 50),
-      HitBoxMaterial.clone()
+      HitBox.clone()
     );
 
     bodyHitBox.rotation.x -= Math.PI / 2;
@@ -112,12 +112,12 @@ export default class Enemy extends Character {
 
     const upperLeg = new Mesh(
       new BoxGeometry(16, 50, 15),
-      HitBoxMaterial.clone()
+      HitBox.clone()
     );
 
     const lowerLeg = new Mesh(
       new BoxGeometry(10, 50, 10),
-      HitBoxMaterial.clone()
+      HitBox.clone()
     );
 
     lowerLeg.userData.enemy = this.id;

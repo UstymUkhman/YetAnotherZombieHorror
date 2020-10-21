@@ -10,11 +10,11 @@ type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { SphereGeometry } from '@three/geometries/SphereGeometry';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
-import { BoxGeometry } from '@three/geometries/BoxGeometry';
 
-import { ColliderMaterial } from '@/utils/Material';
+import { DynamicCollider } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
 
 import { camelCase } from '@/utils/String';
@@ -39,14 +39,8 @@ export default class Character {
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
-    this.object = new Mesh(
-      new BoxGeometry(
-        settings.collider.x,
-        settings.collider.y,
-        settings.collider.z
-      ),
-      ColliderMaterial
-    );
+    const radius = this.settings.collider;
+    this.object = new Mesh(new SphereGeometry(radius, 8, 8), DynamicCollider );
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -118,8 +112,8 @@ export default class Character {
 
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
+    character.scene.position.set(0, -this.settings.collider, 0);
 
-    character.scene.position.copy(this.settings.offset as Vector3);
     this.object.position.copy(this.settings.position as Vector3);
     this.object.scale.copy(this.settings.scale as Vector3);
 

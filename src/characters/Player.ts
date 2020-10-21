@@ -1,7 +1,7 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type Object3D = import('@three/core/Object3D').Object3D;
 
-import Camera /*, { object as cameraObject } */ from '@/managers/Camera';
+import { Camera /*, CameraObject */ } from '@/managers/GameCamera';
 import { Direction, Directions } from '@/managers/Input';
 import { GameEvents } from '@/managers/GameEvents';
 

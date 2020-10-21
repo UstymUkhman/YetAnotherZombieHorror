@@ -1,9 +1,8 @@
 {
   "position": [0.0, 0.0, 0.0],
-  "offset": [0, -0.775, -0.2],
-  "collider": [0.75, 1.5, 1],
   "scale": [1.6, 1.6, 1.6],
   "model": "enemy.glb",
+  "collider": 0.5,
 
   "sounds": {
     "hardAttack": "hardAttack.mp3",

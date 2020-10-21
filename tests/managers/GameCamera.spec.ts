@@ -2,11 +2,22 @@ declare const global: any;
 global.PRODUCTION = false;
 global.BUILD = '0.1.0';
 
+import { Camera, CameraObject, CameraListener, getWorldDirection } from '@/managers/GameCamera';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
-import Camera, { object, listener } from '@/managers/Camera';
 import { Object3D } from '@three/core/Object3D';
+import { Vector3 } from '@three/math/Vector3';
 
-describe('Camera', () => {
+describe('GameCamera', () => {
+  test('CameraObject', () => {
+    expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
+    expect(Camera.object).toStrictEqual(CameraObject);
+    expect(Camera.object.fov).toBeCloseTo(55.4, 1);
+  });
+
+  test('CameraListener', () => {
+    expect(Camera.listener).toStrictEqual(CameraListener);
+  });
+
   test('updateAspectRatio', () => {
     const сameraPrototype = Object.getPrototypeOf(Camera);
     const updateAspectRatio = jest.fn(сameraPrototype.updateAspectRatio.bind(Camera));
@@ -15,22 +26,17 @@ describe('Camera', () => {
     expect(updateAspectRatio).toHaveReturnedWith(undefined);
   });
 
+  test('getWorldDirection', () => {
+    const rotation = getWorldDirection();
+    expect(rotation).toBeInstanceOf(Vector3);
+  });
+
   test('setTo', () => {
     const target = new Object3D();
     Camera.setTo(target);
 
     expect(target.children.length).toStrictEqual(1);
     expect(target.children[0]).toBe(Camera.object);
-  });
-
-  test('listener', () => {
-    expect(Camera.listener).toStrictEqual(listener);
-  });
-
-  test('object', () => {
-    expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
-    expect(Camera.object.fov).toBeCloseTo(55.4, 1);
-    expect(Camera.object).toStrictEqual(object);
   });
 
   test('destroy', () => {

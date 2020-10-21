@@ -1,6 +1,6 @@
+import { /* CameraObject, */ CameraListener } from '@/managers/GameCamera';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
-import { /* object, */ listener } from '@/managers/Camera';
 
 type WeaponSettings = import('@/settings').Settings.Weapon;
 // type Vector2 = import('@three/math/Vector2').Vector2;
@@ -62,8 +62,8 @@ export default class Weapon {
 
   private addSounds (names: Array<string>, sounds: Array<AudioBuffer>): void {
     sounds.forEach((sound, s) => {
+      const audio = new PositionalAudio(CameraListener);
       const volume = names[s] === 'shoot' ? 10 : 5;
-      const audio = new PositionalAudio(listener);
 
       this.weapon?.add(audio);
       audio.setVolume(volume);

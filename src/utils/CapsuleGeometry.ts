@@ -6,7 +6,9 @@ import { Vector4 } from '@three/math/Vector4';
 import { Face3 } from '@three/core/Face3';
 import { PI } from '@/utils/Number';
 
-export default (radius = 1, height = 2, N = 16): Geometry => {
+export type CapsuleGeometry = Geometry & { radius: number; height: number };
+
+export default (radius = 1, height = 2, N = 16): CapsuleGeometry => {
   const geometry = new Geometry();
   const normals = [];
 
@@ -99,5 +101,5 @@ export default (radius = 1, height = 2, N = 16): Geometry => {
   }
 
   geometry.computeFaceNormals();
-  return geometry;
+  return Object.assign(geometry, { radius, height }) as CapsuleGeometry;
 };

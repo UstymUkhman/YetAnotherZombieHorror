@@ -11,8 +11,9 @@ import anime from 'animejs';
 const DEFAULT = new Vector3(-0.625, 1.5, -1.5);
 // const AIM = new Vector3(-0.6, 2.85, -1);
 const RUN = new Vector3(-1.135, 1.25, -3);
+const DIRECTION = new Vector3();
 
-class Camera {
+class GameCamera {
   private audioListener = new AudioListener();
   private readonly onResize = this.updateAspectRatio.bind(this);
 
@@ -105,9 +106,9 @@ class Camera {
   }
 }
 
-const camera = new Camera();
+export const Camera = new GameCamera();
+export const CameraObject = Camera.object;
+export const CameraListener = Camera.listener;
 
-export default camera;
-export const object = camera.object;
-export const listener = camera.listener;
-export const getWorldDirection = object.getWorldDirection.bind(object);
+export const getWorldDirection = (): Vector3 =>
+  CameraObject.getWorldDirection(DIRECTION);

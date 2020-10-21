@@ -95,24 +95,20 @@ export namespace Settings {
 
   export const Player = deepFreeze({
     position: new Vector3(...PlayerData.position),
-    collider: new Vector3(...PlayerData.collider),
-
-    offset: new Vector3(...PlayerData.offset),
     scale: new Vector3(...PlayerData.scale),
 
     animations:  PlayerData.animations,
+    collider: PlayerData.collider,
     sounds: PlayerData.sounds,
     model: PlayerData.model
   });
 
   export const Enemy = deepFreeze({
     position: new Vector3(...EnemyData.position),
-    collider: new Vector3(...EnemyData.collider),
-
-    offset: new Vector3(...EnemyData.offset),
     scale: new Vector3(...EnemyData.scale),
 
     animations:  EnemyData.animations,
+    collider: EnemyData.collider,
     sounds: EnemyData.sounds,
     model: EnemyData.model
   });

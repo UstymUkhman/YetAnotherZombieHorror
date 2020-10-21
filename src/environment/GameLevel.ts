@@ -1,7 +1,7 @@
 import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
+import { CameraObject } from '@/managers/GameCamera';
 import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from '@three/scenes/Scene';
-import { object } from '@/managers/Camera';
 
 export default class GameLevel {
   private renderer = new WebGLRenderer({ antialias: true, alpha: false });
@@ -9,7 +9,7 @@ export default class GameLevel {
 
   private readonly loader = new Assets.Loader();
   protected readonly scene = new Scene();
-  protected camera = object;
+  protected camera = CameraObject;
 
   public constructor () {
     this.createRenderer();
