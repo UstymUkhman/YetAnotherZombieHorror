@@ -23,16 +23,12 @@ const ZERO_MASS = 0.0;
 const MIN_SIZE = 0.01;
 const GRAVITY = -9.81;
 
-namespace Bullet {
-  export type vector3 = Vector3;
+type AmmoWorld = {
+  stepSimulation: (timeStep: number, maxSubSteps?: number) => void
+  addRigidBody: (body: any, group?: number, mask?: number) => void
 
-  export type World = {
-    addRigidBody: (body: any, group?: number, mask?: number) => void
-    stepSimulation: (timeStep: number, maxSubSteps?: number) => void
-
-    setGravity: (gravity: Vector3) => void
-    __destroy__: () => void
-  }
+  setGravity: (gravity: Vector3) => void
+  __destroy__: () => void
 }
 
 type BoundsOptions = {
@@ -41,9 +37,9 @@ type BoundsOptions = {
   y: number
 };
 
-type Direction = {
-  x: number
-  z: number
+type Moves = {
+  speed: number
+  angle: number
 };
 
 class Physics {
@@ -57,7 +53,7 @@ class Physics {
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
 
-  private world: Bullet.World;
+  private world: AmmoWorld;
   private paused = false;
   private player: any;
 
@@ -122,11 +118,11 @@ class Physics {
   } */
 
   private createDynamicSphere (mesh: Mesh, mass: number): void {
-    const shape = new Ammo.btSphereShape((mesh.geometry as SphereGeometry).parameters.radius);
+    const shape = new Ammo.btSphereShape((mesh.geometry as SphereGeometry).parameters.radius * 1.465);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
-    body.setLinearFactor(new Ammo.btVector3(1.0, 0.0, 1.0));
+    body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
 
     this.world.addRigidBody(body, 128, 0xFFFF);
     this.boxes.set(mesh.uuid, { mesh, body });
@@ -230,12 +226,14 @@ class Physics {
     this.player = this.boxes.get(player.uuid)?.body;
   }
 
-  public move (/* direction: Direction */): void {
+  public move (moves: Moves): void {
     const rotation = getWorldDirection();
     const theta = Math.atan2(rotation.x, rotation.z);
 
-    const x = Math.sin(theta) * 5;
-    const z = Math.cos(theta) * 5;
+    const x = Math.sin(theta) * 4;
+    const z = Math.cos(theta) * 4;
+
+    console.log(moves);
 
     this.linearVelocity.setValue(x, 0, z);
     this.player.setLinearVelocity(this.linearVelocity);

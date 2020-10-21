@@ -23,17 +23,17 @@ import Physics from '@/managers/Physics';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
+  private moves = { speed: 0, angle: 0 };
   protected animations: Actions = {};
   // private sounds: CharacterSounds;
 
   private mixer?: AnimationMixer;
-  private speed = { x: 0, z: 0 };
   private model?: Assets.GLTF;
   protected object: Mesh;
 
   protected running = false;
   protected moving = false;
-  protected alive = true;
+  protected dead = false;
 
   private still = false;
   private health = 100;
@@ -76,8 +76,8 @@ export default class Character {
   protected setAnimation (animation: CharacterAnimation): void {
     const animations = this.settings.animations as CharacterAnimations;
 
-    this.speed.x = animations[animation][0];
-    this.speed.z = animations[animation][1];
+    this.moves.speed = animations[animation][0];
+    this.moves.angle = animations[animation][1];
   }
 
   protected createAudio (sound: AudioBuffer, listener: AudioListener, volume = 10): PositionalAudio {
@@ -93,9 +93,8 @@ export default class Character {
     this.mixer?.update(delta);
 
     if (this.moving) {
-      // Physics.move(this.speed);
+      Physics.move(this.moves);
       this.still = false;
-      Physics.move();
     }
 
     else if (!this.still) {
@@ -105,9 +104,9 @@ export default class Character {
   }
 
   protected checkIfAlive (): void {
-    if (!this.alive) return;
-    this.alive = this.alive && this.health > 0;
-    // if (!this.alive) this.death();
+    if (this.dead) return;
+    this.dead = this.dead || !this.health;
+    // this.dead && this.death();
   }
 
   public async load (): Promise<Assets.GLTFModel> {
@@ -158,19 +157,19 @@ export default class Character {
   }
 
   public reset (): void {
-    this.speed = { x: 0, z: 0 };
+    this.moves = { speed: 0, angle: 0 };
     this.running = false;
     this.moving = false;
 
     this.health = 100;
-    this.alive = true;
+    this.dead = false;
   }
 
   public get collider (): Mesh {
     return this.object;
   }
 
-  public get dead (): boolean {
-    return !this.alive;
+  public get alive (): boolean {
+    return !this.dead;
   }
 }

@@ -49,7 +49,7 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
-    // Physics.setPlayer(this.player.collider);
+    Physics.setPlayer(this.player.collider);
 
     this.player.addSounds(playerSounds);
     this.player.setPistol(this.pistol);
@@ -86,13 +86,15 @@ export default class GameLoop {
 
   private update (): void {
     this.stats?.begin();
-
     this.raf = requestAnimationFrame(this.update.bind(this));
-    const delta = this.clock.getDelta();
 
+    const delta = this.clock.getDelta();
     this.player.update(delta);
-    Physics.update(delta);
-    this.input.update();
+
+    if (this.player.alive) {
+      Physics.update(delta);
+      this.input.update();
+    }
 
     this.level.render();
     this.stats?.end();

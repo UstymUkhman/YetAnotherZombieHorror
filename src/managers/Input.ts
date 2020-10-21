@@ -251,8 +251,6 @@ export default class Input {
   }
 
   public update (): void {
-    // if (!this.player.alive) return;
-
     // this.player.tilt(this.rotation.y);
     Physics.rotate(this.rotation.x);
     this.rotation.setScalar(0);

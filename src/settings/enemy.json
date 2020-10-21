@@ -14,9 +14,9 @@
 
   "animations": {
     "Idle": [0, 0],
-    "Walking": [0, 0.01],
-    "Running": [0, 0.07],
-    "Falling": [0, 0.015],
-    "Crawling": [0, 0.01]
+    "Walking": [0.01, 0],
+    "Running": [0.07, 0],
+    "Falling": [0.015, 0],
+    "Crawling": [0.01, 0]
   }
 }

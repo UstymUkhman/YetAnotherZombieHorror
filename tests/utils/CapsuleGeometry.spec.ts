@@ -4,6 +4,9 @@ import { Geometry } from '@three/core/Geometry';
 describe('CapsuleGeometry', () => {
   test('create', () => {
     const capsule = CapsuleGeometry(20, 50);
+
     expect(capsule).toBeInstanceOf(Geometry);
+    expect(capsule.radius).toStrictEqual(20);
+    expect(capsule.height).toStrictEqual(50);
   });
 });
