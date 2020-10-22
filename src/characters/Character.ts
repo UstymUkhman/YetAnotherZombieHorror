@@ -10,10 +10,10 @@ type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { SphereGeometry } from '@three/geometries/SphereGeometry';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
+import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { DynamicCollider } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
 
@@ -39,8 +39,10 @@ export default class Character {
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
-    const radius = this.settings.collider;
-    this.object = new Mesh(new SphereGeometry(radius, 8, 8), DynamicCollider );
+    this.object = new Mesh(
+      new CapsuleGeometry(0.25, 1.2),
+      DynamicCollider
+    );
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {

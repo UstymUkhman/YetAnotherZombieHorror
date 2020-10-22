@@ -91,7 +91,7 @@ export default class Enemy extends Character {
     const spine = this.character.getObjectByName('Spine') as Object3D;
 
     const bodyHitBox = new Mesh(
-      CapsuleGeometry(20, 50),
+      new CapsuleGeometry(0.2, 0.95),
       HitBox.clone()
     );
 

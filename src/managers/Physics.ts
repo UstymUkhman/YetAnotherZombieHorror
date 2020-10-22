@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
-type SphereGeometry = import('@three/geometries/SphereGeometry').SphereGeometry;
-// type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleGeometry;
 type Quaternion = import('@three/math/Quaternion').Quaternion;
-
 type Bounds = import('@/settings').Settings.Bounds;
 type Bound = import('@/settings').Settings.Bound;
 
@@ -117,7 +114,7 @@ class Physics {
     GameEvents.dispatch('add:object', mesh);
   } */
 
-  private createDynamicSphere (mesh: Mesh, mass: number): void {
+  /* private createDynamicSphere (mesh: Mesh, mass: number): void {
     const shape = new Ammo.btSphereShape((mesh.geometry as SphereGeometry).parameters.radius * 1.465);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
@@ -127,21 +124,19 @@ class Physics {
     this.world.addRigidBody(body, 128, 0xFFFF);
     this.boxes.set(mesh.uuid, { mesh, body });
     GameEvents.dispatch('add:object', mesh);
-  }
+  } */
 
-  /* private createDynamicCapsule (mesh: Mesh, mass: number): void {
-    const { radius, height } = mesh.geometry as CapsuleGeometry;
-
-    const shape = new Ammo.btCapsuleShape(radius, height / 2.0);
+  private createCharacterCollider (mesh: Mesh, mass: number): void {
+    const shape = new Ammo.btCapsuleShape(0.25 * 1.4675, 1.2 * 1.4675);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
-    body.setLinearFactor(new Ammo.btVector3(1.0, 0.0, 1.0));
+    body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
 
     this.world.addRigidBody(body, 128, 0xFFFF);
     this.boxes.set(mesh.uuid, { mesh, body });
     GameEvents.dispatch('add:object', mesh);
-  } */
+  }
 
   public createGround (min: Array<number>, max: Array<number>): void {
     this.sizeVector.set(Math.abs(min[0] - max[0]), MIN_SIZE, Math.abs(min[1] - max[1]));
@@ -222,7 +217,7 @@ class Physics {
   }
 
   public setPlayer (player: Mesh): void {
-    this.createDynamicSphere(player, 90);
+    this.createCharacterCollider(player, 90);
     this.player = this.boxes.get(player.uuid)?.body;
   }
 
