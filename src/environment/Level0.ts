@@ -4,7 +4,6 @@
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
-type Coords = Readonly<Array<number>>;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
@@ -64,8 +63,8 @@ export default class Level0 extends GameLevel {
     Physics.createBounds({
       borders: Level0.bounds, y: position.y, height
     }, {
-      borders: Settings.Level0.sidewalk,
-      height: sidewalkHeight, // / Math.sin(Math.PI / 6);
+      borders: Settings.Level0.sidewalk as Settings.Bounds,
+      height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
   }
@@ -89,21 +88,21 @@ export default class Level0 extends GameLevel {
     }
   }
 
-  public static get minCoords (): Array<number> {
+  public static get minCoords (): Settings.Coords {
     return [
-      min(Level0.bounds.map((coords: Coords) => coords[0])),
-      min(Level0.bounds.map((coords: Coords) => coords[1]))
+      min(Level0.bounds.map((coords: Settings.Coords) => coords[0])),
+      min(Level0.bounds.map((coords: Settings.Coords) => coords[1]))
     ];
   }
 
-  public static get maxCoords (): Array<number> {
+  public static get maxCoords (): Settings.Coords {
     return [
-      max(Level0.bounds.map((coords: Coords) => coords[0])),
-      max(Level0.bounds.map((coords: Coords) => coords[1]))
+      max(Level0.bounds.map((coords: Settings.Coords) => coords[0])),
+      max(Level0.bounds.map((coords: Settings.Coords) => coords[1]))
     ];
   }
 
   public static get bounds (): Settings.Bounds {
-    return Settings.Level0.bounds;
+    return Settings.Level0.bounds as Settings.Bounds;
   }
 }

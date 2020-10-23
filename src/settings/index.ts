@@ -12,35 +12,46 @@ import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from '@three/math/Euler';
 
 export namespace Settings {
-  const isApp = navigator.userAgent.toLowerCase().includes('electron');
+  const parseCharacterMoves = (animations: Record<string, Coords>): Moves =>
+    Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
+      speed: animations[animation][0], angle: animations[animation][1]
+    }})
+  ));
+
+  const playerMoves = PlayerData.animations as unknown as Record<string, Coords>;
+  const enemyMoves = EnemyData.animations as unknown as Record<string, Coords>;
+
+  export const APP = navigator.userAgent.toLowerCase().includes('electron');
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
 
-  export type Animations = { [key in Animation]: Array<number> };
+  export type Animations<Value> = { [key in Animation]: Value };
+  export type Animation = PlayerAnimations | EnemyAnimations;
+
   export type PlayerAnimations = keyof typeof Player.animations;
   export type EnemyAnimations = keyof typeof Enemy.animations;
+  export type Move = { speed: number, angle: number };
 
-  export type Animation = PlayerAnimations | EnemyAnimations;
   export type Character = typeof Player | typeof Enemy;
   export type Weapon = typeof Pistol | typeof Rifle;
 
   export type Sounds = { [key in Sound]: string };
   export type Sound = PlayerSounds | EnemySounds;
 
+  export type Coords = Readonly<[number, number]>;
+  export type Bounds = Readonly<Array<Coords>>;
+
   type PlayerSounds = keyof typeof Player.sounds;
   type EnemySounds = keyof typeof Enemy.sounds;
-
-  export type Bounds = Readonly<Array<Bound>>;
-  export type Bound = Readonly<Array<number>>;
-
-  export const freeCamera = false;
-  export const colliders = false;
-  export const hitBoxes = false;
+  type Moves = { [key: string]: Move };
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
   export const DEBUG = !PRODUCTION;
-  export const APP = isApp;
   /* eslint-enable no-undef */
+
+  export const freeCamera = false;
+  export const colliders = false;
+  export const hitBoxes = false;
 
   export const Level0 = deepFreeze({
     position: new Vector3(...Level0Data.position),
@@ -95,20 +106,24 @@ export namespace Settings {
 
   export const Player = deepFreeze({
     position: new Vector3(...PlayerData.position),
+    collider: new Vector3(...PlayerData.collider),
     scale: new Vector3(...PlayerData.scale),
 
-    animations:  PlayerData.animations,
-    collider: PlayerData.collider,
+    moves: parseCharacterMoves(playerMoves),
+    animations: PlayerData.animations,
+
     sounds: PlayerData.sounds,
     model: PlayerData.model
   });
 
   export const Enemy = deepFreeze({
     position: new Vector3(...EnemyData.position),
+    collider: new Vector3(...EnemyData.collider),
     scale: new Vector3(...EnemyData.scale),
 
-    animations:  EnemyData.animations,
-    collider: EnemyData.collider,
+    moves: parseCharacterMoves(enemyMoves),
+    animations: EnemyData.animations,
+
     sounds: EnemyData.sounds,
     model: EnemyData.model
   });

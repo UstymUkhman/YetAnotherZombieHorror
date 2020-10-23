@@ -1,8 +1,8 @@
 {
+  "collider": [0.25, 1.2, -0.845],
   "position": [0.0, 0.0, 0.0],
   "scale": [1.6, 1.6, 1.6],
   "model": "enemy.glb",
-  "collider": 0.5,
 
   "sounds": {
     "hardAttack": "hardAttack.mp3",

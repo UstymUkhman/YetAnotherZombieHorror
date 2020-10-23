@@ -5,7 +5,10 @@ import { BufferGeometry } from '@three/core/BufferGeometry';
 
 import { Vector3 } from '@three/math/Vector3';
 import { Vector2 } from '@three/math/Vector2';
+
 import { PI } from '@/utils/Number';
+
+export type CapsuleBufferGeometry = InstanceType<typeof CapsuleGeometry>;
 
 export default class CapsuleGeometry extends BufferGeometry {
   public readonly type = 'CapsuleGeometry';
@@ -32,7 +35,7 @@ export default class CapsuleGeometry extends BufferGeometry {
     this.vertices = new BufferAttribute(new Float32Array(vertexes * 3), 3);
     this.indices  = new BufferAttribute(new (indexes > 65535 ? Uint32Array : Uint16Array)(indexes), 1);
 
-    this.generateTorso();
+    this.createCapsule();
     this.setIndex(this.indices);
 
     this.setAttribute('uv', this.uvs);
@@ -48,107 +51,108 @@ export default class CapsuleGeometry extends BufferGeometry {
     return radial * (height + caps) * (~~!vertex * 5 + 1);
   }
 
-  private generateTorso (): void {
+  private createCapsule (): void {
+    const { height, caps, radial } = this.segments;
+
     const halfHeight = this.height / 2;
+    const indexes = height + caps * 2;
 
-    const length = new Vector2(this.radius, halfHeight)
-          .sub(new Vector2(this.radius, -halfHeight)).length();
+    const length = new Vector2(this.radius, halfHeight).sub(
+      new Vector2(this.radius, -halfHeight)).length();
 
-    const vl = this.radius * PI.d2 + length;
+    const vLength = this.radius * PI.d2 + length;
+    const indexArray = new Array(indexes + 1);
 
     const normal = new Vector3();
     const vertex = new Vector3();
 
-    const indexArray = [];
     let index = 0, v = 0;
 
-    for (let i = 0; i <= this.segments.caps; i++) {
-      const indexRow = [];
-      const angle = PI.d2 - PI.d2 * (i / this.segments.caps);
+    for (let i = 0; i <= caps; i++) {
+      const angle = PI.d2 - PI.d2 * (i / caps);
+      const indexRow = new Array(radial + 1);
 
-      const cosA = Math.cos(angle);
-      const sinA = Math.sin(angle);
+      const cosine = Math.cos(angle);
+      const sine = Math.sin(angle);
 
-      const radius = cosA * this.radius;
-      v += this.radius * PI.d2 / this.segments.caps;
+      const radius = cosine * this.radius;
+      v += this.radius * PI.d2 / caps;
 
-      for (let j = 0; j <= this.segments.radial; j++) {
-        const u = j / this.segments.radial;
+      for (let j = 0; j <= radial; j++) {
+        const u = j / radial;
         const theta = u * PI.m2;
 
         const sinTheta = Math.sin(theta);
         const cosTheta = Math.cos(theta);
 
-        vertex.set(radius * sinTheta, halfHeight + sinA * this.radius, radius * cosTheta);
+        vertex.set(radius * sinTheta, halfHeight + sine * this.radius, radius * cosTheta);
         this.vertices.setXYZ(index, vertex.x, vertex.y, vertex.z);
 
-        normal.set(cosA * sinTheta, sinA, cosA * cosTheta);
+        normal.set(cosine * sinTheta, sine, cosine * cosTheta);
         this.normals.setXYZ(index, normal.x, normal.y, normal.z);
 
-        this.uvs.setXY(index, u, 1 - v / vl);
-        indexRow.push(index++);
+        this.uvs.setXY(index, u, 1 - v / vLength);
+        indexRow[j] = index++;
       }
 
-      indexArray.push(indexRow);
+      indexArray[i] = indexRow;
     }
 
-    for (let i = 1; i <= this.segments.height; i++) {
-      const indexRow = [];
-			v += length / this.segments.height;
+    for (let i = 1, c = caps; i <= height; i++) {
+      const indexRow = new Array(radial + 1);
+			v += length / height;
 
-			for (let j = 0; j <= this.segments.radial; j++) {
-				const u = j / this.segments.radial;
+			for (let j = 0; j <= radial; j++) {
+				const u = j / radial;
 				const theta = u * PI.m2;
 
 				const sinTheta = Math.sin(theta);
 				const cosTheta = Math.cos(theta);
 
-        vertex.set(this.radius * sinTheta, halfHeight - i * this.height / this.segments.height, this.radius * cosTheta);
+        vertex.set(this.radius * sinTheta, halfHeight - i * this.height / height, this.radius * cosTheta);
 				this.vertices.setXYZ(index, vertex.x, vertex.y, vertex.z);
 
 				normal.set(sinTheta, 0, cosTheta).normalize();
 				this.normals.setXYZ(index, normal.x, normal.y, normal.z);
 
-				this.uvs.setXY(index, u, 1 - v / vl);
-				indexRow.push(index++);
-			}
+        this.uvs.setXY(index, u, 1 - v / vLength);
+        indexRow[j] = index++;
+      }
 
-			indexArray.push(indexRow);
+      indexArray[c + i] = indexRow;
     }
 
-    for (let i = 1; i <= this.segments.caps; i++) {
-      const indexRow = [];
-      const angle = -PI.d2 * (i / this.segments.caps);
+    for (let i = 1, c = caps + height; i <= caps; i++) {
+      const indexRow = new Array(radial + 1);
+      const angle = -PI.d2 * (i / caps);
 
-      const cosA = Math.cos(angle);
-      const sinA = Math.sin(angle);
+      const cosine = Math.cos(angle);
+      const sine = Math.sin(angle);
 
-      const radius = cosA * this.radius;
-      v += this.radius * PI.d2 / this.segments.caps;
+      const radius = cosine * this.radius;
+      v += this.radius * PI.d2 / caps;
 
-      for (let j = 0; j <= this.segments.radial; j++) {
-        const u = j / this.segments.radial;
+      for (let j = 0; j <= radial; j++) {
+        const u = j / radial;
         const theta = u * PI.m2;
 
         const sinTheta = Math.sin(theta);
         const cosTheta = Math.cos(theta);
 
-        vertex.set(radius * sinTheta, -halfHeight + sinA * this.radius, radius * cosTheta);
+        vertex.set(radius * sinTheta, -halfHeight + sine * this.radius, radius * cosTheta);
         this.vertices.setXYZ(index, vertex.x, vertex.y, vertex.z);
 
-        normal.set(cosA * sinTheta, sinA, cosA * cosTheta);
+        normal.set(cosine * sinTheta, sine, cosine * cosTheta);
         this.normals.setXYZ(index, normal.x, normal.y, normal.z);
 
-        this.uvs.setXY(index, u, 1 - v / vl);
-        indexRow.push(index++);
+        this.uvs.setXY(index, u, 1 - v / vLength);
+        indexRow[j] = index++;
       }
 
-      indexArray.push(indexRow);
+      indexArray[c + i] = indexRow;
     }
 
-    for (let index = 0, i0 = 0, i1 = 1; i0 < this.segments.radial; i0++, i1++) {
-      const indexes = this.segments.height + this.segments.caps * 2;
-
+    for (let index = 0, i0 = 0, i1 = 1; i0 < radial; i0++, i1++) {
       for (let j0 = 0, j1 = 1; j0 < indexes; j0++, j1++) {
 				const x0 = indexArray[j0][i0];
 				const x1 = indexArray[j1][i0];
@@ -163,6 +167,6 @@ export default class CapsuleGeometry extends BufferGeometry {
         this.indices.setX(index++, x2);
         this.indices.setX(index++, x3);
 			}
-		}
+    }
   }
 }

@@ -1,13 +1,13 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type AudioListener = import('@three/audio/AudioListener').AudioListener;
 
-type CharacterAnimations = import('@/settings').Settings.Animations;
 type CharacterAnimation = import('@/settings').Settings.Animation;
 type CharacterSettings = import('@/settings').Settings.Character;
 // type CharacterSounds = import('@/settings').Settings.Sounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
+type Move = import('@/settings').Settings.Move;
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
@@ -23,8 +23,9 @@ import Physics from '@/managers/Physics';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
-  private moves = { speed: 0, angle: 0 };
-  protected animations: Actions = {};
+  private step: Move = this.settings.moves.Idle;
+
+  protected animations: Actions = { };
   // private sounds: CharacterSounds;
 
   private mixer?: AnimationMixer;
@@ -39,10 +40,8 @@ export default class Character {
   private health = 100;
 
   public constructor (private settings: CharacterSettings) {
-    this.object = new Mesh(
-      new CapsuleGeometry(0.25, 1.2),
-      DynamicCollider
-    );
+    const { x, y } = this.settings.collider;
+    this.object = new Mesh(new CapsuleGeometry(x, y), DynamicCollider);
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -76,10 +75,7 @@ export default class Character {
   }
 
   protected setAnimation (animation: CharacterAnimation): void {
-    const animations = this.settings.animations as CharacterAnimations;
-
-    this.moves.speed = animations[animation][0];
-    this.moves.angle = animations[animation][1];
+    this.step = this.settings.moves[animation];
   }
 
   protected createAudio (sound: AudioBuffer, listener: AudioListener, volume = 10): PositionalAudio {
@@ -95,7 +91,7 @@ export default class Character {
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(this.moves);
+      Physics.move(this.step);
       this.still = false;
     }
 
@@ -113,7 +109,7 @@ export default class Character {
 
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.settings.model);
-    character.scene.position.set(0, -this.settings.collider, 0);
+    character.scene.position.set(0, this.settings.collider.z, 0);
 
     this.object.position.copy(this.settings.position as Vector3);
     this.object.scale.copy(this.settings.scale as Vector3);
@@ -159,7 +155,7 @@ export default class Character {
   }
 
   public reset (): void {
-    this.moves = { speed: 0, angle: 0 };
+    this.step = this.settings.moves.Idle;
     this.running = false;
     this.moving = false;
 

@@ -1,8 +1,8 @@
 {
+  "collider": [0.25, 1.2, -0.845],
   "position": [0.0, 1.15, 0.0],
   "scale": [1.5, 1.5, 1.5],
   "model": "player.glb",
-  "collider": 0.845,
 
   "sounds": {
     "death": "playerDeath.mp3",

@@ -1,9 +1,11 @@
 import { cloneBounds, min, max } from '@/utils/Array';
+type Bounds = import('@/settings').Settings.Bounds;
 import Level0 from '@/settings/level0.json';
 
 describe('Array', () => {
   test('cloneBounds', () => {
-    expect(cloneBounds(Level0.bounds)).toStrictEqual(Level0.bounds);
+    const bounds = Level0.bounds as unknown as Bounds;
+    expect(cloneBounds(bounds)).toStrictEqual(Level0.bounds);
   });
 
   test('min', () => {

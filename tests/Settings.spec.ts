@@ -1,12 +1,13 @@
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
-import { Euler } from '@three/math/Euler';
 
 import Level0 from '@/settings/level0.json';
 import Pistol from '@/settings/pistol.json';
 
 import Player from '@/settings/player.json';
 import Enemy from '@/settings/enemy.json';
+
+import { Euler } from '@three/math/Euler';
 
 declare const global: any;
 global.PRODUCTION = false;
@@ -54,6 +55,7 @@ describe('Settings', () => {
   test('Player', () => {
     const animationKeys = Object.keys(Settings.Player.animations);
     const playerPosition = new Vector3(...Player.position);
+    const playerCollider = new Vector3(...Player.collider);
     const playerScale = new Vector3(...Player.scale);
 
     expect(Settings.Player.scale).toBeInstanceOf(Vector3);
@@ -64,8 +66,8 @@ describe('Settings', () => {
     expect(Settings.Player.position).toBeInstanceOf(Vector3);
     expect(Settings.Player.position).toStrictEqual(playerPosition);
 
-    expect(Settings.Player.collider).toStrictEqual(Player.collider);
-    expect(typeof Settings.Player.collider).toStrictEqual('number');
+    expect(Settings.Player.collider).toBeInstanceOf(Vector3);
+    expect(Settings.Player.collider).toStrictEqual(playerCollider);
 
     expect(Object.keys(Settings.Player.sounds).length).toBeGreaterThan(0);
     expect(animationKeys.length).toBeGreaterThan(0);
@@ -79,6 +81,7 @@ describe('Settings', () => {
   test('Enemy', () => {
     const animationKeys = Object.keys(Settings.Enemy.animations);
     const enemyPosition = new Vector3(...Enemy.position);
+    const enemyCollider = new Vector3(...Enemy.collider);
     const enemyScale = new Vector3(...Enemy.scale);
 
     expect(Settings.Enemy.scale).toBeInstanceOf(Vector3);
@@ -89,8 +92,8 @@ describe('Settings', () => {
     expect(Settings.Enemy.position).toBeInstanceOf(Vector3);
     expect(Settings.Enemy.position).toStrictEqual(enemyPosition);
 
-    expect(Settings.Enemy.collider).toStrictEqual(Enemy.collider);
-    expect(typeof Settings.Enemy.collider).toStrictEqual('number');
+    expect(Settings.Enemy.collider).toBeInstanceOf(Vector3);
+    expect(Settings.Enemy.collider).toStrictEqual(enemyCollider);
 
     expect(Object.keys(Settings.Enemy.sounds).length).toBeGreaterThan(0);
     expect(animationKeys.length).toBeGreaterThan(0);

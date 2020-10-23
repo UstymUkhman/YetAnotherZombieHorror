@@ -6,6 +6,7 @@
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
   type Bounds = import('@/settings').Settings.Bounds;
+  type Coords = import('@/settings').Settings.Coords;
 
   import { cloneBounds, max } from '@/utils/Array';
   import Level0 from '@/environment/Level0';
@@ -31,7 +32,7 @@
   const PADDING = 1;
 
   function getNormalizedBounds (): Bounds {
-    const scaleBounds = (coord: Array<number>): Array<number> => [coord[0] * scale, coord[1] * scale];
+    const scaleBounds = (coord: Coords): Coords => [coord[0] * scale, coord[1] * scale];
     const cBounds = cloneBounds(bounds).map(bound => scaleBounds(bound));
 
     for (let b = 0; b < cBounds.length; b++) {
@@ -39,8 +40,8 @@
       cBounds[b][1] += scale * minCoords[1];
     }
 
-    map.height = max(cBounds.map((coords: Array<number>) => coords[1])) + PADDING * 2;
-    map.width = max(cBounds.map((coords: Array<number>) => coords[0])) + PADDING * 2;
+    map.height = max(cBounds.map((coords: Coords) => coords[1])) + PADDING * 2;
+    map.width = max(cBounds.map((coords: Coords) => coords[0])) + PADDING * 2;
 
     return cBounds;
   }
