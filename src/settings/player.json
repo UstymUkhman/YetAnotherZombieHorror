@@ -10,17 +10,17 @@
   },
 
   "animations": {
-    "Idle": [0, 0],
-    "Run": [0.25, 0],
-    "Left": [0, 0.07],
-    "Right": [0, -0.09],
+    "Idle": 0,
+    "Run": 6.25,
+    "Left": 1.75,
+    "Right": 2.25,
 
-    "Backward": [-0.06, 0],
-    "BackwardLeft": [-0.04, 0.04],
-    "BackwardRight": [-0.04, -0.04],
+    "Backward": 1.5,
+    "BackwardLeft": 1,
+    "BackwardRight": 1,
 
-    "ForwardRight": [0.065, -0.065],
-    "ForwardLeft": [0.065, 0.065],
-    "Forward": [0.1, 0]
+    "ForwardRight": 1.625,
+    "ForwardLeft": 1.625,
+    "Forward": 2.5
   }
 }

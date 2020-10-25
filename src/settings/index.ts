@@ -12,25 +12,24 @@ import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from '@three/math/Euler';
 
 export namespace Settings {
-  const parseCharacterMoves = (animations: Record<string, Coords>): Moves =>
-    Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
-      speed: animations[animation][0], angle: animations[animation][1]
-    }})
+  const parseCharacterMoves = (animations: CharacterMoves): Moves =>
+    Object.assign({}, ...Object.keys(animations).map(animation => ({
+      [animation]: { speed: animations[animation] }
+    })
   ));
 
-  const playerMoves = PlayerData.animations as unknown as Record<string, Coords>;
-  const enemyMoves = EnemyData.animations as unknown as Record<string, Coords>;
-
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
-  const getAmmo = (value: number) => value < 0 ? Infinity : value;
+  const playerMoves = PlayerData.animations as unknown as CharacterMoves;
+  const enemyMoves = EnemyData.animations as unknown as CharacterMoves;
 
+  const getAmmo = (value: number) => value < 0 ? Infinity : value;
   export type Animations<Value> = { [key in Animation]: Value };
-  export type Animation = PlayerAnimations | EnemyAnimations;
 
   export type PlayerAnimations = keyof typeof Player.animations;
   export type EnemyAnimations = keyof typeof Enemy.animations;
-  export type Move = { speed: number, angle: number };
+  export type Animation = PlayerAnimations | EnemyAnimations;
 
+  type CharacterMoves = Record<string, Readonly<number>>;
   export type Character = typeof Player | typeof Enemy;
   export type Weapon = typeof Pistol | typeof Rifle;
 
@@ -39,6 +38,7 @@ export namespace Settings {
 
   export type Coords = Readonly<[number, number]>;
   export type Bounds = Readonly<Array<Coords>>;
+  export type Move = { speed: number };
 
   type PlayerSounds = keyof typeof Player.sounds;
   type EnemySounds = keyof typeof Enemy.sounds;

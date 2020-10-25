@@ -10,7 +10,6 @@ type Move = import('@/settings').Settings.Move;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
-import { getWorldDirection } from '@/managers/GameCamera';
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector3 } from '@three/math/Vector3';
 
@@ -44,6 +43,7 @@ class Physics {
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
+  private readonly directionVector = new Vector3();
   private readonly positionVector = new Vector3();
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
@@ -183,27 +183,24 @@ class Physics {
 
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
-    this.player = this.boxes.get(player.uuid)?.body;
+    this.player = this.boxes.get(player.uuid);
   }
 
   public move (step: Move): void {
-    const rotation = getWorldDirection();
-    const theta = Math.atan2(rotation.x, rotation.z);
+    this.player.mesh.getWorldDirection(this.directionVector);
+    this.directionVector.multiplyScalar(step.speed);
 
-    const x = Math.sin(theta) * 4;
-    const z = Math.cos(theta) * 4;
+    const { x, z } = this.directionVector;
 
-    console.log(step);
-
-    this.linearVelocity.setValue(x, 0, z);
-    this.player.setLinearVelocity(this.linearVelocity);
+    this.linearVelocity.setValue(x, -1.0, z);
+    this.player.body.setLinearVelocity(this.linearVelocity);
   }
 
   public rotate (rotation: number): void {
     if (!this.player) return;
 
     this.angularVelocity.setValue(0.0, rotation, 0.0);
-    this.player.setAngularVelocity(this.angularVelocity);
+    this.player.body.setAngularVelocity(this.angularVelocity);
   }
 
   public stop (): void {
@@ -212,8 +209,8 @@ class Physics {
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
     this.angularVelocity.setValue(0.0, 0.0, 0.0);
 
-    this.player.setAngularVelocity(this.angularVelocity);
-    this.player.setLinearVelocity(this.linearVelocity);
+    this.player.body.setLinearVelocity(this.linearVelocity);
+    this.player.body.setAngularVelocity(this.angularVelocity);
   }
 
   public update (delta: number): void {

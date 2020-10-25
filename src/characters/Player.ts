@@ -150,7 +150,7 @@ export class Player extends Character {
 
     Camera.shakeAnimation(
       this.isRunning.bind(this),
-      running ? 500 : 0
+      ~~running * 1000
     );
 
     if (!running || this.lastAnimation === run) {

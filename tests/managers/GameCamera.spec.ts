@@ -2,10 +2,9 @@ declare const global: any;
 global.PRODUCTION = false;
 global.BUILD = '0.1.0';
 
-import { Camera, CameraObject, CameraListener, getWorldDirection } from '@/managers/GameCamera';
+import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { Object3D } from '@three/core/Object3D';
-import { Vector3 } from '@three/math/Vector3';
 
 describe('GameCamera', () => {
   test('CameraObject', () => {
@@ -24,11 +23,6 @@ describe('GameCamera', () => {
 
     updateAspectRatio();
     expect(updateAspectRatio).toHaveReturnedWith(undefined);
-  });
-
-  test('getWorldDirection', () => {
-    const rotation = getWorldDirection();
-    expect(rotation).toBeInstanceOf(Vector3);
   });
 
   test('setTo', () => {

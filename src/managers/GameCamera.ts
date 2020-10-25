@@ -8,10 +8,9 @@ type RunCheck = () => boolean;
 
 import anime from 'animejs';
 
-const DEFAULT = new Vector3(-0.625, 1.0, -1.5);
+const DEFAULT = new Vector3(-0.625, 0.7, -1.5);
 // const AIM = new Vector3(-0.6, 2.85, -1);
-const RUN = new Vector3(-1.135, 0.75, -3);
-const DIRECTION = new Vector3();
+const RUN = new Vector3(-1.135, 0.7, -3);
 
 class GameCamera {
   private audioListener = new AudioListener();
@@ -109,6 +108,3 @@ class GameCamera {
 export const Camera = new GameCamera();
 export const CameraObject = Camera.object;
 export const CameraListener = Camera.listener;
-
-export const getWorldDirection = (): Vector3 =>
-  CameraObject.getWorldDirection(DIRECTION);
