@@ -87,6 +87,11 @@ export default class Character {
     return audio;
   }
 
+  protected turn (x: number /*, y: number */): void {
+    // (this.model as Assets.GLTF).rotation.x = y;
+    Physics.rotate(x);
+  }
+
   protected update (delta: number): void {
     this.mixer?.update(delta);
 

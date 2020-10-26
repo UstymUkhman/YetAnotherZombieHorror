@@ -199,15 +199,11 @@ class Physics {
   }
 
   public rotate (rotation: number): void {
-    if (!this.player) return;
-
     this.angularVelocity.setValue(0.0, rotation, 0.0);
     this.player.body.setAngularVelocity(this.angularVelocity);
   }
 
   public stop (): void {
-    if (!this.player) return;
-
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
     this.angularVelocity.setValue(0.0, 0.0, 0.0);
 

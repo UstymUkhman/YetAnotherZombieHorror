@@ -1,6 +1,5 @@
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector2 } from '@three/math/Vector2';
-import Physics from '@/managers/Physics';
 import { throttle } from 'lodash';
 
 type Player = import('@/characters/Player').Player;
@@ -251,8 +250,7 @@ export default class Input {
   }
 
   public update (): void {
-    // this.player.tilt(this.rotation.y);
-    Physics.rotate(this.rotation.x);
+    this.player.rotate(this.rotation);
     this.rotation.setScalar(0);
 
     // this._mouseDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
