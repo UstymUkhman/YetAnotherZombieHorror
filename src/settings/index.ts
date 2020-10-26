@@ -14,31 +14,41 @@ import { Euler } from '@three/math/Euler';
 export namespace Settings {
   const parseCharacterMoves = (animations: CharacterMoves): Moves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({
-      [animation]: { speed: animations[animation] }
+      [animation]: {
+        speed: animations[animation][0],
+
+        direction: {
+          x0: animations[animation][1],
+          z0: animations[animation][2],
+          x1: animations[animation][3],
+          z1: animations[animation][4]
+        }
+      }
     })
   ));
 
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
   const playerMoves = PlayerData.animations as unknown as CharacterMoves;
   const enemyMoves = EnemyData.animations as unknown as CharacterMoves;
+  type Direction = { x0: number, x1: number, z0: number, z1: number };
 
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   export type Animations<Value> = { [key in Animation]: Value };
+  type CharacterMoves = Record<string, Readonly<Array<number>>>;
 
   export type PlayerAnimations = keyof typeof Player.animations;
   export type EnemyAnimations = keyof typeof Enemy.animations;
   export type Animation = PlayerAnimations | EnemyAnimations;
 
-  type CharacterMoves = Record<string, Readonly<number>>;
+  export type Move = { speed: number, direction: Direction };
   export type Character = typeof Player | typeof Enemy;
   export type Weapon = typeof Pistol | typeof Rifle;
 
-  export type Sounds = { [key in Sound]: string };
-  export type Sound = PlayerSounds | EnemySounds;
-
   export type Coords = Readonly<[number, number]>;
   export type Bounds = Readonly<Array<Coords>>;
-  export type Move = { speed: number };
+
+  export type Sounds = { [key in Sound]: string };
+  export type Sound = PlayerSounds | EnemySounds;
 
   type PlayerSounds = keyof typeof Player.sounds;
   type EnemySounds = keyof typeof Enemy.sounds;

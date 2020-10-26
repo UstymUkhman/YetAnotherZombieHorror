@@ -18,10 +18,6 @@ import { Euler } from '@three/math/Euler';
 import { PI } from '@/utils/Number';
 import Ammo from 'ammo.js';
 
-const ZERO_MASS = 0.0;
-const MIN_SIZE = 0.01;
-const GRAVITY = -9.81;
-
 type AmmoWorld = {
   stepSimulation: (timeStep: number, maxSubSteps?: number) => void
   addRigidBody: (body: any, group?: number, mask?: number) => void
@@ -35,6 +31,10 @@ type BoundsOptions = {
   height: number
   y: number
 };
+
+const ZERO_MASS = 0.0;
+const MIN_SIZE = 0.01;
+const GRAVITY = -9.81;
 
 class Physics {
   private readonly boxes: Map<string, {mesh: Mesh, body: any}> = new Map();
@@ -190,9 +190,11 @@ class Physics {
     this.player.mesh.getWorldDirection(this.directionVector);
     this.directionVector.multiplyScalar(step.speed);
 
+    const { x0, z0, x1, z1 } = step.direction;
     const { x, z } = this.directionVector;
+    const min = Math.min(x1, z1);
 
-    this.linearVelocity.setValue(x, -1.0, z);
+    this.linearVelocity.setValue(x * x0 + x * min + z * z1, -1.0, z * z0 + z * min + x * x1);
     this.player.body.setLinearVelocity(this.linearVelocity);
   }
 

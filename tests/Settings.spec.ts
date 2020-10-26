@@ -74,8 +74,7 @@ describe('Settings', () => {
 
     for (const animation of animationKeys) {
       const name = animation as keyof typeof Player.animations;
-      // expect(Settings.Player.animations[name].length).toStrictEqual(2);
-      expect(typeof Settings.Player.animations[name]).toStrictEqual('number');
+      expect(Settings.Player.animations[name].length).toStrictEqual(5);
     }
   });
 
