@@ -47,36 +47,31 @@ class GameCamera {
     this.camera.setFocalLength(25.0);
   }
 
-  public shakeAnimation (isRunning: RunCheck, delay = 0): void {
-    const speed = this.shake || !isRunning() ? 250 : 500;
-    const torque = this.shake * 0.025;
-    const oscillation = this.shake;
+  public runAnimation (isRunning: RunCheck, running?: boolean): void {
+    this.shake *= -1;
+
+    if (running !== undefined) {
+      const { x, y, z } = running ? RUN : DEFAULT;
+      this.shake = ~~running;
+
+      anime({
+        delay: this.shake * 100,
+        targets: this.position,
+        easing: 'easeOutQuad',
+        duration: 300,
+        x, y, z
+      });
+    }
 
     anime({
+      duration: ~~isRunning() * 250 + 250,
+      delay: ~~!(running ?? true) * 1000,
+      y: Math.PI + this.shake * 0.025,
       targets: this.rotation,
-      y: Math.PI + torque,
       easing: 'linear',
-      duration: speed,
-      delay,
 
-      complete: () => {
-        if (!isRunning()) return;
-        this.shake = oscillation * -1;
-        this.shakeAnimation(isRunning);
-      }
-    });
-  }
-
-  public runAnimation (running: boolean): void {
-    const { x, y, z } = running ? RUN : DEFAULT;
-    this.shake = ~~running;
-
-    anime({
-      delay: running ? 100 : 0,
-      targets: this.position,
-      easing: 'easeOutQuad',
-      duration: 300,
-      x, y, z
+      complete: () => isRunning() &&
+        this.runAnimation(isRunning)
     });
   }
 

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
 type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
 type Quaternion = import('@three/math/Quaternion').Quaternion;
@@ -37,7 +36,7 @@ const MIN_SIZE = 0.01;
 const GRAVITY = -9.81;
 
 class Physics {
-  private readonly boxes: Map<string, {mesh: Mesh, body: any}> = new Map();
+  private readonly colliders: Map<string, {mesh: Mesh, body: any}> = new Map();
 
   private readonly angularVelocity = new Ammo.btVector3();
   private readonly linearVelocity = new Ammo.btVector3();
@@ -107,8 +106,8 @@ class Physics {
     body.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
     body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
 
+    this.colliders.set(mesh.uuid, { mesh, body });
     this.world.addRigidBody(body, 128, 0xFFFF);
-    this.boxes.set(mesh.uuid, { mesh, body });
     GameEvents.dispatch('add:object', mesh);
   }
 
@@ -183,7 +182,7 @@ class Physics {
 
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
-    this.player = this.boxes.get(player.uuid);
+    this.player = this.colliders.get(player.uuid);
   }
 
   public move (step: Move): void {
@@ -214,8 +213,8 @@ class Physics {
   public update (delta: number): void {
     this.world.stepSimulation(delta);
 
-    this.boxes.forEach(box => {
-      const { mesh, body } = box;
+    this.colliders.forEach(collider => {
+      const { mesh, body } = collider;
       const motionState = body.getMotionState();
 
       if (motionState) {
@@ -232,7 +231,7 @@ class Physics {
 
   public destroy (): void {
     this.world.__destroy__();
-    this.boxes.clear();
+    this.colliders.clear();
   }
 
   public set pause (pause: boolean) {

@@ -48,7 +48,7 @@ export default class Level0 extends GameLevel {
     });
 
     if (!Settings.DEBUG) {
-      this.scene.fog = new Fog(Color.GREY, 0.1, 100);
+      this.scene.fog = new Fog(Color.GREY, 1, 75);
     }
   }
 

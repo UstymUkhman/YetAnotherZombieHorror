@@ -11,7 +11,9 @@
   import { cloneBounds, max } from '@/utils/Array';
   import Level0 from '@/environment/Level0';
   import Player from '@components/Player';
+
   import { Color } from '@/utils/Color';
+  import { onMount } from 'svelte';
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
@@ -72,13 +74,17 @@
     context.stroke();
   }
 
+  onMount(drawBounds);
+
   $: rotation = playerRotation;
+
+  $: ((position) => {
+    map && position && centerPosition();
+  })(playerPosition);
 
   $: ((scale) => {
     if (!map || !scale) return;
     offset = PADDING * scale / 2;
-
-    drawBounds();
     centerPosition();
   })(scale);
 </script>

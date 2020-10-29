@@ -26,7 +26,6 @@ export default class GameLoop {
   private readonly loader = new Assets.Loader();
   private readonly input = new Input(this.player);
 
-  private raf?: number | void;
   private paused = true;
   private stats?: Stats;
 
@@ -84,9 +83,8 @@ export default class GameLoop {
     this.level.addObject(event.data as Object3D);
   }
 
-  private update (): void {
+  public update (): void {
     this.stats?.begin();
-    this.raf = requestAnimationFrame(this.update.bind(this));
 
     const delta = this.clock.getDelta();
     this.player.update(delta);
@@ -101,7 +99,6 @@ export default class GameLoop {
   }
 
   public destroy (): void {
-    cancelAnimationFrame(this.raf as number);
     this.level.destroy();
     Physics.destroy();
 
@@ -122,13 +119,9 @@ export default class GameLoop {
   public set pause (pause: boolean) {
     this.paused = pause;
 
-    this.raf = this.paused
-      ? cancelAnimationFrame(this.raf as number)
-      : requestAnimationFrame(this.update.bind(this));
-
     this.paused
-      ? !Settings.freeCamera && this.input.exitPointerLock()
-      : !Settings.freeCamera && this.input.requestPointerLock();
+      ? this.input.exitPointerLock()
+      : this.input.requestPointerLock();
   }
 
   public get pause (): boolean {

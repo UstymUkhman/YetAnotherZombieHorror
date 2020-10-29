@@ -4,11 +4,11 @@ type Vector2 = import('@three/math/Vector2').Vector2;
 
 import { Direction, Directions } from '@/managers/Input';
 import { GameEvents } from '@/managers/GameEvents';
+import { MathUtils } from '@three/math/MathUtils';
 import { Camera } from '@/managers/GameCamera';
 
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
-import { Euler } from '@three/math/Euler';
 
 import { clamp } from '@/utils/Number';
 import { Settings } from '@/settings';
@@ -19,12 +19,12 @@ type Weapon = Pistol /* | Rifle */;
 
 export type Location = {
   position: Vector3
-  rotation: Euler
+  rotation: number
 };
 
 export class Player extends Character {
   private readonly currentPosition = new Vector3();
-  private readonly currentRotation = new Euler();
+  private readonly currentRotation = new Vector3();
 
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
@@ -99,8 +99,7 @@ export class Player extends Character {
     this.animations[idle].play();
     this.idleTime = Date.now();
 
-    Camera.shakeAnimation(this.isRunning.bind(this));
-    Camera.runAnimation(false);
+    Camera.runAnimation(this.isRunning.bind(this), false);
 
     setTimeout(() => {
       this.lastAnimation = idle;
@@ -150,14 +149,10 @@ export class Player extends Character {
     GameEvents.dispatch('run', running);
     clearTimeout(this.reloadTimeout);
 
-    Camera.runAnimation(running);
     this.weapon.cancelReload();
     this.reloading = false;
 
-    Camera.shakeAnimation(
-      this.isRunning.bind(this),
-      ~~running * 1000
-    );
+    Camera.runAnimation(this.isRunning.bind(this), running);
 
     if (!running || this.lastAnimation === run) {
       const idling = !Object.values(directions).includes(1);
@@ -187,11 +182,11 @@ export class Player extends Character {
   public async loadCharacter (): Promise<Object3D> {
     const model = (await this.load()).scene;
 
+    this.currentPosition.copy(this.object.position);
+    this.object.rotation.toVector3(this.currentRotation);
+
     this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
-
-    this.currentPosition.copy(this.object.position);
-    this.currentRotation.copy(this.object.rotation);
 
     this.currentAnimation.play();
     return this.object;
@@ -226,9 +221,17 @@ export class Player extends Character {
   }
 
   public get location (): Location {
+    this.object.getWorldPosition(this.currentPosition);
+    this.object.getWorldDirection(this.currentRotation);
+
     return {
       position: this.currentPosition,
-      rotation: this.currentRotation
+      rotation: MathUtils.radToDeg(
+        Math.atan2(
+          -this.currentRotation.x,
+          this.currentRotation.z
+        )
+      )
     };
   }
 

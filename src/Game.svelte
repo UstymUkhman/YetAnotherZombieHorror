@@ -5,17 +5,17 @@
 
   {#if loading}
     <Loader on:loaded={onLoad} />
+  {:else}
+    {#if game.pause}
+      <Pause on:start={() => togglePause(false)} />
+    {:else}
+      <Map
+        playerRotation={location.rotation}
+        playerPosition={location.position}
+        scale={scale} zoom={1}
+      />
+    {/if}
   {/if}
-
-  {#if !loading && game.pause}
-    <Pause on:start={() => togglePause(false)} />
-  {/if}
-
-  <Map
-    playerRotation={location.rotation.y}
-    playerPosition={location.position}
-    scale={scale} zoom={1}
-  />
 </main>
 
 <script lang="typescript">
@@ -34,17 +34,28 @@
   let main: HTMLElement;
   let loading = true;
   let scale: number;
+  let raf: number;
 
   const game = new GameLoop();
-  const location = game.playerLocation;
+  let location = game.playerLocation;
 
   window.addEventListener('resize', updateScale);
   GameEvents.add('pause', event => togglePause(event.data as boolean));
 
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
+      paused
+        ? cancelAnimationFrame(raf)
+        : updateGameLoop();
+
       game.pause = paused;
     }
+  }
+
+  function updateGameLoop (): void {
+    raf = requestAnimationFrame(updateGameLoop);
+    location = game.playerLocation;
+    game.update();
   }
 
   function updateScale (): void {
@@ -61,7 +72,7 @@
   });
 
   onDestroy(() => {
-    game.pause = true;
+    togglePause(true);
     game.destroy();
   });
 </script>

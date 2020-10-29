@@ -1,7 +1,7 @@
 <div class="screen" transition:fade>
   <div class="progress">
     <h1>Loading...</h1>
-    <h1>{Math.floor(progress * 100)}</h1>
+    <h1>{Math.floor(progress * 100)}%</h1>
   </div>
 </div>
 
@@ -86,9 +86,9 @@ div.screen {
     line-height: 5vw;
     display: flex;
 
-    width: 36.6vw;
     margin: auto;
     height: 5vw;
+    width: 40vw;
 
     bottom: 0;
     right: 0;
