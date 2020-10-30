@@ -64,11 +64,10 @@ class GameCamera {
     }
 
     anime({
+      easing: running ?? true ? 'linear' : 'easeOutQuad',
       duration: ~~isRunning() * 250 + 250,
-      delay: ~~!(running ?? true) * 1000,
       y: Math.PI + this.shake * 0.025,
       targets: this.rotation,
-      easing: 'linear',
 
       complete: () => isRunning() &&
         this.runAnimation(isRunning)

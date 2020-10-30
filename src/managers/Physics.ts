@@ -189,11 +189,11 @@ class Physics {
     this.player.mesh.getWorldDirection(this.directionVector);
     this.directionVector.multiplyScalar(step.speed);
 
-    const { x0, z0, x1, z1 } = step.direction;
+    const { z0, x0, x1 } = step.direction;
     const { x, z } = this.directionVector;
-    const min = Math.min(x1, z1);
+    const min = Math.min(x0, x1);
 
-    this.linearVelocity.setValue(x * x0 + x * min + z * z1, -1.0, z * z0 + z * min + x * x1);
+    this.linearVelocity.setValue(x * z0 + x * min + z * x1, -1.0, z * z0 + z * min + x * x0);
     this.player.body.setLinearVelocity(this.linearVelocity);
   }
 
