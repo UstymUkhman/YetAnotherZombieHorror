@@ -18,10 +18,9 @@ export namespace Settings {
         speed: animations[animation][0],
 
         direction: {
-          x0: animations[animation][1],
-          z0: animations[animation][2],
-          x1: animations[animation][3],
-          z1: animations[animation][4]
+          z0: animations[animation][1],
+          x0: animations[animation][2],
+          x1: animations[animation][3]
         }
       }
     })
@@ -30,7 +29,6 @@ export namespace Settings {
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
   const playerMoves = PlayerData.animations as unknown as CharacterMoves;
   const enemyMoves = EnemyData.animations as unknown as CharacterMoves;
-  type Direction = { x0: number, x1: number, z0: number, z1: number };
 
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   export type Animations<Value> = { [key in Animation]: Value };
@@ -41,6 +39,8 @@ export namespace Settings {
   export type Animation = PlayerAnimations | EnemyAnimations;
 
   export type Move = { speed: number, direction: Direction };
+  type Direction = { z0: number, x0: number, x1: number };
+
   export type Character = typeof Player | typeof Enemy;
   export type Weapon = typeof Pistol | typeof Rifle;
 

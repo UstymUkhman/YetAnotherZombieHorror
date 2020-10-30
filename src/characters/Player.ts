@@ -99,8 +99,6 @@ export class Player extends Character {
     this.animations[idle].play();
     this.idleTime = Date.now();
 
-    Camera.runAnimation(this.isRunning.bind(this), false);
-
     setTimeout(() => {
       this.lastAnimation = idle;
       this.setAnimation('Idle');
