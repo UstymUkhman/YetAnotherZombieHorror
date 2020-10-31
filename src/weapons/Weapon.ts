@@ -2,9 +2,9 @@ import { /* CameraObject, */ CameraListener } from '@/managers/GameCamera';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
-type WeaponSettings = import('@/settings').Settings.Weapon;
 // type Vector2 = import('@three/math/Vector2').Vector2;
 type Vector3 = import('@three/math/Vector3').Vector3;
+type WeaponConfig = import('@/config').Config.Weapon;
 
 import { Raycaster } from '@three/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
@@ -26,17 +26,17 @@ export default class Weapon {
   private readonly near = 4.5;
   private aiming = false;
 
-  public constructor (private readonly settings: WeaponSettings) {
-    // this.spread = settings.spread as Vector2;
-    // this.recoil = settings.recoil as Vector2;
+  public constructor (private readonly config: WeaponConfig) {
+    // this.spread = config.spread as Vector2;
+    // this.recoil = config.recoil as Vector2;
 
     this.raycaster.near = this.near;
     this.load();
   }
 
   private async load (): Promise<Assets.GLTF> {
-    this.weapon = (await this.loader.loadGLTF(this.settings.model)).scene;
-    this.addSounds(Object.keys(this.settings.sounds), await this.loadSounds());
+    this.weapon = (await this.loader.loadGLTF(this.config.model)).scene;
+    this.addSounds(Object.keys(this.config.sounds), await this.loadSounds());
 
     this.weapon.traverse(child => {
       const childMesh = child as Mesh;
@@ -53,9 +53,9 @@ export default class Weapon {
       }
     });
 
-    this.weapon.position.copy(this.settings.position as Vector3);
-    this.weapon.rotation.copy(this.settings.rotation as Euler);
-    this.weapon.scale.copy(this.settings.scale as Vector3);
+    this.weapon.position.copy(this.config.position as Vector3);
+    this.weapon.rotation.copy(this.config.rotation as Euler);
+    this.weapon.scale.copy(this.config.scale as Vector3);
 
     return this.weapon;
   }
@@ -73,7 +73,7 @@ export default class Weapon {
 
   private async loadSounds (): Promise<Array<AudioBuffer>> {
     return await Promise.all(
-      Object.values(this.settings.sounds)
+      Object.values(this.config.sounds)
         .map(this.loader.loadAudio.bind(this.loader))
     );
   }
@@ -98,6 +98,6 @@ export default class Weapon {
   }
 
   public get damage (): number {
-    return this.settings.damage;
+    return this.config.damage;
   }
 }

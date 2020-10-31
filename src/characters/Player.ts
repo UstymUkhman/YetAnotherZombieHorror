@@ -11,7 +11,7 @@ import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 
 import { clamp } from '@/utils/Number';
-import { Settings } from '@/settings';
+import { Config } from '@/config';
 
 import Pistol from '@/weapons/Pistol';
 // import Rifle from '@/weapons/Rifle';
@@ -49,14 +49,14 @@ export class Player extends Character {
   private hand?: Object3D;
 
   public constructor () {
-    super(Settings.Player);
+    super(Config.Player);
 
-    if (!Settings.freeCamera) {
+    if (!Config.freeCamera) {
       Camera.setTo(this.object);
     }
   }
 
-  private getMovementAnimation (directions: Directions): Settings.Animation {
+  private getMovementAnimation (directions: Directions): Config.Animation {
     let direction = directions[Direction.UP] ? 'Forward' : directions[Direction.DOWN] ? 'Backward' : '';
 
     if (!this.equipRifle && !direction) {
@@ -65,7 +65,7 @@ export class Player extends Character {
       direction += directions[Direction.LEFT] ? 'Left' : directions[Direction.RIGHT] ? 'Right' : '';
     }
 
-    return direction as Settings.Animation || 'Idle';
+    return direction as Config.Animation || 'Idle';
   }
 
   private getWeaponAnimation (movement: string): string {

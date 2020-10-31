@@ -1,8 +1,8 @@
-import { Settings } from '@/settings';
 import Weapon from '@/weapons/Weapon';
+import { Config } from '@/config';
 
 export default class Pistol extends Weapon {
   constructor () {
-    super(Settings.Pistol);
+    super(Config.Pistol);
   }
 }

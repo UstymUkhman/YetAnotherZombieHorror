@@ -3,7 +3,7 @@ global.PRODUCTION = false;
 global.BUILD = '0.1.0';
 
 import { Object3D } from '@three/core/Object3D';
-import Level0Data from '@/settings/level0.json';
+import Level0Data from '@/config/level0.json';
 import Level0 from '@/environment/Level0';
 
 describe('Level0', () => {

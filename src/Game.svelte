@@ -1,5 +1,5 @@
 <main bind:this={main}>
-  {#if Settings.APP}
+  {#if Config.APP}
     <Close />
   {/if}
 
@@ -20,16 +20,14 @@
 
 <script lang="typescript">
   import { GameEvents } from '@/managers/GameEvents';
+  import Close from '@components/CloseButton.svelte';
+  import Loader from '@components/Loader.svelte';
+  import Pause from '@components/Pause.svelte';
 
   import { onMount, onDestroy } from 'svelte';
-  import Close from '@components/CloseButton';
-
   import GameLoop from '@/managers/GameLoop';
-  import Loader from '@components/Loader';
-  import Pause from '@components/Pause';
-
-  import { Settings } from '@/settings';
-  import Map from '@components/Map';
+  import Map from '@components/Map.svelte';
+  import { Config } from '@/config';
 
   let main: HTMLElement;
   let loading = true;

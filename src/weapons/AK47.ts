@@ -3,20 +3,20 @@ type Vector3 = import('@three/math/Vector3').Vector3;
 type Euler = import('@three/math/Euler').Euler;
 
 // import { GameEvents } from '@/managers/GameEvents';
-import { Settings } from '@/settings';
 import Weapon from '@/weapons/Weapon';
+import { Config } from '@/config';
 
 export default class AK47 extends Weapon {
   private aimTimeout?: number;
   private reloading = false;
 
   public constructor () {
-    super(Settings.Rifle);
+    super(Config.Rifle);
   }
 
   private reset (): void {
-    const position = Settings.Rifle.position as Vector3;
-    const rotation = Settings.Rifle.rotation as Euler;
+    const position = Config.Rifle.position as Vector3;
+    const rotation = Config.Rifle.rotation as Euler;
 
     this.model.position.copy(position);
     this.model.rotation.copy(rotation);
@@ -43,7 +43,7 @@ export default class AK47 extends Weapon {
   } */
 
   public get clone (): GLTF {
-    const worldScale = Settings.Rifle.worldScale as Vector3;
+    const worldScale = Config.Rifle.worldScale as Vector3;
     const rifle = this.model.clone(true);
 
     rifle.scale.copy(worldScale);

@@ -3,9 +3,9 @@ type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicM
 type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
 type Quaternion = import('@three/math/Quaternion').Quaternion;
 
-type Bounds = import('@/settings').Settings.Bounds;
-type Coords = import('@/settings').Settings.Coords;
-type Move = import('@/settings').Settings.Move;
+type Bounds = import('@/config').Config.Bounds;
+type Coords = import('@/config').Config.Coords;
+type Move = import('@/config').Config.Move;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
@@ -164,12 +164,15 @@ class Physics {
       this.createBound(walk[b], walk[b + 1], sidewalk.height, sidewalk.y);
 
       if (this.borderOverflow(borderPosition)) continue;
+      const lengthScale = this.rotationVector.y ? 1.1 : 1;
       const distance = this.positionVector.distanceTo(borderPosition) / 2 * 0.95;
 
       this.positionVector.x -= (this.positionVector.x - borderPosition.x) / 2;
       this.positionVector.z -= (this.positionVector.z - borderPosition.z) / 2;
 
       this.sizeVector.z === MIN_SIZE ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
+      this.positionVector.x < 0 ? this.sizeVector.z *= lengthScale : this.sizeVector.x *= lengthScale;
+
       this.createStaticCollider(StaticCollider);
     }
   }

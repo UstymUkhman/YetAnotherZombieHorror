@@ -42,7 +42,7 @@
     assets.set(event.data, 100);
 
     if (assets.size === ++loaded) {
-      setTimeout(dispatch('loaded'), 500);
+      setTimeout(() => dispatch('loaded'), 500);
       GameEvents.remove('start:loading');
       GameEvents.remove('end:loading');
       GameEvents.remove('is:loading');

@@ -12,17 +12,17 @@ import Physics from '@/managers/Physics';
 import { Fog } from '@three/scenes/Fog';
 
 import { Color } from '@/utils/Color';
-import { Settings } from '@/settings';
 import Music from '@/managers/Music';
+import { Config } from '@/config';
 
 export default class Level0 extends GameLevel {
-  private music = new Music(Settings.Level0.music);
+  private music = new Music(Config.Level0.music);
   private controls?: OrbitControls;
 
   public constructor () {
     super();
 
-    if (Settings.freeCamera) {
+    if (Config.freeCamera) {
       import(/* webpackChunkName: "orbit-controls" */ '@controls/OrbitControls').then((Controls) => {
         this.controls = new Controls.OrbitControls(this.camera, this.canvas);
 
@@ -34,20 +34,20 @@ export default class Level0 extends GameLevel {
       });
     }
 
-    this.camera.far = Settings.Level0.depth;
+    this.camera.far = Config.Level0.depth;
     this.createEnvironment();
     this.createLights();
   }
 
   private createEnvironment (): void {
-    super.createSkybox(Settings.Level0.skybox);
+    super.createSkybox(Config.Level0.skybox);
 
-    super.loadLevel(Settings.Level0.model).then(level => {
-      level.position.copy(Settings.Level0.position as Vector3);
-      level.scale.copy(Settings.Level0.scale as Vector3);
+    super.loadLevel(Config.Level0.model).then(level => {
+      level.position.copy(Config.Level0.position as Vector3);
+      level.scale.copy(Config.Level0.scale as Vector3);
     });
 
-    if (!Settings.DEBUG) {
+    if (!Config.DEBUG) {
       this.scene.fog = new Fog(Color.GREY, 1, 75);
     }
   }
@@ -57,13 +57,13 @@ export default class Level0 extends GameLevel {
   }
 
   public createColliders (): void {
-    const { position, height, sidewalkHeight } = Settings.Level0;
+    const { position, height, sidewalkHeight } = Config.Level0;
     Physics.createGround(Level0.minCoords, Level0.maxCoords);
 
     Physics.createBounds({
       borders: Level0.bounds, y: position.y, height
     }, {
-      borders: Settings.Level0.sidewalk as Settings.Bounds,
+      borders: Config.Level0.sidewalk as Config.Bounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
@@ -82,27 +82,27 @@ export default class Level0 extends GameLevel {
     this.music.destroy();
     super.destroy();
 
-    if (Settings.DEBUG) {
+    if (Config.DEBUG) {
       this.controls?.dispose();
       delete this.controls;
     }
   }
 
-  public static get minCoords (): Settings.Coords {
+  public static get minCoords (): Config.Coords {
     return [
-      min(Level0.bounds.map((coords: Settings.Coords) => coords[0])),
-      min(Level0.bounds.map((coords: Settings.Coords) => coords[1]))
+      min(Level0.bounds.map((coords: Config.Coords) => coords[0])),
+      min(Level0.bounds.map((coords: Config.Coords) => coords[1]))
     ];
   }
 
-  public static get maxCoords (): Settings.Coords {
+  public static get maxCoords (): Config.Coords {
     return [
-      max(Level0.bounds.map((coords: Settings.Coords) => coords[0])),
-      max(Level0.bounds.map((coords: Settings.Coords) => coords[1]))
+      max(Level0.bounds.map((coords: Config.Coords) => coords[0])),
+      max(Level0.bounds.map((coords: Config.Coords) => coords[1]))
     ];
   }
 
-  public static get bounds (): Settings.Bounds {
-    return Settings.Level0.bounds as Settings.Bounds;
+  public static get bounds (): Config.Bounds {
+    return Config.Level0.bounds as Config.Bounds;
   }
 }

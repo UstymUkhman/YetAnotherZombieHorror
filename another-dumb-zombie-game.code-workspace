@@ -1,5 +1,7 @@
 {
-	"settings": {
+	"settings": {		
+		"svelte.language-server.runtime": "C:/Program Files/nodejs/node.exe",
+		"svelte.plugin.typescript.enable": true,
 		"svelte.plugin.svelte.enable": true,
 		"git.ignoreLimitWarning": true,
 

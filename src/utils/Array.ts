@@ -1,4 +1,4 @@
-type Bounds = import('@/settings').Settings.Bounds;
+type Bounds = import('@/config').Config.Bounds;
 
 export const cloneBounds = (bounds: Bounds): Bounds => JSON.parse(JSON.stringify(bounds));
 

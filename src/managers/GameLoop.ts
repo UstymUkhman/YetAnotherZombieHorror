@@ -11,9 +11,9 @@ import Level0 from '@/environment/Level0';
 import Physics from '@/managers/Physics';
 
 import Enemy from '@/characters/Enemy';
-import { Settings } from '@/settings';
 import Pistol from '@/weapons/Pistol';
 import Input from '@/managers/Input';
+import { Config } from '@/config';
 
 export default class GameLoop {
   private clock = new Clock();
@@ -34,7 +34,7 @@ export default class GameLoop {
     this.level.createColliders();
     this.loadCharacters().then(assets => this.enemyAssets = assets);
 
-    if (Settings.DEBUG) {
+    if (Config.DEBUG) {
       import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
         this.stats = new Stats.default();
         this.stats.showPanel(0);
@@ -59,7 +59,7 @@ export default class GameLoop {
 
   private async loadPlayerSounds (): Promise<Array<AudioBuffer>> {
     return await Promise.all(
-      Object.values(Settings.Player.sounds)
+      Object.values(Config.Player.sounds)
         .map(this.loader.loadAudio.bind(this.loader))
     );
   }
@@ -69,7 +69,7 @@ export default class GameLoop {
       model: await new Enemy().load(),
 
       sounds: await Promise.all(
-        Object.values(Settings.Enemy.sounds)
+        Object.values(Config.Enemy.sounds)
           .map(this.loader.loadAudio.bind(this.loader))
       )
     };
@@ -102,7 +102,7 @@ export default class GameLoop {
     this.level.destroy();
     Physics.destroy();
 
-    if (Settings.DEBUG) {
+    if (Config.DEBUG) {
       document.body.removeChild(this.stats.domElement);
       delete this.stats;
     }
@@ -119,9 +119,11 @@ export default class GameLoop {
   public set pause (pause: boolean) {
     this.paused = pause;
 
-    this.paused
-      ? this.input.exitPointerLock()
-      : this.input.requestPointerLock();
+    if (!Config.freeCamera) {
+      this.paused
+        ? this.input.exitPointerLock()
+        : this.input.requestPointerLock();
+    }
   }
 
   public get pause (): boolean {

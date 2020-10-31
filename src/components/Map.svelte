@@ -5,12 +5,12 @@
 
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
-  type Bounds = import('@/settings').Settings.Bounds;
-  type Coords = import('@/settings').Settings.Coords;
+  type Bounds = import('@/config').Config.Bounds;
+  type Coords = import('@/config').Config.Coords;
 
   import { cloneBounds, max } from '@/utils/Array';
+  import Player from '@components/Player.svelte';
   import Level0 from '@/environment/Level0';
-  import Player from '@components/Player';
 
   import { Color } from '@/utils/Color';
   import { onMount } from 'svelte';
@@ -34,7 +34,7 @@
   const PADDING = 1;
 
   function getNormalizedBounds (): Bounds {
-    const scaleBounds = (coord: Coords): Coords => [coord[0] * scale, coord[1] * scale];
+    const scaleBounds = (coord: Coords): [number, number] => [coord[0] * scale, coord[1] * scale];
     const cBounds = cloneBounds(bounds).map(bound => scaleBounds(bound));
 
     for (let b = 0; b < cBounds.length; b++) {
@@ -59,7 +59,7 @@
     const nBounds = getNormalizedBounds();
     const context = map.getContext('2d') as CanvasRenderingContext2D;
 
-    context.strokeStyle = BLACK;
+    context.strokeStyle = BLACK.toString();
     context.lineWidth = 1;
     context.beginPath();
 

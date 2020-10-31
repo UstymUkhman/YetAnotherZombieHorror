@@ -12,10 +12,10 @@ import Character from '@/characters/Character';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { HitBox } from '@/utils/Material';
-import { Settings } from '@/settings';
+import { Config } from '@/config';
 
 export default class Enemy extends Character {
-  private lastAnimation: Settings.EnemyAnimations = 'Idle';
+  private lastAnimation: Config.EnemyAnimations = 'Idle';
   private currentAnimation!: AnimationAction;
 
   private hitBoxes: Array<Mesh> = [];
@@ -24,7 +24,7 @@ export default class Enemy extends Character {
   private id: number;
 
   public constructor (id = 0, model?: GLTFModel) {
-    super(Settings.Enemy);
+    super(Config.Enemy);
     this.id = id;
 
     if (model !== undefined) {

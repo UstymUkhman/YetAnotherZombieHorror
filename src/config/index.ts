@@ -1,9 +1,9 @@
-import Level0Data from '@/settings/level0.json';
-import PistolData from '@/settings/pistol.json';
-import RifleData from '@/settings/rifle.json';
+import Level0Data from '@/config/level0.json';
+import PistolData from '@/config/pistol.json';
+import RifleData from '@/config/rifle.json';
 
-import PlayerData from '@/settings/player.json';
-import EnemyData from '@/settings/enemy.json';
+import PlayerData from '@/config/player.json';
+import EnemyData from '@/config/enemy.json';
 
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
@@ -11,7 +11,7 @@ import { Vector3 } from '@three/math/Vector3';
 import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from '@three/math/Euler';
 
-export namespace Settings {
+export namespace Config {
   const parseCharacterMoves = (animations: CharacterMoves): Moves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({
       [animation]: {

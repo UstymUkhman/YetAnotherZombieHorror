@@ -1,13 +1,13 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type AudioListener = import('@three/audio/AudioListener').AudioListener;
 
-type CharacterAnimation = import('@/settings').Settings.Animation;
-type CharacterSettings = import('@/settings').Settings.Character;
-// type CharacterSounds = import('@/settings').Settings.Sounds;
+type CharacterAnimation = import('@/config').Config.Animation;
+type CharacterConfig = import('@/config').Config.Character;
+// type CharacterSounds = import('@/config').Config.Sounds;
 
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
-type Move = import('@/settings').Settings.Move;
+type Move = import('@/config').Config.Move;
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
@@ -23,7 +23,7 @@ import Physics from '@/managers/Physics';
 
 export default class Character {
   private readonly loader = new Assets.Loader();
-  private step: Move = this.settings.moves.Idle;
+  private step: Move = this.config.moves.Idle;
 
   protected animations: Actions = { };
   // private sounds: CharacterSounds;
@@ -39,8 +39,8 @@ export default class Character {
   private still = false;
   private health = 100;
 
-  public constructor (private settings: CharacterSettings) {
-    const { x, y } = this.settings.collider;
+  public constructor (private config: CharacterConfig) {
+    const { x, y } = this.config.collider;
     this.object = new Mesh(new CapsuleGeometry(x, y), DynamicCollider);
   }
 
@@ -75,7 +75,7 @@ export default class Character {
   }
 
   protected setAnimation (animation: CharacterAnimation): void {
-    this.step = this.settings.moves[animation];
+    this.step = this.config.moves[animation];
   }
 
   protected createAudio (sound: AudioBuffer, listener: AudioListener, volume = 10): PositionalAudio {
@@ -113,11 +113,11 @@ export default class Character {
   }
 
   public async load (): Promise<Assets.GLTFModel> {
-    const character = await this.loader.loadGLTF(this.settings.model);
-    character.scene.position.set(0, this.settings.collider.z, 0);
+    const character = await this.loader.loadGLTF(this.config.model);
+    character.scene.position.set(0, this.config.collider.z, 0);
 
-    this.object.position.copy(this.settings.position as Vector3);
-    this.object.scale.copy(this.settings.scale as Vector3);
+    this.object.position.copy(this.config.position as Vector3);
+    this.object.scale.copy(this.config.scale as Vector3);
 
     this.setCharacterMaterial(character.scene);
     this.object.add(character.scene);
@@ -160,7 +160,7 @@ export default class Character {
   }
 
   public reset (): void {
-    this.step = this.settings.moves.Idle;
+    this.step = this.config.moves.Idle;
     this.running = false;
     this.moving = false;
 

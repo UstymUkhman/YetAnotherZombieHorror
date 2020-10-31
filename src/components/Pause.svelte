@@ -5,8 +5,8 @@
 <script lang="typescript">
   import { createEventDispatcher } from 'svelte';
 
+  import Button from '@components/Button.svelte';
   import { fade } from 'svelte/transition';
-  import Button from '@components/Button';
 
   const dispatch = createEventDispatcher();
 </script>
