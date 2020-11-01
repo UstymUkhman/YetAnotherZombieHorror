@@ -144,7 +144,7 @@ export class Player extends Character {
     if (this.aiming || this.hitting) return;
     const run = this.getWeaponAnimation('Run');
 
-    GameEvents.dispatch('run', running);
+    GameEvents.dispatch('player:run', running);
     clearTimeout(this.reloadTimeout);
 
     this.weapon.cancelReload();

@@ -1,6 +1,8 @@
-<div>
-  <canvas bind:this={map} style="transform: {canvasTransform};"></canvas>
-  <Player rotation={rotation} />
+<div class="map">
+  <div style="transform: scale3d({zoom}, {zoom}, 1) rotate({-playerRotation}deg);">
+    <canvas bind:this={map} style="transform: {canvasTransform};" />
+    <Player rotation={playerRotation} />
+  </div>
 </div>
 
 <script lang="typescript">
@@ -29,7 +31,6 @@
   export let zoom: number;
 
   const { BLACK } = Color;
-  let rotation: number;
   let offset: number;
   const PADDING = 1;
 
@@ -52,7 +53,7 @@
     const x = (playerPosition.x - maxCoords[0]) * scale - offset;
     const y = (playerPosition.z - maxCoords[1]) * scale - offset;
 
-    canvasTransform = `translate(${x}px, ${y}px) scale3d(-${zoom}, -${zoom}, 1)`;
+    canvasTransform = `translate(${x}px, ${y}px) scale3d(-1, -1, 1)`;
   }
 
   function drawBounds (): void {
@@ -76,8 +77,6 @@
 
   onMount(drawBounds);
 
-  $: rotation = playerRotation;
-
   $: ((position) => {
     map && position && centerPosition();
   })(playerPosition);
@@ -85,6 +84,8 @@
   $: ((scale) => {
     if (!map || !scale) return;
     offset = PADDING * scale / 2;
+
+    drawBounds();
     centerPosition();
   })(scale);
 </script>
@@ -92,11 +93,12 @@
 <style lang="scss">
 @import '@scss/variables';
 
-div {
+div.map {
   background-color: rgba($white, 0.25);
   box-shadow: 0px 0px 25px $black;
   backdrop-filter: blur(5px);
 
+  transform-origin: 50% 50%;
   box-sizing: content-box;
   border-radius: 50%;
 
@@ -107,9 +109,24 @@ div {
   height: 10vw;
   width: 10vw;
 
-  padding: 2vw;
   bottom: 2vw;
   right: 2vw;
+
+  div {
+    transform-origin: 50% 50%;
+    box-sizing: content-box;
+    border-radius: 50%;
+
+    position: absolute;
+    overflow: hidden;
+    display: block;
+
+    height: 20vw;
+    width: 20vw;
+
+    left: -5vw;
+    top: -5vw;
+  }
 
   canvas {
     position: absolute;

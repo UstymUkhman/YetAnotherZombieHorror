@@ -9,10 +9,12 @@
     {#if game.pause}
       <Pause on:start={() => togglePause(false)} />
     {:else}
+      <Aim />
+
       <Map
         playerRotation={location.rotation}
         playerPosition={location.position}
-        scale={scale} zoom={1}
+        scale={scale} zoom={zoomScale}
       />
     {/if}
   {/if}
@@ -23,22 +25,29 @@
   import Close from '@components/CloseButton.svelte';
   import Loader from '@components/Loader.svelte';
   import Pause from '@components/Pause.svelte';
-
   import { onMount, onDestroy } from 'svelte';
+
   import GameLoop from '@/managers/GameLoop';
+  import { Elastic } from '@/utils/Elastic';
+  import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
   import { Config } from '@/config';
 
+
+  let zoomScale: number;
   let main: HTMLElement;
+
   let loading = true;
   let scale: number;
   let raf: number;
 
   const game = new GameLoop();
+  const zoom = new Elastic.Number(0);
   let location = game.playerLocation;
 
-  window.addEventListener('resize', updateScale);
+  GameEvents.add('player:run', event => zoom.set(~~(event.data as boolean) * 0.5));
   GameEvents.add('pause', event => togglePause(event.data as boolean));
+  window.addEventListener('resize', updateScale);
 
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
@@ -53,6 +62,9 @@
   function updateGameLoop (): void {
     raf = requestAnimationFrame(updateGameLoop);
     location = game.playerLocation;
+    zoomScale = 1 - zoom.value;
+
+    zoom.update();
     game.update();
   }
 
@@ -70,6 +82,9 @@
   });
 
   onDestroy(() => {
+    GameEvents.remove('player:run');
+    GameEvents.remove('pause');
+
     togglePause(true);
     game.destroy();
   });

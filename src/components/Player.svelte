@@ -16,8 +16,8 @@ div {
   margin: auto;
   padding: 0;
 
-  height: 1.5vw;
-  width: 1.5vw;
+  height: 1vw;
+  width: 1vw;
 
   bottom: 0;
   right: 0;
