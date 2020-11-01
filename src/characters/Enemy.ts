@@ -157,4 +157,8 @@ export default class Enemy extends Character {
       this.character.lookAt(this.playerPosition);
     } */
   }
+
+  public get hitBox (): Array<Mesh> {
+    return this.hitBoxes;
+  }
 }

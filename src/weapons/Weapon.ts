@@ -19,7 +19,7 @@ export default class Weapon {
 
   // private readonly spread: Vector2;
   // private readonly recoil: Vector2;
-  private enemies!: Array<Mesh>;
+  public targets: Array<Mesh> = [];
   private weapon?: Assets.GLTF;
 
   private readonly aimNear = 3.0;
@@ -87,10 +87,6 @@ export default class Weapon {
 
   protected get aim (): boolean {
     return this.aiming;
-  }
-
-  public set targets (colliders: Array<Mesh>) {
-    this.enemies = colliders;
   }
 
   public get model (): Assets.GLTF {

@@ -6,7 +6,7 @@ type Euler = import('@three/math/Euler').Euler;
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
-export default class AK47 extends Weapon {
+export default class Rifle extends Weapon {
   private aimTimeout?: number;
   private reloading = false;
 

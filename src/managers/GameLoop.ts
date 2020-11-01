@@ -1,6 +1,7 @@
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type Object3D = import('@three/core/Object3D').Object3D;
+type Mesh = import('@three/objects/Mesh').Mesh;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Player, Location } from '@/characters/Player';
@@ -9,20 +10,24 @@ import { Assets } from '@/managers/AssetsLoader';
 import { Clock } from '@three/core/Clock';
 import Level0 from '@/environment/Level0';
 import Physics from '@/managers/Physics';
-
 import Enemy from '@/characters/Enemy';
+
 import Pistol from '@/weapons/Pistol';
 import Input from '@/managers/Input';
+import Rifle from '@/weapons/Rifle';
 import { Config } from '@/config';
 
 export default class GameLoop {
   private clock = new Clock();
   private level = new Level0();
 
+  private rifle = new Rifle();
   private pistol = new Pistol();
   private player = new Player();
 
   private enemyAssets?: EnemyAssets;
+  private enemies: Array<Enemy> = [];
+
   private readonly loader = new Assets.Loader();
   private readonly input = new Input(this.player);
 
@@ -48,10 +53,11 @@ export default class GameLoop {
     const playerSounds = await this.loadPlayerSounds();
     const enemyAssets = await this.loadEnemyAssets();
 
-    Physics.setPlayer(this.player.collider);
+    // this.player.setPistol(this.enemyColliders, this.pistol);
+    this.player.setRifle(this.enemyColliders, this.rifle);
 
+    Physics.setPlayer(this.player.collider);
     this.player.addSounds(playerSounds);
-    this.player.setPistol(this.pistol);
     this.level.addObject(character);
 
     return enemyAssets;
@@ -108,6 +114,16 @@ export default class GameLoop {
     }
   }
 
+  private get enemyColliders (): Array<Mesh> {
+    const colliders = [];
+
+    for (let enemy = this.enemies.length - 1; enemy >= 0;) {
+      colliders.push(...this.enemies[enemy].hitBox);
+    }
+
+    return colliders;
+  }
+
   public get playerLocation (): Location {
     return this.player.location;
   }
@@ -117,6 +133,7 @@ export default class GameLoop {
   }
 
   public set pause (pause: boolean) {
+    Physics.pause = pause;
     this.paused = pause;
 
     if (!Config.freeCamera) {

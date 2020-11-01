@@ -16,11 +16,11 @@
     "Right": [4.05, 1, 1, -1],
 
     "Backward": [2.7, -1, 0, 0],
-    "BackwardLeft": [1.8, -1, 0, 0],
-    "BackwardRight": [1.8, -1, 0, 0],
+    "BackwardLeft": [1.8, -1, -0.5, 0.5],
+    "BackwardRight": [1.8, -1, 0.5, -0.5],
 
-    "ForwardRight": [2.93, 1, 0, 0],
-    "ForwardLeft": [2.93, 1, 0, 0],
+    "ForwardRight": [2.93, 1, 0.5, -0.5],
+    "ForwardLeft": [2.93, 1, -0.5, 0.5],
     "Forward": [4.5, 1, 0, 0]
   }
 }

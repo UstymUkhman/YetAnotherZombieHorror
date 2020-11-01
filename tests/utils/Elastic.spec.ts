@@ -7,9 +7,9 @@ describe('Elastic', () => {
 
     elasticNumber.set(2);
     elasticNumber.update();
-    expect(elasticNumber.value).toBeCloseTo(1.166);
+    expect(elasticNumber.value).toBeCloseTo(1.083);
 
     elasticNumber.update();
-    expect(elasticNumber.value).toBeCloseTo(1.305);
+    expect(elasticNumber.value).toBeCloseTo(1.159);
   });
 });

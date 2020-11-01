@@ -1,6 +1,7 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector2 = import('@three/math/Vector2').Vector2;
+type Mesh = import('@three/objects/Mesh').Mesh;
 
 import { Direction, Directions } from '@/managers/Input';
 import { GameEvents } from '@/managers/GameEvents';
@@ -10,12 +11,11 @@ import { Camera } from '@/managers/GameCamera';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 
+import type Pistol from '@/weapons/Pistol';
+import type Rifle from '@/weapons/Rifle';
+
 import { clamp } from '@/utils/Number';
 import { Config } from '@/config';
-
-import Pistol from '@/weapons/Pistol';
-// import Rifle from '@/weapons/Rifle';
-type Weapon = Pistol /* | Rifle */;
 
 export type Location = {
   position: Vector3
@@ -28,6 +28,7 @@ export class Player extends Character {
 
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
+  private weapon!: Pistol | Rifle;
 
   private reloadTimeout?: number;
   private aimTimeout?: number;
@@ -45,8 +46,9 @@ export class Player extends Character {
   private hitting = false;
   private aiming = false;
 
-  private weapon!: Weapon;
   private hand?: Object3D;
+  private pistol?: Pistol;
+  private rifle?: Rifle;
 
   public constructor () {
     super(Config.Player);
@@ -84,6 +86,16 @@ export class Player extends Character {
 
     Camera.object.rotation.x = y;
     super.turn(rotation.x /*, y */);
+  }
+
+  public changeWeapon (): void {
+    if (this.hasRifle && !this.aiming && !this.reloading) {
+      const targets = this.weapon.targets;
+
+      !this.equipRifle
+        ? this.setRifle(targets, this.rifle as Rifle)
+        : this.setPistol(targets, this.pistol as Pistol);
+    }
   }
 
   public idle (): void {
@@ -195,19 +207,47 @@ export class Player extends Character {
     sounds.forEach(sound => this.object.add(this.createAudio(sound, listener)));
   }
 
-  public setPistol (pistol: Pistol): void {
-    // this.weapon.targets = colliders;
-    this.hand?.add(pistol.model);
+  public setPistol (targets: Array<Mesh>, pistol: Pistol): void {
+    this.setWeapon(false);
     this.weapon = pistol;
+    this.pistol = pistol;
+
+    pistol.targets = targets;
+    this.hand?.add(pistol.model);
   }
 
-  public changeWeapon (): void {
-    if (!this.hasRifle || this.aiming || this.reloading) return;
-    // const weapon = this.equipRifle ? this.pistol : this.ak47;
-    // const colliders = this.weapon.targets;
+  public setRifle (targets: Array<Mesh>, rifle: Rifle): void {
+    this.setWeapon(true);
+    this.weapon = rifle;
+    this.rifle = rifle;
 
-    // weapon.setToPlayer(false);
-    // this.setWeapon(colliders, weapon, !this.equipRifle);
+    rifle.targets = targets;
+    this.hand?.add(rifle.model);
+  }
+
+  private setWeapon (rifle: boolean): void {
+    let animation = rifle ?
+      this.lastAnimation.replace('pistol', 'rifle') :
+      this.lastAnimation.replace('rifle', 'pistol');
+
+    GameEvents.dispatch('weapon:change', rifle);
+    this.hand?.remove(this.weapon?.model);
+
+    if (!rifle && !this.animations[animation]) {
+      animation = animation.replace(/BackwardLeft|BackwardRight/gm, 'Backward');
+      animation = animation.replace(/ForwardLeft|ForwardRight/gm, 'Forward');
+    }
+
+    this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
+    this.hasRifle = this.equipRifle || rifle;
+    this.animations[animation].play();
+    this.equipRifle = rifle;
+
+    setTimeout(() => {
+      this.currentAnimation.stop();
+      this.lastAnimation = animation;
+      this.currentAnimation = this.animations[animation];
+    }, 100);
   }
 
   public update (delta: number): void {

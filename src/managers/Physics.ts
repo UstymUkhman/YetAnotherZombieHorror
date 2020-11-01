@@ -40,6 +40,7 @@ class Physics {
 
   private readonly angularVelocity = new Ammo.btVector3();
   private readonly linearVelocity = new Ammo.btVector3();
+  private readonly linearFactor = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
   private readonly directionVector = new Vector3();
@@ -109,6 +110,11 @@ class Physics {
     this.colliders.set(mesh.uuid, { mesh, body });
     this.world.addRigidBody(body, 128, 0xFFFF);
     GameEvents.dispatch('add:object', mesh);
+  }
+
+  private togglePlayerFactor (enable: boolean): void {
+    this.linearFactor.setValue(~~enable, 1.0, ~~enable);
+    this.player.body.setLinearFactor(this.linearFactor);
   }
 
   private borderOverflow (border: Vector3) {
@@ -186,6 +192,7 @@ class Physics {
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
     this.player = this.colliders.get(player.uuid);
+    this.togglePlayerFactor(false);
   }
 
   public move (step: Move): void {
@@ -198,6 +205,7 @@ class Physics {
 
     this.linearVelocity.setValue(x * z0 + x * min + z * x1, -1.0, z * z0 + z * min + x * x0);
     this.player.body.setLinearVelocity(this.linearVelocity);
+    this.togglePlayerFactor(true);
   }
 
   public rotate (rotation: number): void {
@@ -206,6 +214,8 @@ class Physics {
   }
 
   public stop (): void {
+    this.togglePlayerFactor(false);
+
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
     this.angularVelocity.setValue(0.0, 0.0, 0.0);
 
@@ -214,6 +224,7 @@ class Physics {
   }
 
   public update (delta: number): void {
+    if (this.paused) return;
     this.world.stepSimulation(delta);
 
     this.colliders.forEach(collider => {
@@ -238,11 +249,8 @@ class Physics {
   }
 
   public set pause (pause: boolean) {
+    this.togglePlayerFactor(!pause);
     this.paused = pause;
-  }
-
-  public get pause (): boolean {
-    return this.paused;
   }
 }
 
