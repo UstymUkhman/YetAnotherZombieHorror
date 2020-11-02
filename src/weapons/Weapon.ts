@@ -1,36 +1,46 @@
-import { /* CameraObject, */ CameraListener } from '@/managers/GameCamera';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { CameraObject, CameraListener } from '@/managers/GameCamera';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
-// type Vector2 = import('@three/math/Vector2').Vector2;
+type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
 type WeaponConfig = import('@/config').Config.Weapon;
 
+import { GameEvents } from '@/managers/GameEvents';
 import { Raycaster } from '@three/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
-import { FrontSide } from '@three/constants';
 
 type Mesh = import('@three/objects/Mesh').Mesh;
 type Euler = import('@three/math/Euler').Euler;
 
+import { Vector2 } from '@three/math/Vector2';
+import { FrontSide } from '@three/constants';
+
+import { random } from '@/utils/number';
+type Recoil = { x: number, y: number };
+
 export default class Weapon {
+  private readonly sounds!: Map<string, PositionalAudio>;
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
+  private readonly origin = new Vector2();
+  public targets: Array<Object3D> = [];
 
-  // private readonly spread: Vector2;
-  // private readonly recoil: Vector2;
-  public targets: Array<Mesh> = [];
+  private readonly spread: Vector2;
+  private readonly recoil: Vector2;
   private weapon?: Assets.GLTF;
 
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
+  private magazine: number;
   private aiming = false;
 
   public constructor (private readonly config: WeaponConfig) {
-    // this.spread = config.spread as Vector2;
-    // this.recoil = config.recoil as Vector2;
+    this.spread = config.spread as Vector2;
+    this.recoil = config.recoil as Vector2;
 
     this.raycaster.near = this.near;
+    this.magazine = config.magazine;
     this.load();
   }
 
@@ -65,7 +75,9 @@ export default class Weapon {
       const audio = new PositionalAudio(CameraListener);
       const volume = names[s] === 'shoot' ? 10 : 5;
 
+      this.sounds.set(names[s], audio);
       this.weapon?.add(audio);
+
       audio.setVolume(volume);
       audio.setBuffer(sound);
     });
@@ -78,7 +90,52 @@ export default class Weapon {
     );
   }
 
+  private playSound (sfx: string): void {
+    const sound = this.sounds.get(sfx) as PositionalAudio;
+    if (sound.isPlaying) sound.stop();
+    sound.play();
+  }
+
+  private getEvent (index: number): string {
+    const hitBox = index % 6;
+    return !hitBox ? 'headshoot' :
+      hitBox === 1 ? 'bodyHit' : 'legHit';
+  }
+
+  protected reset (): void {
+    this.aiming = false;
+    this.targets = [];
+  }
+
   public cancelReload (): void { return; }
+
+  // public setToPlayer (): void { return; }
+
+  public shoot (player: Vector3): void {
+    const target = this.target;
+    const isEmpty = !this.magazine;
+    const hitBox = this.targets[target];
+
+    this.magazine = Math.max(this.magazine - 1, 0);
+    this.playSound(isEmpty ? 'empty' : 'shoot');
+
+    if (!isEmpty && target > -1) {
+      setTimeout(() =>
+        GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
+        Math.round(hitBox.position.distanceTo(player) / this.config.speed)
+      );
+    }
+  }
+
+  protected get recoilPosition (): Recoil {
+    const energy = ~~this.aiming + 1;
+    const { x } = this.spread;
+
+    return {
+      x: random(-x, x) / energy,
+      y: this.recoil.x / energy
+    };
+  }
 
   protected set aim (aiming: boolean) {
     this.raycaster.near = aiming ? this.aimNear : this.near;
@@ -87,6 +144,18 @@ export default class Weapon {
 
   protected get aim (): boolean {
     return this.aiming;
+  }
+
+  public get target (): number {
+    const x = this.spread.x / 10;
+    const y = this.spread.y / 10;
+
+    this.origin.x += random(-x, x);
+    this.origin.y += random(-y, y);
+
+    this.raycaster.setFromCamera(this.origin, CameraObject);
+    const hitBoxes = this.raycaster.intersectObjects(this.targets);
+    return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
   }
 
   public get model (): Assets.GLTF {

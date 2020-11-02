@@ -114,10 +114,10 @@ export default class GameLoop {
     }
   }
 
-  private get enemyColliders (): Array<Mesh> {
+  private get enemyColliders (): Array<Object3D> {
     const colliders = [];
 
-    for (let enemy = this.enemies.length - 1; enemy >= 0;) {
+    for (let enemy = this.enemies.length; enemy--;) {
       colliders.push(...this.enemies[enemy].hitBox);
     }
 

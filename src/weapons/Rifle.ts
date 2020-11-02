@@ -14,12 +14,14 @@ export default class Rifle extends Weapon {
     super(Config.Rifle);
   }
 
-  private reset (): void {
+  protected reset (): void {
     const position = Config.Rifle.position as Vector3;
     const rotation = Config.Rifle.rotation as Euler;
 
     this.model.position.copy(position);
     this.model.rotation.copy(rotation);
+
+    super.reset();
   }
 
   public cancelReload (): void {

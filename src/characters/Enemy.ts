@@ -18,7 +18,7 @@ export default class Enemy extends Character {
   private lastAnimation: Config.EnemyAnimations = 'Idle';
   private currentAnimation!: AnimationAction;
 
-  private hitBoxes: Array<Mesh> = [];
+  private hitBoxes: Array<Object3D> = [];
   private character!: GLTF;
   private head?: Object3D;
   private id: number;
@@ -158,7 +158,7 @@ export default class Enemy extends Character {
     } */
   }
 
-  public get hitBox (): Array<Mesh> {
+  public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
   }
 }
