@@ -15,30 +15,27 @@ type Euler = import('@three/math/Euler').Euler;
 
 import { Vector2 } from '@three/math/Vector2';
 import { FrontSide } from '@three/constants';
+import { random } from '@/utils/Number';
 
-import { random } from '@/utils/number';
+type Sounds = Map<string, PositionalAudio>;
 type Recoil = { x: number, y: number };
 
 export default class Weapon {
-  private readonly sounds!: Map<string, PositionalAudio>;
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
+  private readonly sounds: Sounds = new Map();
   private readonly origin = new Vector2();
-  public targets: Array<Object3D> = [];
 
-  private readonly spread: Vector2;
-  private readonly recoil: Vector2;
+  public targets: Array<Object3D> = [];
   private weapon?: Assets.GLTF;
 
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
+
   private magazine: number;
   private aiming = false;
 
   public constructor (private readonly config: WeaponConfig) {
-    this.spread = config.spread as Vector2;
-    this.recoil = config.recoil as Vector2;
-
     this.raycaster.near = this.near;
     this.magazine = config.magazine;
     this.load();
@@ -129,11 +126,11 @@ export default class Weapon {
 
   protected get recoilPosition (): Recoil {
     const energy = ~~this.aiming + 1;
-    const { x } = this.spread;
+    const { x } = this.config.spread;
 
     return {
       x: random(-x, x) / energy,
-      y: this.recoil.x / energy
+      y: this.config.recoil.x / energy
     };
   }
 
@@ -147,8 +144,8 @@ export default class Weapon {
   }
 
   public get target (): number {
-    const x = this.spread.x / 10;
-    const y = this.spread.y / 10;
+    const x = this.config.spread.x / 10;
+    const y = this.config.spread.y / 10;
 
     this.origin.x += random(-x, x);
     this.origin.y += random(-y, y);

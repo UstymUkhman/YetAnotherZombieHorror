@@ -3,14 +3,14 @@ type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicM
 type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
 type Quaternion = import('@three/math/Quaternion').Quaternion;
 
-type Bounds = import('@/config').Config.Bounds;
-type Coords = import('@/config').Config.Coords;
-type Move = import('@/config').Config.Move;
-
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import { GameEvents } from '@/managers/GameEvents';
 import { Vector3 } from '@three/math/Vector3';
+
+type Bounds = import('@/config').Config.Bounds;
+type Coords = import('@/config').Config.Coords;
+type Move = import('@/config').Config.Move;
 
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
@@ -34,6 +34,9 @@ type BoundsOptions = {
 const ZERO_MASS = 0.0;
 const MIN_SIZE = 0.01;
 const GRAVITY = -9.81;
+
+const DISABLE = 5;
+const ENABLE = 1;
 
 class Physics {
   private readonly colliders: Map<string, {mesh: Mesh, body: any}> = new Map();
@@ -112,11 +115,6 @@ class Physics {
     GameEvents.dispatch('add:object', mesh);
   }
 
-  private togglePlayerFactor (enable: boolean): void {
-    this.linearFactor.setValue(~~enable, 1.0, ~~enable);
-    this.player.body.setLinearFactor(this.linearFactor);
-  }
-
   private borderOverflow (border: Vector3) {
     const { x, z } = this.positionVector;
     return Math.abs(x) > Math.abs(border.x) && Math.abs(z) > Math.abs(border.z);
@@ -192,7 +190,7 @@ class Physics {
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
     this.player = this.colliders.get(player.uuid);
-    this.togglePlayerFactor(false);
+    this.player.body.forceActivationState(DISABLE);
   }
 
   public move (step: Move): void {
@@ -205,7 +203,7 @@ class Physics {
 
     this.linearVelocity.setValue(x * z0 + x * min + z * x1, -1.0, z * z0 + z * min + x * x0);
     this.player.body.setLinearVelocity(this.linearVelocity);
-    this.togglePlayerFactor(true);
+    this.player.body.forceActivationState(ENABLE);
   }
 
   public rotate (rotation: number): void {
@@ -214,10 +212,10 @@ class Physics {
   }
 
   public stop (): void {
-    this.togglePlayerFactor(false);
-
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
     this.angularVelocity.setValue(0.0, 0.0, 0.0);
+
+    this.player.body.forceActivationState(DISABLE);
 
     this.player.body.setLinearVelocity(this.linearVelocity);
     this.player.body.setAngularVelocity(this.angularVelocity);
@@ -249,7 +247,7 @@ class Physics {
   }
 
   public set pause (pause: boolean) {
-    this.togglePlayerFactor(!pause);
+    this.player.body.forceActivationState(pause ? DISABLE : ENABLE);
     this.paused = pause;
   }
 }
