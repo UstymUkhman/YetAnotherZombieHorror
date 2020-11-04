@@ -9,6 +9,7 @@ import { Camera } from '@/managers/GameCamera';
 
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
+import { LoopOnce } from '@three/constants';
 
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
@@ -26,6 +27,7 @@ export class Player extends Character {
   private readonly currentRotation = new Vector3();
 
   private currentAnimation!: AnimationAction;
+  private moves: Directions = [0, 0, 0, 0];
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
 
@@ -34,10 +36,6 @@ export class Player extends Character {
 
   private equipRifle = false;
   private hasRifle = false;
-
-  private moveTime?: number;
-  private idleTime?: number;
-  private aimTime?: number;
 
   private reloading = false;
   private shooting = false;
@@ -48,6 +46,10 @@ export class Player extends Character {
   private hand?: Object3D;
   private pistol?: Pistol;
   private rifle?: Rifle;
+
+  private idleTime = 0;
+  private moveTime = 0;
+  private aimTime = 0;
 
   public constructor () {
     super(Config.Player);
@@ -179,7 +181,7 @@ export class Player extends Character {
     Camera.runAnimation(this.isRunning.bind(this), running);
 
     if (!running || this.lastAnimation === run) {
-      const idling = !Object.values(directions).includes(1);
+      const idling = !(directions as unknown as number[]).includes(1);
 
       if (!this.aiming && idling) {
         setTimeout(this.idle.bind(this), 150);
@@ -203,6 +205,78 @@ export class Player extends Character {
     }, 100);
   }
 
+  public aim (aiming: boolean): void {
+    let duration = 400;
+
+    const running = this.running;
+    const elapse = Date.now() - this.aimTime;
+    const move = !aiming && (this.moves as unknown as number[]).includes(1);
+
+    this.running && GameEvents.dispatch('run', !aiming);
+    this.weapon.aim = this.aiming = aiming;
+
+    if (aiming || elapse > 900)
+      this.weapon.setAim(aiming, Math.max(duration - 100, 0));
+
+    else {
+      duration = Math.min(elapse, 400);
+      this.running = move && running;
+      this.cancelAim(elapse < 100);
+      this.weapon.cancelAim();
+    }
+
+    if (move) {
+      this.running
+        ? this.run(this.moves, !!this.moves[0])
+        : this.move(this.moves);
+    }
+
+    else {
+      let next: string;
+
+      if (aiming && this.equipRifle) {
+        this.aimTime = Date.now();
+        next = 'rifleAim';
+      } else {
+        next = this.getWeaponAnimation('Idle');
+        this.aimTime = 0;
+      }
+
+      if (this.lastAnimation !== next) {
+        this.currentAnimation.crossFadeTo(this.animations[next], 0.1, true);
+        clearTimeout(this.reloadTimeout);
+        this.animations[next].play();
+        this.weapon.cancelReload();
+        this.reloading = false;
+
+        this.aimTimeout = setTimeout(() => {
+          if (this.lastAnimation !== next) {
+            this.moving = false;
+            this.lastAnimation = next;
+
+            this.setAnimation('Idle');
+            this.currentAnimation.stop();
+            this.currentAnimation = this.animations[next];
+          }
+        }, 100) as unknown as number;
+      }
+    }
+
+    Camera.aimAnimation(this.running, this.moving, aiming, duration);
+  }
+
+  private cancelAim (instant: boolean): void {
+    if (!this.running) this.idle();
+    clearTimeout(this.aimTimeout);
+    Camera.stopAnimations();
+
+    if (instant) {
+      this.currentAnimation.stop();
+      this.running = false;
+      this.moving = false;
+    }
+  }
+
   public async loadCharacter (): Promise<Object3D> {
     const model = (await this.load()).scene;
 
@@ -211,6 +285,14 @@ export class Player extends Character {
 
     this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
+
+    this.animations.rifleReload.clampWhenFinished = true;
+    this.animations.rifleAim.clampWhenFinished = true;
+    this.animations.death.clampWhenFinished = true;
+
+    this.animations.rifleReload.setLoop(LoopOnce, 1);
+    this.animations.rifleAim.setLoop(LoopOnce, 1);
+    this.animations.death.setLoop(LoopOnce, 1);
 
     this.currentAnimation.play();
     return this.object;

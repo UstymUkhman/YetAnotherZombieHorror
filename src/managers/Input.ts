@@ -2,9 +2,10 @@ import { GameEvents } from '@/managers/GameEvents';
 import { Vector2 } from '@three/math/Vector2';
 import { throttle } from 'lodash';
 
-type Player = import('@/characters/Player').Player;
-export const enum Direction { UP, RIGHT, DOWN, LEFT }
 export type Directions = { [way in Direction]: number };
+export const enum Direction { UP, RIGHT, DOWN, LEFT }
+type Player = import('@/characters/Player').Player;
+const enum BUTTON { LEFT, WHEEL, RIGHT }
 
 export default class Input {
   private readonly mousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
@@ -26,8 +27,8 @@ export default class Input {
   private idleTimeout?: number;
   private downTime?: number;
 
-  // this._mouseDown = false;
-  // this.mouseRight = null;
+  private leftDown = false;
+  private rightTime = 0;
 
   private paused = true;
   private shift = false;
@@ -55,30 +56,77 @@ export default class Input {
     this.addEvents();
   } */
 
-  private onMousePress (event: MouseEvent): void {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
   private onMouseDown (event: MouseEvent): void {
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
+
+    if (this.mouseDisabled) return;
+
+    // if (event.button === BUTTON.LEFT) {
+    //   const aiming = this.player.running && this.player.aiming;
+    //   this.leftDown = !this.player.running || aiming;
+    // }
+
+    // else if (event.button === BUTTON.RIGHT && !this.player.hitting) {
+    //   this.rightTime = Date.now();
+    //   this.rotationX.speed = 5;
+    //   this.player.aim(true);
+    // }
   }
 
   private onMouseMove (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.paused) return;
+    if (this.mouseDisabled) return;
     const { movementX, movementY } = event;
 
     this.rotation.set(movementX, movementY);
     this.rotation.multiplyScalar(-0.5);
   }
 
-  private onMouseUp (event: MouseEvent): void {
-    event.stopPropagation();
+  private onMousePress (event: MouseEvent): void {
     event.preventDefault();
+    event.stopPropagation();
+
+    // const empty = !this.player.weapon.magazine;
+    // const recoil = this.player.shoot(this._mouseDown);
+    // this._mouseDown = this._mouseDown && this.player.equipRifle && !empty;
+
+    // this.rotationY.value += recoil.y;
+    // this.rotationX.value += recoil.x;
+
+    // this.player.character.rotation.y = this.rotationX.value;
+    // this.character.rotation.x = this.rotationY.value;
+    // this.camera.rotation.x = this.rotationY.value;
+  }
+
+  private onMouseUp (event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.mouseDisabled) {
+      this.leftDown = false;
+      return;
+    }
+
+    if (event.button === BUTTON.LEFT) {
+      this.leftDown = false;
+    }
+
+    // else if (event.button === BUTTON.RIGHT) {
+    //   const y = clamp(this.rotationY.target, -0.1, 0.2);
+    //   let delay = Date.now() - this.rightTime;
+
+    //   delay = Math.max(150 - delay, 0);
+    //   clearTimeout(this.rightTimeout);
+    //   this.rotationY.target = y;
+
+    //   this.rightTimeout = setTimeout(() => {
+    //     this.rotationX.speed = 15;
+    //     this.player.aim(false);
+    //   }, delay) as unknown as number;
+    // }
   }
 
   private onKeyDown (event: KeyboardEvent): void {
@@ -253,7 +301,7 @@ export default class Input {
     this.player.rotate(this.rotation);
     this.rotation.setScalar(0);
 
-    // this._mouseDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
+    // this.leftDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
   }
 
   public dispose (): void {
@@ -267,6 +315,10 @@ export default class Input {
     // delete this.moves;
 
     this.removeEvents();
+  }
+
+  private get mouseDisabled (): boolean {
+    return this.paused || !this.player.alive;
   }
 
   private get pointerLocked (): boolean {

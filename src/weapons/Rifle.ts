@@ -14,22 +14,22 @@ export default class Rifle extends Weapon {
     super(Config.Rifle);
   }
 
-  protected reset (): void {
-    const position = Config.Rifle.position as Vector3;
-    const rotation = Config.Rifle.rotation as Euler;
-
-    this.model.position.copy(position);
-    this.model.rotation.copy(rotation);
-
-    super.reset();
+  /** @Override */
+  public setAim (aiming: boolean, duration: number): void {
+    !aiming ? this.reset() : this.aimTimeout = setTimeout(() => {
+      this.model.rotation.set(Config.Rifle.rotation.x, Math.PI, -0.1);
+      this.model.position.set(Config.Rifle.position.x, 0.0, -1.0);
+    }, duration) as unknown as number;
   }
 
+  /** @Override */
   public cancelReload (): void {
     // this.reloading && this.sfx.reload.stop();
     this.reloading = false;
     this.reset();
   }
 
+  /** @Override */
   public cancelAim (): void {
     clearTimeout(this.aimTimeout);
     this.reset();
@@ -43,6 +43,17 @@ export default class Rifle extends Weapon {
       ammo: this.ammo
     });
   } */
+
+  /** @Override */
+  protected reset (): void {
+    const position = Config.Rifle.position as Vector3;
+    const rotation = Config.Rifle.rotation as Euler;
+
+    this.model.position.copy(position);
+    this.model.rotation.copy(rotation);
+
+    super.reset();
+  }
 
   public get clone (): GLTF {
     const worldScale = Config.Rifle.worldScale as Vector3;

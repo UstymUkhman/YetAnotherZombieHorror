@@ -9,7 +9,7 @@ type RunCheck = () => boolean;
 import anime from 'animejs';
 
 const DEFAULT = new Vector3(-0.625, 0.7, -1.5);
-// const AIM = new Vector3(-0.6, 2.85, -1);
+const AIM = new Vector3(-0.35, 0.75, -0.5);
 const RUN = new Vector3(-1.135, 0.7, -3);
 
 class GameCamera {
@@ -47,6 +47,28 @@ class GameCamera {
     this.camera.setFocalLength(25.0);
   }
 
+  public aimAnimation (running: boolean, moving: boolean, aiming: boolean, duration: number): void {
+    const { x, y, z } = aiming ? AIM : DEFAULT;
+
+    if (running) {
+      anime({
+        targets: this.rotation,
+        easing: 'linear',
+        duration: 250,
+        y: Math.PI
+      });
+
+      if (moving && !aiming) return;
+    }
+
+    anime({
+      easing: 'easeInOutQuad',
+      targets: this.position,
+      delay: ~~aiming * 100,
+      duration, x, y, z
+    });
+  }
+
   public runAnimation (isRunning: RunCheck, running?: boolean): void {
     this.shake *= -1;
 
@@ -72,6 +94,10 @@ class GameCamera {
       complete: () => isRunning() &&
         this.runAnimation(isRunning)
     });
+  }
+
+  public stopAnimations (): void {
+    anime.running.length = 0;
   }
 
   public setTo (target: Object3D): void {

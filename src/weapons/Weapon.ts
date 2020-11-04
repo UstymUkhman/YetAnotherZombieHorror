@@ -104,9 +104,14 @@ export default class Weapon {
     this.targets = [];
   }
 
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  public setAim (aiming?: boolean, duration?: number): void { return; }
+
   public cancelReload (): void { return; }
 
   // public setToPlayer (): void { return; }
+
+  public cancelAim (): void { return; }
 
   public shoot (player: Vector3): void {
     const target = this.target;
@@ -134,12 +139,12 @@ export default class Weapon {
     };
   }
 
-  protected set aim (aiming: boolean) {
+  public set aim (aiming: boolean) {
     this.raycaster.near = aiming ? this.aimNear : this.near;
     this.aiming = aiming;
   }
 
-  protected get aim (): boolean {
+  public get aim (): boolean {
     return this.aiming;
   }
 
