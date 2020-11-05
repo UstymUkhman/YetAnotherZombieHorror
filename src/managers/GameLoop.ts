@@ -1,7 +1,7 @@
+type CharacterSounds = { [sfx in import('@/types').CharacterSound]: string };
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type Object3D = import('@three/core/Object3D').Object3D;
-type Mesh = import('@three/objects/Mesh').Mesh;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Player, Location } from '@/characters/Player';
@@ -49,36 +49,34 @@ export default class GameLoop {
   }
 
   private async loadCharacters (): Promise<EnemyAssets> {
-    const character = await this.player.loadCharacter();
-    const playerSounds = await this.loadPlayerSounds();
-    const enemyAssets = await this.loadEnemyAssets();
+    this.level.addObject(await this.player.loadCharacter());
+
+    this.player.addSounds(await this.loadCharacterSounds(
+      Config.Player.sounds as CharacterSounds
+    ));
 
     // this.player.setPistol(this.enemyColliders, this.pistol);
     this.player.setRifle(this.enemyColliders, this.rifle);
-
     Physics.setPlayer(this.player.collider);
-    this.player.addSounds(playerSounds);
-    this.level.addObject(character);
 
-    return enemyAssets;
-  }
-
-  private async loadPlayerSounds (): Promise<Array<AudioBuffer>> {
-    return await Promise.all(
-      Object.values(Config.Player.sounds)
-        .map(this.loader.loadAudio.bind(this.loader))
-    );
+    return await this.loadEnemyAssets();
   }
 
   private async loadEnemyAssets (): Promise<EnemyAssets> {
     return {
       model: await new Enemy().load(),
-
-      sounds: await Promise.all(
-        Object.values(Config.Enemy.sounds)
-          .map(this.loader.loadAudio.bind(this.loader))
+      sounds: await this.loadCharacterSounds(
+        Config.Enemy.sounds as CharacterSounds
       )
     };
+  }
+
+  private async loadCharacterSounds (sounds: CharacterSounds): Promise<Array<AudioBuffer>> {
+    return await Promise.all(
+      Object.values(sounds).map(
+        this.loader.loadAudio.bind(this.loader)
+      )
+    );
   }
 
   private addEventListeners (): void {

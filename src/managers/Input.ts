@@ -5,7 +5,9 @@ import { throttle } from 'lodash';
 export type Directions = { [way in Direction]: number };
 export const enum Direction { UP, RIGHT, DOWN, LEFT }
 type Player = import('@/characters/Player').Player;
-const enum BUTTON { LEFT, WHEEL, RIGHT }
+// const enum BUTTON { LEFT, WHEEL, RIGHT }
+
+const IDLING = '0000';
 
 export default class Input {
   private readonly mousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
@@ -23,44 +25,23 @@ export default class Input {
   private readonly rotation = new Vector2();
   private moves: Directions = [0, 0, 0, 0];
 
-  private rightTimeout?: number;
-  private idleTimeout?: number;
-  private downTime?: number;
-
-  private leftDown = false;
-  private rightTime = 0;
+  // private leftDown = false;
+  // private aimTimeout = 0;
+  // private rightTime = 0;
 
   private paused = true;
   private shift = false;
-  private move = '0000';
+  private move = IDLING;
 
   public constructor (private readonly player: Player) {
     this.addEvents();
   }
 
-  /* private init (player: Player): void {
-    this.rotation.setScalar(0);
-
-    this.rightTimeout = undefined;
-    this.idleTimeout = undefined;
-    this.downTime = undefined;
-    this.moves = [0, 0, 0, 0];
-
-    // this._mouseDown = false;
-    // this.mouseRight = null;
-    // this.player = player;
-
-    this.paused = true;
-    this.shift = false;
-    this.move = '0000';
-    this.addEvents();
-  } */
-
   private onMouseDown (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.mouseDisabled) return;
+    if (this.disabled) return;
 
     // if (event.button === BUTTON.LEFT) {
     //   const aiming = this.player.running && this.player.aiming;
@@ -77,12 +58,10 @@ export default class Input {
   private onMouseMove (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
+    if (this.disabled) return;
 
-    if (this.mouseDisabled) return;
     const { movementX, movementY } = event;
-
     this.rotation.set(movementX, movementY);
-    this.rotation.multiplyScalar(-0.5);
   }
 
   private onMousePress (event: MouseEvent): void {
@@ -105,24 +84,24 @@ export default class Input {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.mouseDisabled) {
-      this.leftDown = false;
-      return;
-    }
+    // if (this.disabled) {
+    //   this.leftDown = false;
+    //   return;
+    // }
 
-    if (event.button === BUTTON.LEFT) {
-      this.leftDown = false;
-    }
+    // if (event.button === BUTTON.LEFT) {
+    //   this.leftDown = false;
+    // }
 
     // else if (event.button === BUTTON.RIGHT) {
     //   const y = clamp(this.rotationY.target, -0.1, 0.2);
     //   let delay = Date.now() - this.rightTime;
 
     //   delay = Math.max(150 - delay, 0);
-    //   clearTimeout(this.rightTimeout);
+    //   clearTimeout(this.aimTimeout);
     //   this.rotationY.target = y;
 
-    //   this.rightTimeout = setTimeout(() => {
+    //   this.aimTimeout = setTimeout(() => {
     //     this.rotationX.speed = 15;
     //     this.player.aim(false);
     //   }, delay) as unknown as number;
@@ -132,17 +111,16 @@ export default class Input {
   private onKeyDown (event: KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (this.paused) return;
+    if (this.disabled) return;
 
-    if (event.code === 'ShiftLeft' && this.moves[0] && !this.shift) {
-      this.moves[Direction.RIGHT] = 0;
-      this.moves[Direction.DOWN] = 0;
-      this.moves[Direction.LEFT] = 0;
+    if (event.code === 'ShiftLeft' /* && this.moves[0] && !this.shift */) {
+      // this.moves[Direction.RIGHT] = 0;
+      // this.moves[Direction.DOWN] = 0;
+      // this.moves[Direction.LEFT] = 0;
 
-      this.player.run(this.moves, true);
-      this.downTime = Date.now();
+      // this.player.run(this.moves, true);
       this.shift = true;
-      return;
+      // return;
     }
 
     switch (event.code) {
@@ -170,23 +148,23 @@ export default class Input {
         return;
     }
 
-    const move = Object.values(this.moves).join('');
+    const move = this.movement;
 
-    if (this.move !== move) {
+    if (this.move !== move)
       this.player.move(this.moves);
-      this.downTime = Date.now();
-      this.move = move;
-    }
+
+    this.move = move;
   }
 
   private onKeyUp (event: KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (this.paused) return;
+    if (this.disabled) return;
 
-    if (event.code === 'ShiftLeft' && this.shift) {
-      setTimeout(() => { this.shift = false; }, 150);
-      this.player.run(this.moves, false);
+    if (event.code === 'ShiftLeft' /* && this.shift */) {
+      // setTimeout(() => { this.shift = false; }, 150);
+      // this.player.run(this.moves, false);
+      this.shift = false;
     }
 
     switch (event.code) {
@@ -211,34 +189,23 @@ export default class Input {
         this.player.changeWeapon();
         return;
 
-      // case 'KeyR':
-      //   this.player.reload();
-      //   return;
+      case 'KeyR':
+        this.player.reload();
+        return;
 
       default:
         return;
     }
 
-    const move = Object.values(this.moves).join('');
+    const move = this.movement;
 
-    if (move === '0000') {
-      setTimeout(
-        this.player.idle.bind(this.player), Math.max(
-          150 - (Date.now() - (this.downTime as number)), 0
-        )
-      );
+    if (move === IDLING)
+      this.player.idle();
 
-      clearTimeout(this.idleTimeout);
-      this.move = move;
-      return;
-    }
+    else if (this.move !== move)
+      this.player.move(this.moves);
 
-    if (this.move !== move) {
-      this.idleTimeout = setTimeout(() => {
-        this.player.move(this.moves);
-        this.move = move;
-      }, 100) as unknown as number;
-    }
+    this.move = move;
   }
 
   private onPointerLockChange (event: Event): void {
@@ -305,23 +272,18 @@ export default class Input {
   }
 
   public dispose (): void {
-    delete this.rightTimeout;
-    delete this.idleTimeout;
-
-    // delete this.mouseRight;
-    // delete this._mouseDown;
-    // delete this.downTime;
-    // delete this.player;
-    // delete this.moves;
-
     this.removeEvents();
-  }
-
-  private get mouseDisabled (): boolean {
-    return this.paused || !this.player.alive;
   }
 
   private get pointerLocked (): boolean {
     return !!document.pointerLockElement;
+  }
+
+  private get disabled (): boolean {
+    return this.paused || !this.player.alive;
+  }
+
+  private get movement (): string {
+    return (this.moves as unknown as Array<number>).join('');
   }
 }

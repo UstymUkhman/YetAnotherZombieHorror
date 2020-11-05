@@ -11,6 +11,7 @@ import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
 
+import { PlayerAnimations } from '@/types';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
@@ -39,8 +40,6 @@ export class Player extends Character {
 
   private reloading = false;
   private shooting = false;
-
-  private hitting = false;
   private aiming = false;
 
   private hand?: Object3D;
@@ -53,13 +52,9 @@ export class Player extends Character {
 
   public constructor () {
     super(Config.Player);
-
-    if (!Config.freeCamera) {
-      Camera.setTo(this.object);
-    }
   }
 
-  private getMovementAnimation (directions: Directions): Config.Animation {
+  private getMovementAnimation (directions: Directions): PlayerAnimations {
     let direction = directions[Direction.UP] ? 'Forward' : directions[Direction.DOWN] ? 'Backward' : '';
 
     if (!this.equipRifle && !direction) {
@@ -68,7 +63,7 @@ export class Player extends Character {
       direction += directions[Direction.LEFT] ? 'Left' : directions[Direction.RIGHT] ? 'Right' : '';
     }
 
-    return direction as Config.Animation || 'Idle';
+    return direction as PlayerAnimations || 'Idle';
   }
 
   private getWeaponAnimation (movement: string): string {
@@ -100,28 +95,50 @@ export class Player extends Character {
     }, 100);
   }
 
-  private isRunning (): boolean {
-    return this.running && !this.aiming;
-  }
+  // private isReloading (): boolean {
+  //   return this.reloading;
+  // }
+
+  // private isShooting (): boolean {
+  //   return this.shooting;
+  // }
+
+  // private isAiming (): boolean {
+  //   return this.aiming;
+  // }
+
+  // private isHitting (): boolean {
+  //   return this.hitting;
+  // }
+
+  // private isRunning (): boolean {
+  //   return this.running;
+  // }
+
+  // private isMoving (): boolean {
+  //   return this.moving;
+  // }
 
   public rotate (rotation: Vector2): void {
+    const x = rotation.x / -50;
+
     const y = clamp(
-      Camera.rotation.x + rotation.y / -400,
+      Camera.rotation.x + rotation.y / 400,
       -0.1, ~~this.aiming * 0.2 + 0.2
     );
 
-    Camera.object.rotation.x = y;
-    super.turn(rotation.x /*, y */);
+    // Camera.object.rotation.set(y, x, 0);
+    // Camera.object.rotation.x = y;
+    super.turn(x, y);
   }
 
   public idle (): void {
     const idle = this.getWeaponAnimation('Idle');
     const idling = this.lastAnimation === idle;
-
     this.running = this.moving = false;
 
-    if (this.idleTime && Date.now() - this.idleTime < 150) return;
-    if (this.aiming || this.hitting || this.reloading || idling) return;
+    if (idling || Date.now() - this.idleTime < 100) return;
+    // if (this.aiming || this.hitting || this.reloading || idling) return;
 
     this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
     this.animations[idle].play();
@@ -140,18 +157,18 @@ export class Player extends Character {
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
 
-    if (this.aiming || this.hitting || this.lastAnimation === animation) return;
-    if (this.moveTime && Date.now() - this.moveTime < 150) return;
+    // if (this.aiming || this.hitting || this.lastAnimation === animation) return;
+    if (this.lastAnimation === animation || Date.now() - this.moveTime < 100) return;
 
-    if (this.running) {
-      !direction.includes('Forward') && this.run(directions, false);
-      return;
-    }
+    // if (this.running) {
+    //   !direction.includes('Forward') && this.run(directions, false);
+    //   return;
+    // }
 
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
     this.animations[animation].play();
-    clearTimeout(this.reloadTimeout);
-    this.weapon.cancelReload();
+    // clearTimeout(this.reloadTimeout);
+    // this.weapon.cancelReload();
 
     this.moveTime = Date.now();
     this.reloading = false;
@@ -168,30 +185,30 @@ export class Player extends Character {
   }
 
   public run (directions: Directions, running: boolean): void {
-    this.moving = this.running = running;
-    if (this.aiming || this.hitting) return;
+    this.running = running;
+    // if (this.aiming || this.hitting) return;
     const run = this.getWeaponAnimation('Run');
 
     GameEvents.dispatch('player:run', running);
-    clearTimeout(this.reloadTimeout);
+    // clearTimeout(this.reloadTimeout);
 
-    this.weapon.cancelReload();
-    this.reloading = false;
+    // this.weapon.cancelReload();
+    // this.reloading = false;
 
-    Camera.runAnimation(this.isRunning.bind(this), running);
+    // Camera.runAnimation(this.isRunning.bind(this), running);
 
-    if (!running || this.lastAnimation === run) {
-      const idling = !(directions as unknown as number[]).includes(1);
+    // if (!running || this.lastAnimation === run) {
+    //   const idling = !(directions as unknown as number[]).includes(1);
 
-      if (!this.aiming && idling) {
-        setTimeout(this.idle.bind(this), 150);
-      } else {
-        this.move(directions);
-        this.moving = true;
-      }
+    //   if (!this.aiming && idling) {
+    //     setTimeout(this.idle.bind(this), 150);
+    //   } else {
+    //     this.move(directions);
+    //     this.moving = true;
+    //   }
 
-      return;
-    }
+    //   return;
+    // }
 
     this.currentAnimation.crossFadeTo(this.animations[run], 0.1, true);
     this.animations[run].play();
@@ -205,7 +222,7 @@ export class Player extends Character {
     }, 100);
   }
 
-  public aim (aiming: boolean): void {
+  /* public aim (aiming: boolean): void {
     let duration = 400;
 
     const running = this.running;
@@ -275,7 +292,9 @@ export class Player extends Character {
       this.running = false;
       this.moving = false;
     }
-  }
+  } */
+
+  public reload (): void { return; }
 
   public async loadCharacter (): Promise<Object3D> {
     const model = (await this.load()).scene;
@@ -294,13 +313,9 @@ export class Player extends Character {
     this.animations.rifleAim.setLoop(LoopOnce, 1);
     this.animations.death.setLoop(LoopOnce, 1);
 
+    !Config.freeCamera && Camera.setTo(model);
     this.currentAnimation.play();
     return this.object;
-  }
-
-  public addSounds (sounds: Array<AudioBuffer>): void {
-    const listener = Camera.listener;
-    sounds.forEach(sound => this.object.add(this.createAudio(sound, listener)));
   }
 
   public setPistol (targets: Array<Object3D>, pistol: Pistol): void {
@@ -353,10 +368,6 @@ export class Player extends Character {
       )
     };
   }
-
-  /* public get aimMode (): boolean {
-    return this.aiming;
-  } */
 
   public get uuid (): string {
     return this.object.uuid;

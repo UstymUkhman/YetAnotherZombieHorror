@@ -5,15 +5,13 @@ type Quaternion = import('@three/math/Quaternion').Quaternion;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { CharacterMove, Coords, Bounds } from '@/types';
 import { GameEvents } from '@/managers/GameEvents';
+
 import { Vector3 } from '@three/math/Vector3';
-
-type Bounds = import('@/config').Config.Bounds;
-type Coords = import('@/config').Config.Coords;
-type Move = import('@/config').Config.Move;
-
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
+
 import { PI } from '@/utils/Number';
 import Ammo from 'ammo.js';
 
@@ -43,7 +41,6 @@ class Physics {
 
   private readonly angularVelocity = new Ammo.btVector3();
   private readonly linearVelocity = new Ammo.btVector3();
-  private readonly linearFactor = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
   private readonly directionVector = new Vector3();
@@ -193,7 +190,8 @@ class Physics {
     this.player.body.forceActivationState(DISABLE);
   }
 
-  public move (step: Move): void {
+  public move (step: CharacterMove): void {
+    // this.player.mesh.children[0].getWorldDirection(this.directionVector);
     this.player.mesh.getWorldDirection(this.directionVector);
     this.directionVector.multiplyScalar(step.speed);
 
@@ -204,11 +202,6 @@ class Physics {
     this.linearVelocity.setValue(x * z0 + x * min + z * x1, -1.0, z * z0 + z * min + x * x0);
     this.player.body.setLinearVelocity(this.linearVelocity);
     this.player.body.forceActivationState(ENABLE);
-  }
-
-  public rotate (rotation: number): void {
-    this.angularVelocity.setValue(0.0, rotation, 0.0);
-    this.player.body.setAngularVelocity(this.angularVelocity);
   }
 
   public stop (): void {

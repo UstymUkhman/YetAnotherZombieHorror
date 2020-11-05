@@ -1,18 +1,13 @@
+import { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types';
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type AudioListener = import('@three/audio/AudioListener').AudioListener;
-
-type CharacterAnimation = import('@/config').Config.Animation;
-type CharacterConfig = import('@/config').Config.Character;
-// type CharacterSounds = import('@/config').Config.Sounds;
-
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
-type Move = import('@/config').Config.Move;
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
+import { CameraListener } from '@/managers/GameCamera';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { DynamicCollider } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
@@ -22,17 +17,18 @@ import { Mesh } from '@three/objects/Mesh';
 import Physics from '@/managers/Physics';
 
 export default class Character {
+  private step: CharacterMove = this.config.moves.Idle;
+  private readonly sounds: CharacterSounds = new Map();
   private readonly loader = new Assets.Loader();
-  private step: Move = this.config.moves.Idle;
 
-  protected animations: Actions = { };
-  // private sounds: CharacterSounds;
-
+  protected animations: Actions = {};
   private mixer?: AnimationMixer;
   private model?: Assets.GLTF;
   protected object: Mesh;
 
+  protected hitting = false;
   protected running = false;
+
   protected moving = false;
   protected dead = false;
 
@@ -78,18 +74,9 @@ export default class Character {
     this.step = this.config.moves[animation];
   }
 
-  protected createAudio (sound: AudioBuffer, listener: AudioListener, volume = 10): PositionalAudio {
-    const audio = new PositionalAudio(listener);
-
-    audio.setVolume(volume);
-    audio.setBuffer(sound);
-
-    return audio;
-  }
-
-  protected turn (x: number /*, y: number */): void {
-    // (this.model as Assets.GLTF).rotation.x = y;
-    Physics.rotate(x);
+  protected turn (y: number, x = 0): void {
+    (this.model as Assets.GLTF).rotation.y += y;
+    (this.model as Assets.GLTF).rotation.x = x;
   }
 
   protected update (delta: number): void {
@@ -130,6 +117,20 @@ export default class Character {
     return character;
   }
 
+  public addSounds (sounds: Array<AudioBuffer>): void {
+    const sfx = Object.keys(this.config.sounds) as unknown as Array<CharacterSound>;
+
+    sounds.forEach((sound, s) => {
+      const audio = new PositionalAudio(CameraListener);
+
+      this.sounds.set(sfx[s], audio);
+      this.object.add(audio);
+
+      audio.setBuffer(sound);
+      audio.setVolume(10);
+    });
+  }
+
   public dispose (): void {
     const children = this.model?.children;
 
@@ -156,15 +157,18 @@ export default class Character {
 
     // delete this.colliders;
     // delete this.sounds;
+    delete this.mixer;
     delete this.model;
   }
 
   public reset (): void {
     this.step = this.config.moves.Idle;
+    this.hitting = false;
     this.running = false;
     this.moving = false;
 
     this.health = 100;
+    this.still = true;
     this.dead = false;
   }
 

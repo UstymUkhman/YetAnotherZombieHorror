@@ -13,11 +13,11 @@ const AIM = new Vector3(-0.35, 0.75, -0.5);
 const RUN = new Vector3(-1.135, 0.7, -3);
 
 class GameCamera {
-  private audioListener = new AudioListener();
+  private ratio: number = window.innerWidth / window.innerHeight;
   private readonly onResize = this.updateAspectRatio.bind(this);
 
-  private ratio: number = window.innerWidth / window.innerHeight;
   private camera = new PerspectiveCamera(45, this.ratio);
+  private audioListener = new AudioListener();
 
   private shake = 0;
 
@@ -96,12 +96,12 @@ class GameCamera {
     });
   }
 
-  public stopAnimations (): void {
-    anime.running.length = 0;
-  }
-
   public setTo (target: Object3D): void {
     target.add(this.camera);
+  }
+
+  public stopAnimations (): void {
+    anime.running.length = 0;
   }
 
   public destroy (): void {

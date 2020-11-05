@@ -1,18 +1,21 @@
 import Level0Data from '@/config/level0.json';
-import PistolData from '@/config/pistol.json';
-import RifleData from '@/config/rifle.json';
+import CameraData from '@/config/camera.json';
 
 import PlayerData from '@/config/player.json';
 import EnemyData from '@/config/enemy.json';
+
+import PistolData from '@/config/pistol.json';
+import RifleData from '@/config/rifle.json';
 
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
 
 import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from '@three/math/Euler';
+import { CharacterMove } from '@/types';
 
 export namespace Config {
-  const parseCharacterMoves = (animations: CharacterMoves): Moves =>
+  const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({
       [animation]: {
         speed: animations[animation][0],
@@ -26,33 +29,14 @@ export namespace Config {
     })
   ));
 
+  const playerMoves = PlayerData.animations as unknown as CharacterAnimations;
+  const enemyMoves = EnemyData.animations as unknown as CharacterAnimations;
+
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
-  const playerMoves = PlayerData.animations as unknown as CharacterMoves;
-  const enemyMoves = EnemyData.animations as unknown as CharacterMoves;
+  type CharacterAnimations = Record<string, Readonly<Array<number>>>;
 
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
-  export type Animations<Value> = { [key in Animation]: Value };
-  type CharacterMoves = Record<string, Readonly<Array<number>>>;
-
-  export type PlayerAnimations = keyof typeof Player.animations;
-  export type EnemyAnimations = keyof typeof Enemy.animations;
-  export type Animation = PlayerAnimations | EnemyAnimations;
-
-  export type Move = { speed: number, direction: Direction };
-  type Direction = { z0: number, x0: number, x1: number };
-
-  export type Character = typeof Player | typeof Enemy;
-  export type Weapon = typeof Pistol | typeof Rifle;
-
-  export type Coords = Readonly<[number, number]>;
-  export type Bounds = Readonly<Array<Coords>>;
-
-  export type Sounds = { [key in Sound]: string };
-  export type Sound = PlayerSounds | EnemySounds;
-
-  type PlayerSounds = keyof typeof Player.sounds;
-  type EnemySounds = keyof typeof Enemy.sounds;
-  type Moves = { [key: string]: Move };
+  type CharacterMoves = { [key: string]: CharacterMove };
 
   /* eslint-disable no-undef */
   export const VERSION: string = BUILD;
@@ -77,6 +61,30 @@ export namespace Config {
 
     height: Level0Data.height,
     depth: Level0Data.depth
+  });
+
+  export const Player = deepFreeze({
+    position: new Vector3(...PlayerData.position),
+    collider: new Vector3(...PlayerData.collider),
+    scale: new Vector3(...PlayerData.scale),
+
+    moves: parseCharacterMoves(playerMoves),
+    animations: PlayerData.animations,
+
+    sounds: PlayerData.sounds,
+    model: PlayerData.model
+  });
+
+  export const Enemy = deepFreeze({
+    position: new Vector3(...EnemyData.position),
+    collider: new Vector3(...EnemyData.collider),
+    scale: new Vector3(...EnemyData.scale),
+
+    moves: parseCharacterMoves(enemyMoves),
+    animations: EnemyData.animations,
+
+    sounds: EnemyData.sounds,
+    model: EnemyData.model
   });
 
   export const Pistol = deepFreeze({
@@ -114,27 +122,9 @@ export namespace Config {
     model: RifleData.model
   });
 
-  export const Player = deepFreeze({
-    position: new Vector3(...PlayerData.position),
-    collider: new Vector3(...PlayerData.collider),
-    scale: new Vector3(...PlayerData.scale),
-
-    moves: parseCharacterMoves(playerMoves),
-    animations: PlayerData.animations,
-
-    sounds: PlayerData.sounds,
-    model: PlayerData.model
-  });
-
-  export const Enemy = deepFreeze({
-    position: new Vector3(...EnemyData.position),
-    collider: new Vector3(...EnemyData.collider),
-    scale: new Vector3(...EnemyData.scale),
-
-    moves: parseCharacterMoves(enemyMoves),
-    animations: EnemyData.animations,
-
-    sounds: EnemyData.sounds,
-    model: EnemyData.model
+  export const Camera = deepFreeze({
+    default: new Vector3(...CameraData.default),
+    aim: new Vector3(...CameraData.aim),
+    run: new Vector3(...CameraData.run)
   });
 }

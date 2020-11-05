@@ -12,10 +12,12 @@ import Character from '@/characters/Character';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { HitBox } from '@/utils/Material';
+
+import { EnemyAnimations } from '@/types';
 import { Config } from '@/config';
 
 export default class Enemy extends Character {
-  private lastAnimation: Config.EnemyAnimations = 'Idle';
+  private lastAnimation: EnemyAnimations = 'Idle';
   private currentAnimation!: AnimationAction;
 
   private hitBoxes: Array<Object3D> = [];
@@ -144,10 +146,6 @@ export default class Enemy extends Character {
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
-  }
-
-  public addSounds (sounds: Array<AudioBuffer>, listener: AudioListener): void {
-    sounds.forEach(sound => this.object.add(this.createAudio(sound, listener)));
   }
 
   public update (delta: number): void {

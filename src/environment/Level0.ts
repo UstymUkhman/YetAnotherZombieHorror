@@ -1,17 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../global.d.ts" />
-
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import GameLevel from '@/environment/GameLevel';
+
+import { Coords, Bounds } from '@/types';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/Physics';
-import { Fog } from '@three/scenes/Fog';
 
+import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
+
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
@@ -63,7 +63,7 @@ export default class Level0 extends GameLevel {
     Physics.createBounds({
       borders: Level0.bounds, y: position.y, height
     }, {
-      borders: Config.Level0.sidewalk as Config.Bounds,
+      borders: Config.Level0.sidewalk as Bounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
@@ -88,21 +88,21 @@ export default class Level0 extends GameLevel {
     }
   }
 
-  public static get minCoords (): Config.Coords {
+  public static get minCoords (): Coords {
     return [
-      min(Level0.bounds.map((coords: Config.Coords) => coords[0])),
-      min(Level0.bounds.map((coords: Config.Coords) => coords[1]))
+      min(Level0.bounds.map((coords: Coords) => coords[0])),
+      min(Level0.bounds.map((coords: Coords) => coords[1]))
     ];
   }
 
-  public static get maxCoords (): Config.Coords {
+  public static get maxCoords (): Coords {
     return [
-      max(Level0.bounds.map((coords: Config.Coords) => coords[0])),
-      max(Level0.bounds.map((coords: Config.Coords) => coords[1]))
+      max(Level0.bounds.map((coords: Coords) => coords[0])),
+      max(Level0.bounds.map((coords: Coords) => coords[1]))
     ];
   }
 
-  public static get bounds (): Config.Bounds {
-    return Config.Level0.bounds as Config.Bounds;
+  public static get bounds (): Bounds {
+    return Config.Level0.bounds as Bounds;
   }
 }

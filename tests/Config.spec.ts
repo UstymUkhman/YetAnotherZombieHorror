@@ -2,10 +2,13 @@ import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
 
 import Level0 from '@/config/level0.json';
-import Pistol from '@/config/pistol.json';
+import Camera from '@/config/camera.json';
 
 import Player from '@/config/player.json';
 import Enemy from '@/config/enemy.json';
+
+import Pistol from '@/config/pistol.json';
+import Rifle from '@/config/rifle.json';
 
 import { Euler } from '@three/math/Euler';
 
@@ -135,6 +138,54 @@ describe('Settings', () => {
 
     expect(Config.Pistol.damage).toBeGreaterThan(0);
     expect(Config.Pistol.speed).toBeGreaterThan(0);
+  });
+
+  test('Rifle', () => {
+    const riflePosition = new Vector3(...Rifle.position);
+    const rifleRotation = new Euler(...Rifle.rotation);
+
+    const rifleSpread = new Vector2(...Rifle.spread);
+    const rifleRecoil = new Vector2(...Rifle.recoil);
+    const rifleScale = new Vector3(...Rifle.scale);
+
+    expect(Object.keys(Config.Rifle.sounds).length).toBeGreaterThan(0);
+
+    expect(Config.Rifle.position).toStrictEqual(riflePosition);
+    expect(Config.Rifle.position).toBeInstanceOf(Vector3);
+
+    expect(Config.Rifle.rotation).toStrictEqual(rifleRotation);
+    expect(Config.Rifle.rotation).toBeInstanceOf(Euler);
+
+    expect(Config.Rifle.scale).toStrictEqual(rifleScale);
+    expect(Config.Rifle.scale).toBeInstanceOf(Vector3);
+
+    expect(Config.Rifle.spread).toStrictEqual(rifleSpread);
+    expect(Config.Rifle.spread).toBeInstanceOf(Vector2);
+
+    expect(Config.Rifle.recoil).toStrictEqual(rifleRecoil);
+    expect(Config.Rifle.recoil).toBeInstanceOf(Vector2);
+
+    expect(Config.Rifle.model).toStrictEqual('AK47.glb');
+    expect(Config.Rifle.magazine).toStrictEqual(0);
+
+    expect(Config.Rifle.damage).toBeGreaterThan(0);
+    expect(Config.Rifle.speed).toBeGreaterThan(0);
+    expect(Config.Rifle.ammo).toStrictEqual(0);
+  });
+
+  test('Camera', () => {
+    const cameraDefaultPosition = new Vector3(...Camera.default);
+    const cameraAimPosition = new Vector3(...Camera.aim);
+    const cameraRunPosition = new Vector3(...Camera.run);
+
+    expect(Config.Camera.default).toStrictEqual(cameraDefaultPosition);
+    expect(Config.Camera.default).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.aim).toStrictEqual(cameraAimPosition);
+    expect(Config.Camera.aim).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.run).toStrictEqual(cameraRunPosition);
+    expect(Config.Camera.run).toBeInstanceOf(Vector3);
   });
 
   test('Frozen', () => {

@@ -1,10 +1,10 @@
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
+import { WeaponConfig, WeaponSounds, WeaponSound } from '@/types';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
-type WeaponConfig = import('@/config').Config.Weapon;
 
 import { GameEvents } from '@/managers/GameEvents';
 import { Raycaster } from '@three/core/Raycaster';
@@ -17,13 +17,12 @@ import { Vector2 } from '@three/math/Vector2';
 import { FrontSide } from '@three/constants';
 import { random } from '@/utils/Number';
 
-type Sounds = Map<string, PositionalAudio>;
 type Recoil = { x: number, y: number };
 
 export default class Weapon {
+  private readonly sounds: WeaponSounds = new Map();
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
-  private readonly sounds: Sounds = new Map();
   private readonly origin = new Vector2();
 
   public targets: Array<Object3D> = [];
@@ -43,7 +42,7 @@ export default class Weapon {
 
   private async load (): Promise<Assets.GLTF> {
     this.weapon = (await this.loader.loadGLTF(this.config.model)).scene;
-    this.addSounds(Object.keys(this.config.sounds), await this.loadSounds());
+    this.addSounds(await this.loadSounds());
 
     this.weapon.traverse(child => {
       const childMesh = child as Mesh;
@@ -67,12 +66,14 @@ export default class Weapon {
     return this.weapon;
   }
 
-  private addSounds (names: Array<string>, sounds: Array<AudioBuffer>): void {
+  private addSounds (sounds: Array<AudioBuffer>): void {
+    const sfx = Object.keys(this.config.sounds) as unknown as Array<WeaponSound>;
+
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(CameraListener);
-      const volume = names[s] === 'shoot' ? 10 : 5;
+      const volume = sfx[s] === 'shoot' ? 10 : 5;
 
-      this.sounds.set(names[s], audio);
+      this.sounds.set(sfx[s], audio);
       this.weapon?.add(audio);
 
       audio.setVolume(volume);
@@ -87,7 +88,7 @@ export default class Weapon {
     );
   }
 
-  private playSound (sfx: string): void {
+  private playSound (sfx: WeaponSound): void {
     const sound = this.sounds.get(sfx) as PositionalAudio;
     if (sound.isPlaying) sound.stop();
     sound.play();
