@@ -1,5 +1,6 @@
 import { Config } from '@/config';
 
+type Location = { position: import('@three/math/Vector3').Vector3, rotation: number };
 type CharacterAnimations<Animation> = { [key in CharacterAnimation]: Animation };
 type PositionalAudio = import('@three/audio/PositionalAudio').PositionalAudio;
 

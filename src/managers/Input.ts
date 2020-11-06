@@ -4,7 +4,7 @@ import { throttle } from 'lodash';
 
 export type Directions = { [way in Direction]: number };
 export const enum Direction { UP, RIGHT, DOWN, LEFT }
-type Player = import('@/characters/Player').Player;
+import type Player from '@/characters/Player';
 // const enum BUTTON { LEFT, WHEEL, RIGHT }
 
 const IDLING = '0000';

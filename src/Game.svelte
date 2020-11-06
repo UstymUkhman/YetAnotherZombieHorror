@@ -31,8 +31,9 @@
   import { Elastic } from '@/utils/Elastic';
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
-  import { Config } from '@/config';
 
+  // import { Location } from '@/types';
+  import { Config } from '@/config';
 
   let zoomScale: number;
   let main: HTMLElement;
@@ -42,8 +43,8 @@
   let raf: number;
 
   const game = new GameLoop();
+  let location: any; // Location;
   const zoom = new Elastic.Number(0);
-  let location = game.playerLocation;
 
   GameEvents.add('player:run', event => zoom.set(~~(event.data as boolean) * 0.5));
   GameEvents.add('pause', event => togglePause(event.data as boolean));

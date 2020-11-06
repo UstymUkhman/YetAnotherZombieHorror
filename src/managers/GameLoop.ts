@@ -1,15 +1,16 @@
-type CharacterSounds = { [sfx in import('@/types').CharacterSound]: string };
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 type Stats = typeof import('three/examples/js/libs/stats.min');
+type CharacterSounds = { [sfx in CharacterSound]: string };
 type Object3D = import('@three/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
-import { Player, Location } from '@/characters/Player';
+import { CharacterSound, Location } from '@/types';
 import { Assets } from '@/managers/AssetsLoader';
 
 import { Clock } from '@three/core/Clock';
 import Level0 from '@/environment/Level0';
 import Physics from '@/managers/Physics';
+import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
 
 import Pistol from '@/weapons/Pistol';

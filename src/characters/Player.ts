@@ -1,8 +1,10 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
+type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector2 = import('@three/math/Vector2').Vector2;
 
 import { Direction, Directions } from '@/managers/Input';
+import { Location, PlayerAnimations } from '@/types';
 import { GameEvents } from '@/managers/GameEvents';
 import { MathUtils } from '@three/math/MathUtils';
 import { Camera } from '@/managers/GameCamera';
@@ -10,24 +12,16 @@ import { Camera } from '@/managers/GameCamera';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
-
-import { PlayerAnimations } from '@/types';
 import type Pistol from '@/weapons/Pistol';
-import type Rifle from '@/weapons/Rifle';
 
-// import { clamp } from '@/utils/Number';
+import type Rifle from '@/weapons/Rifle';
+import { clamp } from '@/utils/Number';
 import { Config } from '@/config';
 
-export type Location = {
-  position: Vector3
-  rotation: number
-};
-
-export class Player extends Character {
+export default class Player extends Character {
   private readonly currentPosition = new Vector3();
-  private readonly currentRotation = new Vector3();
-
   private currentAnimation!: AnimationAction;
+
   private moves: Directions = [0, 0, 0, 0];
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
@@ -119,13 +113,14 @@ export class Player extends Character {
   //   return this.moving;
   // }
 
-  public rotate (rotation: Vector2): void {
-    // const y = clamp(
-    //   Camera.rotation.x + rotation.y / 400,
-    //   -0.1, ~~this.aiming * 0.2 + 0.2
-    // );
+  public rotate (mouse: Vector2): void {
+    const { rotation } = this.model as GLTF;
+    rotation.y += mouse.y / 400;
 
-    super.turn(rotation.x / -100);
+    rotation.x = clamp(
+      rotation.x + mouse.x / -100,
+      -0.1, ~~this.aiming * 0.2 + 0.2
+    );
   }
 
   public idle (): void {
@@ -296,8 +291,6 @@ export class Player extends Character {
     const model = (await this.load()).scene;
 
     this.currentPosition.copy(this.object.position);
-    this.object.rotation.toVector3(this.currentRotation);
-
     this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
 
@@ -352,15 +345,12 @@ export class Player extends Character {
 
   public get location (): Location {
     this.object.getWorldPosition(this.currentPosition);
-    this.object.getWorldDirection(this.currentRotation);
+    const { x, z } = this.rotation;
 
     return {
       position: this.currentPosition,
       rotation: MathUtils.radToDeg(
-        Math.atan2(
-          -this.currentRotation.x,
-          this.currentRotation.z
-        )
+        Math.atan2(-x, z)
       )
     };
   }

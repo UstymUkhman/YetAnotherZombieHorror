@@ -17,15 +17,15 @@ import { Mesh } from '@three/objects/Mesh';
 import Physics from '@/managers/Physics';
 
 export default class Character {
-  private readonly directionVector = new Vector3(0, -1, 0);
   private step: CharacterMove = this.config.moves.Idle;
 
   private readonly sounds: CharacterSounds = new Map();
+  private readonly rotationVector = new Vector3();
   private readonly loader = new Assets.Loader();
 
   protected animations: Actions = {};
   private mixer?: AnimationMixer;
-  private model?: Assets.GLTF;
+  protected model?: Assets.GLTF;
   protected object: Mesh;
 
   protected hitting = false;
@@ -76,11 +76,6 @@ export default class Character {
     this.step = this.config.moves[animation];
   }
 
-  protected turn (y: number, x = 0): void {
-    (this.model as Assets.GLTF).rotation.y += y;
-    (this.model as Assets.GLTF).rotation.x += x;
-  }
-
   protected update (delta: number): void {
     this.mixer?.update(delta);
 
@@ -107,6 +102,7 @@ export default class Character {
 
     this.object.position.copy(this.config.position as Vector3);
     this.object.scale.copy(this.config.scale as Vector3);
+    this.object.rotation.toVector3(this.rotationVector);
 
     this.setCharacterMaterial(character.scene);
     this.object.add(character.scene);
@@ -158,7 +154,6 @@ export default class Character {
     }
 
     // delete this.colliders;
-    // delete this.sounds;
     delete this.mixer;
     delete this.model;
   }
@@ -175,18 +170,24 @@ export default class Character {
     this.dead = false;
   }
 
+  protected get rotation (): Vector3 {
+    return (this.model as Assets.GLTF).getWorldDirection(this.rotationVector);
+  }
+
   private get direction (): Vector3 {
-    (this.model as Assets.GLTF).getWorldDirection(this.directionVector);
-    this.directionVector.multiplyScalar(this.step.speed);
+    const { speed, direction } = this.step;
+    const { z0, x0, x1 } = direction;
 
-    const { z0, x0, x1 } = this.step.direction;
-    const { x, z } = this.directionVector;
     const min = Math.min(x0, x1);
+    let { x, z } = this.rotation;
 
-    this.directionVector.setX(x * z0 + x * min + z * x1);
-    this.directionVector.setZ(z * z0 + z * min + x * x0);
+    x *= speed; z *= speed;
 
-    return this.directionVector;
+    return this.rotationVector.set(
+      x * z0 + x * min + z * x1,
+      -1.0,
+      z * z0 + z * min + x * x0
+    );
   }
 
   public get collider (): Mesh {
