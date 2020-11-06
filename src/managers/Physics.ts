@@ -5,13 +5,13 @@ type Quaternion = import('@three/math/Quaternion').Quaternion;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
-import { CharacterMove, Coords, Bounds } from '@/types';
 import { GameEvents } from '@/managers/GameEvents';
 
 import { Vector3 } from '@three/math/Vector3';
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
 
+import { Coords, Bounds } from '@/types';
 import { PI } from '@/utils/Number';
 import Ammo from 'ammo.js';
 
@@ -39,11 +39,9 @@ const ENABLE = 1;
 class Physics {
   private readonly colliders: Map<string, {mesh: Mesh, body: any}> = new Map();
 
-  private readonly angularVelocity = new Ammo.btVector3();
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
-  private readonly directionVector = new Vector3();
   private readonly positionVector = new Vector3();
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
@@ -104,7 +102,7 @@ class Physics {
     const shape = new Ammo.btCapsuleShape(radius * 1.4675, height * 1.4675);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
-    body.setAngularFactor(new Ammo.btVector3(0.0, 1.0, 0.0));
+    body.setAngularFactor(new Ammo.btVector3(0.0, 0.0, 0.0));
     body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
 
     this.colliders.set(mesh.uuid, { mesh, body });
@@ -190,28 +188,16 @@ class Physics {
     this.player.body.forceActivationState(DISABLE);
   }
 
-  public move (step: CharacterMove): void {
-    // this.player.mesh.children[0].getWorldDirection(this.directionVector);
-    this.player.mesh.getWorldDirection(this.directionVector);
-    this.directionVector.multiplyScalar(step.speed);
-
-    const { z0, x0, x1 } = step.direction;
-    const { x, z } = this.directionVector;
-    const min = Math.min(x0, x1);
-
-    this.linearVelocity.setValue(x * z0 + x * min + z * x1, -1.0, z * z0 + z * min + x * x0);
+  public move (direction: Vector3): void {
+    this.linearVelocity.setValue(direction.x, direction.y, direction.z);
     this.player.body.setLinearVelocity(this.linearVelocity);
     this.player.body.forceActivationState(ENABLE);
   }
 
   public stop (): void {
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
-    this.angularVelocity.setValue(0.0, 0.0, 0.0);
-
     this.player.body.forceActivationState(DISABLE);
-
     this.player.body.setLinearVelocity(this.linearVelocity);
-    this.player.body.setAngularVelocity(this.angularVelocity);
   }
 
   public update (delta: number): void {

@@ -1,6 +1,5 @@
 import { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types';
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type Vector3 = import('@three/math/Vector3').Vector3;
 type Actions = { [name: string]: AnimationAction };
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
@@ -11,13 +10,16 @@ import { CameraListener } from '@/managers/GameCamera';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { DynamicCollider } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
+import { Vector3 } from '@three/math/Vector3';
 
 import { camelCase } from '@/utils/String';
 import { Mesh } from '@three/objects/Mesh';
 import Physics from '@/managers/Physics';
 
 export default class Character {
+  private readonly directionVector = new Vector3(0, -1, 0);
   private step: CharacterMove = this.config.moves.Idle;
+
   private readonly sounds: CharacterSounds = new Map();
   private readonly loader = new Assets.Loader();
 
@@ -76,14 +78,14 @@ export default class Character {
 
   protected turn (y: number, x = 0): void {
     (this.model as Assets.GLTF).rotation.y += y;
-    (this.model as Assets.GLTF).rotation.x = x;
+    (this.model as Assets.GLTF).rotation.x += x;
   }
 
   protected update (delta: number): void {
     this.mixer?.update(delta);
 
     if (this.moving) {
-      Physics.move(this.step);
+      Physics.move(this.direction);
       this.still = false;
     }
 
@@ -163,6 +165,7 @@ export default class Character {
 
   public reset (): void {
     this.step = this.config.moves.Idle;
+
     this.hitting = false;
     this.running = false;
     this.moving = false;
@@ -170,6 +173,20 @@ export default class Character {
     this.health = 100;
     this.still = true;
     this.dead = false;
+  }
+
+  private get direction (): Vector3 {
+    (this.model as Assets.GLTF).getWorldDirection(this.directionVector);
+    this.directionVector.multiplyScalar(this.step.speed);
+
+    const { z0, x0, x1 } = this.step.direction;
+    const { x, z } = this.directionVector;
+    const min = Math.min(x0, x1);
+
+    this.directionVector.setX(x * z0 + x * min + z * x1);
+    this.directionVector.setZ(z * z0 + z * min + x * x0);
+
+    return this.directionVector;
   }
 
   public get collider (): Mesh {

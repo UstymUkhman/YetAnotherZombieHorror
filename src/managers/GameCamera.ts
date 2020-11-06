@@ -1,24 +1,24 @@
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { AudioListener } from '@three/audio/AudioListener';
+type Object3D = import('@three/core/Object3D').Object3D;
+
+type Euler = import('@three/math/Euler').Euler;
 import { Vector3 } from '@three/math/Vector3';
 
-type Object3D = import('@three/core/Object3D').Object3D;
-type Euler = import('@three/math/Euler').Euler;
+import { Config } from '@/config';
 type RunCheck = () => boolean;
-
 import anime from 'animejs';
-
-const DEFAULT = new Vector3(-0.625, 0.7, -1.5);
-const AIM = new Vector3(-0.35, 0.75, -0.5);
-const RUN = new Vector3(-1.135, 0.7, -3);
 
 class GameCamera {
   private ratio: number = window.innerWidth / window.innerHeight;
   private readonly onResize = this.updateAspectRatio.bind(this);
-
   private camera = new PerspectiveCamera(45, this.ratio);
-  private audioListener = new AudioListener();
 
+  private readonly TPS = Config.Camera.tps as Vector3;
+  private readonly AIM = Config.Camera.tps as Vector3;
+  private readonly RUN = Config.Camera.tps as Vector3;
+
+  private audioListener = new AudioListener();
   private shake = 0;
 
   public constructor () {
@@ -43,12 +43,12 @@ class GameCamera {
 
   private setCamera (): void {
     this.camera.rotation.set(0, Math.PI, 0);
-    this.camera.position.copy(DEFAULT);
+    this.camera.position.copy(this.TPS);
     this.camera.setFocalLength(25.0);
   }
 
   public aimAnimation (running: boolean, moving: boolean, aiming: boolean, duration: number): void {
-    const { x, y, z } = aiming ? AIM : DEFAULT;
+    const { x, y, z } = aiming ? this.AIM : this.TPS;
 
     if (running) {
       anime({
@@ -73,7 +73,7 @@ class GameCamera {
     this.shake *= -1;
 
     if (running !== undefined) {
-      const { x, y, z } = running ? RUN : DEFAULT;
+      const { x, y, z } = running ? this.RUN : this.TPS;
       this.shake = ~~running;
 
       anime({

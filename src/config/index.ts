@@ -123,7 +123,8 @@ export namespace Config {
   });
 
   export const Camera = deepFreeze({
-    default: new Vector3(...CameraData.default),
+    fps: new Vector3(...CameraData.fps),
+    tps: new Vector3(...CameraData.tps),
     aim: new Vector3(...CameraData.aim),
     run: new Vector3(...CameraData.run)
   });

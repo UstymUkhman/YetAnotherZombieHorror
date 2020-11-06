@@ -174,12 +174,16 @@ describe('Settings', () => {
   });
 
   test('Camera', () => {
-    const cameraDefaultPosition = new Vector3(...Camera.default);
+    const cameraFPSPosition = new Vector3(...Camera.fps);
+    const cameraTPSPosition = new Vector3(...Camera.tps);
     const cameraAimPosition = new Vector3(...Camera.aim);
     const cameraRunPosition = new Vector3(...Camera.run);
 
-    expect(Config.Camera.default).toStrictEqual(cameraDefaultPosition);
-    expect(Config.Camera.default).toBeInstanceOf(Vector3);
+    expect(Config.Camera.fps).toStrictEqual(cameraFPSPosition);
+    expect(Config.Camera.fps).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.tps).toStrictEqual(cameraTPSPosition);
+    expect(Config.Camera.tps).toBeInstanceOf(Vector3);
 
     expect(Config.Camera.aim).toStrictEqual(cameraAimPosition);
     expect(Config.Camera.aim).toBeInstanceOf(Vector3);

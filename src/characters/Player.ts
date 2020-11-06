@@ -15,7 +15,7 @@ import { PlayerAnimations } from '@/types';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
-import { clamp } from '@/utils/Number';
+// import { clamp } from '@/utils/Number';
 import { Config } from '@/config';
 
 export type Location = {
@@ -120,16 +120,12 @@ export class Player extends Character {
   // }
 
   public rotate (rotation: Vector2): void {
-    const x = rotation.x / -50;
+    // const y = clamp(
+    //   Camera.rotation.x + rotation.y / 400,
+    //   -0.1, ~~this.aiming * 0.2 + 0.2
+    // );
 
-    const y = clamp(
-      Camera.rotation.x + rotation.y / 400,
-      -0.1, ~~this.aiming * 0.2 + 0.2
-    );
-
-    // Camera.object.rotation.set(y, x, 0);
-    // Camera.object.rotation.x = y;
-    super.turn(x, y);
+    super.turn(rotation.x / -100);
   }
 
   public idle (): void {
