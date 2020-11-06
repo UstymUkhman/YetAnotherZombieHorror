@@ -25,7 +25,7 @@ export default class Character {
 
   protected animations: Actions = {};
   private mixer?: AnimationMixer;
-  protected model?: Assets.GLTF;
+  private model?: Assets.GLTF;
   protected object: Mesh;
 
   protected hitting = false;
@@ -171,7 +171,11 @@ export default class Character {
   }
 
   protected get rotation (): Vector3 {
-    return (this.model as Assets.GLTF).getWorldDirection(this.rotationVector);
+    return this.mesh.getWorldDirection(this.rotationVector);
+  }
+
+  protected get mesh (): Assets.GLTF {
+    return this.model as Assets.GLTF;
   }
 
   private get direction (): Vector3 {

@@ -1,5 +1,4 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector2 = import('@three/math/Vector2').Vector2;
 
@@ -15,7 +14,7 @@ import { LoopOnce } from '@three/constants';
 import type Pistol from '@/weapons/Pistol';
 
 import type Rifle from '@/weapons/Rifle';
-import { clamp } from '@/utils/Number';
+// import { clamp } from '@/utils/Number';
 import { Config } from '@/config';
 
 export default class Player extends Character {
@@ -114,13 +113,16 @@ export default class Player extends Character {
   // }
 
   public rotate (mouse: Vector2): void {
-    const { rotation } = this.model as GLTF;
-    rotation.y += mouse.y / 400;
+    // const { rotation } = this.mesh;
+    // rotation.y += mouse.x / -100;
 
-    rotation.x = clamp(
-      rotation.x + mouse.x / -100,
-      -0.1, ~~this.aiming * 0.2 + 0.2
-    );
+    // rotation.x = clamp(
+    //   rotation.x + mouse.y / 400,
+    //   -0.1, ~~this.aiming * 0.2 + 0.2
+    // );
+
+    this.mesh.rotateY(mouse.x / -100);
+    this.mesh.rotateX(mouse.y / 400);
   }
 
   public idle (): void {
@@ -337,10 +339,6 @@ export default class Player extends Character {
 
   public update (delta: number): void {
     super.update(delta);
-
-    /* if (this.deathCamera) {
-      this.cameraRotation.z += 0.005;
-    } */
   }
 
   public get location (): Location {

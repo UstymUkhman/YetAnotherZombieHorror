@@ -1,5 +1,4 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type AudioListener = import('@three/audio/AudioListener').AudioListener;
 type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
