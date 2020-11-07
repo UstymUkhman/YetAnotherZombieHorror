@@ -96,7 +96,6 @@ export default class GameLoop {
 
     if (this.player.alive) {
       Physics.update(delta);
-      this.input.update();
     }
 
     this.level.render();

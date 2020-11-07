@@ -1,6 +1,5 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 type Object3D = import('@three/core/Object3D').Object3D;
-type Vector2 = import('@three/math/Vector2').Vector2;
 
 import { Direction, Directions } from '@/managers/Input';
 import { Location, PlayerAnimations } from '@/types';
@@ -14,14 +13,15 @@ import { LoopOnce } from '@three/constants';
 import type Pistol from '@/weapons/Pistol';
 
 import type Rifle from '@/weapons/Rifle';
-// import { clamp } from '@/utils/Number';
 import { Config } from '@/config';
 
-export default class Player extends Character {
-  private readonly currentPosition = new Vector3();
-  private currentAnimation!: AnimationAction;
+const AXIS_X = new Vector3(1, 0, 0);
+const AXIS_Y = new Vector3(0, 1, 0);
 
+export default class Player extends Character {
+  private currentAnimation!: AnimationAction;
   private moves: Directions = [0, 0, 0, 0];
+
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
 
@@ -112,17 +112,16 @@ export default class Player extends Character {
   //   return this.moving;
   // }
 
-  public rotate (mouse: Vector2): void {
-    // const { rotation } = this.mesh;
-    // rotation.y += mouse.x / -100;
+  public rotate (x: number, y: number): void {
+    const lookDown = y > 0;
+    const tilt = this.rotation.y;
+    const model = this.getModel();
 
-    // rotation.x = clamp(
-    //   rotation.x + mouse.y / 400,
-    //   -0.1, ~~this.aiming * 0.2 + 0.2
-    // );
+    model.rotateOnWorldAxis(AXIS_Y, x);
 
-    this.mesh.rotateY(mouse.x / -100);
-    this.mesh.rotateX(mouse.y / 400);
+    if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= 0.1)) {
+      model.rotateOnAxis(AXIS_X, y);
+    }
   }
 
   public idle (): void {
@@ -292,9 +291,8 @@ export default class Player extends Character {
   public async loadCharacter (): Promise<Object3D> {
     const model = (await this.load()).scene;
 
-    this.currentPosition.copy(this.object.position);
-    this.currentAnimation = this.animations.pistolIdle;
     this.hand = model.getObjectByName('swatRightHand');
+    this.currentAnimation = this.animations.pistolIdle;
 
     this.animations.rifleReload.clampWhenFinished = true;
     this.animations.rifleAim.clampWhenFinished = true;
@@ -342,11 +340,10 @@ export default class Player extends Character {
   }
 
   public get location (): Location {
-    this.object.getWorldPosition(this.currentPosition);
     const { x, z } = this.rotation;
 
     return {
-      position: this.currentPosition,
+      position: this.position,
       rotation: MathUtils.radToDeg(
         Math.atan2(-x, z)
       )

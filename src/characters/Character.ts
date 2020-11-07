@@ -18,10 +18,12 @@ import Physics from '@/managers/Physics';
 
 export default class Character {
   private step: CharacterMove = this.config.moves.Idle;
-
   private readonly sounds: CharacterSounds = new Map();
-  private readonly rotationVector = new Vector3();
   private readonly loader = new Assets.Loader();
+
+  protected readonly direction = new Vector3();
+  protected readonly position  = new Vector3();
+  protected readonly rotation  = new Vector3();
 
   protected animations: Actions = {};
   private mixer?: AnimationMixer;
@@ -76,8 +78,29 @@ export default class Character {
     this.step = this.config.moves[animation];
   }
 
+  private updateCharacterLocation (): void {
+    const model = this.model as Assets.GLTF;
+    const { speed, direction } = this.step;
+
+    model.getWorldDirection(this.rotation);
+    this.object.getWorldPosition(this.position);
+
+    const x = this.rotation.x * speed;
+    const z = this.rotation.z * speed;
+
+    const { z0, x0, x1 } = direction;
+    const min = Math.min(x0, x1);
+
+    this.direction.set(
+      x * z0 + x * min + z * x1,
+      -1.0,
+      z * z0 + z * min + x * x0
+    );
+  }
+
   protected update (delta: number): void {
     this.mixer?.update(delta);
+    this.updateCharacterLocation();
 
     if (this.moving) {
       Physics.move(this.direction);
@@ -96,15 +119,20 @@ export default class Character {
     // this.dead && this.death();
   }
 
+  protected getModel (): Assets.GLTF {
+    return this.model as Assets.GLTF;
+  }
+
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.config.model);
     character.scene.position.set(0, this.config.collider.z, 0);
 
     this.object.position.copy(this.config.position as Vector3);
     this.object.scale.copy(this.config.scale as Vector3);
-    this.object.rotation.toVector3(this.rotationVector);
+    this.object.rotation.toVector3(this.rotation);
 
     this.setCharacterMaterial(character.scene);
+    this.position.copy(this.object.position);
     this.object.add(character.scene);
 
     if (character.animations) {
@@ -161,6 +189,9 @@ export default class Character {
   public reset (): void {
     this.step = this.config.moves.Idle;
 
+    this.position.setScalar(0);
+    this.rotation.setScalar(0);
+
     this.hitting = false;
     this.running = false;
     this.moving = false;
@@ -168,30 +199,6 @@ export default class Character {
     this.health = 100;
     this.still = true;
     this.dead = false;
-  }
-
-  protected get rotation (): Vector3 {
-    return this.mesh.getWorldDirection(this.rotationVector);
-  }
-
-  protected get mesh (): Assets.GLTF {
-    return this.model as Assets.GLTF;
-  }
-
-  private get direction (): Vector3 {
-    const { speed, direction } = this.step;
-    const { z0, x0, x1 } = direction;
-
-    const min = Math.min(x0, x1);
-    let { x, z } = this.rotation;
-
-    x *= speed; z *= speed;
-
-    return this.rotationVector.set(
-      x * z0 + x * min + z * x1,
-      -1.0,
-      z * z0 + z * min + x * x0
-    );
   }
 
   public get collider (): Mesh {

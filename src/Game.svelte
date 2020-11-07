@@ -32,7 +32,7 @@
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
 
-  // import { Location } from '@/types';
+  import type { Location } from '@/types';
   import { Config } from '@/config';
 
   let zoomScale: number;
@@ -42,8 +42,8 @@
   let scale: number;
   let raf: number;
 
+  let location: Location;
   const game = new GameLoop();
-  let location: any; // Location;
   const zoom = new Elastic.Number(0);
 
   GameEvents.add('player:run', event => zoom.set(~~(event.data as boolean) * 0.5));

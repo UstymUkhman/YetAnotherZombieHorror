@@ -1,5 +1,4 @@
 import { GameEvents } from '@/managers/GameEvents';
-import { Vector2 } from '@three/math/Vector2';
 import { throttle } from 'lodash';
 
 export type Directions = { [way in Direction]: number };
@@ -22,7 +21,6 @@ export default class Input {
   private readonly keyDown = this.onKeyDown.bind(this);
   private readonly keyUp = this.onKeyUp.bind(this);
 
-  private readonly rotation = new Vector2();
   private moves: Directions = [0, 0, 0, 0];
 
   // private leftDown = false;
@@ -60,8 +58,7 @@ export default class Input {
     event.stopPropagation();
     if (this.disabled) return;
 
-    const { movementX, movementY } = event;
-    this.rotation.set(movementX, movementY);
+    this.player.rotate(event.movementX / -100, event.movementY / 400);
   }
 
   private onMousePress (event: MouseEvent): void {
@@ -264,12 +261,9 @@ export default class Input {
     document.exitPointerLock();
   }
 
-  public update (): void {
-    this.player.rotate(this.rotation);
-    this.rotation.setScalar(0);
-
-    // this.leftDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
-  }
+  /* public update (): void {
+    this.leftDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
+  } */
 
   public dispose (): void {
     this.removeEvents();
