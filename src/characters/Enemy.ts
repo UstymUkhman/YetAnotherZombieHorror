@@ -155,6 +155,16 @@ export default class Enemy extends Character {
     } */
   }
 
+  public dispose (): void {
+    this.head?.remove(this.hitBoxes[0]);
+
+    for (let box = this.hitBoxes.length; box--;) {
+      this.hitBoxes.splice(box);
+    }
+
+    this.dispose();
+  }
+
   public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
   }

@@ -1,6 +1,6 @@
 import { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types';
-type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type Actions = { [name: string]: AnimationAction };
+type Actions = { [name: string]: import('@three/animation/AnimationAction').AnimationAction };
+type Object3D = import('@three/core/Object3D').Object3D;
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';
@@ -68,7 +68,7 @@ export default class Character {
     const animations = model.animations as Assets.Animations;
     this.mixer = new AnimationMixer(model.scene);
 
-    for (let a = 0; a < animations.length; a++) {
+    for (let a = animations.length; a--;) {
       const clip = camelCase(animations[a].name);
       this.animations[clip] = this.mixer.clipAction(animations[a]);
     }
@@ -158,22 +158,8 @@ export default class Character {
   }
 
   public dispose (): void {
-    const children = this.model?.children;
-
-    // this.rightUpLeg.remove(this.colliders[2]);
-    // this.leftUpLeg.remove(this.colliders[3]);
-    // this.rightLeg.remove(this.colliders[4]);
-    // this.leftLeg.remove(this.colliders[5]);
-    // this.spine.remove(this.colliders[1]);
-    // this.head.remove(this.colliders[0]);
-
-    // for (let c = 0; c < this.colliders.length; c++) {
-    //   this.colliders.splice(c, 1);
-    // }
-
-    for (let c = 0; children && c < children.length; c++) {
-      this.model?.remove(children[c]);
-    }
+    const model = this.getModel();
+    const children = model.children as Array<Object3D>;
 
     for (const animation in this.animations) {
       this.animations[animation].stopFading();
@@ -181,7 +167,10 @@ export default class Character {
       delete this.animations[animation];
     }
 
-    // delete this.colliders;
+    for (let c = children.length; c--;) {
+      model.remove(children[c]);
+    }
+
     delete this.mixer;
     delete this.model;
   }
@@ -189,6 +178,7 @@ export default class Character {
   public reset (): void {
     this.step = this.config.moves.Idle;
 
+    this.direction.setScalar(0);
     this.position.setScalar(0);
     this.rotation.setScalar(0);
 

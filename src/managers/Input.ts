@@ -108,17 +108,9 @@ export default class Input {
   private onKeyDown (event: KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
+
     if (this.disabled) return;
-
-    if (event.code === 'ShiftLeft' /* && this.moves[0] && !this.shift */) {
-      // this.moves[Direction.RIGHT] = 0;
-      // this.moves[Direction.DOWN] = 0;
-      // this.moves[Direction.LEFT] = 0;
-
-      // this.player.run(this.moves, true);
-      this.shift = true;
-      // return;
-    }
+    this.onShift(event.code, true);
 
     switch (event.code) {
       case 'KeyW':
@@ -148,7 +140,7 @@ export default class Input {
     const move = this.movement;
 
     if (this.move !== move)
-      this.player.move(this.moves);
+      this.player.move(this.moves, false);
 
     this.move = move;
   }
@@ -156,13 +148,9 @@ export default class Input {
   private onKeyUp (event: KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (this.disabled) return;
 
-    if (event.code === 'ShiftLeft' /* && this.shift */) {
-      // setTimeout(() => { this.shift = false; }, 150);
-      // this.player.run(this.moves, false);
-      this.shift = false;
-    }
+    if (this.disabled) return;
+    this.onShift(event.code, false);
 
     switch (event.code) {
       case 'KeyW':
@@ -200,9 +188,18 @@ export default class Input {
       this.player.idle();
 
     else if (this.move !== move)
-      this.player.move(this.moves);
+      this.player.move(this.moves, this.shift);
 
     this.move = move;
+  }
+
+  private onShift (code: string, down: boolean): void {
+    const shift = down ? !this.shift : this.shift;
+
+    if (code === 'ShiftLeft' && shift) {
+      this.player.run(this.moves, down);
+      this.shift = down;
+    }
   }
 
   private onPointerLockChange (event: Event): void {

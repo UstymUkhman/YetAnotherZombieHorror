@@ -15,8 +15,8 @@ class GameCamera {
   private camera = new PerspectiveCamera(45, this.ratio);
 
   private readonly TPS = Config.Camera.tps as Vector3;
-  private readonly AIM = Config.Camera.tps as Vector3;
-  private readonly RUN = Config.Camera.tps as Vector3;
+  private readonly AIM = Config.Camera.aim as Vector3;
+  private readonly RUN = Config.Camera.run as Vector3;
 
   private audioListener = new AudioListener();
   private shake = 0;
@@ -70,6 +70,7 @@ class GameCamera {
   }
 
   public runAnimation (isRunning: RunCheck, running?: boolean): void {
+    if (!this.shake && running === false) return;
     this.shake *= -1;
 
     if (running !== undefined) {

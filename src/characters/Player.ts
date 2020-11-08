@@ -88,30 +88,6 @@ export default class Player extends Character {
     }, 100);
   }
 
-  // private isReloading (): boolean {
-  //   return this.reloading;
-  // }
-
-  // private isShooting (): boolean {
-  //   return this.shooting;
-  // }
-
-  // private isAiming (): boolean {
-  //   return this.aiming;
-  // }
-
-  // private isHitting (): boolean {
-  //   return this.hitting;
-  // }
-
-  // private isRunning (): boolean {
-  //   return this.running;
-  // }
-
-  // private isMoving (): boolean {
-  //   return this.moving;
-  // }
-
   public rotate (x: number, y: number): void {
     const lookDown = y > 0;
     const tilt = this.rotation.y;
@@ -133,6 +109,7 @@ export default class Player extends Character {
     // if (this.aiming || this.hitting || this.reloading || idling) return;
 
     this.currentAnimation.crossFadeTo(this.animations[idle], 0.1, true);
+    Camera.runAnimation(() => false, false);
     this.animations[idle].play();
     this.idleTime = Date.now();
 
@@ -145,19 +122,22 @@ export default class Player extends Character {
     }, 100);
   }
 
-  public move (directions: Directions): void {
+  public move (directions: Directions, running: boolean): void {
+    if (Date.now() - this.moveTime < 100) return;
+
+    if (this.running && running && directions[Direction.UP]) {
+      return this.run(directions, true);
+    }
+
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
 
-    // if (this.aiming || this.hitting || this.lastAnimation === animation) return;
-    if (this.lastAnimation === animation || Date.now() - this.moveTime < 100) return;
-
-    // if (this.running) {
-    //   !direction.includes('Forward') && this.run(directions, false);
-    //   return;
-    // }
+    if (this.lastAnimation === animation) return;
+    // if (this.aiming || this.hitting) return;
 
     this.currentAnimation.crossFadeTo(this.animations[animation], 0.1, true);
+    GameEvents.dispatch('player:run', false);
+    Camera.runAnimation(() => false, false);
     this.animations[animation].play();
     // clearTimeout(this.reloadTimeout);
     // this.weapon.cancelReload();
@@ -177,41 +157,41 @@ export default class Player extends Character {
   }
 
   public run (directions: Directions, running: boolean): void {
-    this.running = running;
-    // if (this.aiming || this.hitting) return;
+    if (this.running && running) return;
     const run = this.getWeaponAnimation('Run');
 
-    GameEvents.dispatch('player:run', running);
+    // if (this.aiming || this.hitting) return;
     // clearTimeout(this.reloadTimeout);
-
     // this.weapon.cancelReload();
-    // this.reloading = false;
 
-    // Camera.runAnimation(this.isRunning.bind(this), running);
+    if (!running || this.lastAnimation === run) {
+      GameEvents.dispatch('player:run', false);
+      this.running = false;
 
-    // if (!running || this.lastAnimation === run) {
-    //   const idling = !(directions as unknown as number[]).includes(1);
+      !(directions as unknown as number[]).includes(1)
+        ? setTimeout(this.idle.bind(this), 150)
+        : this.move(directions, false);
 
-    //   if (!this.aiming && idling) {
-    //     setTimeout(this.idle.bind(this), 150);
-    //   } else {
-    //     this.move(directions);
-    //     this.moving = true;
-    //   }
+      return;
+    }
 
-    //   return;
-    // }
+    this.reloading = false;
+    this.running = true;
 
-    this.currentAnimation.crossFadeTo(this.animations[run], 0.1, true);
-    this.animations[run].play();
+    if (directions[Direction.UP]) {
+      this.currentAnimation.crossFadeTo(this.animations[run], 0.1, true);
+      Camera.runAnimation(() => this.running, true);
+      GameEvents.dispatch('player:run', true);
+      this.animations[run].play();
 
-    setTimeout(() => {
-      this.setAnimation('Run');
-      this.lastAnimation = run;
+      setTimeout(() => {
+        this.setAnimation('Run');
+        this.lastAnimation = run;
 
-      this.currentAnimation.stop();
-      this.currentAnimation = this.animations[run];
-    }, 100);
+        this.currentAnimation.stop();
+        this.currentAnimation = this.animations[run];
+      }, 100);
+    }
   }
 
   /* public aim (aiming: boolean): void {
@@ -237,7 +217,7 @@ export default class Player extends Character {
     if (move) {
       this.running
         ? this.run(this.moves, !!this.moves[0])
-        : this.move(this.moves);
+        : this.move(this.moves, false);
     }
 
     else {
