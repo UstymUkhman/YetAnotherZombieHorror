@@ -49,7 +49,7 @@ module.exports = {
           loader: MiniCssExtractPlugin.loader,
           options: { publicPath: '../' }
         }, {
-          options: { sourceMap: true },
+          options: { sourceMap: !build },
           loader: 'css-loader'
         }
       ]
@@ -163,7 +163,7 @@ module.exports = {
 
     minimizer: [
       new TerserPlugin({
-        sourceMap: true,
+        sourceMap: !build,
         parallel: true,
 
         terserOptions: {

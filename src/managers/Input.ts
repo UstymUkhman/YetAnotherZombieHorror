@@ -47,7 +47,7 @@ export default class Input {
     }
 
     else if (event.button === BUTTON.RIGHT) {
-      this.player.aim(this.moves, this.shift, true);
+      this.player.startAiming();
       this.aimTime = Date.now();
     }
   }
@@ -89,10 +89,10 @@ export default class Input {
     else if (event.button === BUTTON.RIGHT) {
       clearTimeout(this.aimTimeout);
 
-      this.aimTimeout = setTimeout(
-        this.player.aim.bind(this.player, this.moves, this.shift, false),
-        Math.max(150 - (Date.now() - this.aimTime), 0)
-      ) as unknown as number;
+      this.aimTimeout = setTimeout(() => {
+        this.player.stopAiming();
+        this.shift ? this.player.run(this.moves, true) : this.player.move(this.moves, false);
+      }, Math.max(150 - (Date.now() - this.aimTime), 0)) as unknown as number;
     }
   }
 

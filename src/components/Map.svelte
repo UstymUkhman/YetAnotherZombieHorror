@@ -61,7 +61,7 @@
     const context = map.getContext('2d') as CanvasRenderingContext2D;
 
     context.strokeStyle = BLACK.toString();
-    context.lineWidth = 1;
+    context.lineWidth = 2.0;
     context.beginPath();
 
     context.clearRect(0, 0, map.width, map.height);

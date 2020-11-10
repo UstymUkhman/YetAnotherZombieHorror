@@ -1,8 +1,6 @@
 import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
 import { AudioListener } from '@three/audio/AudioListener';
 type Object3D = import('@three/core/Object3D').Object3D;
-
-type Euler = import('@three/math/Euler').Euler;
 import { Vector3 } from '@three/math/Vector3';
 
 import { Config } from '@/config';
@@ -49,10 +47,11 @@ class GameCamera {
 
   public aimAnimation (running: boolean, moving: boolean, aiming: boolean, duration: number): void {
     const { x, y, z } = aiming ? this.AIM : this.TPS;
+    !aiming && (anime.running.length = 0);
 
     if (running) {
       anime({
-        targets: this.rotation,
+        targets: this.camera.rotation,
         easing: 'linear',
         duration: 250,
         y: Math.PI
@@ -62,8 +61,8 @@ class GameCamera {
     }
 
     anime({
+      targets: this.camera.position,
       easing: 'easeInOutQuad',
-      targets: this.position,
       delay: ~~aiming * 100,
       duration, x, y, z
     });
@@ -78,8 +77,8 @@ class GameCamera {
       this.shake = ~~running;
 
       anime({
+        targets: this.camera.position,
         delay: this.shake * 100,
-        targets: this.position,
         easing: 'easeOutQuad',
         duration: 300,
         x, y, z
@@ -90,7 +89,7 @@ class GameCamera {
       easing: running ?? true ? 'linear' : 'easeOutQuad',
       duration: ~~isRunning() * 250 + 250,
       y: Math.PI + this.shake * 0.025,
-      targets: this.rotation,
+      targets: this.camera.rotation,
 
       complete: () => isRunning() &&
         this.runAnimation(isRunning)
@@ -99,10 +98,6 @@ class GameCamera {
 
   public setTo (target: Object3D): void {
     target.add(this.camera);
-  }
-
-  public stopAnimations (): void {
-    anime.running.length = 0;
   }
 
   public destroy (): void {
@@ -115,14 +110,6 @@ class GameCamera {
 
   public get listener (): AudioListener {
     return this.audioListener;
-  }
-
-  public get position (): Vector3 {
-    return this.camera.position;
-  }
-
-  public get rotation (): Euler {
-    return this.camera.rotation;
   }
 }
 
