@@ -1,11 +1,11 @@
 import { GameEvents } from '@/managers/GameEvents';
+import type Player from '@/characters/Player';
 import { throttle } from 'lodash';
 
 export type Directions = { [way in Direction]: number };
 export const enum Direction { UP, RIGHT, DOWN, LEFT }
-import type Player from '@/characters/Player';
-// const enum BUTTON { LEFT, WHEEL, RIGHT }
 
+const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
 
 export default class Input {
@@ -23,9 +23,9 @@ export default class Input {
 
   private moves: Directions = [0, 0, 0, 0];
 
-  // private leftDown = false;
-  // private aimTimeout = 0;
-  // private rightTime = 0;
+  private aimTimeout = 0.0;
+  private shooting = false;
+  private aimTime = 0.0;
 
   private paused = true;
   private shift = false;
@@ -41,23 +41,22 @@ export default class Input {
 
     if (this.disabled) return;
 
-    // if (event.button === BUTTON.LEFT) {
-    //   const aiming = this.player.running && this.player.aiming;
-    //   this.leftDown = !this.player.running || aiming;
-    // }
+    if (event.button === BUTTON.LEFT) {
+      this.shooting = true;
+      this.player.shoot();
+    }
 
-    // else if (event.button === BUTTON.RIGHT && !this.player.hitting) {
-    //   this.rightTime = Date.now();
-    //   this.rotationX.speed = 5;
-    //   this.player.aim(true);
-    // }
+    else if (event.button === BUTTON.RIGHT) {
+      this.player.aim(this.moves, this.shift, true);
+      this.aimTime = Date.now();
+    }
   }
 
   private onMouseMove (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    if (this.disabled) return;
 
+    if (this.disabled) return;
     this.player.rotate(event.movementX / -100, event.movementY / 400);
   }
 
@@ -81,28 +80,20 @@ export default class Input {
     event.preventDefault();
     event.stopPropagation();
 
-    // if (this.disabled) {
-    //   this.leftDown = false;
-    //   return;
-    // }
+    if (this.disabled) return;
 
-    // if (event.button === BUTTON.LEFT) {
-    //   this.leftDown = false;
-    // }
+    if (event.button === BUTTON.LEFT) {
+      this.shooting = false;
+    }
 
-    // else if (event.button === BUTTON.RIGHT) {
-    //   const y = clamp(this.rotationY.target, -0.1, 0.2);
-    //   let delay = Date.now() - this.rightTime;
+    else if (event.button === BUTTON.RIGHT) {
+      clearTimeout(this.aimTimeout);
 
-    //   delay = Math.max(150 - delay, 0);
-    //   clearTimeout(this.aimTimeout);
-    //   this.rotationY.target = y;
-
-    //   this.aimTimeout = setTimeout(() => {
-    //     this.rotationX.speed = 15;
-    //     this.player.aim(false);
-    //   }, delay) as unknown as number;
-    // }
+      this.aimTimeout = setTimeout(
+        this.player.aim.bind(this.player, this.moves, this.shift, false),
+        Math.max(150 - (Date.now() - this.aimTime), 0)
+      ) as unknown as number;
+    }
   }
 
   private onKeyDown (event: KeyboardEvent): void {

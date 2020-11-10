@@ -11,16 +11,16 @@
 
   "animations": {
     "Idle": [0, 0, 0, 0],
-    "Run": [8.75, 1, 0, 0],
-    "Left": [3.15, 1, -1, 1],
-    "Right": [4.05, 1, 1, -1],
+    "Run": [10.0, 1, 0, 0],
+    "Left": [3.5, 1, -1, 1],
+    "Right": [4.5, 1, 1, -1],
 
-    "Backward": [2.7, -1, 0, 0],
-    "BackwardLeft": [1.8, -1, -0.5, 0.5],
-    "BackwardRight": [1.8, -1, 0.5, -0.5],
+    "Backward": [3, -1, 0, 0],
+    "BackwardLeft": [2, -1, -0.5, 0.5],
+    "BackwardRight": [2, -1, 0.5, -0.5],
 
-    "ForwardRight": [2.93, 1, 0.5, -0.5],
-    "ForwardLeft": [2.93, 1, -0.5, 0.5],
-    "Forward": [4.5, 1, 0, 0]
+    "ForwardRight": [4, 1, 0.5, -0.5],
+    "ForwardLeft": [4, 1, -0.5, 0.5],
+    "Forward": [5, 1, 0, 0]
   }
 }
