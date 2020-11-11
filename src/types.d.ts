@@ -25,4 +25,5 @@ type CharacterSound = PlayerSounds | EnemySounds;
 type WeaponSound    = PistolSounds | RifleSounds;
 
 type Coords = Readonly<[number, number]>;
+type Recoil = { x: number, y: number };
 type Bounds = Readonly<Array<Coords>>;

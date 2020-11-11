@@ -1,6 +1,6 @@
+import { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
-import { WeaponConfig, WeaponSounds, WeaponSound } from '@/types';
 import { PositionalAudio } from '@three/audio/PositionalAudio';
 
 type Object3D = import('@three/core/Object3D').Object3D;
@@ -17,8 +17,6 @@ import { Vector2 } from '@three/math/Vector2';
 import { FrontSide } from '@three/constants';
 import { random } from '@/utils/Number';
 
-type Recoil = { x: number, y: number };
-
 export default class Weapon {
   private readonly sounds: WeaponSounds = new Map();
   private readonly loader = new Assets.Loader();
@@ -31,12 +29,18 @@ export default class Weapon {
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
 
+  private loadedAmmo: number;
+  private totalAmmo: number;
   private magazine: number;
   private aiming = false;
 
   public constructor (private readonly config: WeaponConfig) {
     this.raycaster.near = this.near;
     this.magazine = config.magazine;
+
+    this.loadedAmmo = config.ammo;
+    this.totalAmmo = config.ammo;
+
     this.load();
   }
 
@@ -88,55 +92,70 @@ export default class Weapon {
     );
   }
 
-  private playSound (sfx: WeaponSound): void {
-    const sound = this.sounds.get(sfx) as PositionalAudio;
-    if (sound.isPlaying) sound.stop();
-    sound.play();
-  }
-
   private getEvent (index: number): string {
     const hitBox = index % 6;
     return !hitBox ? 'headshoot' :
       hitBox === 1 ? 'bodyHit' : 'legHit';
   }
 
-  protected reset (): void {
-    this.aiming = false;
-    this.targets = [];
+  protected stopSound (sfx: WeaponSound): PositionalAudio {
+    const sound = this.sounds.get(sfx) as PositionalAudio;
+    if (sound.isPlaying) sound.stop();
+    return sound;
   }
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  public setAim (aiming?: boolean, duration?: number): void { return; }
-
-  public cancelReload (): void { return; }
+  protected playSound (sfx: WeaponSound): void {
+    this.stopSound(sfx).play();
+  }
 
   // public setToPlayer (): void { return; }
 
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  public setAim (duration: number): void { return; }
+
   public cancelAim (): void { return; }
 
-  public shoot (player: Vector3): void {
+  public shoot (player: Vector3): boolean {
+    const shoot = !this.empty;
     const target = this.target;
-    const isEmpty = !this.magazine;
     const hitBox = this.targets[target];
 
-    this.magazine = Math.max(this.magazine - 1, 0);
-    this.playSound(isEmpty ? 'empty' : 'shoot');
+    this.playSound(shoot ? 'shoot' : 'empty');
+    this.loadedAmmo = Math.max(this.loadedAmmo - 1, 0);
 
-    if (!isEmpty && target > -1) {
+    if (shoot && target > -1) {
       setTimeout(() =>
         GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
         Math.round(hitBox.position.distanceTo(player) / this.config.speed)
       );
     }
+
+    return shoot;
   }
 
-  protected get recoilPosition (): Recoil {
+  public reload (): void { return; }
+
+  public cancelReload (): void { return; }
+
+  private get target (): number {
+    const x = this.config.spread.x / 10;
+    const y = this.config.spread.y / 10;
+
+    this.origin.x += random(-x, x);
+    this.origin.y += random(-y, y);
+
+    this.raycaster.setFromCamera(this.origin, CameraObject);
+    const hitBoxes = this.raycaster.intersectObjects(this.targets);
+    return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
+  }
+
+  public get recoil (): Recoil {
+    const { x, y } = this.config.recoil;
     const energy = ~~this.aiming + 1;
-    const { x } = this.config.spread;
 
     return {
       x: random(-x, x) / energy,
-      y: this.config.recoil.x / energy
+      y: y / energy
     };
   }
 
@@ -149,23 +168,23 @@ export default class Weapon {
     return this.aiming;
   }
 
-  public get target (): number {
-    const x = this.config.spread.x / 10;
-    const y = this.config.spread.y / 10;
-
-    this.origin.x += random(-x, x);
-    this.origin.y += random(-y, y);
-
-    this.raycaster.setFromCamera(this.origin, CameraObject);
-    const hitBoxes = this.raycaster.intersectObjects(this.targets);
-    return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
-  }
-
   public get model (): Assets.GLTF {
     return this.weapon as Assets.GLTF;
   }
 
   public get damage (): number {
     return this.config.damage;
+  }
+
+  public get empty (): boolean {
+    return !this.loadedAmmo;
+  }
+
+  public get full (): boolean {
+    return this.loadedAmmo === this.magazine;
+  }
+
+  public get ammo (): number {
+    return this.totalAmmo;
   }
 }

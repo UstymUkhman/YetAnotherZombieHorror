@@ -166,7 +166,7 @@ describe('Settings', () => {
     expect(Config.Rifle.recoil).toBeInstanceOf(Vector2);
 
     expect(Config.Rifle.model).toStrictEqual('AK47.glb');
-    expect(Config.Rifle.magazine).toStrictEqual(0);
+    expect(Config.Rifle.magazine).toBeGreaterThan(0);
 
     expect(Config.Rifle.damage).toBeGreaterThan(0);
     expect(Config.Rifle.speed).toBeGreaterThan(0);

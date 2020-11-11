@@ -4,12 +4,12 @@
   "position": [-26, 1, -5.75],
   "scale": [0.29, 0.29, 0.29],
 
+  "recoil": [0.025, -0.03],
   "spread": [0.025, 0.025],
-  "recoil": [0, -0.03],
   "model": "AK47.glb",
 
   "speed": 715000,
-  "magazine": 0,
+  "magazine": 30,
   "damage": 20,
   "ammo": 0,
 

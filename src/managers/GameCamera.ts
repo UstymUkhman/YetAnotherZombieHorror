@@ -47,7 +47,7 @@ class GameCamera {
 
   public aimAnimation (running: boolean, moving: boolean, aiming: boolean, duration: number): void {
     const { x, y, z } = aiming ? this.AIM : this.TPS;
-    !aiming && (anime.running.length = 0);
+    anime.running.length = 0;
 
     if (running) {
       anime({

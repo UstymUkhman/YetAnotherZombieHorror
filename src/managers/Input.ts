@@ -1,6 +1,5 @@
 import { GameEvents } from '@/managers/GameEvents';
 import type Player from '@/characters/Player';
-import { throttle } from 'lodash';
 
 export type Directions = { [way in Direction]: number };
 export const enum Direction { UP, RIGHT, DOWN, LEFT }
@@ -9,7 +8,6 @@ const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
 
 export default class Input {
-  private readonly mousePress = throttle(this.onMousePress.bind(this), 150, { leading: true });
   private readonly pointerLockChange = this.onPointerLockChange.bind(this);
   private readonly pointerLockError = this.onPointerLockError.bind(this);
 
@@ -24,7 +22,6 @@ export default class Input {
   private moves: Directions = [0, 0, 0, 0];
 
   private aimTimeout = 0.0;
-  private shooting = false;
   private aimTime = 0.0;
 
   private paused = true;
@@ -42,8 +39,7 @@ export default class Input {
     if (this.disabled) return;
 
     if (event.button === BUTTON.LEFT) {
-      this.shooting = true;
-      this.player.shoot();
+      this.player.startShooting();
     }
 
     else if (event.button === BUTTON.RIGHT) {
@@ -60,22 +56,6 @@ export default class Input {
     this.player.rotate(event.movementX / -100, event.movementY / 400);
   }
 
-  private onMousePress (event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    // const empty = !this.player.weapon.magazine;
-    // const recoil = this.player.shoot(this._mouseDown);
-    // this._mouseDown = this._mouseDown && this.player.equipRifle && !empty;
-
-    // this.rotationY.value += recoil.y;
-    // this.rotationX.value += recoil.x;
-
-    // this.player.character.rotation.y = this.rotationX.value;
-    // this.character.rotation.x = this.rotationY.value;
-    // this.camera.rotation.x = this.rotationY.value;
-  }
-
   private onMouseUp (event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -83,7 +63,7 @@ export default class Input {
     if (this.disabled) return;
 
     if (event.button === BUTTON.LEFT) {
-      this.shooting = false;
+      this.player.stopShooting();
     }
 
     else if (event.button === BUTTON.RIGHT) {
@@ -91,7 +71,10 @@ export default class Input {
 
       this.aimTimeout = setTimeout(() => {
         this.player.stopAiming();
-        this.shift ? this.player.run(this.moves, true) : this.player.move(this.moves, false);
+
+        this.shift && this.moves[Direction.UP]
+          ? this.player.run(this.moves, true)
+          : this.player.move(this.moves, false);
       }, Math.max(150 - (Date.now() - this.aimTime), 0)) as unknown as number;
     }
   }
@@ -248,10 +231,6 @@ export default class Input {
   public exitPointerLock (): void {
     document.exitPointerLock();
   }
-
-  /* public update (): void {
-    this.leftDown && !this.player.hitting && !this.player.reloading && this._onMousePress();
-  } */
 
   public dispose (): void {
     this.removeEvents();

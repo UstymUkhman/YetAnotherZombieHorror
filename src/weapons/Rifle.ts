@@ -7,26 +7,22 @@ import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
 export default class Rifle extends Weapon {
-  private aimTimeout?: number;
+  private readonly position = Config.Rifle.position as Vector3;
+  private readonly rotation = Config.Rifle.rotation as Euler;
+
   private reloading = false;
+  private aimTimeout = 0;
 
   public constructor () {
     super(Config.Rifle);
   }
 
   /** @Override */
-  public setAim (aiming: boolean, duration: number): void {
-    !aiming ? this.reset() : this.aimTimeout = setTimeout(() => {
-      this.model.rotation.set(Config.Rifle.rotation.x, Math.PI, -0.1);
-      this.model.position.set(Config.Rifle.position.x, 0.0, -1.0);
+  public setAim (duration: number): void {
+    this.aimTimeout = setTimeout(() => {
+      this.model.rotation.set(this.rotation.x, Math.PI, -0.1);
+      this.model.position.set(this.position.x, 0.0, -1.0);
     }, duration) as unknown as number;
-  }
-
-  /** @Override */
-  public cancelReload (): void {
-    // this.reloading && this.sfx.reload.stop();
-    this.reloading = false;
-    this.reset();
   }
 
   /** @Override */
@@ -35,24 +31,25 @@ export default class Rifle extends Weapon {
     this.reset();
   }
 
-  /* public shoot (position: Vector3): void {
-    super.shoot(position);
+  /** @Override */
+  public reload (): void {
+    this.model.position.set(this.position.x, this.position.y, 0);
+    this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
 
-    GameEvents.dispatch('reload', {
-      magazine: this.magazine,
-      ammo: this.ammo
-    });
-  } */
+    this.playSound('reload');
+    this.reloading = true;
+  }
 
   /** @Override */
-  protected reset (): void {
-    const position = Config.Rifle.position as Vector3;
-    const rotation = Config.Rifle.rotation as Euler;
+  public cancelReload (): void {
+    this.reloading && this.stopSound('reload');
+    this.reloading = false;
+    this.reset();
+  }
 
-    this.model.position.copy(position);
-    this.model.rotation.copy(rotation);
-
-    super.reset();
+  private reset (): void {
+    this.model.position.copy(this.position);
+    this.model.rotation.copy(this.rotation);
   }
 
   public get clone (): GLTF {
