@@ -118,13 +118,17 @@ export default class Weapon {
   public shoot (player: Vector3): boolean {
     const shoot = !this.empty;
     const target = this.target;
-    const hitBox = this.targets[target];
 
-    this.playSound(shoot ? 'shoot' : 'empty');
-    this.loadedAmmo = Math.max(this.loadedAmmo - 1, 0);
+    if (!shoot) this.playSound('empty');
 
-    if (shoot && target > -1) {
-      setTimeout(() =>
+    else {
+      const hitBox = this.targets[target];
+      GameEvents.dispatch('player:shoot');
+
+      this.playSound('shoot');
+      this.loadedAmmo--;
+
+      target > -1 && setTimeout(() =>
         GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
         Math.round(hitBox.position.distanceTo(player) / this.config.speed)
       );

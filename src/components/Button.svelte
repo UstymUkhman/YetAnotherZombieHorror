@@ -1,4 +1,4 @@
-<button on:click>{ text }</button>
+<button on:click>{text}</button>
 
 <script lang="typescript">
   export let text: string;

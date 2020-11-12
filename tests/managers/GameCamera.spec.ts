@@ -35,10 +35,10 @@ describe('GameCamera', () => {
 
   test('aimAnimation', () => {
     const aimAnimation = jest.fn(Camera.aimAnimation.bind(Camera));
-    aimAnimation(true, true, false, 400);
+    aimAnimation(true, false, 400);
     expect(aimAnimation).toHaveReturnedWith(undefined);
 
-    aimAnimation(false, false, true, 400);
+    aimAnimation(false, true, 400);
     expect(aimAnimation).toHaveReturnedWith(undefined);
   });
 

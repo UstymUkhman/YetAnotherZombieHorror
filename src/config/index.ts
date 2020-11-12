@@ -16,17 +16,15 @@ import { CharacterMove } from '@/types';
 
 export namespace Config {
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
-    Object.assign({}, ...Object.keys(animations).map(animation => ({
-      [animation]: {
-        speed: animations[animation][0],
+    Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
+      speed: animations[animation][0],
 
-        direction: {
-          z0: animations[animation][1],
-          x0: animations[animation][2],
-          x1: animations[animation][3]
-        }
+      direction: {
+        z0: animations[animation][1],
+        x0: animations[animation][2],
+        x1: animations[animation][3]
       }
-    })
+    }})
   ));
 
   const playerMoves = PlayerData.animations as unknown as CharacterAnimations;

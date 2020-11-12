@@ -45,20 +45,16 @@ class GameCamera {
     this.camera.setFocalLength(25.0);
   }
 
-  public aimAnimation (running: boolean, moving: boolean, aiming: boolean, duration: number): void {
+  public aimAnimation (running: boolean, aiming: boolean, duration: number): void {
     const { x, y, z } = aiming ? this.AIM : this.TPS;
     anime.running.length = 0;
 
-    if (running) {
-      anime({
-        targets: this.camera.rotation,
-        easing: 'linear',
-        duration: 250,
-        y: Math.PI
-      });
-
-      if (moving && !aiming) return;
-    }
+    running && aiming && anime({
+      targets: this.camera.rotation,
+      easing: 'linear',
+      duration: 250,
+      y: Math.PI
+    });
 
     anime({
       targets: this.camera.position,
@@ -90,6 +86,7 @@ class GameCamera {
       duration: ~~isRunning() * 250 + 250,
       y: Math.PI + this.shake * 0.025,
       targets: this.camera.rotation,
+      delay: ~~!!running * 1000,
 
       complete: () => isRunning() &&
         this.runAnimation(isRunning)

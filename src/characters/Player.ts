@@ -94,21 +94,25 @@ export default class Player extends Character {
 
   public idle (): void {
     const now = Date.now();
-    if (now - this.idleTime < 100) return;
-    if (this.aiming || this.hitting) return;
 
+    if (now - this.idleTime < 350) return;
+    if (this.aiming || this.hitting) return;
     const idle = this.getWeaponAnimation('Idle');
-    if (this.lastAnimation === idle) return;
-    this.running = this.moving = false;
 
     Camera.runAnimation(() => false, false);
-    this.updateAnimation('Idle', idle);
+    this.running = this.moving = false;
     this.idleTime = now;
+
+    setTimeout(
+      this.updateAnimation.bind(this, 'Idle', idle),
+      ~~(this.lastAnimation === idle) * 100
+    );
   }
 
   public move (directions: Directions, running: boolean): void {
     const now = Date.now();
-    if (now - this.moveTime < 100) return;
+
+    if (now - this.moveTime < 350) return;
     if (this.aiming || this.hitting) return;
 
     if (this.running && running && directions[Direction.UP]) {
@@ -164,12 +168,9 @@ export default class Player extends Character {
   }
 
   public startAiming (): void {
+    let next: string;
     if (this.hitting) return;
     this.weapon.aim = this.aiming = true;
-
-    let next: string;
-    this.weapon.setAim(300);
-    Camera.runAnimation(() => false, false);
 
     if (this.equipRifle) {
       this.aimTime = Date.now();
@@ -178,6 +179,10 @@ export default class Player extends Character {
       next = this.getWeaponAnimation('Idle');
       this.aimTime = 0;
     }
+
+    this.weapon.setAim(300);
+    Camera.runAnimation(() => false, false);
+    Camera.aimAnimation(this.running, true, 400);
 
     if (this.lastAnimation !== next) {
       this.aimTimeout = this.updateAnimation('Idle', next);
@@ -188,8 +193,6 @@ export default class Player extends Character {
       this.running = false;
       this.moving = false;
     }
-
-    Camera.aimAnimation(this.running, this.moving, true, 400);
   }
 
   public stopAiming (): void {
@@ -197,7 +200,7 @@ export default class Player extends Character {
     const duration = Math.min(elapse, 400);
     this.weapon.aim = this.aiming = false;
 
-    Camera.aimAnimation(this.running, this.moving, false, duration);
+    Camera.aimAnimation(this.running, false, duration);
     elapse < 100 && this.currentAnimation.stop();
     clearTimeout(this.aimTimeout);
     this.weapon.cancelAim();

@@ -18,6 +18,7 @@ export namespace Assets {
   export type Texture = import('@three/textures/Texture').Texture;
   export type GLTF = import('@three/objects/Group').Group;
 
+  type ProgressEventTarget = EventTarget & { responseURL: string };
   type Assets = Texture | CubeTexture | GLTFModel | AudioBuffer;
   type Reject = (error: ErrorEvent) => void;
 
@@ -56,8 +57,7 @@ export namespace Assets {
         },
 
         onProgress: (event: ProgressEvent<EventTarget>) => this.onProgress(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (event.target as any).responseURL, event.loaded, event.total
+          (event.target as ProgressEventTarget).responseURL, event.loaded, event.total
         ),
 
         onError: (error: ErrorEvent) => reject(error)

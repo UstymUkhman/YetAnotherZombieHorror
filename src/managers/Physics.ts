@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from '@/managers/Physics.d';
 type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
 type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
 type Quaternion = import('@three/math/Quaternion').Quaternion;
@@ -11,23 +11,9 @@ import { Vector3 } from '@three/math/Vector3';
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
 
-import { Coords, Bounds } from '@/types';
 import { PI } from '@/utils/Number';
+import { Coords } from '@/types';
 import Ammo from 'ammo.js';
-
-type AmmoWorld = {
-  stepSimulation: (timeStep: number, maxSubSteps?: number) => void
-  addRigidBody: (body: any, group?: number, mask?: number) => void
-
-  setGravity: (gravity: Vector3) => void
-  __destroy__: () => void
-}
-
-type BoundsOptions = {
-  borders: Bounds
-  height: number
-  y: number
-};
 
 const ZERO_MASS = 0.0;
 const MIN_SIZE = 0.01;
@@ -37,7 +23,7 @@ const DISABLE = 5;
 const ENABLE = 1;
 
 class Physics {
-  private readonly colliders: Map<string, {mesh: Mesh, body: any}> = new Map();
+  private readonly colliders: Map<string, Collider> = new Map();
 
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
@@ -46,9 +32,9 @@ class Physics {
   private readonly rotationVector = new Euler();
   private readonly sizeVector = new Vector3();
 
+  private player!: Collider;
   private world: AmmoWorld;
   private paused = false;
-  private player: any;
 
   public constructor () {
     const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
@@ -63,7 +49,7 @@ class Physics {
     this.world.setGravity(new Ammo.btVector3(0.0, GRAVITY, 0.0));
   }
 
-  private createRigidBody (shape: any, mass: number, position: Vector3, quaternion: Quaternion): any {
+  private createRigidBody (shape: RigidBody, mass: number, position: Vector3, quaternion: Quaternion): AmmoBody {
     const transform = new Ammo.btTransform();
 
     transform.setIdentity();
@@ -184,7 +170,7 @@ class Physics {
 
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
-    this.player = this.colliders.get(player.uuid);
+    this.player = this.colliders.get(player.uuid) as Collider;
     this.player.body.forceActivationState(DISABLE);
   }
 
@@ -232,4 +218,3 @@ class Physics {
 }
 
 export default new Physics();
-/* eslint-enable @typescript-eslint/no-explicit-any */
