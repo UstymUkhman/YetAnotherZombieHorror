@@ -226,15 +226,30 @@ export default class Player extends Character {
   }
 
   public reload (): void {
-    if (this.reloading || this.hitting || this.weapon.full || this.weapon.empty) return;
+    if (this.reloading || this.hitting || this.weapon.full) return;
 
     this.updateAnimation('Idle', 'rifleReload');
-    // this.reloading = true;
+    this.reloading = true;
     this.weapon.reload();
   }
 
-  private updateAnimation (animation: CharacterAnimation, action: string): number {
-    this.currentAnimation.crossFadeTo(this.animations[action], 0.1, true);
+  public die (): void {
+    this.updateAnimation('Idle', 'death', 0.5);
+    GameEvents.dispatch('player:death');
+
+    // clearTimeout(this.reloadTimeout);
+    // this.weapon.cancelReload();
+    // Camera.deathAnimation();
+
+    this.reloading = false;
+    this.shooting = false;
+    this.aiming = false;
+
+    this.death();
+  }
+
+  private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): number {
+    this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
     this.animations[action].play();
 
     return setTimeout(() => {
@@ -243,7 +258,7 @@ export default class Player extends Character {
 
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[action];
-    }, 100) as unknown as number;
+    }, duration * 1000) as unknown as number;
   }
 
   public async loadCharacter (): Promise<Object3D> {

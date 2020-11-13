@@ -123,6 +123,15 @@ export default class Character {
     return this.model as Assets.GLTF;
   }
 
+  protected death (): void {
+    this.sounds.get('death')?.play();
+    this.hitting = false;
+    this.running = false;
+    this.moving = false;
+    this.still = false;
+    this.dead = true;
+  }
+
   public async load (): Promise<Assets.GLTFModel> {
     const character = await this.loader.loadGLTF(this.config.model);
     character.scene.position.set(0, this.config.collider.z, 0);

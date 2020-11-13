@@ -47,14 +47,6 @@
   const game = new GameLoop();
   const zoom = new Elastic.Number(0);
 
-  GameEvents.add('pause', event => togglePause(event.data as boolean));
-  window.addEventListener('resize', updateScale);
-
-  GameEvents.add('player:run', event => {
-    running = event.data as boolean;
-    zoom.set(~~running * 0.5);
-  });
-
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
       paused
@@ -77,6 +69,14 @@
   function updateScale (): void {
     scale = window.innerWidth / 175;
   }
+
+  GameEvents.add('pause', event => togglePause(event.data as boolean));
+  window.addEventListener('resize', updateScale);
+
+  GameEvents.add('player:run', event => {
+    running = event.data as boolean;
+    zoom.set(~~running * 0.5);
+  });
 
   onMount(() => {
     main.prepend(game.scene);
