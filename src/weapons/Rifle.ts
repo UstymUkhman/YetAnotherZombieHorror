@@ -2,7 +2,6 @@ type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Euler = import('@three/math/Euler').Euler;
 
-// import { GameEvents } from '@/managers/GameEvents';
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
@@ -11,23 +10,19 @@ export default class Rifle extends Weapon {
   private readonly rotation = Config.Rifle.rotation as Euler;
 
   private reloading = false;
-  private aimTimeout = 0;
 
   public constructor () {
     super(Config.Rifle);
   }
 
   /** @Override */
-  public setAim (duration: number): void {
-    this.aimTimeout = setTimeout(() => {
-      this.model.rotation.set(this.rotation.x, Math.PI, -0.1);
-      this.model.position.set(this.position.x, 0.0, -1.0);
-    }, duration) as unknown as number;
+  public setAim (): void {
+    this.model.rotation.set(this.rotation.x, Math.PI, -0.1);
+    this.model.position.set(this.position.x, 0.0, -1.0);
   }
 
   /** @Override */
   public cancelAim (): void {
-    clearTimeout(this.aimTimeout);
     this.reset();
   }
 

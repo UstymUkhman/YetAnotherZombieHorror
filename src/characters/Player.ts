@@ -80,14 +80,14 @@ export default class Player extends Character {
     this.equipRifle = rifle;
   }
 
-  public rotate (x: number, y: number): void {
+  public rotate (x: number, y: number, maxTilt: number): void {
     const lookDown = y > 0;
     const tilt = this.rotation.y;
     const model = this.getModel();
 
     model.rotateOnWorldAxis(AXIS_Y, x);
 
-    if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= 0.1)) {
+    if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= maxTilt)) {
       model.rotateOnAxis(AXIS_X, y);
     }
   }
@@ -99,7 +99,9 @@ export default class Player extends Character {
     if (this.aiming || this.hitting) return;
     const idle = this.getWeaponAnimation('Idle');
 
+    GameEvents.dispatch('player:run', false);
     Camera.runAnimation(() => false, false);
+
     this.running = this.moving = false;
     this.idleTime = now;
 
@@ -138,7 +140,7 @@ export default class Player extends Character {
   }
 
   public run (directions: Directions, running: boolean): void {
-    if (this.running && running) return;
+    if (this.running === running) return;
     if (this.aiming || this.hitting) return;
 
     const run = this.getWeaponAnimation('Run');
@@ -146,7 +148,6 @@ export default class Player extends Character {
     // this.weapon.cancelReload();
 
     if (!running || this.lastAnimation === run) {
-      GameEvents.dispatch('player:run', false);
       this.running = this.reloading = false;
 
       !(directions as unknown as Array<number>).includes(1)
@@ -168,26 +169,22 @@ export default class Player extends Character {
   }
 
   public startAiming (): void {
-    let next: string;
     if (this.hitting) return;
+
+    GameEvents.dispatch('player:run', false);
     this.weapon.aim = this.aiming = true;
 
-    if (this.equipRifle) {
-      this.aimTime = Date.now();
-      next = 'rifleAim';
-    } else {
-      next = this.getWeaponAnimation('Idle');
-      this.aimTime = 0;
-    }
-
-    this.weapon.setAim(300);
     Camera.runAnimation(() => false, false);
     Camera.aimAnimation(this.running, true, 400);
+
+    this.aimTime = this.equipRifle ? Date.now() : 0;
+    const next = this.equipRifle ? 'rifleAim' : this.getWeaponAnimation('Idle');
 
     if (this.lastAnimation !== next) {
       this.aimTimeout = this.updateAnimation('Idle', next);
       // clearTimeout(this.reloadTimeout);
       // this.weapon.cancelReload();
+      this.weapon.setAim();
 
       this.reloading = false;
       this.running = false;
@@ -207,19 +204,21 @@ export default class Player extends Character {
   }
 
   public startShooting (): void {
+    this.shooting = true;
     const now = Date.now();
+
+    if (now - this.aimTime < 500) return;
     if (now - this.shootTime < 150) return;
-    if (this.hitting || this.reloading) return;
+    if (this.running || this.hitting || this.reloading) return;
 
-    const shoot = this.weapon.shoot(this.position);
-
-    if (shoot) {
+    if (this.weapon.shoot(this.position)) {
       const { x, y } = this.weapon.recoil;
-      this.rotate(x, y);
+      this.rotate(x, y, 0.2);
     }
 
-    this.shooting = shoot;
+    this.reloading = false;
     this.shootTime = now;
+    this.running = false;
   }
 
   public stopShooting (): void {
@@ -296,6 +295,7 @@ export default class Player extends Character {
 
   public update (delta: number): void {
     super.update(delta);
+    this.shooting && this.startShooting();
   }
 
   public get location (): Location {

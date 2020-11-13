@@ -4,12 +4,12 @@
   {/if}
 
   {#if loading}
-    <Loader on:loaded={onLoad} />
+    <Loader on:loaded={() => loading = false} />
   {:else}
     {#if game.pause}
       <Pause on:start={() => togglePause(false)} />
     {:else}
-      <Aim />
+      <Aim running={running} />
 
       <Map
         playerRotation={location.rotation}
@@ -37,6 +37,7 @@
 
   let zoomScale: number;
   let main: HTMLElement;
+  let running = false;
 
   let loading = true;
   let scale: number;
@@ -46,9 +47,13 @@
   const game = new GameLoop();
   const zoom = new Elastic.Number(0);
 
-  GameEvents.add('player:run', event => zoom.set(~~(event.data as boolean) * 0.5));
   GameEvents.add('pause', event => togglePause(event.data as boolean));
   window.addEventListener('resize', updateScale);
+
+  GameEvents.add('player:run', event => {
+    running = event.data as boolean;
+    zoom.set(~~running * 0.5);
+  });
 
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
@@ -71,10 +76,6 @@
 
   function updateScale (): void {
     scale = window.innerWidth / 175;
-  }
-
-  function onLoad (): void {
-    loading = false;
   }
 
   onMount(() => {

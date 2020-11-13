@@ -165,12 +165,12 @@ describe('Settings', () => {
     expect(Config.Rifle.recoil).toStrictEqual(rifleRecoil);
     expect(Config.Rifle.recoil).toBeInstanceOf(Vector2);
 
+    expect(typeof Config.Rifle.ammo).toStrictEqual('number');
     expect(Config.Rifle.model).toStrictEqual('AK47.glb');
     expect(Config.Rifle.magazine).toBeGreaterThan(0);
 
     expect(Config.Rifle.damage).toBeGreaterThan(0);
     expect(Config.Rifle.speed).toBeGreaterThan(0);
-    expect(Config.Rifle.ammo).toStrictEqual(0);
   });
 
   test('Camera', () => {

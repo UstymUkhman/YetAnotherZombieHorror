@@ -110,8 +110,7 @@ export default class Weapon {
 
   // public setToPlayer (): void { return; }
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  public setAim (duration: number): void { return; }
+  public setAim (): void { return; }
 
   public cancelAim (): void { return; }
 
