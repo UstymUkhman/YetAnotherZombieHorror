@@ -1,8 +1,8 @@
-import { GameEvents } from '@/managers/GameEvents';
-import type Player from '@/characters/Player';
-
 export type Directions = { [way in Direction]: number };
 export const enum Direction { UP, RIGHT, DOWN, LEFT }
+
+import { GameEvents } from '@/managers/GameEvents';
+import type Player from '@/characters/Player';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';

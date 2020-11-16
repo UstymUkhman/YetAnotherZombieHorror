@@ -8,6 +8,7 @@
   "spread": [0.025, 0.025],
   "model": "AK47.glb",
 
+  "maxStock": 150,
   "speed": 715000,
   "magazine": 30,
   "damage": 20,

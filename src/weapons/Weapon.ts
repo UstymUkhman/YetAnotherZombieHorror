@@ -26,12 +26,12 @@ export default class Weapon {
   public targets: Array<Object3D> = [];
   private weapon?: Assets.GLTF;
 
+  protected readonly magazine: number;
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
 
-  private loadedAmmo: number;
-  private totalAmmo: number;
-  private magazine: number;
+  protected loadedAmmo: number;
+  protected totalAmmo: number;
   private aiming = false;
 
   public constructor (private readonly config: WeaponConfig) {
@@ -108,8 +108,6 @@ export default class Weapon {
     this.stopSound(sfx).play();
   }
 
-  // public setToPlayer (): void { return; }
-
   public setAim (): void { return; }
 
   public cancelAim (): void { return; }
@@ -136,9 +134,12 @@ export default class Weapon {
     return shoot;
   }
 
-  public reload (): void { return; }
+  public startReloading (): void { return; }
 
-  public cancelReload (): void { return; }
+  public stopReloading (): void { return; }
+
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  public addAmmo (ammo: number): void { return; }
 
   private get target (): number {
     const x = this.config.spread.x / 10;
@@ -177,6 +178,10 @@ export default class Weapon {
 
   public get damage (): number {
     return this.config.damage;
+  }
+
+  public get inStock (): number {
+    return this.totalAmmo - this.loadedAmmo;
   }
 
   public get empty (): boolean {

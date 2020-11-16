@@ -150,6 +150,9 @@ describe('Settings', () => {
 
     expect(Object.keys(Config.Rifle.sounds).length).toBeGreaterThan(0);
 
+    expect(typeof Config.Rifle.maxStock).toStrictEqual('number');
+    expect(typeof Config.Rifle.ammo).toStrictEqual('number');
+
     expect(Config.Rifle.position).toStrictEqual(riflePosition);
     expect(Config.Rifle.position).toBeInstanceOf(Vector3);
 
@@ -165,12 +168,13 @@ describe('Settings', () => {
     expect(Config.Rifle.recoil).toStrictEqual(rifleRecoil);
     expect(Config.Rifle.recoil).toBeInstanceOf(Vector2);
 
-    expect(typeof Config.Rifle.ammo).toStrictEqual('number');
     expect(Config.Rifle.model).toStrictEqual('AK47.glb');
     expect(Config.Rifle.magazine).toBeGreaterThan(0);
 
     expect(Config.Rifle.damage).toBeGreaterThan(0);
     expect(Config.Rifle.speed).toBeGreaterThan(0);
+
+    expect(Config.Rifle.spread).toBeInstanceOf(Vector2);
   });
 
   test('Camera', () => {

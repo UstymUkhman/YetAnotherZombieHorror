@@ -113,6 +113,7 @@ export namespace Config {
 
     magazine: getAmmo(RifleData.magazine),
     ammo: getAmmo(RifleData.ammo),
+    maxStock: RifleData.maxStock,
 
     sounds: RifleData.sounds,
     damage: RifleData.damage,
