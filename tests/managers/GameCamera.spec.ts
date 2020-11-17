@@ -1,10 +1,7 @@
-declare const global: any;
-global.PRODUCTION = false;
-global.BUILD = '0.1.0';
-
-import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';
-import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
+import '../globals';
 import { Object3D } from '@three/core/Object3D';
+import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
+import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';
 
 describe('GameCamera', () => {
   test('CameraObject', () => {
@@ -46,6 +43,12 @@ describe('GameCamera', () => {
     const runAnimation = jest.fn(Camera.runAnimation.bind(Camera));
     runAnimation(() => true, true);
     expect(runAnimation).toHaveReturnedWith(undefined);
+  });
+
+  test('deathAnimation', () => {
+    const deathAnimation = jest.fn(Camera.deathAnimation.bind(Camera));
+    deathAnimation();
+    expect(deathAnimation).toHaveReturnedWith(undefined);
   });
 
   test('setTo', () => {

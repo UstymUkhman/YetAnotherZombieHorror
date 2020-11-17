@@ -1,12 +1,9 @@
-declare const global: any;
-global.PRODUCTION = false;
-global.BUILD = '0.1.0';
-
-import { DynamicCollider, StaticCollider, HitBox, Transparent } from '@/utils/Material';
-import { Color as TColor } from '@three/math/Color';
-
-import { Color } from '@/utils/Color';
+import '../globals';
 import { Config } from '@/config';
+import { Color } from '@/utils/Color';
+
+import { Color as TColor } from '@three/math/Color';
+import { DynamicCollider, StaticCollider, HitBox, Transparent } from '@/utils/Material';
 
 describe('Material', () => {
   test('DynamicCollider', () => {

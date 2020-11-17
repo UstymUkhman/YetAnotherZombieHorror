@@ -1,3 +1,7 @@
+import './globals';
+import { Config } from '@/config';
+import { Euler } from '@three/math/Euler';
+
 import { Vector2 } from '@three/math/Vector2';
 import { Vector3 } from '@three/math/Vector3';
 
@@ -9,14 +13,6 @@ import Enemy from '@/config/enemy.json';
 
 import Pistol from '@/config/pistol.json';
 import Rifle from '@/config/rifle.json';
-
-import { Euler } from '@three/math/Euler';
-
-declare const global: any;
-global.PRODUCTION = false;
-global.BUILD = '0.1.0';
-
-import { Config } from '@/config';
 
 describe('Settings', () => {
   test('Constants', () => {

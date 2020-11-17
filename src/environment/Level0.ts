@@ -3,15 +3,14 @@ type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
 
 import { AmbientLight } from '@three/lights/AmbientLight';
+import { FogExp2 } from '@three/scenes/FogExp2';
 import GameLevel from '@/environment/GameLevel';
 
 import { Coords, Bounds } from '@/types';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/Physics';
 
-import { Fog } from '@three/scenes/Fog';
 import { Color } from '@/utils/Color';
-
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
@@ -40,16 +39,13 @@ export default class Level0 extends GameLevel {
   }
 
   private createEnvironment (): void {
-    super.createSkybox(Config.Level0.skybox);
+    this.scene.fog = new FogExp2(Color.GREY, 0.1);
+    this.scene.background = Color.getClass(Color.SKY);
 
     super.loadLevel(Config.Level0.model).then(level => {
       level.position.copy(Config.Level0.position as Vector3);
       level.scale.copy(Config.Level0.scale as Vector3);
     });
-
-    if (!Config.DEBUG) {
-      this.scene.fog = new Fog(Color.GREY, 1, 25);
-    }
   }
 
   private createLights (): void {

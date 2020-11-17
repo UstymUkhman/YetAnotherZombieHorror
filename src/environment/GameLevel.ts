@@ -29,7 +29,7 @@ export default class GameLevel {
 
   private createRenderer (): void {
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    // this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.enabled = false;
     this.setRenderSize();
   }
 

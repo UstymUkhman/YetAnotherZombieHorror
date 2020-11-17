@@ -1,10 +1,7 @@
-declare const global: any;
-global.PRODUCTION = false;
-global.BUILD = '0.1.0';
-
-import { Object3D } from '@three/core/Object3D';
-import Level0Data from '@/config/level0.json';
+import '../globals';
 import Level0 from '@/environment/Level0';
+import Level0Data from '@/config/level0.json';
+import { Object3D } from '@three/core/Object3D';
 
 describe('Level0', () => {
   const level = new Level0();
@@ -12,6 +9,12 @@ describe('Level0', () => {
   test('Create', () => {
     expect(Level0).toBeDefined();
     expect(level).toBeInstanceOf(Level0);
+  });
+
+  test('createColliders', () => {
+    const createColliders = jest.fn(level.createColliders.bind(level));
+    createColliders();
+    expect(createColliders).toHaveReturnedWith(undefined);
   });
 
   test('addObject', () => {

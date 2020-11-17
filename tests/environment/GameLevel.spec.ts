@@ -1,7 +1,4 @@
-declare const global: any;
-global.PRODUCTION = false;
-global.BUILD = '0.1.0';
-
+import '../globals';
 import GameLevel from '@/environment/GameLevel';
 
 describe('Level0', () => {
