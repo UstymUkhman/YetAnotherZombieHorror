@@ -70,7 +70,7 @@
     scale = window.innerWidth / 175;
   }
 
-  GameEvents.add('pause', event => togglePause(event.data as boolean));
+  GameEvents.add('game:pause', event => togglePause(event.data as boolean));
   window.addEventListener('resize', updateScale);
 
   GameEvents.add('player:run', event => {

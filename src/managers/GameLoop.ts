@@ -56,8 +56,8 @@ export default class GameLoop {
       Config.Player.sounds as CharacterSounds
     ));
 
-    // this.player.setPistol(this.enemyColliders, this.pistol);
-    this.player.setRifle(this.enemyColliders, this.rifle);
+    this.player.setPistol(this.enemyColliders, this.pistol);
+    // this.player.setRifle(this.enemyColliders, this.rifle);
     Physics.setPlayer(this.player.collider);
 
     return await this.loadEnemyAssets();
@@ -81,7 +81,7 @@ export default class GameLoop {
   }
 
   private addEventListeners (): void {
-    GameEvents.add('add:object', this.addGameObject.bind(this));
+    GameEvents.add('game:object', this.addGameObject.bind(this));
   }
 
   private addGameObject (event: GameEvent): void {

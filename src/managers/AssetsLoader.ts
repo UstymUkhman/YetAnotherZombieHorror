@@ -103,14 +103,14 @@ export namespace Assets {
     public onProgress = (url: string, loaded: number, total: number): void => {
       const progress = loaded * 100 / total;
 
-      GameEvents.dispatch('is:loading', {
+      GameEvents.dispatch('loading:progress', {
         uuid: this.uuid,
         progress
       });
     }
 
     public onStart = (): void => {
-      GameEvents.dispatch('start:loading', this.uuid);
+      GameEvents.dispatch('loading:start', this.uuid);
     }
 
     public onError = (url: string): void => {
@@ -118,7 +118,7 @@ export namespace Assets {
     }
 
     public onLoad = (): void => {
-      GameEvents.dispatch('end:loading', this.uuid);
+      GameEvents.dispatch('loading:end', this.uuid);
     }
   }
 }

@@ -93,6 +93,8 @@ class GameCamera {
     });
   }
 
+  public deathAnimation (): void { return; }
+
   public setTo (target: Object3D): void {
     target.add(this.camera);
   }

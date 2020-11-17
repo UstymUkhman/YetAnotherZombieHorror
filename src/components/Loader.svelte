@@ -42,17 +42,17 @@
     assets.set(event.data, 100);
 
     if (assets.size === ++loaded) {
-      setTimeout(() => dispatch('loaded'), 500);
-      GameEvents.remove('start:loading');
-      GameEvents.remove('end:loading');
-      GameEvents.remove('is:loading');
+      setTimeout(() => dispatch('loaded'), 1000);
+      GameEvents.remove('loading:progress');
+      GameEvents.remove('loading:start');
+      GameEvents.remove('loading:end');
       progress = 1;
     }
   }
 
-  GameEvents.add('start:loading', onStart);
-  GameEvents.add('is:loading', onProgress);
-  GameEvents.add('end:loading', onLoad);
+  GameEvents.add('loading:progress', onProgress);
+  GameEvents.add('loading:start', onStart);
+  GameEvents.add('loading:end', onLoad);
 </script>
 
 <style lang="scss">

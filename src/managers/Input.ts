@@ -74,7 +74,7 @@ export default class Input {
 
         this.shift && this.moves[Direction.UP]
           ? this.player.run(this.moves, true)
-          : this.player.move(this.moves, false);
+          : this.player.move(this.moves);
       }, Math.max(150 - (Date.now() - this.aimTime), 0)) as unknown as number;
     }
   }
@@ -107,14 +107,13 @@ export default class Input {
         this.moves[Direction.LEFT] = 1;
         break;
 
-      default:
-        return;
+      default: return;
     }
 
     const move = this.movement;
 
     if (this.move !== move)
-      this.player.move(this.moves, false);
+      this.player.move(this.moves);
 
     this.move = move;
   }
@@ -145,15 +144,15 @@ export default class Input {
 
       case 'KeyQ':
       case 'KeyE':
-        this.player.changeWeapon();
-        return;
+        return this.player.changeWeapon();
 
       case 'KeyR':
-        this.player.reload();
-        return;
+        return this.player.reload(() => ({
+          directions: this.moves,
+          running: this.shift
+        }));
 
-      default:
-        return;
+      default: return;
     }
 
     const move = this.movement;
@@ -162,7 +161,7 @@ export default class Input {
       this.player.idle();
 
     else if (this.move !== move)
-      this.player.move(this.moves, this.shift);
+      this.player.move(this.moves);
 
     this.move = move;
   }
@@ -181,7 +180,7 @@ export default class Input {
     event.preventDefault();
 
     this.paused = !this.pointerLocked;
-    GameEvents.dispatch('pause', this.paused);
+    GameEvents.dispatch('game:pause', this.paused);
   }
 
   private onPointerLockError (event: Event): void {
@@ -191,11 +190,10 @@ export default class Input {
   }
 
   private onContextMenu (event: Event): boolean | void {
-    if (!this.paused) {
-      event.stopPropagation();
-      event.preventDefault();
-      return false;
-    }
+    if (this.paused) return;
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
   }
 
   private addEvents (): void {

@@ -1,5 +1,6 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 import { Location, PlayerAnimations, CharacterAnimation } from '@/types';
+type Movement = { directions: Directions, running: boolean };
 type Object3D = import('@three/core/Object3D').Object3D;
 
 import { Direction, Directions } from '@/managers/Input';
@@ -75,22 +76,13 @@ export default class Player extends Character {
       animation = animation.replace(/ForwardLeft|ForwardRight/gm, 'Forward');
     }
 
+    this.lastAnimation !== animation && this.updateAnimation('Idle', animation);
     this.hasRifle = this.equipRifle || rifle;
-    this.updateAnimation('Idle', animation);
     this.equipRifle = rifle;
   }
 
   private blockingAnimation (): boolean {
     return this.aiming || this.hitting || this.reloading;
-  }
-
-  private cancelReload (): void {
-    this.animations.rifleReload.stop();
-    clearTimeout(this.reloadTimeout);
-
-    this.weapon.stopReloading();
-    this.setAnimation('Idle');
-    this.reloading = false;
   }
 
   public rotate (x: number, y: number, maxTilt: number): void {
@@ -124,15 +116,11 @@ export default class Player extends Character {
     );
   }
 
-  public move (directions: Directions, running: boolean): void {
+  public move (directions: Directions): void {
     const now = Date.now();
 
     if (this.blockingAnimation()) return;
     if (now - this.moveTime < 350) return;
-
-    if (this.running && running && directions[Direction.UP]) {
-      return this.run(directions, true);
-    }
 
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
@@ -142,7 +130,6 @@ export default class Player extends Character {
     this.updateAnimation(direction, animation);
     GameEvents.dispatch('player:run', false);
     Camera.runAnimation(() => false, false);
-    this.cancelReload();
 
     this.running = false;
     this.moveTime = now;
@@ -154,16 +141,13 @@ export default class Player extends Character {
     if (this.blockingAnimation()) return;
 
     const run = this.getWeaponAnimation('Run');
-    this.cancelReload();
 
     if (!running || this.lastAnimation === run) {
       this.running = false;
 
-      !(directions as unknown as Array<number>).includes(1)
-        ? setTimeout(this.idle.bind(this), 150)
-        : this.move(directions, false);
-
-      return;
+      return !(directions as unknown as Array<number>).includes(1)
+        ? setTimeout(this.idle.bind(this), 150) as unknown as void
+        : this.move(directions);
     }
 
     if (directions[Direction.UP]) {
@@ -225,13 +209,18 @@ export default class Player extends Character {
     this.shooting = false;
   }
 
-  public reload (): void {
+  public reload (getMovement: () => Movement): void {
     if (this.blockingAnimation()) return;
     if (this.weapon.full || !this.weapon.inStock) return;
 
     this.updateAnimation('Idle', 'rifleReload');
+    GameEvents.dispatch('player:run', false);
+    Camera.runAnimation(() => false, false);
     this.weapon.startReloading();
+
     this.reloading = true;
+    this.running = false;
+    this.moving = false;
 
     this.reloadTimeout = setTimeout(
       this.weapon.addAmmo.bind(this.weapon, 0), 2000
@@ -240,16 +229,22 @@ export default class Player extends Character {
     setTimeout(() => {
       if (this.dead) return;
       this.reloading = false;
-      this.idle();
+
+      const { directions, running } = getMovement();
+      running ? this.run(directions, running) : this.move(directions);
     }, 2500);
   }
 
   public die (): void {
     this.updateAnimation('Idle', 'death', 0.5);
     GameEvents.dispatch('player:death');
-    // Camera.deathAnimation();
-    this.cancelReload();
+    clearTimeout(this.reloadTimeout);
 
+    this.weapon.stopReloading();
+    this.setAnimation('Idle');
+    Camera.deathAnimation();
+
+    this.reloading = false;
     this.shooting = false;
     this.aiming = false;
 

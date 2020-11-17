@@ -12,7 +12,7 @@
   "speed": 715000,
   "magazine": 30,
   "damage": 20,
-  "ammo": -1,
+  "ammo": 30,
 
   "sounds": {
     "reload": "reload.mp3",

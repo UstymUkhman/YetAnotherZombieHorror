@@ -33,7 +33,7 @@ export default class Rifle extends Weapon {
     this.model.position.set(this.position.x, this.position.y, 0);
     this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
 
-    this.playSound('reload');
+    this.playSound('reload', true);
     this.reloading = true;
   }
 

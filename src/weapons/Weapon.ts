@@ -94,8 +94,8 @@ export default class Weapon {
 
   private getEvent (index: number): string {
     const hitBox = index % 6;
-    return !hitBox ? 'headshoot' :
-      hitBox === 1 ? 'bodyHit' : 'legHit';
+    return !hitBox ? 'hit:head' :
+      hitBox === 1 ? 'hit:body' : 'hit:leg';
   }
 
   protected stopSound (sfx: WeaponSound): PositionalAudio {
@@ -104,8 +104,12 @@ export default class Weapon {
     return sound;
   }
 
-  protected playSound (sfx: WeaponSound): void {
-    this.stopSound(sfx).play();
+  protected playSound (sfx: WeaponSound, stop: boolean): void {
+    const sound = stop
+      ? this.stopSound(sfx)
+      : this.sounds.get(sfx) as PositionalAudio;
+
+    !sound.isPlaying && sound.play();
   }
 
   public setAim (): void { return; }
@@ -116,13 +120,13 @@ export default class Weapon {
     const shoot = !this.empty;
     const target = this.target;
 
-    if (!shoot) this.playSound('empty');
+    if (!shoot) this.playSound('empty', false);
 
     else {
       const hitBox = this.targets[target];
       GameEvents.dispatch('player:shoot');
 
-      this.playSound('shoot');
+      this.playSound('shoot', true);
       this.loadedAmmo--;
 
       target > -1 && setTimeout(() =>
