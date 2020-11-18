@@ -41,9 +41,9 @@ export namespace Assets {
     private readonly uuid = MathUtils.generateUUID();
 
     private readonly cubeTextures = [
-      'px.png', 'nx.png',
-      'py.png', 'ny.png',
-      'pz.png', 'nz.png'
+      'px.jpg', 'nx.jpg',
+      'py.jpg', 'ny.jpg',
+      'pz.jpg', 'nz.jpg'
     ];
 
     private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
