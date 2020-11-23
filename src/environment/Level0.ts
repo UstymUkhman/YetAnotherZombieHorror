@@ -42,7 +42,7 @@ export default class Level0 extends GameLevel {
     this.createSkybox(Config.Level0.skybox);
     this.scene.fog = new FogExp2(Color.GREY, 0.1);
 
-    super.loadLevel(Config.Level0.model).then(level => {
+    this.loadLevel(Config.Level0.model).then(level => {
       level.position.copy(Config.Level0.position as Vector3);
       level.scale.copy(Config.Level0.scale as Vector3);
     });
@@ -65,6 +65,10 @@ export default class Level0 extends GameLevel {
     });
   }
 
+  public removeObject (model: Object3D): void {
+    this.scene.remove(model);
+  }
+
   public addObject (model: Object3D): void {
     this.scene.add(model);
   }
@@ -82,6 +86,10 @@ export default class Level0 extends GameLevel {
       this.controls?.dispose();
       delete this.controls;
     }
+  }
+
+  public static get randomCoord (): Coords {
+    return [0.0, 10.0];
   }
 
   public static get minCoords (): Coords {

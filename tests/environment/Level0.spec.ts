@@ -17,6 +17,12 @@ describe('Level0', () => {
     expect(createColliders).toHaveReturnedWith(undefined);
   });
 
+  test('removeObject', () => {
+    const removeObject = jest.fn(level.removeObject.bind(level));
+    removeObject(new Object3D());
+    expect(removeObject).toHaveReturnedWith(undefined);
+  });
+
   test('addObject', () => {
     const addObject = jest.fn(level.addObject.bind(level));
     addObject(new Object3D());
@@ -33,6 +39,17 @@ describe('Level0', () => {
     const destroy = jest.fn(level.destroy.bind(level));
     destroy();
     expect(destroy).toHaveReturnedWith(undefined);
+  });
+
+  test('randomCoord', () => {
+    const min = Level0.minCoords;
+    const max = Level0.maxCoords;
+
+    expect(Level0.randomCoord[0]).toBeLessThan(max[0]);
+    expect(Level0.randomCoord[0]).toBeGreaterThan(min[0]);
+
+    expect(Level0.randomCoord[1]).toBeLessThan(max[1]);
+    expect(Level0.randomCoord[1]).toBeGreaterThan(min[1]);
   });
 
   test('minCoords', () => {

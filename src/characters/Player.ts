@@ -63,6 +63,11 @@ export default class Player extends Character {
     return `${this.equipRifle ? 'rifle' : 'pistol'}${movement}`;
   }
 
+  private getPlayerAnimation (): PlayerAnimations {
+    const weapon = this.equipRifle ? 'rifle' : 'pistol';
+    return this.lastAnimation.replace(weapon, '') as PlayerAnimations;
+  }
+
   private setWeapon (rifle: boolean): void {
     let animation = rifle ?
       this.lastAnimation.replace('pistol', 'rifle') :
@@ -76,7 +81,10 @@ export default class Player extends Character {
       animation = animation.replace(/ForwardLeft|ForwardRight/gm, 'Forward');
     }
 
-    this.lastAnimation !== animation && this.updateAnimation('Idle', animation);
+    this.lastAnimation !== animation && this.updateAnimation(
+      this.getPlayerAnimation(), animation
+    );
+
     this.hasRifle = this.equipRifle || rifle;
     this.equipRifle = rifle;
   }
@@ -199,10 +207,11 @@ export default class Player extends Character {
 
     if (this.weapon.shoot(this.position)) {
       const { x, y } = this.weapon.recoil;
-      this.rotate(x, y, 0.2);
+      this.rotate(x, y, 0.25);
     }
 
     this.shootTime = now;
+    !this.equipRifle && this.stopShooting();
   }
 
   public stopShooting (): void {
@@ -292,7 +301,7 @@ export default class Player extends Character {
     this.hand?.add(pistol.model);
   }
 
-  public setRifle (targets: Array<Object3D>, rifle: Rifle): void {
+  private setRifle (targets: Array<Object3D>, rifle: Rifle): void {
     this.setWeapon(true);
     this.weapon = rifle;
     this.rifle = rifle;
@@ -309,6 +318,12 @@ export default class Player extends Character {
         ? this.setRifle(targets, this.rifle as Rifle)
         : this.setPistol(targets, this.pistol as Pistol);
     }
+  }
+
+  public pickRifle (rifle: Rifle): void {
+    this.rifle = rifle;
+    this.hasRifle = true;
+    this.rifle.addAmmo(30);
   }
 
   public update (delta: number): void {

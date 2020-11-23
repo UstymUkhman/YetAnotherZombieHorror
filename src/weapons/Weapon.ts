@@ -21,14 +21,16 @@ export default class Weapon {
   private readonly sounds: WeaponSounds = new Map();
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
-  private readonly origin = new Vector2();
 
+  private readonly origin = new Vector2();
   public targets: Array<Object3D> = [];
-  private weapon?: Assets.GLTF;
 
   protected readonly magazine: number;
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
+
+  private weapon?: Assets.GLTF;
+  private asset?: Assets.GLTF;
 
   protected loadedAmmo: number;
   protected totalAmmo: number;
@@ -44,9 +46,8 @@ export default class Weapon {
     this.load();
   }
 
-  private async load (): Promise<Assets.GLTF> {
+  private async load (): Promise<void> {
     this.weapon = (await this.loader.loadGLTF(this.config.model)).scene;
-    this.addSounds(await this.loadSounds());
 
     this.weapon.traverse(child => {
       const childMesh = child as Mesh;
@@ -67,7 +68,8 @@ export default class Weapon {
     this.weapon.rotation.copy(this.config.rotation as Euler);
     this.weapon.scale.copy(this.config.scale as Vector3);
 
-    return this.weapon;
+    this.asset = this.model.clone();
+    this.addSounds(await this.loadSounds());
   }
 
   private addSounds (sounds: Array<AudioBuffer>): void {
@@ -77,11 +79,11 @@ export default class Weapon {
       const audio = new PositionalAudio(CameraListener);
       const volume = sfx[s] === 'shoot' ? 10 : 5;
 
-      this.sounds.set(sfx[s], audio);
-      this.weapon?.add(audio);
-
-      audio.setVolume(volume);
       audio.setBuffer(sound);
+      audio.setVolume(volume);
+
+      this.sounds.set(sfx[s], audio);
+      this.model.add(audio);
     });
   }
 
@@ -144,6 +146,12 @@ export default class Weapon {
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   public addAmmo (ammo: number): void { return; }
+
+  protected getClone (): Assets.GLTF {
+    const clone = this.asset as Assets.GLTF;
+    this.sounds.forEach(sound => clone.add(sound));
+    return clone;
+  }
 
   private get target (): number {
     const x = this.config.spread.x / 10;

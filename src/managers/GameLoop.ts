@@ -41,7 +41,7 @@ export default class GameLoop {
     this.loadCharacters().then(assets => this.enemyAssets = assets);
 
     if (Config.DEBUG) {
-      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then((Stats) => {
+      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then(Stats => {
         this.stats = new Stats.default();
         this.stats.showPanel(0);
         document.body.appendChild(this.stats.domElement);
@@ -57,7 +57,6 @@ export default class GameLoop {
     ));
 
     this.player.setPistol(this.enemyColliders, this.pistol);
-    // this.player.setRifle(this.enemyColliders, this.rifle);
     Physics.setPlayer(this.player.collider);
 
     return await this.loadEnemyAssets();
@@ -81,17 +80,31 @@ export default class GameLoop {
   }
 
   private addEventListeners (): void {
-    GameEvents.add('game:object', this.addGameObject.bind(this));
+    GameEvents.add('remove:object', this.removeGameObject.bind(this));
+    GameEvents.add('add:object', this.addGameObject.bind(this));
+    GameEvents.add('weapon:pick', this.pickRifle.bind(this));
+  }
+
+  private removeGameObject (event: GameEvent): void {
+    this.level.removeObject(event.data as Object3D);
   }
 
   private addGameObject (event: GameEvent): void {
     this.level.addObject(event.data as Object3D);
   }
 
+  private pickRifle (event: GameEvent): void {
+    this.player.pickRifle(this.rifle);
+    this.removeGameObject(event);
+  }
+
   public update (): void {
     this.stats?.begin();
 
+    const playerPosition = this.player.location.position;
     const delta = this.clock.getDelta();
+
+    this.rifle.update(playerPosition);
     this.player.update(delta);
 
     if (this.player.alive) {

@@ -53,7 +53,7 @@ export default class Input {
     event.stopPropagation();
 
     if (this.disabled) return;
-    this.player.rotate(event.movementX / -100, event.movementY / 400, 0.1);
+    this.player.rotate(event.movementX / -100, event.movementY / 400, 0.15);
   }
 
   private onMouseUp (event: MouseEvent): void {

@@ -4,7 +4,9 @@ type Euler = import('@three/math/Euler').Euler;
 
 import { GameEvents } from '@/managers/GameEvents';
 import Weapon from '@/weapons/Weapon';
+
 import { Config } from '@/config';
+import { Coords } from '@/types';
 
 export default class Rifle extends Weapon {
   private readonly position = Config.Rifle.position as Vector3;
@@ -12,6 +14,8 @@ export default class Rifle extends Weapon {
   private readonly maxStock = Config.Rifle.maxStock;
 
   private reloading = false;
+  private onStage = false;
+  private clone?: GLTF;
 
   public constructor () {
     super(Config.Rifle);
@@ -63,19 +67,31 @@ export default class Rifle extends Weapon {
     this.reset();
   }
 
+  public update (player: Vector3): void {
+    if (!this.onStage || !this.clone) return;
+
+    this.clone.rotation.y -= 0.025;
+
+    if (this.clone.position.distanceTo(player) < 2.5) {
+      GameEvents.dispatch('weapon:pick', this.clone);
+      this.onStage = false;
+    }
+  }
+
+  public spawn (coord: Coords): void {
+    const worldScale = Config.Rifle.worldScale as Vector3;
+    this.clone = this.clone || this.getClone();
+
+    this.clone.position.set(coord[0], 1.75, coord[1]);
+    this.clone.scale.copy(worldScale);
+    this.clone.rotation.set(0, 0, 0);
+
+    GameEvents.dispatch('add:object', this.clone);
+    this.onStage = true;
+  }
+
   private reset (): void {
     this.model.position.copy(this.position);
     this.model.rotation.copy(this.rotation);
-  }
-
-  public get clone (): GLTF {
-    const worldScale = Config.Rifle.worldScale as Vector3;
-    const rifle = this.model.clone(true);
-
-    rifle.scale.copy(worldScale);
-    rifle.rotation.set(0, 0, 0);
-    rifle.visible = false;
-
-    return rifle;
   }
 }

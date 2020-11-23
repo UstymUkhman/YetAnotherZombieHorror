@@ -80,7 +80,7 @@ class Physics {
     const body = this.createRigidBody(shape, ZERO_MASS, box.position, box.quaternion);
 
     this.world.addRigidBody(body, 2, 0xFFFF);
-    GameEvents.dispatch('game:object', box);
+    GameEvents.dispatch('add:object', box);
   }
 
   private createCharacterCollider (mesh: Mesh, mass: number): void {
@@ -93,7 +93,7 @@ class Physics {
 
     this.colliders.set(mesh.uuid, { mesh, body });
     this.world.addRigidBody(body, 128, 0xFFFF);
-    GameEvents.dispatch('game:object', mesh);
+    GameEvents.dispatch('add:object', mesh);
   }
 
   private borderOverflow (border: Vector3) {
