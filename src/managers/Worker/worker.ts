@@ -1,8 +1,24 @@
+import { LevelParams, getRandomCoord } from './randomCoord';
 export const worker: Worker = self as never;
 
+const getEventData = (event: string, params?: unknown): unknown => {
+  switch (event) {
+    case 'Level:coord':
+      return getRandomCoord(params as LevelParams);
+
+    default:
+      return undefined;
+  }
+};
+
 worker.onmessage = (message => {
-  // worker.postMessage({ });
-  console.log(message.data);
+  const { event, params } = message.data;
+  const data = getEventData(event, params);
+
+  worker.postMessage({
+    response: data,
+    name: event
+  });
 });
 
 worker.onerror = (error => {

@@ -1,22 +1,36 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./worker.d.ts" />
 
-import Worker from 'worker-loader!./worker';
+type EventData = { callback: Callback, params: unknown };
+import WebWorker from 'worker-loader!./worker';
+type Callback = (data: unknown) => void;
 
-export default class WorkerManager {
-  private static loader = new Worker();
+export default class Worker {
+  private events: Map<string, EventData> = new Map();
+  private worker = new WebWorker();
 
-  public static init (): void {
-    this.loader.onmessage = this.onMessage.bind(this);
-    this.loader.onerror = this.onError.bind(this);
-    // this.loader.postMessage({ });
+  public constructor () {
+    this.worker.onmessage = this.onMessage.bind(this);
+    this.worker.onerror = this.onError.bind(this);
   }
 
-  private static onMessage (message: MessageEvent): void {
-    console.log(message.data);
+  public add (event: string, callback: Callback, params?: unknown): void {
+    this.events.set(event, { callback, params });
   }
 
-  private static onError (error: ErrorEvent): void {
+  private onMessage (event: MessageEvent): void {
+    const { name, response } = event.data;
+    const callback = this.events.get(name)?.callback;
+
+    callback && callback(response);
+  }
+
+  private onError (error: ErrorEvent): void {
     console.error(error);
+  }
+
+  public get (event: string): void {
+    const params = this.events.get(event)?.params;
+    this.worker.postMessage({ event, params });
   }
 }

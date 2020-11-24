@@ -10,12 +10,16 @@ import { Coords, Bounds } from '@/types';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/Physics';
 
+import Worker from '@/managers/worker';
 import { Color } from '@/utils/Color';
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
 export default class Level0 extends GameLevel {
   private readonly music = new Music(Config.Level0.music);
+  private static readonly worker = new Worker();
+
+  private static randomPosition: Coords;
   private controls?: OrbitControls;
 
   public constructor () {
@@ -88,8 +92,19 @@ export default class Level0 extends GameLevel {
     }
   }
 
+  public static generateRandomCoord (): void {
+    this.worker.add('Level:coord', data =>
+      this.randomPosition = data as Coords, {
+        minCoords: this.minCoords,
+        maxCoords: this.maxCoords,
+        bounds: this.bounds
+      }
+    );
+  }
+
   public static get randomCoord (): Coords {
-    return [-39.0, 52.5]; // +/- 0.5 on X & Z:
+    this.worker.get('Level:coord');
+    return this.randomPosition;
   }
 
   public static get minCoords (): Coords {
@@ -110,3 +125,5 @@ export default class Level0 extends GameLevel {
     return Config.Level0.bounds as Bounds;
   }
 }
+
+Level0.generateRandomCoord();
