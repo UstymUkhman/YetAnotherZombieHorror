@@ -323,7 +323,7 @@ export default class Player extends Character {
   public pickRifle (rifle: Rifle): void {
     this.rifle = rifle;
     this.hasRifle = true;
-    this.rifle.addAmmo(30);
+    this.rifle.addAmmo();
   }
 
   public update (delta: number): void {

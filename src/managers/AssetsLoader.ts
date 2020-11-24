@@ -48,7 +48,7 @@ export namespace Assets {
 
     private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
       return {
-        onLoad: (asset: Assets) => {
+        onLoad: asset => {
           if (asset instanceof CubeTexture) {
             asset.format = RGBFormat;
           }
@@ -56,16 +56,16 @@ export namespace Assets {
           resolve(asset);
         },
 
-        onProgress: (event: ProgressEvent<EventTarget>) => this.onProgress(
+        onProgress: event => this.onProgress(
           (event.target as ProgressEventTarget).responseURL, event.loaded, event.total
         ),
 
-        onError: (error: ErrorEvent) => reject(error)
+        onError: error => reject(error)
       };
     }
 
     public async loadCubeTexture (folder: string): Promise<CubeTexture> {
-      return await new Promise((resolve: Resolve<CubeTexture>, reject: Reject) => {
+      return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
         this.cubeTexture.setPath(`${this.textureBasePath}/${folder}/`);
@@ -74,7 +74,7 @@ export namespace Assets {
     }
 
     public async loadTexture (file: string): Promise<Texture> {
-      return await new Promise((resolve: Resolve<Texture>, reject: Reject) => {
+      return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
         this.texture.setPath(`${this.textureBasePath}/`);
@@ -83,7 +83,7 @@ export namespace Assets {
     }
 
     public async loadGLTF (file: string): Promise<GLTFModel> {
-      return await new Promise((resolve: Resolve<GLTFModel>, reject: Reject) => {
+      return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
         this.gltf.setPath(this.modelBasePath);
@@ -92,7 +92,7 @@ export namespace Assets {
     }
 
     public async loadAudio (file: string): Promise<AudioBuffer> {
-      return await new Promise((resolve: Resolve<AudioBuffer>, reject: Reject) => {
+      return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
         this.audio.setPath(this.audioBasePath);

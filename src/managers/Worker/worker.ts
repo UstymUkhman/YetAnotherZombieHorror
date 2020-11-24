@@ -1,10 +1,10 @@
 export const worker: Worker = self as never;
 
-worker.onmessage = ((message: MessageEvent) => {
+worker.onmessage = (message => {
   // worker.postMessage({ });
   console.log(message.data);
 });
 
-worker.onerror = ((error: ErrorEvent) => {
+worker.onerror = (error => {
   console.error(error);
 });

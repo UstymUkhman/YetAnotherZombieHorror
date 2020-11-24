@@ -188,12 +188,12 @@ export default class Weapon {
     return this.weapon as Assets.GLTF;
   }
 
-  public get damage (): number {
-    return this.config.damage;
-  }
-
   public get inStock (): number {
     return this.totalAmmo - this.loadedAmmo;
+  }
+
+  public get damage (): number {
+    return this.config.damage;
   }
 
   public get empty (): boolean {

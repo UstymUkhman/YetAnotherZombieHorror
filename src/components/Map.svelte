@@ -7,13 +7,12 @@
 
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
-  type Bounds = import('@/config').Config.Bounds;
-  type Coords = import('@/config').Config.Coords;
 
   import { cloneBounds, max } from '@/utils/Array';
   import Player from '@components/Player.svelte';
-  import Level0 from '@/environment/Level0';
+  import type { Coords, Bounds } from '@/types';
 
+  import Level0 from '@/environment/Level0';
   import { Color } from '@/utils/Color';
   import { onMount } from 'svelte';
 
@@ -36,7 +35,7 @@
 
   function getNormalizedBounds (): Bounds {
     const scaleBounds = (coord: Coords): [number, number] => [coord[0] * scale, coord[1] * scale];
-    const cBounds = cloneBounds(bounds).map(bound => scaleBounds(bound));
+    const cBounds = cloneBounds(bounds).map((bound: Coords) => scaleBounds(bound));
 
     for (let b = 0; b < cBounds.length; b++) {
       cBounds[b][0] += scale * minCoords[0];
@@ -77,11 +76,11 @@
 
   onMount(drawBounds);
 
-  $: ((position) => {
+  $: (position => {
     map && position && centerPosition();
   })(playerPosition);
 
-  $: ((scale) => {
+  $: (scale => {
     if (!map || !scale) return;
     offset = PADDING * scale / 2;
 

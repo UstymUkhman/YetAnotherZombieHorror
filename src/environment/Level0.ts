@@ -15,14 +15,14 @@ import Music from '@/managers/Music';
 import { Config } from '@/config';
 
 export default class Level0 extends GameLevel {
-  private music = new Music(Config.Level0.music);
+  private readonly music = new Music(Config.Level0.music);
   private controls?: OrbitControls;
 
   public constructor () {
     super();
 
     if (Config.freeCamera) {
-      import(/* webpackChunkName: "orbit-controls" */ '@controls/OrbitControls').then((Controls) => {
+      import(/* webpackChunkName: "orbit-controls" */ '@controls/OrbitControls').then(Controls => {
         this.controls = new Controls.OrbitControls(this.camera, this.canvas);
 
         this.camera.position.set(0, 10, -50);
@@ -89,20 +89,20 @@ export default class Level0 extends GameLevel {
   }
 
   public static get randomCoord (): Coords {
-    return [0.0, 10.0];
+    return [-39.0, 52.5]; // +/- 0.5 on X & Z:
   }
 
   public static get minCoords (): Coords {
     return [
-      min(Level0.bounds.map((coords: Coords) => coords[0])),
-      min(Level0.bounds.map((coords: Coords) => coords[1]))
+      min(Level0.bounds.map(coords => coords[0])),
+      min(Level0.bounds.map(coords => coords[1]))
     ];
   }
 
   public static get maxCoords (): Coords {
     return [
-      max(Level0.bounds.map((coords: Coords) => coords[0])),
-      max(Level0.bounds.map((coords: Coords) => coords[1]))
+      max(Level0.bounds.map(coords => coords[0])),
+      max(Level0.bounds.map(coords => coords[1]))
     ];
   }
 

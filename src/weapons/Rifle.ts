@@ -42,7 +42,7 @@ export default class Rifle extends Weapon {
   }
 
   /** @Override */
-  public addAmmo (ammo: number): void {
+  public addAmmo (ammo = Config.Rifle.magazine): void {
     if (!ammo) {
       const toLoad = Math.min(this.magazine - this.loadedAmmo, this.magazine);
       this.totalAmmo = Math.max(this.totalAmmo - toLoad, 0);
@@ -69,10 +69,11 @@ export default class Rifle extends Weapon {
 
   public update (player: Vector3): void {
     if (!this.onStage || !this.clone) return;
-
     this.clone.rotation.y -= 0.025;
 
-    if (this.clone.position.distanceTo(player) < 2.5) {
+    const playerDistance = this.clone.position.distanceTo(player);
+
+    if (this.inStock < this.maxStock && playerDistance < 2.5) {
       GameEvents.dispatch('weapon:pick', this.clone);
       this.onStage = false;
     }
