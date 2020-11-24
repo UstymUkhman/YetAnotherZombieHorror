@@ -41,17 +41,6 @@ describe('Level0', () => {
     expect(destroy).toHaveReturnedWith(undefined);
   });
 
-  test('randomCoord', () => {
-    const min = Level0.minCoords;
-    const max = Level0.maxCoords;
-
-    expect(Level0.randomCoord[0]).toBeLessThan(max[0]);
-    expect(Level0.randomCoord[0]).toBeGreaterThan(min[0]);
-
-    expect(Level0.randomCoord[1]).toBeLessThan(max[1]);
-    expect(Level0.randomCoord[1]).toBeGreaterThan(min[1]);
-  });
-
   test('minCoords', () => {
     expect(Level0.minCoords[0]).toStrictEqual(-39.5);
     expect(Level0.minCoords[1]).toStrictEqual(-53);

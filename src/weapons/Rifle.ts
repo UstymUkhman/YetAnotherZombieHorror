@@ -79,11 +79,11 @@ export default class Rifle extends Weapon {
     }
   }
 
-  public spawn (coord: Coords): void {
+  public spawn (coords: Coords): void {
     const worldScale = Config.Rifle.worldScale as Vector3;
     this.clone = this.clone || this.getClone();
 
-    this.clone.position.set(coord[0], 1.75, coord[1]);
+    this.clone.position.set(coords[0], 1.75, coords[1]);
     this.clone.scale.copy(worldScale);
     this.clone.rotation.set(0, 0, 0);
 

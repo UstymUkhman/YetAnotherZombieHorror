@@ -4,7 +4,7 @@ type CharacterSounds = { [sfx in CharacterSound]: string };
 type Object3D = import('@three/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
-import { CharacterSound, Location } from '@/types';
+import { CharacterSound, Location, Coords } from '@/types';
 import { Assets } from '@/managers/AssetsLoader';
 
 import { Clock } from '@three/core/Clock';
@@ -13,6 +13,7 @@ import Physics from '@/managers/Physics';
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
 
+import Worker from '@/managers/worker';
 import Pistol from '@/weapons/Pistol';
 import Input from '@/managers/Input';
 import Rifle from '@/weapons/Rifle';
@@ -29,6 +30,7 @@ export default class GameLoop {
   private enemyAssets?: EnemyAssets;
   private enemies: Array<Enemy> = [];
 
+  private readonly worker = new Worker();
   private readonly loader = new Assets.Loader();
   private readonly input = new Input(this.player);
 
@@ -83,6 +85,14 @@ export default class GameLoop {
     GameEvents.add('remove:object', this.removeGameObject.bind(this));
     GameEvents.add('add:object', this.addGameObject.bind(this));
     GameEvents.add('weapon:pick', this.pickRifle.bind(this));
+
+    this.worker.add('Level:coord', data =>
+      this.rifle.spawn(data as Coords), {
+        minCoords: Level0.minCoords,
+        maxCoords: Level0.maxCoords,
+        bounds: Level0.bounds
+      }
+    );
   }
 
   private removeGameObject (event: GameEvent): void {
@@ -96,6 +106,11 @@ export default class GameLoop {
   private pickRifle (event: GameEvent): void {
     this.player.pickRifle(this.rifle);
     this.removeGameObject(event);
+  }
+
+  private spawnRifle (): void {
+    const player = this.playerLocation.position;
+    this.worker.get('Level:coord', { player });
   }
 
   public update (): void {

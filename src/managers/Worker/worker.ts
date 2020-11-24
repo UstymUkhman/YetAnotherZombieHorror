@@ -1,7 +1,7 @@
-import { LevelParams, getRandomCoord } from './randomCoord';
+import { LevelParams, getRandomCoord } from './randomCoords';
 export const worker: Worker = self as never;
 
-const getEventData = (event: string, params?: unknown): unknown => {
+const getEventData = (event: string, params?: unknown) => {
   switch (event) {
     case 'Level:coord':
       return getRandomCoord(params as LevelParams);

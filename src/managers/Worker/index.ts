@@ -1,8 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./worker.d.ts" />
 
-type EventData = { callback: Callback, params: unknown };
+type EventData = { callback: Callback, params?: EventParams };
 import WebWorker from 'worker-loader!./worker';
+
+type EventParams = Record<string, unknown>;
 type Callback = (data: unknown) => void;
 
 export default class Worker {
@@ -14,8 +16,16 @@ export default class Worker {
     this.worker.onerror = this.onError.bind(this);
   }
 
-  public add (event: string, callback: Callback, params?: unknown): void {
+  public add (event: string, callback: Callback, params?: EventParams): void {
     this.events.set(event, { callback, params });
+  }
+
+  public get (event: string, params?: EventParams): void {
+    const eventParams = this.events.get(event)?.params;
+
+    this.worker.postMessage({ event, params: {
+      ...eventParams, ...params
+    }});
   }
 
   private onMessage (event: MessageEvent): void {
@@ -29,8 +39,7 @@ export default class Worker {
     console.error(error);
   }
 
-  public get (event: string): void {
-    const params = this.events.get(event)?.params;
-    this.worker.postMessage({ event, params });
+  public remove (event: string): void {
+    this.events.delete(event);
   }
 }

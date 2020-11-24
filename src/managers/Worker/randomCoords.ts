@@ -1,24 +1,36 @@
+type Vector3 = import('@three/math/Vector3').Vector3;
 import { Coords, Bounds } from '@/types';
 import { random } from '@/utils/Number';
 
 export type LevelParams = {
   minCoords: Coords,
   maxCoords: Coords,
+  player: Vector3,
   bounds: Bounds
 };
 
 export const getRandomCoord = (params: LevelParams): Coords => {
-  let minRightX = -Infinity, minLeftX = -Infinity, maxRightX = Infinity, maxLeftX = Infinity;
-  let minRightZ = -Infinity, minLeftZ = -Infinity, maxRightZ = Infinity, maxLeftZ = Infinity;
-
   const bounds = params.bounds as unknown as Array<Array<number>>;
-  const minZ = params.minCoords[1], maxZ = params.maxCoords[1];
-
-  const randomZ = random(minZ + 0.5, maxZ - 0.5);
   bounds.push(bounds.shift() as Array<number>);
 
   const rightBounds = bounds.filter(bound => bound[0] < 0);
   const leftBounds = bounds.filter(bound => bound[0] > 0);
+
+  let minRightX = -Infinity, minLeftX = -Infinity,
+      minRightZ = -Infinity, minLeftZ = -Infinity,
+      maxRightX =  Infinity, maxLeftX =  Infinity,
+      maxRightZ =  Infinity, maxLeftZ =  Infinity;
+
+  const minZ = params.minCoords[1] + 0.5,
+        maxZ = params.maxCoords[1] - 0.5;
+
+  let tooCloseX: boolean, tooCloseZ: boolean;
+  let randomX: number, randomZ: number;
+
+  do {
+    randomZ = random(minZ, maxZ);
+    tooCloseZ = Math.abs(randomZ - params.player.z) < 10.0;
+  } while (randomZ < 37.0 && tooCloseZ);
 
   rightBounds.forEach(bound => {
     const z = bound[1];
@@ -48,8 +60,16 @@ export const getRandomCoord = (params: LevelParams): Coords => {
     }
   });
 
-  return [random(
-    Math.max(minRightX, maxRightX) + 0.5,
-    Math.min(minLeftX, maxLeftX) - 0.5
-  ), randomZ];
+  const minX = Math.max(minRightX, maxRightX) + 0.5;
+
+  const maxX = (randomZ < 37.0
+    ? Math.min(minLeftX, maxLeftX)
+    : Math.max(minLeftX, maxLeftX)) - 0.5;
+
+  do {
+    randomX = random(minX, maxX);
+    tooCloseX = Math.abs(randomX - params.player.x) < 10.0;
+  } while (tooCloseX && tooCloseZ);
+
+  return [randomX, randomZ];
 };
