@@ -2,6 +2,9 @@ type Vector3 = import('@three/math/Vector3').Vector3;
 import { Coords, Bounds } from '@/types';
 import { random } from '@/utils/Number';
 
+const MIN_PLAYER_DISTANCE = 10.0;
+const LEVEL0_TOP_COORD = 37.0;
+
 export type LevelParams = {
   minCoords: Coords,
   maxCoords: Coords,
@@ -29,8 +32,8 @@ export const getRandomCoord = (params: LevelParams): Coords => {
 
   do {
     randomZ = random(minZ, maxZ);
-    tooCloseZ = Math.abs(randomZ - params.player.z) < 10.0;
-  } while (randomZ < 37.0 && tooCloseZ);
+    tooCloseZ = Math.abs(randomZ - params.player.z) < MIN_PLAYER_DISTANCE;
+  } while (randomZ < LEVEL0_TOP_COORD && tooCloseZ);
 
   rightBounds.forEach(bound => {
     const z = bound[1];
@@ -61,14 +64,11 @@ export const getRandomCoord = (params: LevelParams): Coords => {
   });
 
   const minX = Math.max(minRightX, maxRightX) + 0.5;
-
-  const maxX = (randomZ < 37.0
-    ? Math.min(minLeftX, maxLeftX)
-    : Math.max(minLeftX, maxLeftX)) - 0.5;
+  const maxX = (randomZ < LEVEL0_TOP_COORD ? Math.min : Math.max)(minLeftX, maxLeftX) - 0.5;
 
   do {
     randomX = random(minX, maxX);
-    tooCloseX = Math.abs(randomX - params.player.x) < 10.0;
+    tooCloseX = Math.abs(randomX - params.player.x) < MIN_PLAYER_DISTANCE;
   } while (tooCloseX && tooCloseZ);
 
   return [randomX, randomZ];

@@ -1,27 +1,33 @@
 <div class="map">
   <div style="transform: scale3d({zoom}, {zoom}, 1) rotate({-playerRotation}deg);">
     <canvas bind:this={map} style="transform: {canvasTransform};" />
+    <Rifle context={context} minCoords={minCoords} scale={scale} />
     <Player rotation={playerRotation} />
   </div>
 </div>
 
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
-
   import { cloneBounds, max } from '@/utils/Array';
+
   import Player from '@components/Player.svelte';
   import type { Coords, Bounds } from '@/types';
+  import Rifle from '@components/Rifle.svelte';
 
   import Level0 from '@/environment/Level0';
-  import { Color } from '@/utils/Color';
   import { onMount } from 'svelte';
+
+  export let context: CanvasRenderingContext2D;
+
+  const minCoords = Level0.minCoords.map(
+    coord => Math.abs(coord) + PADDING
+  );
+
+  const maxCoords = Level0.maxCoords;
+  const bounds = Level0.bounds;
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
-
-  const minCoords = Level0.minCoords.map(coord => Math.abs(coord) + PADDING);
-  const maxCoords = Level0.maxCoords;
-  const bounds = Level0.bounds;
 
   let canvasTransform: string;
   let map: HTMLCanvasElement;
@@ -29,7 +35,6 @@
   export let scale: number;
   export let zoom: number;
 
-  const { BLACK } = Color;
   let offset: number;
   const PADDING = 1;
 
@@ -57,9 +62,9 @@
 
   function drawBounds (): void {
     const nBounds = getNormalizedBounds();
-    const context = map.getContext('2d') as CanvasRenderingContext2D;
+    context = map.getContext('2d')!;
 
-    context.strokeStyle = BLACK.toString();
+    context.strokeStyle = '#000';
     context.lineWidth = 2.0;
     context.beginPath();
 

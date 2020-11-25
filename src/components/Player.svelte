@@ -9,7 +9,7 @@
 
 div {
   clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0% 100%);
-  background-color: $red;
+  background-color: $black;
 
   position: absolute;
   display: block;

@@ -43,21 +43,21 @@ export default class Rifle extends Weapon {
 
   /** @Override */
   public addAmmo (ammo = Config.Rifle.magazine): void {
-    if (!ammo) {
+    if (ammo) this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
+
+    else {
       const toLoad = Math.min(this.magazine - this.loadedAmmo, this.magazine);
       this.totalAmmo = Math.max(this.totalAmmo - toLoad, 0);
 
       setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;
+
+      GameEvents.dispatch('weapon:reload', {
+        loaded: this.loadedAmmo,
+        inStock: this.inStock,
+        ammo: this.totalAmmo
+      });
     }
-
-    else this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
-
-    GameEvents.dispatch('weapon:reload', {
-      loaded: this.loadedAmmo,
-      inStock: this.inStock,
-      ammo: this.totalAmmo
-    });
   }
 
   /** @Override */
@@ -75,6 +75,7 @@ export default class Rifle extends Weapon {
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
       GameEvents.dispatch('weapon:pick', this.clone);
+      GameEvents.dispatch('rifle:pick');
       this.onStage = false;
     }
   }
@@ -88,6 +89,7 @@ export default class Rifle extends Weapon {
     this.clone.rotation.set(0, 0, 0);
 
     GameEvents.dispatch('add:object', this.clone);
+    GameEvents.dispatch('rifle:spawn', coords);
     this.onStage = true;
   }
 
