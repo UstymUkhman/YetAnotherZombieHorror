@@ -1,11 +1,13 @@
 <script lang="typescript">
+  import { getScaledCoords, pointInCircle } from '@components/utils';
   import { GameEvents, GameEvent } from '@/managers/GameEvents';
+  type Vector3 = import('@three/math/Vector3').Vector3;
+
   import type { Coords } from '@/types';
   import { PI } from '@/utils/Number';
   import { onDestroy } from 'svelte';
 
   export let context: CanvasRenderingContext2D;
-  export let minCoords: Coords;
 
   GameEvents.add('rifle:spawn', spawnRifle);
   GameEvents.add('rifle:pick', pickRifle);
@@ -13,22 +15,23 @@
   let lastRifleCoords: Coords = [0.0, 0.0];
   const rifleCoords: Coords = [0.0, 0.0];
 
+  export let minCoords: Coords;
+  export let player: Vector3;
   let visibleRifle = false;
+
   export let scale: number;
+  export let zoom: number;
 
   const RADIUS = 5.0;
+  const MAP_RADIUS = 90.0;
   const CIRC = RADIUS * Math.PI;
   const CIRC2 = CIRC / 2.0;
 
   function setRifleCoords (coords: Coords): void {
-    let xCoord = coords[0] * scale;
-    let yCoord = coords[1] * scale;
+    coords = getScaledCoords(coords, minCoords, scale);
 
-    xCoord += scale * minCoords[0];
-    yCoord += scale * minCoords[1];
-
-    rifleCoords[0] = xCoord;
-    rifleCoords[1] = yCoord;
+    rifleCoords[0] = coords[0];
+    rifleCoords[1] = coords[1];
 
     drawRifle();
   }
@@ -41,17 +44,22 @@
     drawRifle();
   }
 
+  function onBorder (): boolean {
+    const coords = getScaledCoords([player.x, player.z], minCoords, scale);
+    return !pointInCircle(rifleCoords, coords, MAP_RADIUS / zoom);
+  }
+
   function drawRifle (): void {
+    if (!visibleRifle) return;
+
     const x = rifleCoords[0], y = rifleCoords[1];
     context.fillStyle = '#222';
 
-    if (visibleRifle) {
-      context.beginPath();
-      context.arc(x, y, RADIUS, 0.0, PI.m2);
+    context.beginPath();
+    context.arc(x, y, RADIUS, 0.0, PI.m2);
 
-      context.closePath();
-      context.fill();
-    }
+    context.closePath();
+    context.fill();
   }
 
   function pickRifle (): void {

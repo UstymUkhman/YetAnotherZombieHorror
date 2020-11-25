@@ -1,13 +1,21 @@
 <div class="map">
   <div style="transform: scale3d({zoom}, {zoom}, 1) rotate({-playerRotation}deg);">
     <canvas bind:this={map} style="transform: {canvasTransform};" />
-    <Rifle context={context} minCoords={minCoords} scale={scale} />
     <Player rotation={playerRotation} />
+
+    <Rifle
+      player={playerPosition}
+      minCoords={minCoords}
+      context={context}
+      scale={scale}
+      zoom={zoom}
+    />
   </div>
 </div>
 
 <script lang="typescript">
   type Vector3 = import('@three/math/Vector3').Vector3;
+  import { getScaledCoords } from '@components/utils';
   import { cloneBounds, max } from '@/utils/Array';
 
   import Player from '@components/Player.svelte';
@@ -24,11 +32,10 @@
   );
 
   const maxCoords = Level0.maxCoords;
-  const bounds = Level0.bounds;
-
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
+  const bounds = Level0.bounds;
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 
@@ -39,13 +46,7 @@
   const PADDING = 1;
 
   function getNormalizedBounds (): Bounds {
-    const scaleBounds = (coord: Coords): [number, number] => [coord[0] * scale, coord[1] * scale];
-    const cBounds = cloneBounds(bounds).map((bound: Coords) => scaleBounds(bound));
-
-    for (let b = 0; b < cBounds.length; b++) {
-      cBounds[b][0] += scale * minCoords[0];
-      cBounds[b][1] += scale * minCoords[1];
-    }
+    const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
 
     map.height = max(cBounds.map((coords: Coords) => coords[1])) + PADDING * 2;
     map.width = max(cBounds.map((coords: Coords) => coords[0])) + PADDING * 2;

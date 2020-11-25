@@ -1,9 +1,11 @@
 type Vector3 = import('@three/math/Vector3').Vector3;
+
 import { Coords, Bounds } from '@/types';
 import { random } from '@/utils/Number';
 
 const MIN_PLAYER_DISTANCE = 10.0;
 const LEVEL0_TOP_COORD = 37.0;
+const BOUND_OFFSET = 0.5;
 
 export type LevelParams = {
   minCoords: Coords,
@@ -16,16 +18,16 @@ export const getRandomCoord = (params: LevelParams): Coords => {
   const bounds = params.bounds as unknown as Array<Array<number>>;
   bounds.push(bounds.shift() as Array<number>);
 
-  const rightBounds = bounds.filter(bound => bound[0] < 0);
-  const leftBounds = bounds.filter(bound => bound[0] > 0);
+  const rightBounds = bounds.filter(bound => bound[0] < BOUND_OFFSET);
+  const leftBounds = bounds.filter(bound => bound[0] > BOUND_OFFSET);
 
   let minRightX = -Infinity, minLeftX = -Infinity,
       minRightZ = -Infinity, minLeftZ = -Infinity,
       maxRightX =  Infinity, maxLeftX =  Infinity,
       maxRightZ =  Infinity, maxLeftZ =  Infinity;
 
-  const minZ = params.minCoords[1] + 0.5,
-        maxZ = params.maxCoords[1] - 0.5;
+  const minZ = params.minCoords[1] + BOUND_OFFSET,
+        maxZ = params.maxCoords[1] - BOUND_OFFSET;
 
   let tooCloseX: boolean, tooCloseZ: boolean;
   let randomX: number, randomZ: number;
@@ -63,8 +65,11 @@ export const getRandomCoord = (params: LevelParams): Coords => {
     }
   });
 
-  const minX = Math.max(minRightX, maxRightX) + 0.5;
-  const maxX = (randomZ < LEVEL0_TOP_COORD ? Math.min : Math.max)(minLeftX, maxLeftX) - 0.5;
+  const minX = Math.max(minRightX, maxRightX) + BOUND_OFFSET;
+
+  const maxX = (
+    randomZ < LEVEL0_TOP_COORD ? Math.min : Math.max
+  )(minLeftX, maxLeftX) - BOUND_OFFSET;
 
   do {
     randomX = random(minX, maxX);
