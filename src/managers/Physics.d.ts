@@ -1,7 +1,7 @@
 type AmmoQuaternion = import('@three/math/Quaternion').Quaternion;
 type AmmoVector3 = import('@three/math/Vector3').Vector3;
 type Mesh = import('@three/objects/Mesh').Mesh;
-import type { Bounds } from '@/types';
+import type { Bounds } from '@/types.d';
 
 interface AmmoWorld {
   addRigidBody: (body: AmmoBody, group?: number, mask?: number) => void

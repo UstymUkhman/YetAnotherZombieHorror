@@ -11,8 +11,8 @@ import { Vector3 } from '@three/math/Vector3';
 import { Mesh } from '@three/objects/Mesh';
 import { Euler } from '@three/math/Euler';
 
+import type { Coords } from '@/types.d';
 import { PI } from '@/utils/Number';
-import { Coords } from '@/types';
 import Ammo from 'ammo.js';
 
 const ZERO_MASS = 0.0;

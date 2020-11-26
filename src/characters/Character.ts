@@ -1,4 +1,4 @@
-import { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types';
+import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types.d';
 type Actions = { [name: string]: import('@three/animation/AnimationAction').AnimationAction };
 type Object3D = import('@three/core/Object3D').Object3D;
 

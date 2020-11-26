@@ -1,4 +1,4 @@
-import type { Bounds } from '@/types';
+import type { Bounds } from '@/types.d';
 
 export const cloneBounds = (bounds: Bounds): Bounds => JSON.parse(JSON.stringify(bounds));
 

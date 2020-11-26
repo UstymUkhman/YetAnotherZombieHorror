@@ -1,3 +1,5 @@
+import type { CharacterMove } from '@/types.d';
+
 import Level0Data from '@/config/level0.json';
 import CameraData from '@/config/camera.json';
 
@@ -12,7 +14,6 @@ import { Vector3 } from '@three/math/Vector3';
 
 import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from '@three/math/Euler';
-import { CharacterMove } from '@/types';
 
 export namespace Config {
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
@@ -29,10 +30,9 @@ export namespace Config {
 
   const playerMoves = PlayerData.animations as unknown as CharacterAnimations;
   const enemyMoves = EnemyData.animations as unknown as CharacterAnimations;
-
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
-  type CharacterAnimations = Record<string, Readonly<Array<number>>>;
 
+  type CharacterAnimations = Record<string, Readonly<Array<number>>>;
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
 

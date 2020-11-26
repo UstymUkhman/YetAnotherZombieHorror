@@ -1,12 +1,12 @@
 type OrbitControls = import('@controls/OrbitControls').OrbitControls;
 type Object3D = import('@three/core/Object3D').Object3D;
 type Vector3 = import('@three/math/Vector3').Vector3;
+import type { Coords, Bounds } from '@/types.d';
 
 import { AmbientLight } from '@three/lights/AmbientLight';
 import { FogExp2 } from '@three/scenes/FogExp2';
 import GameLevel from '@/environment/GameLevel';
 
-import { Coords, Bounds } from '@/types';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/Physics';
 

@@ -2,6 +2,7 @@ type AnimationAction = import('@three/animation/AnimationAction').AnimationActio
 type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Object3D = import('@three/core/Object3D').Object3D;
+import type { EnemyAnimations } from '@/types.d';
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
@@ -11,8 +12,6 @@ import Character from '@/characters/Character';
 import { LoopOnce } from '@three/constants';
 import { Mesh } from '@three/objects/Mesh';
 import { HitBox } from '@/utils/Material';
-
-import { EnemyAnimations } from '@/types';
 import { Config } from '@/config';
 
 export default class Enemy extends Character {

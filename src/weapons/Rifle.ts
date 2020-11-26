@@ -1,12 +1,11 @@
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 type Vector3 = import('@three/math/Vector3').Vector3;
 type Euler = import('@three/math/Euler').Euler;
+import type { Coords } from '@/types.d';
 
 import { GameEvents } from '@/managers/GameEvents';
 import Weapon from '@/weapons/Weapon';
-
 import { Config } from '@/config';
-import { Coords } from '@/types';
 
 export default class Rifle extends Weapon {
   private readonly position = Config.Rifle.position as Vector3;
@@ -14,7 +13,7 @@ export default class Rifle extends Weapon {
   private readonly maxStock = Config.Rifle.maxStock;
 
   private reloading = false;
-  private onStage = false;
+  private spawned = false;
   private clone?: GLTF;
 
   public constructor () {
@@ -68,7 +67,7 @@ export default class Rifle extends Weapon {
   }
 
   public update (player: Vector3): void {
-    if (!this.onStage || !this.clone) return;
+    if (!this.spawned || !this.clone) return;
     this.clone.rotation.y -= 0.025;
 
     const playerDistance = this.clone.position.distanceTo(player);
@@ -76,7 +75,7 @@ export default class Rifle extends Weapon {
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
       GameEvents.dispatch('weapon:pick', this.clone);
       GameEvents.dispatch('rifle:pick');
-      this.onStage = false;
+      this.spawned = false;
     }
   }
 
@@ -90,11 +89,16 @@ export default class Rifle extends Weapon {
 
     GameEvents.dispatch('add:object', this.clone);
     GameEvents.dispatch('rifle:spawn', coords);
-    this.onStage = true;
+
+    this.spawned = true;
   }
 
   private reset (): void {
     this.model.position.copy(this.position);
     this.model.rotation.copy(this.rotation);
+  }
+
+  public get onStage (): boolean {
+    return this.spawned;
   }
 }

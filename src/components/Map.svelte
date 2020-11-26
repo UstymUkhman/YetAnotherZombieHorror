@@ -3,27 +3,28 @@
     <canvas bind:this={map} style="transform: {canvasTransform};" />
     <Player rotation={playerRotation} />
 
-    <Rifle
-      player={playerPosition}
-      minCoords={minCoords}
-      context={context}
-      scale={scale}
-      zoom={zoom}
-    />
+    {#if renderRifle}
+      <Rifle
+        visible={visibleRifle}
+        coords={rifleCoords}
+        context={context}
+      />
+    {/if}
   </div>
 </div>
 
 <script lang="typescript">
+  import { getScaledCoords, pointInCircle } from '@components/utils';
+  import { GameEvents, GameEvent } from '@/managers/GameEvents';
   type Vector3 = import('@three/math/Vector3').Vector3;
-  import { getScaledCoords } from '@components/utils';
+
   import { cloneBounds, max } from '@/utils/Array';
-
+  import type { Coords, Bounds } from '@/types.d';
   import Player from '@components/Player.svelte';
-  import type { Coords, Bounds } from '@/types';
-  import Rifle from '@components/Rifle.svelte';
 
+  import Rifle from '@components/Rifle.svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Level0 from '@/environment/Level0';
-  import { onMount } from 'svelte';
 
   export let context: CanvasRenderingContext2D;
 
@@ -39,11 +40,23 @@
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 
+  let visibleRifle: boolean;
+  let renderRifle: boolean;
+  let rifleCoords: Coords;
+
   export let scale: number;
   export let zoom: number;
 
+  const MAP_RADIUS = 90;
   let offset: number;
   const PADDING = 1;
+
+  function spawnRifle (event: GameEvent): void {
+    rifleCoords = getScaledCoords(event.data as Coords, minCoords, scale);
+
+    visibleRifle = true;
+    renderRifle = true;
+  }
 
   function getNormalizedBounds (): Bounds {
     const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
@@ -55,8 +68,15 @@
   }
 
   function centerPosition (): void {
-    const x = (playerPosition.x - maxCoords[0]) * scale - offset;
-    const y = (playerPosition.z - maxCoords[1]) * scale - offset;
+    const px = playerPosition.x, pz = playerPosition.z;
+
+    const x = (px - maxCoords[0]) * scale - offset;
+    const y = (pz - maxCoords[1]) * scale - offset;
+
+    if (visibleRifle) {
+      const scaledCoords = getScaledCoords([px, pz], minCoords, scale);
+      console.log('Rifle on map: ', pointInCircle(rifleCoords, scaledCoords, MAP_RADIUS / zoom));
+    }
 
     canvasTransform = `translate(${x}px, ${y}px) scale3d(-1, -1, 1)`;
   }
@@ -80,7 +100,20 @@
     context.stroke();
   }
 
+  function pickRifle (): void {
+    setTimeout(() => renderRifle = false);
+    visibleRifle = false;
+  }
+
+  GameEvents.add('rifle:spawn', spawnRifle);
+  GameEvents.add('rifle:pick', pickRifle);
+
   onMount(drawBounds);
+
+  onDestroy(() => {
+    GameEvents.remove('rifle:spawn');
+    GameEvents.remove('rifle:pick');
+  });
 
   $: (position => {
     map && position && centerPosition();

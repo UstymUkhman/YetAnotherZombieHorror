@@ -1,4 +1,4 @@
-import { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types';
+import type { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types.d';
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
 import { PositionalAudio } from '@three/audio/PositionalAudio';

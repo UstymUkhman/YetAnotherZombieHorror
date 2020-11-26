@@ -1,10 +1,10 @@
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
+import type { CharacterSound, Location, Coords } from '@/types.d';
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type CharacterSounds = { [sfx in CharacterSound]: string };
 type Object3D = import('@three/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
-import { CharacterSound, Location, Coords } from '@/types';
 import { Assets } from '@/managers/AssetsLoader';
 
 import { Clock } from '@three/core/Clock';
@@ -109,6 +109,7 @@ export default class GameLoop {
   }
 
   private spawnRifle (): void {
+    if (this.rifle.onStage) return;
     const player = this.playerLocation.position;
     this.worker.get('Level:coord', { player });
   }

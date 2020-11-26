@@ -1,6 +1,5 @@
 type Vector3 = import('@three/math/Vector3').Vector3;
-
-import { Coords, Bounds } from '@/types';
+import type { Coords, Bounds } from '@/types.d';
 import { random } from '@/utils/Number';
 
 const MIN_PLAYER_DISTANCE = 10.0;
@@ -19,7 +18,7 @@ export const getRandomCoord = (params: LevelParams): Coords => {
   bounds.push(bounds.shift() as Array<number>);
 
   const rightBounds = bounds.filter(bound => bound[0] < BOUND_OFFSET);
-  const leftBounds = bounds.filter(bound => bound[0] > BOUND_OFFSET);
+  const leftBounds = bounds.filter(bound => bound[0] >= BOUND_OFFSET);
 
   let minRightX = -Infinity, minLeftX = -Infinity,
       minRightZ = -Infinity, minLeftZ = -Infinity,

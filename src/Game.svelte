@@ -23,29 +23,29 @@
 <script lang="typescript">
   import { GameEvents } from '@/managers/GameEvents';
   import Close from '@components/CloseButton.svelte';
+
   import Loader from '@components/Loader.svelte';
   import Pause from '@components/Pause.svelte';
   import { onMount, onDestroy } from 'svelte';
-
   import GameLoop from '@/managers/GameLoop';
   import { Elastic } from '@/utils/Elastic';
+
+  import type { Location } from '@/types.d';
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
-
-  import type { Location } from '@/types';
   import { Config } from '@/config';
+
+  const zoom = new Elastic.Number(0);
+  const DIGITS = Math.pow(10, 5);
+  const game = new GameLoop();
+  let location: Location;
 
   let zoomScale: number;
   let main: HTMLElement;
   let running = false;
-
   let loading = true;
   let scale: number;
   let raf: number;
-
-  let location: Location;
-  const game = new GameLoop();
-  const zoom = new Elastic.Number(0);
 
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
@@ -60,7 +60,10 @@
   function updateGameLoop (): void {
     raf = requestAnimationFrame(updateGameLoop);
     location = game.playerLocation;
-    zoomScale = 1 - zoom.value;
+
+    zoomScale = Math.round(
+      (1 - zoom.value) * DIGITS + Number.EPSILON
+    ) / DIGITS;
 
     zoom.update();
     game.update();

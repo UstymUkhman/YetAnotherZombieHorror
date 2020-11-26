@@ -1,5 +1,5 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-import { Location, PlayerAnimations, CharacterAnimation } from '@/types';
+import type { Location, PlayerAnimations, CharacterAnimation } from '@/types.d';
 type Movement = { directions: Directions, running: boolean };
 type Object3D = import('@three/core/Object3D').Object3D;
 

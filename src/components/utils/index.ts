@@ -1,4 +1,4 @@
-import type { Coords } from '@/types';
+import type { Coords } from '@/types.d';
 
 export function getScaledCoords (coords: Coords, minCoords: Coords, scale: number): Coords {
   return [
