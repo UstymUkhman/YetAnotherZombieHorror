@@ -161,7 +161,7 @@ export default class Enemy extends Character {
       this.hitBoxes.splice(box);
     }
 
-    this.dispose();
+    super.dispose();
   }
 
   public get hitBox (): Array<Object3D> {

@@ -6,7 +6,7 @@
   {#if loading}
     <Loader on:loaded={() => loading = false} />
   {:else}
-    {#if game.pause}
+    {#if game.pause} <!-- || !lastFrameDelta -->
       <Pause on:start={() => togglePause(false)} />
     {:else}
       <Aim running={running} />
@@ -36,34 +36,43 @@
   import { Config } from '@/config';
 
   const zoom = new Elastic.Number(0);
-  const DIGITS = Math.pow(10, 5);
   const game = new GameLoop();
   let location: Location;
+  let main: HTMLElement;
 
   let zoomScale: number;
-  let main: HTMLElement;
   let running = false;
   let loading = true;
   let scale: number;
   let raf: number;
 
+  // let lastFrameDelta = 0;
+  // const FPS = 30, INT = 1e3 / 60;
+  // const FMT = INT * (60 / FPS) - INT / 2;
+
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
       paused
         ? cancelAnimationFrame(raf)
-        : updateGameLoop();
+        : update(Date.now());
 
       game.pause = paused;
     }
   }
 
-  function updateGameLoop (): void {
-    raf = requestAnimationFrame(updateGameLoop);
+  function update (delta: number): void {
+    // if (delta - lastFrameDelta < FMT) {
+    //   requestAnimationFrame(update);
+    //   return;
+    // }
+
+    raf = requestAnimationFrame(update);
     location = game.playerLocation;
+    // lastFrameDelta = delta;
 
     zoomScale = Math.round(
-      (1 - zoom.value) * DIGITS + Number.EPSILON
-    ) / DIGITS;
+      (1 - zoom.value) * 1e5 + Number.EPSILON
+    ) / 1e5;
 
     zoom.update();
     game.update();
@@ -89,6 +98,7 @@
   onDestroy(() => {
     GameEvents.remove('player:run');
     GameEvents.remove('pause');
+    cancelAnimationFrame(raf);
 
     togglePause(true);
     game.destroy();

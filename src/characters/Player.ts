@@ -342,7 +342,7 @@ export default class Player extends Character {
     delete this.rifle;
     delete this.hand;
 
-    this.dispose();
+    super.dispose();
   }
 
   public get location (): Location {

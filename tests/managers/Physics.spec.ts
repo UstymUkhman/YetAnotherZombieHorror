@@ -1,6 +1,6 @@
 import '../globals';
-import { Bounds } from '@/types';
 import { Config } from '@/config';
+import { Bounds } from '@/types.d';
 
 import Physics from '@/managers/Physics';
 import Level0 from '@/environment/Level0';

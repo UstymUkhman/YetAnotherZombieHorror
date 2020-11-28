@@ -1,6 +1,6 @@
 import { cloneBounds, min, max } from '@/utils/Array';
 import Level0 from '@/config/level0.json';
-import { Bounds } from '@/types';
+import { Bounds } from '@/types.d';
 
 describe('Array', () => {
   test('cloneBounds', () => {

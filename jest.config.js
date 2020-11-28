@@ -95,9 +95,10 @@ module.exports = {
     '^@shaders/(.*)': '<rootDir>/node_modules/three/examples/jsm/shaders/$1',
     '^@loaders/(.*)': '<rootDir>/node_modules/three/examples/jsm/loaders/$1',
     '^@utils/(.*)': '<rootDir>/node_modules/three/examples/jsm/utils/$1',
+    '^worker-loader!./worker': '<rootDir>/tests/__mocks__/worker.ts',
     '^@three/(.*)': '<rootDir>/node_modules/three/src/$1',
-    '@components/(.*)': '<rootDir>/src/components/$1',
-    '@/(.*)': '<rootDir>/src/$1'
+    '^@components/(.*)': '<rootDir>/src/components/$1',
+    '^@/(.*)': '<rootDir>/src/$1'
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

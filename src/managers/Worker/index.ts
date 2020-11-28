@@ -30,7 +30,7 @@ export default class Worker {
 
   private onMessage (event: MessageEvent): void {
     const { name, response } = event.data;
-    const callback = this.events.get(name)?.callback;
+    const callback = this.events?.get(name)?.callback;
 
     callback && callback(response);
   }

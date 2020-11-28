@@ -11,7 +11,7 @@ const getEventData = (event: string, params?: unknown) => {
   }
 };
 
-worker.onmessage = (message => {
+worker.onmessage = message => {
   const { event, params } = message.data;
   const data = getEventData(event, params);
 
@@ -19,8 +19,8 @@ worker.onmessage = (message => {
     response: data,
     name: event
   });
-});
+};
 
-worker.onerror = (error => {
+worker.onerror = error => {
   console.error(error);
-});
+};
