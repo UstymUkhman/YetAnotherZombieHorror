@@ -49,7 +49,7 @@ module.exports = {
           loader: MiniCssExtractPlugin.loader,
           options: { publicPath: '../' }
         }, {
-          options: { sourceMap: !build },
+          options: { sourceMap: false },
           loader: 'css-loader'
         }
       ]

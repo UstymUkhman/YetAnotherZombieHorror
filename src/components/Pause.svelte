@@ -12,7 +12,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 div {
   background-color: $black;

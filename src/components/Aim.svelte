@@ -26,7 +26,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 div.container {
   position: absolute;

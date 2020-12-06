@@ -5,7 +5,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 button {
   transition: border-color 0.5s, color 0.5s;

@@ -12,8 +12,8 @@ module.exports = {
     typescript: { tsconfigFile: './tsconfig.json' },
 
     scss: { importer: [url => {
-      return url.indexOf('@scss') ? url : {
-        file: url.replace('@scss', path.resolve('./src/components/scss'))
+      return url.indexOf('@') ? url : {
+        file: url.replace('@', path.resolve('./src/components/utils'))
       };
     }]}
   })

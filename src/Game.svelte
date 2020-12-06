@@ -106,8 +106,7 @@
 </script>
 
 <style lang="scss" global>
-@import '@scss/variables';
-@import '@scss/fonts';
+@import '@/variables';
 
 html,
 body {

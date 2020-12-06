@@ -56,7 +56,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 div.screen {
   background-color: $black;

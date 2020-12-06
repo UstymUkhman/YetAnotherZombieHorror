@@ -26,13 +26,13 @@
   import { onMount, onDestroy } from 'svelte';
   import Level0 from '@/environment/Level0';
 
-  export let context: CanvasRenderingContext2D;
-
   const minCoords = Level0.minCoords.map(
     coord => Math.abs(coord) + PADDING
-  );
+  ) as unknown as Coords;
 
+  let context: CanvasRenderingContext2D;
   const maxCoords = Level0.maxCoords;
+
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
@@ -129,7 +129,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 div.map {
   background-color: rgba($white, 0.25);

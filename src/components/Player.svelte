@@ -5,7 +5,7 @@
 </script>
 
 <style lang="scss">
-@import '@scss/variables';
+@import '@/variables';
 
 div {
   clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0% 100%);
