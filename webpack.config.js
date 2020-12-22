@@ -16,8 +16,9 @@ const HOST = process.env.HOST;
 
 module.exports = {
   devtool: build ? false : 'cheap-module-eval-source-map',
-  mode: build ? 'production' : 'development',
   entry: path.resolve('./src/main.ts'),
+  name: 'Another Dumb Zombie Game',
+  mode: process.env.NODE_ENV,
 
   module: {
     rules: [{
