@@ -101,8 +101,12 @@
   }
 
   function pickRifle (): void {
-    setTimeout(() => renderRifle = false);
     visibleRifle = false;
+
+    setTimeout(() => {
+      renderRifle = false;
+      drawBounds();
+    });
   }
 
   GameEvents.add('rifle:spawn', spawnRifle);

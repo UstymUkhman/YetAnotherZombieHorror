@@ -1,4 +1,4 @@
-import { smoothstep, near, mix, map, randomInt, clamp, random, lerp, PI } from '@/utils/Number';
+import { smoothstep, near, mix, map, randomInt, clamp, random, easeOutSine, lerp, PI } from '@/utils/Number';
 import { Vector3 } from '@three/math/Vector3';
 
 describe('Number', () => {
@@ -47,6 +47,14 @@ describe('Number', () => {
     expect(rand).toBeLessThan(2);
     expect(rand).toBeGreaterThan(1);
     expect(random(0, 0.5)).toBeLessThan(0.5);
+  });
+
+  test('easeOutSine', () => {
+    expect(easeOutSine(0)).toStrictEqual(0);
+    expect(easeOutSine(0.25)).toBeCloseTo(0.38);
+    expect(easeOutSine(0.5)).toBeCloseTo(0.707);
+    expect(easeOutSine(0.75)).toBeCloseTo(0.92);
+    expect(easeOutSine(1)).toStrictEqual(1);
   });
 
   test('lerp', () => {
