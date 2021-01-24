@@ -1,7 +1,11 @@
-type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
 import type { Location, PlayerAnimations, CharacterAnimation } from '@/types.d';
+import type { AnimationAction } from '@three/animation/AnimationAction';
+
 type Movement = { directions: Directions, running: boolean };
-type Object3D = import('@three/core/Object3D').Object3D;
+import type { Object3D } from '@three/core/Object3D';
+
+import type Pistol from '@/weapons/Pistol';
+import type Rifle from '@/weapons/Rifle';
 
 import { Direction, Directions } from '@/managers/Input';
 import { GameEvents } from '@/managers/GameEvents';
@@ -11,9 +15,6 @@ import { Camera } from '@/managers/GameCamera';
 import Character from '@/characters/Character';
 import { Vector3 } from '@three/math/Vector3';
 import { LoopOnce } from '@three/constants';
-import type Pistol from '@/weapons/Pistol';
-
-import type Rifle from '@/weapons/Rifle';
 import { Config } from '@/config';
 
 const AXIS_X = new Vector3(1, 0, 0);

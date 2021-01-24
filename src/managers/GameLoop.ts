@@ -2,7 +2,7 @@ type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 import type { CharacterSound, Location, Coords } from '@/types.d';
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type CharacterSounds = { [sfx in CharacterSound]: string };
-import type { Object3D } from '@three/core/Object3D';
+type Object3D = import('@three/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
@@ -49,6 +49,8 @@ export default class GameLoop {
         document.body.appendChild(this.stats.domElement);
       });
     }
+
+    setTimeout(() => this.spawnRifle(), 5000);
   }
 
   private async loadCharacters (): Promise<EnemyAssets> {
@@ -108,11 +110,11 @@ export default class GameLoop {
     this.removeGameObject(event);
   }
 
-  /* private spawnRifle (): void {
+  private spawnRifle (): void {
     if (this.rifle.onStage) return;
     const player = this.playerLocation.position;
     this.worker.get('Level:coord', { player });
-  } */
+  }
 
   public update (): void {
     this.stats?.begin();

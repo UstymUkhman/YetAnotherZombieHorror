@@ -1,6 +1,3 @@
-import type { AnimationClip } from '@three/animation/AnimationClip';
-import type { Group } from '@three/objects/Group';
-
 import { CubeTextureLoader } from '@three/loaders/CubeTextureLoader';
 import { LoadingManager } from '@three/loaders/LoadingManager';
 
@@ -14,16 +11,16 @@ import { GLTFLoader } from '@loaders/GLTFLoader';
 import { RGBFormat } from '@three/constants';
 
 export namespace Assets {
+  export type Animations = Array<import('@three/animation/AnimationClip').AnimationClip>;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
-  export type Texture = import ('@three/textures/Texture').Texture;
+
   export type GLTFModel = { scene: GLTF, animations?: Animations };
+  export type Texture = import ('@three/textures/Texture').Texture;
+  export type GLTF = import('@three/objects/Group').Group;
 
   type ProgressEventTarget = EventTarget & { responseURL: string };
   type Assets = Texture | CubeTexture | GLTFModel | AudioBuffer;
-
-  export type Animations = Array<AnimationClip>;
   type Reject = (error: ErrorEvent) => void;
-  export type GLTF = Group;
 
   export interface Callbacks {
     onProgress: (event: ProgressEvent<EventTarget>) => void;
