@@ -1,7 +1,6 @@
 type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
-type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
-type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-type Object3D = import('@three/core/Object3D').Object3D;
+import type { Assets } from '@/managers/AssetsLoader';
+import type { Object3D } from '@three/core/Object3D';
 import type { EnemyAnimations } from '@/types.d';
 
 import { BoxGeometry } from '@three/geometries/BoxGeometry';
@@ -19,16 +18,16 @@ export default class Enemy extends Character {
   private currentAnimation!: AnimationAction;
 
   private hitBoxes: Array<Object3D> = [];
-  private character!: GLTF;
+  private character!: Assets.GLTF;
   private head?: Object3D;
   private id: number;
 
-  public constructor (id = 0, model?: GLTFModel) {
+  public constructor (id = 0, model?: Assets.GLTFModel) {
     super(Config.Enemy);
     this.id = id;
 
     if (model !== undefined) {
-      this.character = SkeletonUtils.clone(model.scene) as GLTF;
+      this.character = SkeletonUtils.clone(model.scene) as Assets.GLTF;
       this.setCharacterMaterial(this.character, 0);
       this.createAnimations(model);
       this.setDefaultState();

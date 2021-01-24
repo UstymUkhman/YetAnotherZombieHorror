@@ -1,6 +1,7 @@
 import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types.d';
-type Actions = { [name: string]: import('@three/animation/AnimationAction').AnimationAction };
-type Object3D = import('@three/core/Object3D').Object3D;
+import type { AnimationAction } from '@three/animation/AnimationAction';
+import type { Object3D } from '@three/core/Object3D';
+type Actions = { [name: string]: AnimationAction };
 
 import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
 import { AnimationMixer } from '@three/animation/AnimationMixer';

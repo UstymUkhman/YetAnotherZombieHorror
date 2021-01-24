@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "noUnusedParameters": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
+    "noUnusedLocals": true,
     "importHelpers": true,
     "noImplicitAny": true,
 

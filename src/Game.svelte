@@ -114,20 +114,33 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: none;
+  -webkit-touch-callout: none;
+
+  font-family: 'DrawingBlood', sans-serif;
   text-rendering: optimizeLegibility;
-
   font-variant-ligatures: none;
-  text-size-adjust: 100%;
-  font-weight: normal;
-  font-kerning: none;
-  font-style: normal;
-
+  backface-visibility: hidden;
   background-color: $black;
+  text-size-adjust: 100%;
+
   letter-spacing: normal;
   line-height: normal;
   user-select: none;
+  appearance: none;
   overflow: hidden;
+
+  font-weight: normal;
+  font-kerning: none;
+  font-style: normal;
+  font-size: 1rem;
   color: $red;
+
+  max-height: 100%;
+  min-height: 100%;
+
+  max-width: 100%;
+  min-width: 100%;
 
   height: 100%;
   width: 100%;

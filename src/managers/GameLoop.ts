@@ -2,7 +2,7 @@ type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 import type { CharacterSound, Location, Coords } from '@/types.d';
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type CharacterSounds = { [sfx in CharacterSound]: string };
-type Object3D = import('@three/core/Object3D').Object3D;
+import type { Object3D } from '@three/core/Object3D';
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
@@ -27,7 +27,7 @@ export default class GameLoop {
   private pistol = new Pistol();
   private player = new Player();
 
-  private enemyAssets?: EnemyAssets;
+  // private enemyAssets?: EnemyAssets;
   private enemies: Array<Enemy> = [];
 
   private readonly worker = new Worker();
@@ -40,7 +40,7 @@ export default class GameLoop {
   public constructor () {
     this.addEventListeners();
     this.level.createColliders();
-    this.loadCharacters().then(assets => this.enemyAssets = assets);
+    this.loadCharacters(); // .then(assets => this.enemyAssets = assets);
 
     if (Config.DEBUG) {
       import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then(Stats => {
@@ -108,11 +108,11 @@ export default class GameLoop {
     this.removeGameObject(event);
   }
 
-  private spawnRifle (): void {
+  /* private spawnRifle (): void {
     if (this.rifle.onStage) return;
     const player = this.playerLocation.position;
     this.worker.get('Level:coord', { player });
-  }
+  } */
 
   public update (): void {
     this.stats?.begin();

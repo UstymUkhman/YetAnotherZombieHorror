@@ -1,7 +1,7 @@
 import type { AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from '@/managers/Physics.d';
-type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
-type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
-type Quaternion = import('@three/math/Quaternion').Quaternion;
+import type { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
+import type CapsuleGeometry from '@/utils/CapsuleGeometry';
+import type { Quaternion } from '@three/math/Quaternion';
 
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from '@three/geometries/BoxGeometry';

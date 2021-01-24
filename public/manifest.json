@@ -2,38 +2,51 @@
   "name": "Another Dumb Zombie Game",
   "short_name": "Another Dumb Zombie Game",
   "orientation": "landscape",
-  "display": "standalone",
-  "start_url": "/",
+  "display": "fullscreen",
+  "start_url": "./",
+  "scope": "./",
   "icons": [{
     "src": ".\/favicon\/android-icon-36x36.png",
-    "sizes": "36x36",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "36x36",
     "density": "0.75"
   }, {
     "src": ".\/favicon\/android-icon-48x48.png",
-    "sizes": "48x48",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "48x48",
     "density": "1.0"
   }, {
     "src": ".\/favicon\/android-icon-72x72.png",
-    "sizes": "72x72",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "72x72",
     "density": "1.5"
   }, {
     "src": ".\/favicon\/android-icon-96x96.png",
-    "sizes": "96x96",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "96x96",
     "density": "2.0"
   }, {
     "src": ".\/favicon\/android-icon-144x144.png",
-    "sizes": "144x144",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "144x144",
     "density": "3.0"
   }, {
     "src": ".\/favicon\/android-icon-192x192.png",
-    "sizes": "192x192",
+    "purpose": "any maskable",
     "type": "image\/png",
+    "sizes": "192x192",
     "density": "4.0"
+  }, {
+    "src": ".\/favicon\/favicon-512x512.png",
+    "purpose": "any maskable",
+    "type": "image\/png",
+    "sizes": "512x512",
+    "density": "5.0"
   }],
   "prefer_related_applications": false,
   "background_color": "#000000",
