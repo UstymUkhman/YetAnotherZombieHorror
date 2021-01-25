@@ -6,21 +6,31 @@
   {#if loading}
     <Loader on:loaded={() => loading = false} />
   {:else}
-    {#if game.pause} <!-- || !lastFrameDelta -->
+    {#if game.pause || !lastFrameDelta}
       <Pause on:start={() => togglePause(false)} />
     {:else}
       <Aim running={running} />
 
       <Map
-        playerRotation={location.rotation}
-        playerPosition={location.position}
+        playerRotation={player.rotation}
+        playerPosition={player.position}
+        radius={mapRadius / zoomScale}
         scale={scale} zoom={zoomScale}
+        on:rifle={updateRifleAngle}
       />
+
+      {#if visibleRifle}
+        <BorderRifle
+          playerRotation={player.rotation}
+          angle={rifleAngle}
+        />
+      {/if}
     {/if}
   {/if}
 </main>
 
 <script lang="typescript">
+  import BorderRifle from '@components/BorderRifle.svelte';
   import { GameEvents } from '@/managers/GameEvents';
   import Close from '@components/CloseButton.svelte';
 
@@ -37,38 +47,43 @@
 
   const zoom = new Elastic.Number(0);
   const game = new GameLoop();
-  let location: Location;
+
+  let visibleRifle = false;
+  let rifleAngle: number;
   let main: HTMLElement;
+  let player: Location;
 
   let zoomScale: number;
+  let mapRadius: number;
+
   let running = false;
   let loading = true;
   let scale: number;
   let raf: number;
 
-  // let lastFrameDelta = 0;
-  // const FPS = 30, INT = 1e3 / 60;
-  // const FMT = INT * (60 / FPS) - INT / 2;
+  let lastFrameDelta = 0;
+  const FPS = 60, INT = 1e3 / 60;
+  const FMT = INT * (60 / FPS) - INT / 2;
 
   function togglePause (paused: boolean): void {
     if (game.pause !== paused) {
       paused
         ? cancelAnimationFrame(raf)
-        : update(Date.now());
+        : requestAnimationFrame(update);
 
       game.pause = paused;
     }
   }
 
   function update (delta: number): void {
-    // if (delta - lastFrameDelta < FMT) {
-    //   requestAnimationFrame(update);
-    //   return;
-    // }
+    if (delta - lastFrameDelta < FMT) {
+      raf = requestAnimationFrame(update);
+      return;
+    }
 
     raf = requestAnimationFrame(update);
-    location = game.playerLocation;
-    // lastFrameDelta = delta;
+    player = game.playerLocation;
+    lastFrameDelta = delta;
 
     zoomScale = Math.round(
       (1 - zoom.value) * 1e5 + Number.EPSILON
@@ -78,7 +93,13 @@
     game.update();
   }
 
+  function updateRifleAngle (event: CustomEvent): void {
+    visibleRifle = event.detail.visible;
+    rifleAngle = event.detail.angle;
+  }
+
   function updateScale (): void {
+    mapRadius = window.innerWidth / 17.25;
     scale = window.innerWidth / 175;
   }
 

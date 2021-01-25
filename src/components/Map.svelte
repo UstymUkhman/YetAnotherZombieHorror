@@ -4,7 +4,7 @@
     <Player rotation={playerRotation} />
 
     {#if renderRifle}
-      <Rifle
+      <MapRifle
         visible={visibleRifle}
         coords={rifleCoords}
         context={context}
@@ -14,17 +14,20 @@
 </div>
 
 <script lang="typescript">
-  import { getScaledCoords, pointInCircle } from '@components/utils';
+  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
   import { GameEvents, GameEvent } from '@/managers/GameEvents';
   type Vector3 = import('@three/math/Vector3').Vector3;
+  import MapRifle from '@components/MapRifle.svelte';
 
   import { cloneBounds, max } from '@/utils/Array';
   import type { Coords, Bounds } from '@/types.d';
+  import { createEventDispatcher } from 'svelte';
   import Player from '@components/Player.svelte';
 
-  import Rifle from '@components/Rifle.svelte';
   import { onMount, onDestroy } from 'svelte';
   import Level0 from '@/environment/Level0';
+
+  const dispatch = createEventDispatcher();
 
   const minCoords = Level0.minCoords.map(
     coord => Math.abs(coord) + PADDING
@@ -44,10 +47,10 @@
   let renderRifle: boolean;
   let rifleCoords: Coords;
 
+  export let radius: number;
   export let scale: number;
   export let zoom: number;
 
-  const MAP_RADIUS = 90;
   let offset: number;
   const PADDING = 1;
 
@@ -75,7 +78,11 @@
 
     if (visibleRifle) {
       const scaledCoords = getScaledCoords([px, pz], minCoords, scale);
-      console.log('Rifle on map: ', pointInCircle(rifleCoords, scaledCoords, MAP_RADIUS / zoom));
+
+      dispatch('rifle', {
+        visible: !pointInCircle(rifleCoords, scaledCoords, radius),
+        angle: getAngleToRifle(scaledCoords, rifleCoords)
+      });
     }
 
     canvasTransform = `translate(${x}px, ${y}px) scale3d(-1, -1, 1)`;

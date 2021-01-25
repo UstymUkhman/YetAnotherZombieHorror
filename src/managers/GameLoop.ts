@@ -49,8 +49,6 @@ export default class GameLoop {
         document.body.appendChild(this.stats.domElement);
       });
     }
-
-    setTimeout(() => this.spawnRifle(), 5000);
   }
 
   private async loadCharacters (): Promise<EnemyAssets> {
@@ -110,11 +108,11 @@ export default class GameLoop {
     this.removeGameObject(event);
   }
 
-  private spawnRifle (): void {
+  /* private spawnRifle (): void {
     if (this.rifle.onStage) return;
     const player = this.playerLocation.position;
     this.worker.get('Level:coord', { player });
-  }
+  } */
 
   public update (): void {
     this.stats?.begin();

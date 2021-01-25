@@ -2,6 +2,7 @@
   import { PI, easeOutSine } from '@/utils/Number';
   export let context: CanvasRenderingContext2D;
   import type { Coords } from '@/types.d';
+  import { onDestroy } from 'svelte';
 
   export let visible: boolean;
   export let coords: Coords;
@@ -10,7 +11,7 @@
   const FRAME = 1.0 / 60.0;
   const MAX_RADIUS = RADIUS * 2.0;
 
-  const RIFLE_RGB = '34, 34, 34';
+  const RIFLE_RGB = '255, 255, 255';
   const CIRC = RADIUS * Math.PI;
   const CIRC2 = CIRC * 2.0;
 
@@ -54,6 +55,8 @@
     const [x, y] = coords;
     context.clearRect(x - CIRC, y - CIRC, CIRC2, CIRC2);
   }
+
+  onDestroy(pickRifle);
 
   $: (visible => {
     if (!coords) return;

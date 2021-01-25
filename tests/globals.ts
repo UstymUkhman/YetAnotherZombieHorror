@@ -1,5 +1,5 @@
 (global as any).PRODUCTION = false;
-(global as any).BUILD = '0.2.0';
+(global as any).BUILD = '0.2.5';
 
 describe('globals', () => {
   test('PRODUCTION', () => {

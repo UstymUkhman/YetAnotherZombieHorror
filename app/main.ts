@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { join } from 'path';
 import { BrowserWindow, app, screen, ipcMain } from 'electron';
 
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
@@ -6,27 +6,24 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 const PRODUCTION = process.env.ENVIRONMENT !== 'development';
 let game: Electron.BrowserWindow | null = null;
-const screenRatio = PRODUCTION ? 1 : 0.9;
+const screenRatio = 0.9 + ~~PRODUCTION * 0.1;
 
 function createWindow(): void {
-  if (game === null) {
-    game = new BrowserWindow({
-      backgroundColor: '#000000',
-      fullscreen: PRODUCTION,
-      frame: false,
+  if (game !== null) return;
 
-      webPreferences: {
-        preload: path.join(__dirname, './preloader.js')
-      }
-    });
+  game = new BrowserWindow({
+    webPreferences: !PRODUCTION && {
+      preload: join(__dirname, './preloader.js')
+    },
 
-    game.loadFile(path.join(__dirname, '../public/index.html'));
-    if (!PRODUCTION) game.webContents.openDevTools();
+    backgroundColor: '#000000',
+    fullscreen: PRODUCTION,
+    frame: false
+  });
 
-    game.on('closed', () => {
-      game = null;
-    });
-  }
+  game.loadFile(join(__dirname, '../public/index.html'));
+  if (!PRODUCTION) game.webContents.openDevTools();
+  game.on('closed', (): void => game = null);
 }
 
 app.whenReady().then(() => {
@@ -49,12 +46,8 @@ app.whenReady().then(() => {
 app.on('ready', createWindow);
 app.on('activate', createWindow);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+app.on('window-all-closed', (): void =>
+  process.platform !== 'darwin' && app.quit()
+);
 
-ipcMain.on('close', (): void => {
-  game.close();
-});
+ipcMain.on('close', (): void => game.close());

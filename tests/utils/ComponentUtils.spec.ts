@@ -1,7 +1,7 @@
 import '../globals';
 import { Coords } from '@/types.d';
 import Level0 from '@/environment/Level0';
-import { getScaledCoords, pointInCircle } from '@/components/utils';
+import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
 
 describe('ComponentUtils', () => {
   test('getScaledCoords', () => {
@@ -21,5 +21,12 @@ describe('ComponentUtils', () => {
     expect(pointInCircle([1.25, 1.25], [0.5, 0.5], 1)).toStrictEqual(false);
     expect(pointInCircle([0, 0], [0.5, 0.5], 0.75)).toStrictEqual(true);
     expect(pointInCircle(pCoords, cCoords, 0)).toStrictEqual(false);
+  });
+
+  test('getAngleToRifle', () => {
+    expect(getAngleToRifle([0, 0], [0, 10])).toStrictEqual(0);
+    expect(getAngleToRifle([0, 0], [-10, 0])).toStrictEqual(90);
+    expect(getAngleToRifle([0, 0], [0, -10])).toStrictEqual(180);
+    expect(getAngleToRifle([0, 0], [10, 0])).toStrictEqual(270);
   });
 });

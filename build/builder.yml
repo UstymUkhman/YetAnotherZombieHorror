@@ -1,7 +1,10 @@
-copyright: Copyright © 2020 Ustym Ukhman
+copyright: Copyright © 2021 Ustym Ukhman
 productName: Another Dumb Zombie Game
 appId: another.dumb.zombie.game
 publish: null
+
+extraMetadata:
+  main: build/main.js
 
 files:
   - build/**/*
@@ -14,7 +17,7 @@ directories:
   buildResources: public/favicon
 
 win:
-  legalTrademarks: Copyright © 2020 Ustym Ukhman
+  legalTrademarks: Copyright © 2021 Ustym Ukhman
   icon: public/favicon/favicon-512x512.png
   publisherName: Ustym Ukhman
 
