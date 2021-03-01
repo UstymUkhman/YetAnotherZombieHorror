@@ -48,7 +48,7 @@
     "@types/animejs": "^3.1.2",
     "ammo.js": "^0.0.10",
     "animejs": "^3.2.0",
-    "three": "^0.124.0"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
