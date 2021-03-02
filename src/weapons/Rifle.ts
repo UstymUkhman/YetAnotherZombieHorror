@@ -1,6 +1,6 @@
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-type Vector3 = import('@three/math/Vector3').Vector3;
-type Euler = import('@three/math/Euler').Euler;
+type Vector3 = import('three/src/math/Vector3').Vector3;
+type Euler = import('three/src/math/Euler').Euler;
 import type { Coords } from '@/types.d';
 
 import { GameEvents } from '@/managers/GameEvents';

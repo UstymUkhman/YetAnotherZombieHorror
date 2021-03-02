@@ -1,6 +1,6 @@
 import '../globals';
-import { Object3D } from '@three/core/Object3D';
-import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
+import { Object3D } from 'three/src/core/Object3D';
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';
 
 describe('GameCamera', () => {

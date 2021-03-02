@@ -2,7 +2,7 @@ import '../globals';
 import { Config } from '@/config';
 import { Color } from '@/utils/Color';
 
-import { Color as TColor } from '@three/math/Color';
+import { Color as TColor } from 'three/src/math/Color';
 import { DynamicCollider, StaticCollider, HitBox, Transparent } from '@/utils/Material';
 
 describe('Material', () => {

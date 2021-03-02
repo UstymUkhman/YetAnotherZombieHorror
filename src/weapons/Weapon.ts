@@ -1,20 +1,20 @@
 import type { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types.d';
-import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
+import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
-import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 
-type Object3D = import('@three/core/Object3D').Object3D;
-type Vector3 = import('@three/math/Vector3').Vector3;
+type Object3D = import('three/src/core/Object3D').Object3D;
+type Vector3 = import('three/src/math/Vector3').Vector3;
 
 import { GameEvents } from '@/managers/GameEvents';
-import { Raycaster } from '@three/core/Raycaster';
+import { Raycaster } from 'three/src/core/Raycaster';
 import { Assets } from '@/managers/AssetsLoader';
 
-type Mesh = import('@three/objects/Mesh').Mesh;
-type Euler = import('@three/math/Euler').Euler;
+type Mesh = import('three/src/objects/Mesh').Mesh;
+type Euler = import('three/src/math/Euler').Euler;
 
-import { Vector2 } from '@three/math/Vector2';
-import { FrontSide } from '@three/constants';
+import { Vector2 } from 'three/src/math/Vector2';
+import { FrontSide } from 'three/src/constants';
 import { random } from '@/utils/Number';
 
 export default class Weapon {
@@ -68,7 +68,7 @@ export default class Weapon {
     this.weapon.rotation.copy(this.config.rotation as Euler);
     this.weapon.scale.copy(this.config.scale as Vector3);
 
-    this.asset = this.model.clone();
+    this.asset = this.model.clone() as Assets.GLTF;
     this.addSounds(await this.loadSounds());
   }
 

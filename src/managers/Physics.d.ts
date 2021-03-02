@@ -1,6 +1,6 @@
-type AmmoQuaternion = import('@three/math/Quaternion').Quaternion;
-type AmmoVector3 = import('@three/math/Vector3').Vector3;
-type Mesh = import('@three/objects/Mesh').Mesh;
+type AmmoQuaternion = import('three/src/math/Quaternion').Quaternion;
+type AmmoVector3 = import('three/src/math/Vector3').Vector3;
+type Mesh = import('three/src/objects/Mesh').Mesh;
 import type { Bounds } from '@/types.d';
 
 interface AmmoWorld {

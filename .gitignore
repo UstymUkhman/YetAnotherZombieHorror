@@ -10,9 +10,9 @@ pids
 
 coverage/
 build/**/*
-!build/*.yml
 node_modules
 .lock-wscript
+!build/builder.yml
 
 public/**/*.txt
 public/**/*.map

@@ -1,10 +1,10 @@
-type OrbitControls = import('@controls/OrbitControls').OrbitControls;
-type Object3D = import('@three/core/Object3D').Object3D;
-type Vector3 = import('@three/math/Vector3').Vector3;
+type OrbitControls = import('three/examples/jsm/controls/OrbitControls').OrbitControls;
+type Object3D = import('three/src/core/Object3D').Object3D;
+type Vector3 = import('three/src/math/Vector3').Vector3;
 import type { Coords, Bounds } from '@/types.d';
 
-import { AmbientLight } from '@three/lights/AmbientLight';
-import { FogExp2 } from '@three/scenes/FogExp2';
+import { AmbientLight } from 'three/src/lights/AmbientLight';
+import { FogExp2 } from 'three/src/scenes/FogExp2';
 import GameLevel from '@/environment/GameLevel';
 
 import { min, max } from '@/utils/Array';
@@ -22,7 +22,7 @@ export default class Level0 extends GameLevel {
     super();
 
     if (Config.freeCamera) {
-      import(/* webpackChunkName: "orbit-controls" */ '@controls/OrbitControls').then(Controls => {
+      import(/* webpackChunkName: "orbit-controls" */ 'three/examples/jsm/controls/OrbitControls').then(Controls => {
         this.controls = new Controls.OrbitControls(this.camera, this.canvas);
 
         this.camera.position.set(0, 10, -50);

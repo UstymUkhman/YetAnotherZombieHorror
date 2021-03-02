@@ -1,4 +1,4 @@
-import { Color as TColor } from '@three/math/Color';
+import { Color as TColor } from 'three/src/math/Color';
 
 export namespace Color {
   export type RGB = { r: number, g: number, b: number };

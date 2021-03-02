@@ -1,10 +1,10 @@
 // Based on: https://github.com/maximeq/three-js-capsule-geometry
 
-import { BufferAttribute } from '@three/core/BufferAttribute';
-import { BufferGeometry } from '@three/core/BufferGeometry';
+import { BufferAttribute } from 'three/src/core/BufferAttribute';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
 
-import { Vector3 } from '@three/math/Vector3';
-import { Vector2 } from '@three/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Vector2 } from 'three/src/math/Vector2';
 
 import { PI } from '@/utils/Number';
 

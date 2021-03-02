@@ -1,8 +1,8 @@
 import { Config } from '@/config';
 
-type Location = { position: import('@three/math/Vector3').Vector3, rotation: number };
+type Location = { position: import('three/src/math/Vector3').Vector3, rotation: number };
 type CharacterAnimations<Animation> = { [key in CharacterAnimation]: Animation };
-type PositionalAudio = import('@three/audio/PositionalAudio').PositionalAudio;
+type PositionalAudio = import('three/src/audio/PositionalAudio').PositionalAudio;
 
 type CharacterSounds = Map<PlayerSounds | EnemySounds, PositionalAudio>;
 type WeaponSounds    = Map<PistolSounds | RifleSounds, PositionalAudio>;

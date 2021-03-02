@@ -1,4 +1,4 @@
-import { Color as TColor } from '@three/math/Color';
+import { Color as TColor } from 'three/src/math/Color';
 import { Color } from '@/utils/Color';
 
 describe('Color', () => {

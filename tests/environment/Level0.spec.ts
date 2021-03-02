@@ -1,7 +1,7 @@
 import '../globals';
 import Level0 from '@/environment/Level0';
 import Level0Data from '@/config/level0.json';
-import { Object3D } from '@three/core/Object3D';
+import { Object3D } from 'three/src/core/Object3D';
 
 describe('Level0', () => {
   const level = new Level0();

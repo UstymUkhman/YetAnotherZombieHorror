@@ -1,4 +1,4 @@
-type Vector3 = import('@three/math/Vector3').Vector3;
+type Vector3 = import('three/src/math/Vector3').Vector3;
 import type { Coords, Bounds } from '@/types.d';
 import { cloneBounds } from '@/utils/Array';
 import { random } from '@/utils/Number';

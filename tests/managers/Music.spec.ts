@@ -19,6 +19,12 @@ describe('Music', () => {
     expect(pause).toHaveReturnedWith(undefined);
   });
 
+  test('destroy', () => {
+    const destroy = jest.fn(music.destroy.bind(music));
+    destroy();
+    expect(destroy).toHaveReturnedWith(undefined);
+  });
+
   test('volume', () => {
     music.volume = 0.5;
     expect(music.volume).toStrictEqual(0.5);

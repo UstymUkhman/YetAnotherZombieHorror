@@ -1,7 +1,7 @@
-import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
+import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { CameraObject } from '@/managers/GameCamera';
 import { Assets } from '@/managers/AssetsLoader';
-import { Scene } from '@three/scenes/Scene';
+import { Scene } from 'three/src/scenes/Scene';
 
 export default class GameLevel {
   private renderer = new WebGLRenderer({ antialias: true, alpha: false });

@@ -1,6 +1,6 @@
 import '../../globals';
 import Level0 from '@/environment/Level0';
-import { Vector3 } from '@three/math/Vector3';
+import { Vector3 } from 'three/src/math/Vector3';
 import { getRandomCoord } from '@/managers/worker/randomCoords';
 
 describe('randomCoords', () => {

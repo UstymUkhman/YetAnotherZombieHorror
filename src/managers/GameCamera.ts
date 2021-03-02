@@ -1,7 +1,7 @@
-import { PerspectiveCamera } from '@three/cameras/PerspectiveCamera';
-import { AudioListener } from '@three/audio/AudioListener';
-type Object3D = import('@three/core/Object3D').Object3D;
-import { Vector3 } from '@three/math/Vector3';
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+import { AudioListener } from 'three/src/audio/AudioListener';
+type Object3D = import('three/src/core/Object3D').Object3D;
+import { Vector3 } from 'three/src/math/Vector3';
 
 import { Config } from '@/config';
 type RunCheck = () => boolean;

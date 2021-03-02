@@ -1,9 +1,9 @@
 import './globals';
 import { Config } from '@/config';
-import { Euler } from '@three/math/Euler';
+import { Euler } from 'three/src/math/Euler';
 
-import { Vector2 } from '@three/math/Vector2';
-import { Vector3 } from '@three/math/Vector3';
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
 
 import Level0 from '@/config/level0.json';
 import Camera from '@/config/camera.json';

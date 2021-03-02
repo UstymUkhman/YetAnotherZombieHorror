@@ -1,5 +1,5 @@
 import { smoothstep, near, mix, map, randomInt, clamp, random, easeOutSine, lerp, PI } from '@/utils/Number';
-import { Vector3 } from '@three/math/Vector3';
+import { Vector3 } from 'three/src/math/Vector3';
 
 describe('Number', () => {
   test('smoothstep', () => {

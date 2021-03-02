@@ -1,22 +1,22 @@
-import { CubeTextureLoader } from '@three/loaders/CubeTextureLoader';
-import { LoadingManager } from '@three/loaders/LoadingManager';
+import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { LoadingManager } from 'three/src/loaders/LoadingManager';
 
-import { TextureLoader } from '@three/loaders/TextureLoader';
-import { CubeTexture } from '@three/textures/CubeTexture';
-import { AudioLoader } from '@three/loaders/AudioLoader';
+import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { CubeTexture } from 'three/src/textures/CubeTexture';
+import { AudioLoader } from 'three/src/loaders/AudioLoader';
 
+import { MathUtils } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/managers/GameEvents';
-import { MathUtils } from '@three/math/MathUtils';
-import { GLTFLoader } from '@loaders/GLTFLoader';
-import { RGBFormat } from '@three/constants';
+import { RGBFormat } from 'three/src/constants';
 
 export namespace Assets {
-  export type Animations = Array<import('@three/animation/AnimationClip').AnimationClip>;
+  export type Animations = Array<import('three/src/animation/AnimationClip').AnimationClip>;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
 
+  export type Texture = import ('three/src/textures/Texture').Texture;
   export type GLTFModel = { scene: GLTF, animations?: Animations };
-  export type Texture = import ('@three/textures/Texture').Texture;
-  export type GLTF = import('@three/objects/Group').Group;
+  export type GLTF = import('three/src/objects/Group').Group;
 
   type ProgressEventTarget = EventTarget & { responseURL: string };
   type Assets = Texture | CubeTexture | GLTFModel | AudioBuffer;

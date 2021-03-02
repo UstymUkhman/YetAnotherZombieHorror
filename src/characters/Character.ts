@@ -1,19 +1,19 @@
 import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types.d';
-type Actions = { [name: string]: import('@three/animation/AnimationAction').AnimationAction };
-type Object3D = import('@three/core/Object3D').Object3D;
+type Actions = { [name: string]: import('three/src/animation/AnimationAction').AnimationAction };
+type Object3D = import('three/src/core/Object3D').Object3D;
 
-import { MeshPhongMaterial } from '@three/materials/MeshPhongMaterial';
-import { AnimationMixer } from '@three/animation/AnimationMixer';
-import { PositionalAudio } from '@three/audio/PositionalAudio';
+import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
+import { AnimationMixer } from 'three/src/animation/AnimationMixer';
+import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 
 import { CameraListener } from '@/managers/GameCamera';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { DynamicCollider } from '@/utils/Material';
 import { Assets } from '@/managers/AssetsLoader';
-import { Vector3 } from '@three/math/Vector3';
+import { Vector3 } from 'three/src/math/Vector3';
 
 import { camelCase } from '@/utils/String';
-import { Mesh } from '@three/objects/Mesh';
+import { Mesh } from 'three/src/objects/Mesh';
 import Physics from '@/managers/Physics';
 
 export default class Character {

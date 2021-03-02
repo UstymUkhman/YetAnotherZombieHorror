@@ -1,16 +1,16 @@
-type AnimationAction = import('@three/animation/AnimationAction').AnimationAction;
+type AnimationAction = import('three/src/animation/AnimationAction').AnimationAction;
 type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
+type Object3D = import('three/src/core/Object3D').Object3D;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-type Object3D = import('@three/core/Object3D').Object3D;
 import type { EnemyAnimations } from '@/types.d';
 
-import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
+import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
-import { SkeletonUtils } from '@utils/SkeletonUtils';
 
 import Character from '@/characters/Character';
-import { LoopOnce } from '@three/constants';
-import { Mesh } from '@three/objects/Mesh';
+import { LoopOnce } from 'three/src/constants';
+import { Mesh } from 'three/src/objects/Mesh';
 import { HitBox } from '@/utils/Material';
 import { Config } from '@/config';
 

@@ -1,5 +1,5 @@
-import { Vector2 as TVector2 } from '@three/math/Vector2';
-import { Vector3 as TVector3 } from '@three/math/Vector3';
+import { Vector2 as TVector2 } from 'three/src/math/Vector2';
+import { Vector3 as TVector3 } from 'three/src/math/Vector3';
 
 export namespace Elastic
 {

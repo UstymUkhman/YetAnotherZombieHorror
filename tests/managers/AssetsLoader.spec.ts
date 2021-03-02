@@ -1,10 +1,10 @@
-import { LoadingManager } from '@three/loaders/LoadingManager';
-import { CubeTexture } from '@three/textures/CubeTexture';
-import { Texture } from '@three/textures/Texture';
+import { LoadingManager } from 'three/src/loaders/LoadingManager';
+import { CubeTexture } from 'three/src/textures/CubeTexture';
+import { Texture } from 'three/src/textures/Texture';
 
 import { Assets } from '@/managers/AssetsLoader';
-import { Group } from '@three/objects/Group';
-import { RGBFormat } from '@three/constants';
+import { Group } from 'three/src/objects/Group';
+import { RGBFormat } from 'three/src/constants';
 
 describe('AssetsLoader', () => {
   const loader = new Assets.Loader();

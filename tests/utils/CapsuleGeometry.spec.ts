@@ -1,4 +1,4 @@
-import { BufferGeometry } from '@three/core/BufferGeometry';
+import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
 describe('CapsuleGeometry', () => {

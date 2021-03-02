@@ -5,8 +5,8 @@ import { Bounds } from '@/types.d';
 import Physics from '@/managers/Physics';
 import Level0 from '@/environment/Level0';
 
-import { Mesh } from '@three/objects/Mesh';
-import { Vector3 } from '@three/math/Vector3';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Vector3 } from 'three/src/math/Vector3';
 
 describe('Physics', () => {
   test('Create', () => {

@@ -9,11 +9,11 @@ import EnemyData from '@/config/enemy.json';
 import PistolData from '@/config/pistol.json';
 import RifleData from '@/config/rifle.json';
 
-import { Vector2 } from '@three/math/Vector2';
-import { Vector3 } from '@three/math/Vector3';
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
 
 import deepFreeze from '@/utils/deepFreeze';
-import { Euler } from '@three/math/Euler';
+import { Euler } from 'three/src/math/Euler';
 
 export namespace Config {
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>

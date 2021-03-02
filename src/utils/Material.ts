@@ -1,4 +1,4 @@
-import { MeshBasicMaterial } from '@three/materials/MeshBasicMaterial';
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { Color } from '@/utils/Color';
 import { Config } from '@/config';
 

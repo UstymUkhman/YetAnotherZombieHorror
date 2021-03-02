@@ -2,12 +2,12 @@ type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
 import type { CharacterSound, Location, Coords } from '@/types.d';
 type Stats = typeof import('three/examples/js/libs/stats.min');
 type CharacterSounds = { [sfx in CharacterSound]: string };
-type Object3D = import('@three/core/Object3D').Object3D;
+type Object3D = import('three/src/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
 
-import { Clock } from '@three/core/Clock';
+import { Clock } from 'three/src/core/Clock';
 import Level0 from '@/environment/Level0';
 import Physics from '@/managers/Physics';
 import Player from '@/characters/Player';

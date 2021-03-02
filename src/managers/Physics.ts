@@ -1,15 +1,15 @@
 import type { AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from '@/managers/Physics.d';
-type MeshBasicMaterial = import('@three/materials/MeshBasicMaterial').MeshBasicMaterial;
+type MeshBasicMaterial = import('three/src/materials/MeshBasicMaterial').MeshBasicMaterial;
 type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
-type Quaternion = import('@three/math/Quaternion').Quaternion;
+type Quaternion = import('three/src/math/Quaternion').Quaternion;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
-import { BoxGeometry } from '@three/geometries/BoxGeometry';
+import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { GameEvents } from '@/managers/GameEvents';
 
-import { Vector3 } from '@three/math/Vector3';
-import { Mesh } from '@three/objects/Mesh';
-import { Euler } from '@three/math/Euler';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Euler } from 'three/src/math/Euler';
 
 import type { Coords } from '@/types.d';
 import { PI } from '@/utils/Number';
