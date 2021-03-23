@@ -1,6 +1,5 @@
-import type { AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from '@/managers/Physics.d';
+import type { PhysicsWorld, AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from './physics.d';
 type MeshBasicMaterial = import('three/src/materials/MeshBasicMaterial').MeshBasicMaterial;
-type CapsuleGeometry = import('@/utils/CapsuleGeometry').CapsuleBufferGeometry;
 type Quaternion = import('three/src/math/Quaternion').Quaternion;
 
 import { StaticCollider, Transparent } from '@/utils/Material';
@@ -18,11 +17,12 @@ import Ammo from 'ammo.js';
 const ZERO_MASS = 0.0;
 const MIN_SIZE = 0.01;
 const GRAVITY = -9.81;
+// const OFFSET = 0.9225;
 
 const DISABLE = 5;
 const ENABLE = 1;
 
-class Physics {
+export default class AmmoPhysics implements PhysicsWorld {
   private readonly colliders: Map<string, Collider> = new Map();
 
   private readonly linearVelocity = new Ammo.btVector3();
@@ -84,8 +84,10 @@ class Physics {
   }
 
   private createCharacterCollider (mesh: Mesh, mass: number): void {
-    const { radius, height } = mesh.geometry as CapsuleGeometry;
-    const shape = new Ammo.btCapsuleShape(radius * 1.4675, height * 1.4675);
+    const { radius, height } = mesh.userData;
+    const shape = new Ammo.btCapsuleShape(radius, height);
+
+    // const shape = new Ammo.btCapsuleShape(radius * OFFSET, height * OFFSET);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 0.0, 0.0));
@@ -209,6 +211,7 @@ class Physics {
   public destroy (): void {
     this.world.__destroy__();
     this.colliders.clear();
+    this.paused = true;
   }
 
   public set pause (pause: boolean) {
@@ -216,5 +219,3 @@ class Physics {
     this.paused = pause;
   }
 }
-
-export default new Physics();

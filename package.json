@@ -47,14 +47,15 @@
   "dependencies": {
     "ammo.js": "^0.0.10",
     "animejs": "^3.2.0",
-    "three": "^0.126.0"
+    "three": "^0.126.1",
+    "three-mesh-bvh": "^0.3.7"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
     "@types/animejs": "^3.1.2",
     "@types/jest": "^26.0.20",
     "@types/node": "14.14.22",
-    "@types/three": "^0.125.3",
+    "@types/three": "^0.126.1",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "babel-jest": "^26.6.3",

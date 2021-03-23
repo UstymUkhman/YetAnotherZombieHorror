@@ -1,6 +1,6 @@
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
+type Stats = import('three/examples/jsm/libs/stats.module').default;
 import type { CharacterSound, Location, Coords } from '@/types.d';
-type Stats = typeof import('three/examples/js/libs/stats.min');
 type CharacterSounds = { [sfx in CharacterSound]: string };
 type Object3D = import('three/src/core/Object3D').Object3D;
 
@@ -9,7 +9,7 @@ import { Assets } from '@/managers/AssetsLoader';
 
 import { Clock } from 'three/src/core/Clock';
 import Level0 from '@/environment/Level0';
-import Physics from '@/managers/Physics';
+import Physics from '@/managers/physics';
 import Player from '@/characters/Player';
 import Enemy from '@/characters/Enemy';
 
@@ -43,8 +43,8 @@ export default class GameLoop {
     this.loadCharacters(); // .then(assets => this.enemyAssets = assets);
 
     if (Config.DEBUG) {
-      import(/* webpackChunkName: "stats.min" */ 'three/examples/js/libs/stats.min').then(Stats => {
-        this.stats = new Stats.default();
+      import(/* webpackChunkName: "stats.module" */ 'three/examples/jsm/libs/stats.module').then(Stats => {
+        this.stats = Stats.default();
         this.stats.showPanel(0);
         document.body.appendChild(this.stats.domElement);
       });
@@ -118,7 +118,7 @@ export default class GameLoop {
     this.stats?.begin();
 
     const playerPosition = this.player.location.position;
-    const delta = this.clock.getDelta();
+    const delta = Math.min(this.clock.getDelta(), 0.1);
 
     this.rifle.update(playerPosition);
     this.player.update(delta);
@@ -136,7 +136,8 @@ export default class GameLoop {
     Physics.destroy();
 
     if (Config.DEBUG) {
-      document.body.removeChild(this.stats.domElement);
+      const stats = this.stats?.domElement as HTMLDivElement;
+      document.body.removeChild(stats);
       delete this.stats;
     }
   }

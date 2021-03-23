@@ -1,3 +1,5 @@
+declare module 'three-mesh-bvh/src/MeshBVHVisualizer';
+declare module 'three-mesh-bvh/src/MeshBVH';
 declare module 'ammo.js';
 
 declare module '*.json' {
@@ -7,4 +9,3 @@ declare module '*.json' {
 
 declare const BUILD: string;
 declare const PRODUCTION: boolean;
-declare module 'three/examples/js/libs/stats.min';

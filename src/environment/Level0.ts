@@ -8,7 +8,7 @@ import { FogExp2 } from 'three/src/scenes/FogExp2';
 import GameLevel from '@/environment/GameLevel';
 
 import { min, max } from '@/utils/Array';
-import Physics from '@/managers/Physics';
+import Physics from '@/managers/physics';
 
 import { Color } from '@/utils/Color';
 import Music from '@/managers/Music';
@@ -45,6 +45,7 @@ export default class Level0 extends GameLevel {
     this.loadLevel(Config.Level0.model).then(level => {
       level.position.copy(Config.Level0.position as Vector3);
       level.scale.copy(Config.Level0.scale as Vector3);
+      // BVHPhysics.setEnvironmentColliders(this.scene);
     });
   }
 

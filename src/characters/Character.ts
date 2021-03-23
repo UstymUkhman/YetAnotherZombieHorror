@@ -2,19 +2,22 @@ import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSound
 type Actions = { [name: string]: import('three/src/animation/AnimationAction').AnimationAction };
 type Object3D = import('three/src/core/Object3D').Object3D;
 
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 
 import { CameraListener } from '@/managers/GameCamera';
-import CapsuleGeometry from '@/utils/CapsuleGeometry';
 import { DynamicCollider } from '@/utils/Material';
-import { Assets } from '@/managers/AssetsLoader';
+
 import { Vector3 } from 'three/src/math/Vector3';
+import { Assets } from '@/managers/AssetsLoader';
+
+import { Mesh } from 'three/src/objects/Mesh';
+import { Line3 } from 'three/src/math/Line3';
 
 import { camelCase } from '@/utils/String';
-import { Mesh } from 'three/src/objects/Mesh';
-import Physics from '@/managers/Physics';
+import Physics from '@/managers/physics';
 
 export default class Character {
   private step: CharacterMove = this.config.moves.Idle;
@@ -41,7 +44,16 @@ export default class Character {
 
   public constructor (private config: CharacterConfig) {
     const { x, y } = this.config.collider;
-    this.object = new Mesh(new CapsuleGeometry(x, y), DynamicCollider);
+
+    this.object = new Mesh(
+      new RoundedBoxGeometry(x, y, x, 2, 0.5),
+      DynamicCollider
+    );
+
+    this.object.userData = {
+      segment: new Line3(new Vector3(), new Vector3(0, -1.0, 0.0)),
+      height: y * 0.9225, radius: 0.5 * 0.9225
+    };
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
@@ -93,7 +105,7 @@ export default class Character {
 
     this.direction.set(
       x * z0 + x * min + z * x1,
-      -1.0,
+      -1.0, // Use "1.0" for BVH physics.
       z * z0 + z * min + x * x0
     );
   }

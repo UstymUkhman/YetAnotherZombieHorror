@@ -1,5 +1,7 @@
 import type { CharacterMove } from '@/types.d';
 
+import SettingsData from '@/config/settings.json';
+
 import Level0Data from '@/config/level0.json';
 import CameraData from '@/config/camera.json';
 
@@ -44,6 +46,17 @@ export namespace Config {
   export const freeCamera = false;
   export const colliders = false;
   export const hitBoxes = false;
+
+  export const Settings = deepFreeze({
+    ammoPhysics: SettingsData.physics === 'ammo'
+  });
+
+  export const Camera = deepFreeze({
+    fps: new Vector3(...CameraData.fps),
+    tps: new Vector3(...CameraData.tps),
+    aim: new Vector3(...CameraData.aim),
+    run: new Vector3(...CameraData.run)
+  });
 
   export const Level0 = deepFreeze({
     position: new Vector3(...Level0Data.position),
@@ -119,12 +132,5 @@ export namespace Config {
     damage: RifleData.damage,
     speed: RifleData.speed,
     model: RifleData.model
-  });
-
-  export const Camera = deepFreeze({
-    fps: new Vector3(...CameraData.fps),
-    tps: new Vector3(...CameraData.tps),
-    aim: new Vector3(...CameraData.aim),
-    run: new Vector3(...CameraData.run)
   });
 }

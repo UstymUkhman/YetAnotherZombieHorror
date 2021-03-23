@@ -2,13 +2,15 @@ import '../globals';
 import { Config } from '@/config';
 import { Bounds } from '@/types.d';
 
-import Physics from '@/managers/Physics';
 import Level0 from '@/environment/Level0';
-
 import { Mesh } from 'three/src/objects/Mesh';
+
 import { Vector3 } from 'three/src/math/Vector3';
+import AmmoPhysics from '@/managers/physics/AmmoPhysics';
 
 describe('Physics', () => {
+  const Physics = new AmmoPhysics();
+
   test('Create', () => {
     expect(Physics).toBeDefined();
     expect(Physics).toBeInstanceOf(Object);
