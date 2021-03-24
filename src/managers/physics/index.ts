@@ -1,4 +1,5 @@
-import type { PhysicsWorld } from './physics.d';
+// import type { PhysicsWorld } from './physics.d';
+import PhysicsWorld from './PhysicsWorld';
 import { Config } from '@/config';
 
 export default new (
