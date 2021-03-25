@@ -1,37 +1,24 @@
-import type { /* PhysicsWorld, */ AmmoWorld, AmmoBody, RigidBody, Collider, BoundsOptions } from './physics.d';
-// type MeshBasicMaterial = import('three/src/materials/MeshBasicMaterial').MeshBasicMaterial;
+import type { AmmoWorld, AmmoBody, RigidBody, Collider } from './physics.d';
 type Quaternion = import('three/src/math/Quaternion').Quaternion;
 
-import { StaticCollider /* , Transparent */ } from '@/utils/Material';
-// import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { GameEvents } from '@/managers/GameEvents';
-
 import { Vector3 } from 'three/src/math/Vector3';
 import { Mesh } from 'three/src/objects/Mesh';
-// import { Euler } from 'three/src/math/Euler';
 
 import PhysicsWorld from './PhysicsWorld';
-import type { Coords } from '@/types.d';
-import { PI } from '@/utils/Number';
 import Ammo from 'ammo.js';
 
 const ZERO_MASS = 0.0;
-// const MIN_SIZE = 0.01;
 const GRAVITY = -9.81;
-// const OFFSET = 0.9225;
 
 const DISABLE = 5;
 const ENABLE = 1;
 
-export default class AmmoPhysics extends PhysicsWorld /* implements PhysicsWorld */ {
+export default class AmmoPhysics extends PhysicsWorld {
   private readonly colliders: Map<string, Collider> = new Map();
 
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
-
-  // private readonly positionVector = new Vector3();
-  // private readonly rotationVector = new Euler();
-  // private readonly sizeVector = new Vector3();
 
   private player!: Collider;
   private world: AmmoWorld;
@@ -72,25 +59,9 @@ export default class AmmoPhysics extends PhysicsWorld /* implements PhysicsWorld
     return body;
   }
 
-  /* private createStaticCollider (material: MeshBasicMaterial): void {
-    const { x, y, z } = this.sizeVector;
-    const box = new Mesh(new BoxGeometry(x, y, z), material);
-
-    box.position.copy(this.positionVector);
-    box.rotation.copy(this.rotationVector);
-
-    const shape = new Ammo.btBoxShape(new Ammo.btVector3(x / 2.0, y / 2.0, z / 2.0));
-    const body = this.createRigidBody(shape, ZERO_MASS, box.position, box.quaternion);
-
-    this.world.addRigidBody(body, 2, 0xFFFF);
-    GameEvents.dispatch('add:object', box);
-  } */
-
   private createCharacterCollider (mesh: Mesh, mass: number): void {
     const { radius, height } = mesh.userData;
     const shape = new Ammo.btCapsuleShape(radius, height);
-
-    // const shape = new Ammo.btCapsuleShape(radius * OFFSET, height * OFFSET);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 0.0, 0.0));
@@ -101,45 +72,6 @@ export default class AmmoPhysics extends PhysicsWorld /* implements PhysicsWorld
     GameEvents.dispatch('add:object', mesh);
   }
 
-  private borderOverflow (border: Vector3) {
-    const { x, z } = this.positionVector;
-    return Math.abs(x) > Math.abs(border.x) && Math.abs(z) > Math.abs(border.z);
-  }
-
-  private createBound (current: Coords, next: Coords, h: number, y = 0): void {
-    this.rotationVector.set(0, 0, 0);
-
-    const x0 = current[0];
-    const z0 = current[1];
-
-    const x1 = x0 - next[0];
-    const z1 = z0 - next[1];
-
-    const x = x1 / -2 + x0;
-    const z = z1 / -2 + z0;
-
-    let w = Math.abs(x1);
-    let d = Math.abs(z1);
-
-    if (w && d) {
-      const deeper = d > w;
-      const length = Math.sqrt(w ** 2 + d ** 2);
-
-      this.rotationVector.set(0, deeper
-        ? PI.d2 + Math.atan(d / w)
-        : PI.d2 - Math.atan(w / d)
-      , 0);
-
-      deeper ? d = length : w = length;
-    }
-
-    w = w < d ? this.MIN_SIZE : w;
-    d = d < w ? this.MIN_SIZE : d;
-
-    this.positionVector.set(x, y, z);
-    this.sizeVector.set(w, h, d);
-  }
-
   protected addStaticCollider (collider: Mesh): void {
     const { x, y, z } = this.sizeVector;
 
@@ -148,39 +80,6 @@ export default class AmmoPhysics extends PhysicsWorld /* implements PhysicsWorld
       ZERO_MASS, collider.position, collider.quaternion
     ), 2, 0xFFFF);
   }
-
-  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
-    const borderPosition = new Vector3();
-
-    const border = bounds.borders.concat([bounds.borders[0]]);
-    const walk = sidewalk.borders.concat([sidewalk.borders[0]]);
-
-    for (let b = 0; b < bounds.borders.length; b++) {
-      this.createBound(border[b], border[b + 1], bounds.height, bounds.y);
-      this.createStaticCollider(StaticCollider);
-
-      borderPosition.copy(this.positionVector);
-      this.createBound(walk[b], walk[b + 1], sidewalk.height, sidewalk.y);
-
-      if (this.borderOverflow(borderPosition)) continue;
-      const lengthScale = this.rotationVector.y ? 1.1 : 1;
-      const distance = this.positionVector.distanceTo(borderPosition) / 2 * 0.95;
-
-      this.positionVector.x -= (this.positionVector.x - borderPosition.x) / 2;
-      this.positionVector.z -= (this.positionVector.z - borderPosition.z) / 2;
-
-      this.sizeVector.z === this.MIN_SIZE ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
-      this.positionVector.x < 0 ? this.sizeVector.z *= lengthScale : this.sizeVector.x *= lengthScale;
-
-      this.createStaticCollider(StaticCollider);
-    }
-  }
-
-  /* public createGround (min: Coords, max: Coords): void {
-    this.sizeVector.set(Math.abs(min[0] - max[0]), MIN_SIZE, Math.abs(min[1] - max[1]));
-    this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
-    this.createStaticCollider(Transparent);
-  } */
 
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);

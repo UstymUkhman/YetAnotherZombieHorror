@@ -10,24 +10,11 @@ type Line3 = import('three/src/math/Line3').Line3;
 type Mesh = import('three/src/objects/Mesh').Mesh;
 
 type LevelColliders = Map<number, Array<Mesh>>;
-import type { /* Coords, */ Bounds } from '@/types.d';
+import type { Bounds } from '@/types.d';
 
 interface SeparatingAxisTriangle extends Triangle {
   closestPointToSegment: (segment: Line3, target1?: Vector3, target2?: Vector3) => number
 }
-
-// interface PhysicsWorld {
-//   createBounds: (bounds: BoundsOptions, sidewalk: BoundsOptions) => void
-//   createGround: (min: Coords, max: Coords) => void
-
-//   move: (direction: Vector3) => void
-//   setPlayer: (player: Mesh) => void
-//   update: (delta: number) => void
-
-//   destroy: () => void
-//   stop: () => void
-//   pause: boolean
-// }
 
 interface AmmoWorld {
   addRigidBody: (body: AmmoBody, group?: number, mask?: number) => void

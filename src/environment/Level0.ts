@@ -45,7 +45,6 @@ export default class Level0 extends GameLevel {
     this.loadLevel(Config.Level0.model).then(level => {
       level.position.copy(Config.Level0.position as Vector3);
       level.scale.copy(Config.Level0.scale as Vector3);
-      // BVHPhysics.setEnvironmentColliders(this.scene);
     });
   }
 
