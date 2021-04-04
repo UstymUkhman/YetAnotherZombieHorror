@@ -8,17 +8,17 @@ import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
 import { Direction, Directions } from '@/managers/Input';
-import { GameEvents } from '@/managers/GameEvents';
 import { MathUtils } from 'three/src/math/MathUtils';
-import { Camera } from '@/managers/GameCamera';
-
-import Character from '@/characters/Character';
+import { GameEvents } from '@/managers/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
+
 import { LoopOnce } from 'three/src/constants';
+import { Camera } from '@/managers/GameCamera';
+import Character from '@/characters/Character';
 import { Config } from '@/config';
 
-const AXIS_X = new Vector3(1, 0, 0);
-const AXIS_Y = new Vector3(0, 1, 0);
+const RIGHT = new Vector3(1, 0, 0);
+const UP = new Vector3(0, 1, 0);
 
 export default class Player extends Character {
   private currentAnimation!: AnimationAction;
@@ -99,10 +99,10 @@ export default class Player extends Character {
     const tilt = this.rotation.y;
     const model = this.getModel();
 
-    model.rotateOnWorldAxis(AXIS_Y, x);
+    model.rotateOnWorldAxis(UP, x);
 
     if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= maxTilt)) {
-      model.rotateOnAxis(AXIS_X, y);
+      model.rotateOnAxis(RIGHT, y);
     }
   }
 

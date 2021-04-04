@@ -19,7 +19,8 @@ import { Line3 } from 'three/src/math/Line3';
 import { camelCase } from '@/utils/String';
 import Physics from '@/managers/physics';
 
-export default class Character {
+export default class Character
+{
   private step: CharacterMove = this.config.moves.Idle;
   private readonly sounds: CharacterSounds = new Map();
   private readonly loader = new Assets.Loader();
@@ -51,8 +52,8 @@ export default class Character {
     );
 
     this.object.userData = {
-      segment: new Line3(new Vector3(), new Vector3(0, -1.0, 0.0)),
-      height: y * 0.9225, radius: 0.5 * 0.9225
+      segment: new Line3(new Vector3(), new Vector3(0, -1, 0)),
+      height: y, radius: 0.5
     };
   }
 
@@ -91,7 +92,7 @@ export default class Character {
   }
 
   private updateCharacterLocation (): void {
-    const model = this.model as Assets.GLTF;
+    const model = this.getModel();
     const { speed, direction } = this.step;
 
     model.getWorldDirection(this.rotation);
@@ -105,7 +106,7 @@ export default class Character {
 
     this.direction.set(
       x * z0 + x * min + z * x1,
-      -1.0, // Use "1.0" for BVH physics.
+      -1.0,
       z * z0 + z * min + x * x0
     );
   }

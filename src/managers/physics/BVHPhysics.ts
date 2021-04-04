@@ -2,9 +2,6 @@ import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from './physi
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 type BufferGeometry = import ('three/src/core/BufferGeometry').BufferGeometry;
 
-import MeshBVHVisualizer from 'three-mesh-bvh/src/MeshBVHVisualizer';
-import { StaticCollider, DynamicCollider } from '@/utils/Material';
-
 import { GameEvents } from '@/managers/GameEvents';
 import { Matrix4 } from 'three/src/math/Matrix4';
 import MeshBVH from 'three-mesh-bvh/src/MeshBVH';
@@ -20,15 +17,14 @@ import PhysicsWorld from './PhysicsWorld';
 const GRAVITY = -9.81;
 const SPEED = 5.0;
 
-export default class BVHPhysics extends PhysicsWorld {
+export default class BVHPhysics extends PhysicsWorld
+{
   private readonly linearVelocity = new Vector3();
   private readonly playerVelocity = new Vector3();
 
-  private visualizer?: typeof MeshBVHVisualizer;
-  private readonly colliders: Array<Mesh> = [];
   private readonly environment = new Group();
-
   private readonly capsule = new Vector3();
+
   private readonly matrix = new Matrix4();
   private readonly segment = new Line3();
   private readonly box = new Box3();
@@ -39,22 +35,7 @@ export default class BVHPhysics extends PhysicsWorld {
   private delta = 0.0;
 
   protected addStaticCollider (collider: Mesh): void {
-    this.colliders.push(collider);
-  }
-
-  private mergeStaticColliders (): void {
-    const geometries: Array<BufferGeometry> = [];
-
-    this.colliders.forEach(collider => {
-      const geometry = collider.geometry.clone();
-      geometry.applyMatrix4(collider.matrixWorld);
-      geometries.push(geometry);
-    });
-
-    geometries.length && this.environment.add(new Mesh(
-      BufferGeometryUtils.mergeBufferGeometries(geometries),
-      StaticCollider
-    ));
+    this.environment.attach(collider);
   }
 
   private addPhysicsCollider (): void {
@@ -77,27 +58,26 @@ export default class BVHPhysics extends PhysicsWorld {
 		});
 
 		const mergedGeometry: BVHGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
-
-		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, {
-      lazyGeneration: false
-    });
-
-    this.collider = new Mesh(mergedGeometry, DynamicCollider);
-    this.visualizer = new MeshBVHVisualizer(this.collider, 20);
+		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
     GameEvents.dispatch('add:object', this.environment);
-    GameEvents.dispatch('add:object', this.visualizer);
-    GameEvents.dispatch('add:object', this.collider);
+    this.collider = new Mesh(mergedGeometry);
   }
 
   public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
     super.createBounds(bounds, sidewalk);
-    this.mergeStaticColliders();
     this.addPhysicsCollider();
   }
 
   public setPlayer (player: Mesh): void {
+    const { height, radius } = player.userData;
+
+    player.geometry.translate(0, -radius, 0);
+    player.children[0].translateY(-radius);
+    player.position.set(0, height, 0);
+
     this.player = player;
+    this.move(new Vector3(0, 1, 0));
   }
 
   public move (direction: Vector3): void {
@@ -159,10 +139,11 @@ export default class BVHPhysics extends PhysicsWorld {
     deltaVector.subVectors(position, this.player.position);
 
     this.player.position.copy(position);
+    this.playerVelocity.set(0, 0, 0);
   }
 
   public stop (): void {
-    this.playerVelocity.set(0.0, 0.0, 0.0);
+    this.playerVelocity.set(0, 0, 0);
   }
 
   public update (delta: number): void {
@@ -171,10 +152,7 @@ export default class BVHPhysics extends PhysicsWorld {
   }
 
   public destroy (): void {
-    this.colliders.splice(0, this.colliders.length);
     this.environment.clear();
-
-    delete this.visualizer;
     delete this.collider;
     this.paused = true;
   }

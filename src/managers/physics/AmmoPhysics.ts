@@ -14,9 +14,9 @@ const GRAVITY = -9.81;
 const DISABLE = 5;
 const ENABLE = 1;
 
-export default class AmmoPhysics extends PhysicsWorld {
+export default class AmmoPhysics extends PhysicsWorld
+{
   private readonly colliders: Map<string, Collider> = new Map();
-
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
@@ -61,7 +61,7 @@ export default class AmmoPhysics extends PhysicsWorld {
 
   private createCharacterCollider (mesh: Mesh, mass: number): void {
     const { radius, height } = mesh.userData;
-    const shape = new Ammo.btCapsuleShape(radius, height);
+    const shape = new Ammo.btCapsuleShape(radius * 0.9225, height * 0.9225);
     const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 0.0, 0.0));
