@@ -1,6 +1,7 @@
 import { Color as TColor } from 'three/src/math/Color';
 
-export namespace Color {
+export namespace Color
+{
   export type RGB = { r: number, g: number, b: number };
 
   export const BLACK = 0x000000;

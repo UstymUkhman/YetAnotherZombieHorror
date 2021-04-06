@@ -7,7 +7,8 @@ import WebWorker from 'worker-loader!./worker';
 type EventParams = Record<string, unknown>;
 type Callback = (data: unknown) => void;
 
-export default class Worker {
+export default class Worker
+{
   private events: Map<string, EventData> = new Map();
   private worker = new WebWorker();
 

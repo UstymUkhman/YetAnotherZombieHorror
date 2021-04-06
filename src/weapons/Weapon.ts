@@ -17,7 +17,8 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { FrontSide } from 'three/src/constants';
 import { random } from '@/utils/Number';
 
-export default class Weapon {
+export default class Weapon
+{
   private readonly sounds: WeaponSounds = new Map();
   private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();

@@ -1,15 +1,11 @@
 import type { AmmoWorld, AmmoBody, RigidBody, Collider } from './physics.d';
 type Quaternion = import('three/src/math/Quaternion').Quaternion;
+type Vector3 = import('three/src/math/Vector3').Vector3;
 
 import { GameEvents } from '@/managers/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
 import { Mesh } from 'three/src/objects/Mesh';
-
 import PhysicsWorld from './PhysicsWorld';
 import Ammo from 'ammo.js';
-
-const ZERO_MASS = 0.0;
-const GRAVITY = -9.81;
 
 const DISABLE = 5;
 const ENABLE = 1;
@@ -36,7 +32,7 @@ export default class AmmoPhysics extends PhysicsWorld
       collisionConfiguration
     );
 
-    this.world.setGravity(new Ammo.btVector3(0.0, GRAVITY, 0.0));
+    this.world.setGravity(new Ammo.btVector3(0.0, this.GRAVITY, 0.0));
   }
 
   private createRigidBody (shape: RigidBody, mass: number, position: Vector3, quaternion: Quaternion): AmmoBody {
@@ -48,7 +44,7 @@ export default class AmmoPhysics extends PhysicsWorld
 
     const inertia = new Ammo.btVector3(0.0, 0.0, 0.0);
     const motion = new Ammo.btDefaultMotionState(transform);
-    if (mass > ZERO_MASS) shape.calculateLocalInertia(mass, inertia);
+    if (mass > 0.0) shape.calculateLocalInertia(mass, inertia);
 
     const body = new Ammo.btRigidBody(new Ammo.btRigidBodyConstructionInfo(mass, motion, shape, inertia));
 
@@ -77,8 +73,8 @@ export default class AmmoPhysics extends PhysicsWorld
 
     this.world.addRigidBody(this.createRigidBody(
       new Ammo.btBoxShape(new Ammo.btVector3(x / 2.0, y / 2.0, z / 2.0)),
-      ZERO_MASS, collider.position, collider.quaternion
-    ), 2, 0xFFFF);
+      0.0, collider.position, collider.quaternion
+    ), 2.0, 0xFFFF);
   }
 
   public setPlayer (player: Mesh): void {

@@ -25,6 +25,8 @@ export default abstract class PhysicsWorld
   public abstract setPlayer (player: Mesh): void;
   public abstract update (delta: number): void;
 
+  protected readonly GRAVITY = -9.81;
+
   public abstract destroy (): void;
   public abstract pause: boolean;
   public abstract stop (): void;

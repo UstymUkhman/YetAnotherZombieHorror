@@ -1,26 +1,25 @@
+type AnimationAction = import('three/src/animation/AnimationAction').AnimationAction;
 import type { Location, PlayerAnimations, CharacterAnimation } from '@/types.d';
-import type { AnimationAction } from 'three/src/animation/AnimationAction';
 
 type Movement = { directions: Directions, running: boolean };
-import type { Object3D } from 'three/src/core/Object3D';
-
-import type Pistol from '@/weapons/Pistol';
-import type Rifle from '@/weapons/Rifle';
+type Object3D = import('three/src/core/Object3D').Object3D;
 
 import { Direction, Directions } from '@/managers/Input';
 import { MathUtils } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/managers/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
 
 import { LoopOnce } from 'three/src/constants';
 import { Camera } from '@/managers/GameCamera';
 import Character from '@/characters/Character';
+
+import type Pistol from '@/weapons/Pistol';
+import type Rifle from '@/weapons/Rifle';
+
+import { Vector } from '@/utils/Vector';
 import { Config } from '@/config';
 
-const RIGHT = new Vector3(1, 0, 0);
-const UP = new Vector3(0, 1, 0);
-
-export default class Player extends Character {
+export default class Player extends Character
+{
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
@@ -99,10 +98,10 @@ export default class Player extends Character {
     const tilt = this.rotation.y;
     const model = this.getModel();
 
-    model.rotateOnWorldAxis(UP, x);
+    model.rotateOnWorldAxis(Vector.UP, x);
 
     if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= maxTilt)) {
-      model.rotateOnAxis(RIGHT, y);
+      model.rotateOnAxis(Vector.RIGHT, y);
     }
   }
 

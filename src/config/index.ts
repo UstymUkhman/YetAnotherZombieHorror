@@ -2,6 +2,9 @@ import type { CharacterMove } from '@/types.d';
 
 import SettingsData from '@/config/settings.json';
 
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
+
 import Level0Data from '@/config/level0.json';
 import CameraData from '@/config/camera.json';
 
@@ -11,13 +14,11 @@ import EnemyData from '@/config/enemy.json';
 import PistolData from '@/config/pistol.json';
 import RifleData from '@/config/rifle.json';
 
-import { Vector2 } from 'three/src/math/Vector2';
-import { Vector3 } from 'three/src/math/Vector3';
-
-import deepFreeze from '@/utils/deepFreeze';
 import { Euler } from 'three/src/math/Euler';
+import deepFreeze from '@/utils/deepFreeze';
 
-export namespace Config {
+export namespace Config
+{
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
       speed: animations[animation][0],

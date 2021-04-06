@@ -4,9 +4,9 @@ type Object3D = import('three/src/core/Object3D').Object3D;
 type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
 import type { EnemyAnimations } from '@/types.d';
 
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
-import CapsuleGeometry from '@/utils/CapsuleGeometry';
 
 import Character from '@/characters/Character';
 import { LoopOnce } from 'three/src/constants';
@@ -14,7 +14,8 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { HitBox } from '@/utils/Material';
 import { Config } from '@/config';
 
-export default class Enemy extends Character {
+export default class Enemy extends Character
+{
   private lastAnimation: EnemyAnimations = 'Idle';
   private currentAnimation!: AnimationAction;
 
@@ -91,7 +92,7 @@ export default class Enemy extends Character {
     const spine = this.character.getObjectByName('Spine') as Object3D;
 
     const bodyHitBox = new Mesh(
-      new CapsuleGeometry(0.2, 0.95),
+      new RoundedBoxGeometry(0.5, 0.95, 0.5, 2, 0.2),
       HitBox.clone()
     );
 

@@ -7,7 +7,8 @@ import { GameEvents } from '@/managers/GameEvents';
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
-export default class Rifle extends Weapon {
+export default class Rifle extends Weapon
+{
   private readonly position = Config.Rifle.position as Vector3;
   private readonly rotation = Config.Rifle.rotation as Euler;
   private readonly maxStock = Config.Rifle.maxStock;

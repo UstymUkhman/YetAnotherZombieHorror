@@ -1,4 +1,5 @@
-export default class Music {
+export default class Music
+{
   private readonly basePath = './assets/music';
   private track: HTMLAudioElement;
 

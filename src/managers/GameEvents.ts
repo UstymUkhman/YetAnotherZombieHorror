@@ -6,7 +6,8 @@ export class GameEvent extends CustomEvent<unknown> {
   public data: unknown = null;
 }
 
-export class GameEvents {
+export class GameEvents
+{
   private static readonly callbacks: Callbacks = new Map();
   private static readonly events: Events = new Map();
 

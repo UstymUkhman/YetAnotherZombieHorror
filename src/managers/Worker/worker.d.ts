@@ -1,5 +1,6 @@
 declare module 'worker-loader!*' {
-  class WebpackWorker extends Worker {
+  class WebpackWorker extends Worker
+  {
     public constructor();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

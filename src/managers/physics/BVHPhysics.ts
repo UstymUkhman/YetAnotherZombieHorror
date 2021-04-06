@@ -13,8 +13,8 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
 import PhysicsWorld from './PhysicsWorld';
+import { Vector } from '@/utils/Vector';
 
-const GRAVITY = -9.81;
 const SPEED = 5.0;
 
 export default class BVHPhysics extends PhysicsWorld
@@ -33,10 +33,6 @@ export default class BVHPhysics extends PhysicsWorld
   private paused = false;
   private player!: Mesh;
   private delta = 0.0;
-
-  protected addStaticCollider (collider: Mesh): void {
-    this.environment.attach(collider);
-  }
 
   private addPhysicsCollider (): void {
     const geometries: Array<BufferGeometry> = [];
@@ -64,6 +60,10 @@ export default class BVHPhysics extends PhysicsWorld
     this.collider = new Mesh(mergedGeometry);
   }
 
+  protected addStaticCollider (collider: Mesh): void {
+    this.environment.attach(collider);
+  }
+
   public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
     super.createBounds(bounds, sidewalk);
     this.addPhysicsCollider();
@@ -77,7 +77,7 @@ export default class BVHPhysics extends PhysicsWorld
     player.position.set(0, height, 0);
 
     this.player = player;
-    this.move(new Vector3(0, 1, 0));
+    this.move(Vector.UP);
   }
 
   public move (direction: Vector3): void {
@@ -85,7 +85,7 @@ export default class BVHPhysics extends PhysicsWorld
     const colliderMatrix = this.collider?.matrixWorld as Matrix4;
     const colliderGeometry = this.collider?.geometry as BVHGeometry;
 
-    this.playerVelocity.y += this.delta * GRAVITY;
+    this.playerVelocity.y += this.delta * this.GRAVITY;
     this.player.position.addScaledVector(this.playerVelocity, this.delta);
 
     this.linearVelocity.set(direction.x, direction.y, direction.z);

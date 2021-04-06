@@ -7,7 +7,8 @@ import type Player from '@/characters/Player';
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
 
-export default class Input {
+export default class Input
+{
   private readonly pointerLockChange = this.onPointerLockChange.bind(this);
   private readonly pointerLockError = this.onPointerLockError.bind(this);
 

@@ -10,7 +10,8 @@ import { MathUtils } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/managers/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
-export namespace Assets {
+export namespace Assets
+{
   export type Animations = Array<import('three/src/animation/AnimationClip').AnimationClip>;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
 
@@ -28,7 +29,8 @@ export namespace Assets {
     onError: Reject;
   }
 
-  export class Loader extends LoadingManager {
+  export class Loader extends LoadingManager
+  {
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);
     private readonly gltf = new GLTFLoader(this);

@@ -5,6 +5,10 @@
 		"svelte.plugin.svelte.enable": true,
 		"git.ignoreLimitWarning": true,
 
+		"[svelte]": {
+			"editor.defaultFormatter": "svelte.svelte-vscode"
+		},
+
 		"editor.codeActionsOnSave": {
 			"source.fixAll.eslint": false
 		},

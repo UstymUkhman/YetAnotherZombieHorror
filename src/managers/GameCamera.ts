@@ -1,28 +1,45 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { AudioListener } from 'three/src/audio/AudioListener';
-type Object3D = import('three/src/core/Object3D').Object3D;
-import { Vector3 } from 'three/src/math/Vector3';
 
+type Object3D = import('three/src/core/Object3D').Object3D;
+type Vector3 = import('three/src/math/Vector3').Vector3;
+
+import { Clock } from 'three/src/core/Clock';
+import { Vector } from '@/utils/Vector';
 import { Config } from '@/config';
+
 type RunCheck = () => boolean;
 import anime from 'animejs';
 
-class GameCamera {
-  private ratio: number = window.innerWidth / window.innerHeight;
-  private readonly onResize = this.updateAspectRatio.bind(this);
-  private camera = new PerspectiveCamera(45, this.ratio);
+class GameCamera
+{
+  private run = 0;
+  private shakeDuration = 0.0;
+
+  private readonly shakePower = 0.025;
+  private readonly shakeAttenuation = 1.0;
+
+  private readonly clock = new Clock();
+  private readonly audioListener = new AudioListener();
 
   private readonly TPS = Config.Camera.tps as Vector3;
   private readonly AIM = Config.Camera.aim as Vector3;
   private readonly RUN = Config.Camera.run as Vector3;
 
-  private audioListener = new AudioListener();
-  private shake = 0;
+  private readonly onResize = this.updateAspectRatio.bind(this);
+  private ratio: number = window.innerWidth / window.innerHeight;
+  private readonly camera = new PerspectiveCamera(45, this.ratio);
 
   public constructor () {
     this.addAudioListener();
     this.createEvents();
     this.setCamera();
+  }
+
+  private updateAspectRatio (): void {
+    this.ratio = window.innerWidth / window.innerHeight;
+    this.camera.aspect = this.ratio;
+    this.camera.updateProjectionMatrix();
   }
 
   private addAudioListener (): void {
@@ -31,12 +48,6 @@ class GameCamera {
 
   private createEvents (): void {
     window.addEventListener('resize', this.onResize, false);
-  }
-
-  private updateAspectRatio (): void {
-    this.ratio = window.innerWidth / window.innerHeight;
-    this.camera.aspect = this.ratio;
-    this.camera.updateProjectionMatrix();
   }
 
   private setCamera (): void {
@@ -65,16 +76,16 @@ class GameCamera {
   }
 
   public runAnimation (isRunning: RunCheck, running?: boolean): void {
-    if (!this.shake && running === false) return;
-    this.shake *= -1;
+    if (!this.run && running === false) return;
+    this.run *= -1;
 
     if (running !== undefined) {
       const { x, y, z } = running ? this.RUN : this.TPS;
-      this.shake = ~~running;
+      this.run = ~~running;
 
       anime({
         targets: this.camera.position,
-        delay: this.shake * 100,
+        delay: this.run * 100,
         easing: 'easeOutQuad',
         duration: 300,
         x, y, z
@@ -84,13 +95,30 @@ class GameCamera {
     anime({
       easing: running ?? true ? 'linear' : 'easeOutQuad',
       duration: ~~isRunning() * 250 + 250,
-      y: Math.PI + this.shake * 0.025,
+      y: Math.PI + this.run * 0.025,
       targets: this.camera.rotation,
       delay: ~~!!running * 1000,
 
       complete: () => isRunning() &&
         this.runAnimation(isRunning)
     });
+  }
+
+  public shakeAnimation (duration: number): void {
+    this.shakeDuration = Math.max(duration, 0);
+
+    if (this.shakeDuration) {
+      const delta = this.clock.getDelta();
+      const offset = Vector.random().multiplyScalar(this.shakePower);
+
+      setTimeout(() => this.shakeAnimation(this.shakeDuration), delta);
+      this.shakeDuration -= delta * this.shakeAttenuation;
+      this.camera.position.add(offset);
+    }
+
+    else {
+      this.camera.position.copy(this.TPS);
+    }
   }
 
   public deathAnimation (): void { return; }

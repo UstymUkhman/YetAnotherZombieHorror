@@ -18,6 +18,7 @@ import { Line3 } from 'three/src/math/Line3';
 
 import { camelCase } from '@/utils/String';
 import Physics from '@/managers/physics';
+import { Vector } from '@/utils/Vector';
 
 export default class Character
 {
@@ -52,7 +53,7 @@ export default class Character
     );
 
     this.object.userData = {
-      segment: new Line3(new Vector3(), new Vector3(0, -1, 0)),
+      segment: new Line3(new Vector3(), Vector.DOWN),
       height: y, radius: 0.5
     };
   }

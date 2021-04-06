@@ -3,7 +3,8 @@ import { CameraObject } from '@/managers/GameCamera';
 import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 
-export default class GameLevel {
+export default class GameLevel
+{
   private renderer = new WebGLRenderer({ antialias: true, alpha: false });
   private readonly onResize = this.setRenderSize.bind(this);
 

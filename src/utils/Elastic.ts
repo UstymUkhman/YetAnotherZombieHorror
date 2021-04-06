@@ -3,7 +3,8 @@ import { Vector3 as TVector3 } from 'three/src/math/Vector3';
 
 export namespace Elastic
 {
-  export class Number {
+  export class Number
+  {
     private current: number;
     private target: number;
     public speed = 10;
@@ -26,7 +27,8 @@ export namespace Elastic
     }
   }
 
-  export class Vector2 {
+  export class Vector2
+  {
     private readonly current = new TVector2();
     private readonly target = new TVector2();
     public speed = 10;
@@ -65,7 +67,8 @@ export namespace Elastic
     }
   }
 
-  export class Vector3 {
+  export class Vector3
+  {
     private readonly current = new TVector3();
     private readonly target = new TVector3();
     public speed = 10;

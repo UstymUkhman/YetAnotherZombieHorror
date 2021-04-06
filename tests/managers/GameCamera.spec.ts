@@ -45,6 +45,25 @@ describe('GameCamera', () => {
     expect(runAnimation).toHaveReturnedWith(undefined);
   });
 
+  test('shakeAnimation', () => {
+    const { x, y, z } = Camera.object.position;
+    const shakeAnimation = jest.fn(Camera.shakeAnimation.bind(Camera));
+
+    shakeAnimation(0.0);
+
+    expect(Camera.object.position.x).toStrictEqual(x);
+    expect(Camera.object.position.y).toStrictEqual(y);
+    expect(Camera.object.position.z).toStrictEqual(z);
+
+    shakeAnimation(0.1);
+
+    expect(Camera.object.position.x).not.toStrictEqual(x);
+    expect(Camera.object.position.y).not.toStrictEqual(y);
+    expect(Camera.object.position.z).not.toStrictEqual(z);
+
+    expect(shakeAnimation).toHaveReturnedWith(undefined);
+  });
+
   test('deathAnimation', () => {
     const deathAnimation = jest.fn(Camera.deathAnimation.bind(Camera));
     deathAnimation();

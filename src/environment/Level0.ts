@@ -14,7 +14,8 @@ import { Color } from '@/utils/Color';
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
-export default class Level0 extends GameLevel {
+export default class Level0 extends GameLevel
+{
   private readonly music = new Music(Config.Level0.music);
   private controls?: OrbitControls;
 

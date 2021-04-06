@@ -19,16 +19,17 @@ import Input from '@/managers/Input';
 import Rifle from '@/weapons/Rifle';
 import { Config } from '@/config';
 
-export default class GameLoop {
-  private clock = new Clock();
-  private level = new Level0();
+export default class GameLoop
+{
+  private readonly clock = new Clock();
+  private readonly level = new Level0();
 
-  private rifle = new Rifle();
-  private pistol = new Pistol();
-  private player = new Player();
+  private readonly rifle = new Rifle();
+  private readonly pistol = new Pistol();
+  private readonly player = new Player();
 
-  // private enemyAssets?: EnemyAssets;
-  private enemies: Array<Enemy> = [];
+  // private readonly enemyAssets?: EnemyAssets;
+  private readonly enemies: Array<Enemy> = [];
 
   private readonly worker = new Worker();
   private readonly loader = new Assets.Loader();
