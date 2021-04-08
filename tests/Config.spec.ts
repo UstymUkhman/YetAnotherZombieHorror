@@ -25,6 +25,29 @@ describe('Settings', () => {
     expect(Config.APP).toStrictEqual(false);
   });
 
+  test('Settings', () => {
+    expect(typeof Config.Settings.ammoPhysics).toStrictEqual('boolean');
+  });
+
+  test('Camera', () => {
+    const cameraFPSPosition = new Vector3(...Camera.fps);
+    const cameraTPSPosition = new Vector3(...Camera.tps);
+    const cameraAimPosition = new Vector3(...Camera.aim);
+    const cameraRunPosition = new Vector3(...Camera.run);
+
+    expect(Config.Camera.fps).toStrictEqual(cameraFPSPosition);
+    expect(Config.Camera.fps).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.tps).toStrictEqual(cameraTPSPosition);
+    expect(Config.Camera.tps).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.aim).toStrictEqual(cameraAimPosition);
+    expect(Config.Camera.aim).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.run).toStrictEqual(cameraRunPosition);
+    expect(Config.Camera.run).toBeInstanceOf(Vector3);
+  });
+
   test('Level0', () => {
     const levelPosition = new Vector3(...Level0.position);
     const levelScale = new Vector3(...Level0.scale);
@@ -171,25 +194,6 @@ describe('Settings', () => {
     expect(Config.Rifle.speed).toBeGreaterThan(0);
 
     expect(Config.Rifle.spread).toBeInstanceOf(Vector2);
-  });
-
-  test('Camera', () => {
-    const cameraFPSPosition = new Vector3(...Camera.fps);
-    const cameraTPSPosition = new Vector3(...Camera.tps);
-    const cameraAimPosition = new Vector3(...Camera.aim);
-    const cameraRunPosition = new Vector3(...Camera.run);
-
-    expect(Config.Camera.fps).toStrictEqual(cameraFPSPosition);
-    expect(Config.Camera.fps).toBeInstanceOf(Vector3);
-
-    expect(Config.Camera.tps).toStrictEqual(cameraTPSPosition);
-    expect(Config.Camera.tps).toBeInstanceOf(Vector3);
-
-    expect(Config.Camera.aim).toStrictEqual(cameraAimPosition);
-    expect(Config.Camera.aim).toBeInstanceOf(Vector3);
-
-    expect(Config.Camera.run).toStrictEqual(cameraRunPosition);
-    expect(Config.Camera.run).toBeInstanceOf(Vector3);
   });
 
   test('Frozen', () => {

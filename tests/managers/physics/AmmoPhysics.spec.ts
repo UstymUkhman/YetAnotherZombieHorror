@@ -1,4 +1,4 @@
-import '../globals';
+import '../../globals';
 import { Config } from '@/config';
 import { Bounds } from '@/types.d';
 
@@ -8,12 +8,21 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { Vector3 } from 'three/src/math/Vector3';
 import AmmoPhysics from '@/managers/physics/AmmoPhysics';
 
-describe('Physics', () => {
+describe('AmmoPhysics', () => {
   const Physics = new AmmoPhysics();
 
   test('Create', () => {
     expect(Physics).toBeDefined();
     expect(Physics).toBeInstanceOf(Object);
+  });
+
+  test('createGround', () => {
+    const createGround = jest.fn(Physics.createGround.bind(
+      Physics, Level0.minCoords, Level0.maxCoords
+    ));
+
+    createGround();
+    expect(createGround).toHaveReturnedWith(undefined);
   });
 
   test('createBounds', () => {
@@ -29,15 +38,6 @@ describe('Physics', () => {
 
     createBounds();
     expect(createBounds).toHaveReturnedWith(undefined);
-  });
-
-  test('createGround', () => {
-    const createGround = jest.fn(Physics.createGround.bind(
-      Physics, Level0.minCoords, Level0.maxCoords
-    ));
-
-    createGround();
-    expect(createGround).toHaveReturnedWith(undefined);
   });
 
   test('setPlayer', () => {
