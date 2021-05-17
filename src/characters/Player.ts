@@ -346,12 +346,10 @@ export default class Player extends Character
   }
 
   public get location (): Location {
-    const { x, z } = this.rotation;
-
     return {
       position: this.position,
       rotation: MathUtils.radToDeg(
-        Math.atan2(-x, z)
+        Math.atan2(-this.rotation.x, this.rotation.z)
       )
     };
   }

@@ -45,6 +45,7 @@
 
   "exclude": [
     "node_modules",
+    "typings",
     "public",
     "build",
     "app"

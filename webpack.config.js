@@ -3,35 +3,28 @@
 const path = require('path');
 const webpack = require('webpack');
 const config = require('./package.json');
-const svelteConfig = require('./svelte.config.js');
-
 const app = require('yargs').argv.env === 'app';
+const svelteConfig = require('./svelte.config.js');
+const ESLintPlugin = require('eslint-webpack-plugin');
+
 const TerserPlugin = require('terser-webpack-plugin');
 const build = require('yargs').argv.env === 'build' || app;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ThreeMinifierPlugin = require('@yushijinhun/three-minifier-webpack');
 
 process.env.NODE_ENV = build ? 'production' : 'development';
 const PORT = process.env.PORT && Number(process.env.PORT);
+const threeMinifierPlugin = new ThreeMinifierPlugin();
 const HOST = process.env.HOST;
 
 module.exports = {
-  devtool: build ? false : 'cheap-module-eval-source-map',
+  devtool: build ? false : 'eval-cheap-module-source-map',
   entry: path.resolve('./src/main.ts'),
   name: 'Another Dumb Zombie Game',
   mode: process.env.NODE_ENV,
 
   module: {
     rules: [{
-      enforce: 'pre',
-      test: /\.tsx?$/,
-      loader: 'eslint-loader',
-      include: [path.resolve('./src')],
-
-      options: {
-        formatter: require('eslint-friendly-formatter'),
-        emitWarning: !build
-      }
-    }, {
       test: /\.svelte$/,
       loader: 'svelte-loader',
       exclude: /node_modules/,
@@ -47,13 +40,12 @@ module.exports = {
     }, {
       test: /\.s?css$/,
       use: !build ? ['style-loader', 'css-loader', 'sass-loader'] : [{
-          loader: MiniCssExtractPlugin.loader,
-          options: { publicPath: '../' }
-        }, {
-          options: { sourceMap: false },
-          loader: 'css-loader'
-        }
-      ]
+        loader: MiniCssExtractPlugin.loader,
+        options: { publicPath: '../' }
+      }, {
+        options: { sourceMap: false },
+        loader: 'css-loader'
+      }]
     }, {
       test: /\.(mp4|webm)(\?.*)?$/i,
       loader: 'url-loader',
@@ -100,19 +92,14 @@ module.exports = {
     }]
   },
 
-  resolve: {
-    modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.svelte', '.mjs', '.ts', '.tsx', '.js', '.json'],
-    mainFields: ['svelte', 'browser', 'module', 'main'],
-
-    alias: {
-      '@components': path.resolve('./src/components'),
-      '@scss': path.resolve('./src/components/scss'),
-      '@': path.resolve('./src')
-    }
-  },
-
   plugins: [
+    threeMinifierPlugin,
+
+    new ESLintPlugin({
+      emitWarning: !build,
+      formatter: require('eslint-friendly-formatter'),
+    }),
+
     new MiniCssExtractPlugin({
       chunkFilename: 'styles/[name].css',
       filename: 'styles/index.css'
@@ -133,6 +120,19 @@ module.exports = {
       new webpack.NoEmitOnErrorsPlugin()
     ])
   ],
+
+  resolve: {
+    modules: [path.resolve('./node_modules'), path.resolve('./src')],
+    extensions: ['.svelte', '.mjs', '.ts', '.tsx', '.js', '.json'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
+    plugins: [threeMinifierPlugin.resolver],
+
+    alias: {
+      '@components': path.resolve('./src/components'),
+      '@scss': path.resolve('./src/components/scss'),
+      '@': path.resolve('./src')
+    }
+  },
 
   output: {
     libraryTarget: build ? 'umd' : 'var',
