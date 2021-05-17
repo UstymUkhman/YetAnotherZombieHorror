@@ -1,27 +1,29 @@
 {
-  "name": "another-dumb-zombie-game",
-  "description": "Another Dumb Zombie Game",
+  "name": "YetAnotherZombieHorror",
+  "description": "Yet Another Zombie Horror",
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com>",
-  "homepage": "https://github.com/UstymUkhman/another-dumb-zombie-game#readme",
+  "homepage": "https://github.com/UstymUkhman/YetAnotherZombieHorror#readme",
   "main": "src/main.ts",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "license": "MIT",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game.git"
+    "url": "https://github.com/UstymUkhman/YetAnotherZombieHorror.git"
   },
   "bugs": {
-    "url": "https://github.com/UstymUkhman/another-dumb-zombie-game/issues",
+    "url": "https://github.com/UstymUkhman/YetAnotherZombieHorror/issues",
     "email": "ustym.ukhman@gmail.com"
   },
   "keywords": [
     "fps",
     "tps",
     "game",
+    "horror",
     "zombies",
     "shooter",
     "survival",
+    "survival-horror",
     "survival-shooter",
     "first-person-shooter",
     "third-person-shooter",

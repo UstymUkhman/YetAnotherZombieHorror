@@ -13,14 +13,14 @@ describe('String', () => {
   });
 
   test('capitalize', () => {
-    const name = 'another dumb zombie game';
-    const capitalized = 'Another dumb zombie game';
+    const name = 'yet another zombie horror';
+    const capitalized = 'Yet another zombie horror';
     expect(capitalize(name)).toStrictEqual(capitalized);
   });
 
   test('camelCase', () => {
-    const name = 'AnotherDumbZombieGame';
-    const camelCased = 'anotherDumbZombieGame';
+    const name = 'YetAnotherZombieHorror';
+    const camelCased = 'yetAnotherZombieHorror';
     expect(camelCase(name)).toStrictEqual(camelCased);
   });
 });

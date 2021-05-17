@@ -1,7 +1,7 @@
 copyright: Copyright © 2021 Ustym Ukhman
-productName: Another Dumb Zombie Game
-appId: another.dumb.zombie.game
+productName: Yet Another Zombie Horror
 publish: null
+appId: yazh
 
 extraMetadata:
   main: build/main.js

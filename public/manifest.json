@@ -1,8 +1,8 @@
 {
-  "name": "Another Dumb Zombie Game",
-  "short_name": "Another Dumb Zombie Game",
+  "name": "Yet Another Zombie Horror",
   "orientation": "landscape",
   "display": "fullscreen",
+  "short_name": "YAZH",
   "start_url": "./",
   "scope": "./",
   "icons": [{

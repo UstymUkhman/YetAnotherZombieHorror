@@ -1,16 +1,18 @@
-![GitHub deployments](https://img.shields.io/github/deployments/UstymUkhman/another-dumb-zombie-game/github-pages)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UstymUkhman/another-dumb-zombie-game/Check%20commit%20message%20style/master)
-![GitHub repo size](https://img.shields.io/github/repo-size/UstymUkhman/another-dumb-zombie-game)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/another-dumb-zombie-game)
-![GitHub](https://img.shields.io/github/license/UstymUkhman/another-dumb-zombie-game)
+![GitHub deployments](https://img.shields.io/github/deployments/UstymUkhman/YetAnotherZombieHorror/github-pages)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UstymUkhman/YetAnotherZombieHorror/Check%20commit%20message%20style/master)
+![GitHub repo size](https://img.shields.io/github/repo-size/UstymUkhman/YetAnotherZombieHorror)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/YetAnotherZombieHorror)
+![GitHub](https://img.shields.io/github/license/UstymUkhman/YetAnotherZombieHorror)
 
-# [Another Dumb Zombie Game](https://ustymukhman.github.io/another-dumb-zombie-game/public/) #
+# [Yet Another Zombie Horror](https://ustymukhman.github.io/YetAnotherZombieHorror/public/) #
+
+> (or simply ***YAZH*** [[jɑːʒ](./public/assets/sounds/YAZH.mp3)]) is a first / third person zombie survival shooter.
 
 ## Download ##
 
-`git clone https://github.com/UstymUkhman/another-dumb-zombie-game.git`
+`git clone https://github.com/UstymUkhman/YetAnotherZombieHorror.git`
 
-`cd another-dumb-zombie-game`
+`cd YetAnotherZombieHorror`
 
 ## Develop ##
 
