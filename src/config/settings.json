@@ -1,3 +1,4 @@
 {
-  "physics": "ammo"
+  "physics": "ammo",
+  "mode": "fps"
 }

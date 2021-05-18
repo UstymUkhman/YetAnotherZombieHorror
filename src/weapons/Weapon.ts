@@ -117,7 +117,8 @@ export default class Weapon
 
   public setAim (): void { return; }
 
-  public cancelAim (): void { return; }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public cancelAim (duration?: number): void { return; }
 
   public shoot (player: Vector3): boolean {
     const shoot = !this.empty;
@@ -146,7 +147,7 @@ export default class Weapon
   public stopReloading (): void { return; }
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  public addAmmo (ammo: number): void { return; }
+  public addAmmo (ammo?: number): void { return; }
 
   protected getClone (): Assets.GLTF {
     const clone = this.asset as Assets.GLTF;

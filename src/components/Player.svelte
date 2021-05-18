@@ -1,4 +1,4 @@
-<div style="transform: rotate({rotation}deg);"></div>
+<div style="transform: rotate({rotation}deg);" />
 
 <script lang="typescript">
   export let rotation: number;

@@ -7,7 +7,9 @@ describe('GameCamera', () => {
   test('CameraObject', () => {
     expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
     expect(Camera.object).toStrictEqual(CameraObject);
-    expect(Camera.object.fov).toBeCloseTo(55.4, 1);
+
+    expect(Camera.object.fov).toBeGreaterThan(55.4);
+    expect(Camera.object.fov).toBeLessThan(60.513);
   });
 
   test('CameraListener', () => {

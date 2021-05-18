@@ -11,6 +11,12 @@ import { Config } from '@/config';
 type RunCheck = () => boolean;
 import anime from 'animejs';
 
+type Positions = {
+  readonly idle: Vector3;
+  readonly aim: Vector3;
+  readonly run: Vector3;
+};
+
 class GameCamera
 {
   private run = 0;
@@ -20,17 +26,17 @@ class GameCamera
   private readonly shakeAttenuation = 1.0;
 
   private readonly clock = new Clock();
+  private readonly camera: PerspectiveCamera;
+  private readonly fps = Config.Settings.fpCamera;
+
   private readonly audioListener = new AudioListener();
-
-  private readonly TPS = Config.Camera.tps as Vector3;
-  private readonly AIM = Config.Camera.aim as Vector3;
-  private readonly RUN = Config.Camera.run as Vector3;
-
   private readonly onResize = this.updateAspectRatio.bind(this);
   private ratio: number = window.innerWidth / window.innerHeight;
-  private readonly camera = new PerspectiveCamera(45, this.ratio);
 
   public constructor () {
+    const near = +this.fps * 0.215 + 0.1;
+    this.camera = new PerspectiveCamera(45, this.ratio, near);
+
     this.addAudioListener();
     this.createEvents();
     this.setCamera();
@@ -51,13 +57,19 @@ class GameCamera
   }
 
   private setCamera (): void {
-    this.camera.rotation.set(0, Math.PI, 0);
-    this.camera.position.copy(this.TPS);
-    this.camera.setFocalLength(25.0);
+    const idle = this.position.idle;
+    const focalLength = +!this.fps * 2.5 + 22.5;
+
+    this.camera.rotation.set(0.0, Math.PI, 0.0);
+    this.camera.setFocalLength(focalLength);
+    this.camera.position.copy(idle);
   }
 
   public aimAnimation (running: boolean, aiming: boolean, duration: number): void {
-    const { x, y, z } = aiming ? this.AIM : this.TPS;
+    const { idle, aim } = this.position;
+    const { x, y, z } = aiming ? aim : idle;
+    const near = +(this.fps && +!aiming) * 0.215 + 0.1;
+
     anime.running.length = 0;
 
     running && aiming && anime({
@@ -67,10 +79,18 @@ class GameCamera
       y: Math.PI
     });
 
+    this.fps && anime({
+      update: () => this.camera.updateProjectionMatrix(),
+      easing: 'easeInOutQuad',
+      targets: this.camera,
+      delay: +aiming * 100,
+      duration, near
+    });
+
     anime({
       targets: this.camera.position,
       easing: 'easeInOutQuad',
-      delay: ~~aiming * 100,
+      delay: +aiming * 100,
       duration, x, y, z
     });
   }
@@ -80,8 +100,10 @@ class GameCamera
     this.run *= -1;
 
     if (running !== undefined) {
-      const { x, y, z } = running ? this.RUN : this.TPS;
-      this.run = ~~running;
+      const { idle, run } = this.position;
+      const { x, y, z } = running ? run : idle;
+
+      this.run = +running;
 
       anime({
         targets: this.camera.position,
@@ -94,10 +116,10 @@ class GameCamera
 
     anime({
       easing: running ?? true ? 'linear' : 'easeOutQuad',
-      duration: ~~isRunning() * 250 + 250,
+      duration: +(isRunning() && !this.fps) * 250 + 250,
       y: Math.PI + this.run * 0.025,
       targets: this.camera.rotation,
-      delay: ~~!!running * 1000,
+      delay: +!!running * 1000,
 
       complete: () => isRunning() &&
         this.runAnimation(isRunning)
@@ -117,7 +139,7 @@ class GameCamera
     }
 
     else {
-      this.camera.position.copy(this.TPS);
+      this.camera.position.copy(this.position.idle);
     }
   }
 
@@ -129,6 +151,10 @@ class GameCamera
 
   public destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
+  }
+
+  private get position (): Positions {
+    return Config.Camera[this.fps ? 'fps' : 'tps'] as Positions;
   }
 
   public get object (): PerspectiveCamera {

@@ -27,25 +27,36 @@ describe('Settings', () => {
 
   test('Settings', () => {
     expect(typeof Config.Settings.ammoPhysics).toStrictEqual('boolean');
+    expect(typeof Config.Settings.fpCamera).toStrictEqual('boolean');
   });
 
-  test('Camera', () => {
-    const cameraFPSPosition = new Vector3(...Camera.fps);
-    const cameraTPSPosition = new Vector3(...Camera.tps);
-    const cameraAimPosition = new Vector3(...Camera.aim);
-    const cameraRunPosition = new Vector3(...Camera.run);
+  test('Camera.fps', () => {
+    const cameraTPSIdlePosition = new Vector3(...Camera.fps.idle);
+    const cameraTPSAimPosition = new Vector3(...Camera.fps.aim);
 
-    expect(Config.Camera.fps).toStrictEqual(cameraFPSPosition);
-    expect(Config.Camera.fps).toBeInstanceOf(Vector3);
+    expect(Config.Camera.fps.idle).toStrictEqual(cameraTPSIdlePosition);
+    expect(Config.Camera.fps.idle).toBeInstanceOf(Vector3);
 
-    expect(Config.Camera.tps).toStrictEqual(cameraTPSPosition);
-    expect(Config.Camera.tps).toBeInstanceOf(Vector3);
+    expect(Config.Camera.fps.run).toStrictEqual(cameraTPSIdlePosition);
+    expect(Config.Camera.fps.run).toBeInstanceOf(Vector3);
 
-    expect(Config.Camera.aim).toStrictEqual(cameraAimPosition);
-    expect(Config.Camera.aim).toBeInstanceOf(Vector3);
+    expect(Config.Camera.fps.aim).toStrictEqual(cameraTPSAimPosition);
+    expect(Config.Camera.fps.aim).toBeInstanceOf(Vector3);
+  });
 
-    expect(Config.Camera.run).toStrictEqual(cameraRunPosition);
-    expect(Config.Camera.run).toBeInstanceOf(Vector3);
+  test('Camera.tps', () => {
+    const cameraTPSIdlePosition = new Vector3(...Camera.tps.idle);
+    const cameraTPSRunPosition = new Vector3(...Camera.tps.run);
+    const cameraTPSAimPosition = new Vector3(...Camera.tps.aim);
+
+    expect(Config.Camera.tps.idle).toStrictEqual(cameraTPSIdlePosition);
+    expect(Config.Camera.tps.idle).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.tps.run).toStrictEqual(cameraTPSRunPosition);
+    expect(Config.Camera.tps.run).toBeInstanceOf(Vector3);
+
+    expect(Config.Camera.tps.aim).toStrictEqual(cameraTPSAimPosition);
+    expect(Config.Camera.tps.aim).toBeInstanceOf(Vector3);
   });
 
   test('Level0', () => {

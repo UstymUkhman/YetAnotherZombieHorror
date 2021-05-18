@@ -30,100 +30,100 @@
 </main>
 
 <script lang="typescript">
-  import BorderRifle from '@components/BorderRifle.svelte';
-  import { GameEvents } from '@/managers/GameEvents';
-  import Close from '@components/CloseButton.svelte';
+import BorderRifle from '@components/BorderRifle.svelte';
+import { GameEvents } from '@/managers/GameEvents';
+import Close from '@components/CloseButton.svelte';
 
-  import Loader from '@components/Loader.svelte';
-  import Pause from '@components/Pause.svelte';
-  import { onMount, onDestroy } from 'svelte';
-  import GameLoop from '@/managers/GameLoop';
-  import { Elastic } from '@/utils/Elastic';
+import Loader from '@components/Loader.svelte';
+import Pause from '@components/Pause.svelte';
+import { onMount, onDestroy } from 'svelte';
+import GameLoop from '@/managers/GameLoop';
+import { Elastic } from '@/utils/Elastic';
 
-  import type { Location } from '@/types.d';
-  import Aim from '@components/Aim.svelte';
-  import Map from '@components/Map.svelte';
-  import { Config } from '@/config';
+import type { Location } from '@/types.d';
+import Aim from '@components/Aim.svelte';
+import Map from '@components/Map.svelte';
+import { Config } from '@/config';
 
-  const zoom = new Elastic.Number(0);
-  const game = new GameLoop();
+const zoom = new Elastic.Number(0);
+const game = new GameLoop();
 
-  let visibleRifle = false;
-  let rifleAngle: number;
-  let main: HTMLElement;
-  let player: Location;
+let visibleRifle = false;
+let rifleAngle: number;
+let main: HTMLElement;
+let player: Location;
 
-  let zoomScale: number;
-  let mapRadius: number;
+let zoomScale: number;
+let mapRadius: number;
 
-  let running = false;
-  let loading = true;
-  let scale: number;
-  let raf: number;
+let running = false;
+let loading = true;
+let scale: number;
+let raf: number;
 
-  let lastFrameDelta = 0;
-  const FPS = 60, INT = 1e3 / 60;
-  const FMT = INT * (60 / FPS) - INT / 2;
+let lastFrameDelta = 0;
+const FPS = 60, INT = 1e3 / 60;
+const FMT = INT * (60 / FPS) - INT / 2;
 
-  function togglePause (paused: boolean): void {
-    if (game.pause !== paused) {
-      paused
-        ? cancelAnimationFrame(raf)
-        : requestAnimationFrame(update);
+function togglePause (paused: boolean): void {
+  if (game.pause !== paused) {
+    paused
+      ? cancelAnimationFrame(raf)
+      : requestAnimationFrame(update);
 
-      game.pause = paused;
-    }
+    game.pause = paused;
   }
+}
 
-  function update (delta: number): void {
-    if (delta - lastFrameDelta < FMT) {
-      raf = requestAnimationFrame(update);
-      return;
-    }
-
+function update (delta: number): void {
+  if (delta - lastFrameDelta < FMT) {
     raf = requestAnimationFrame(update);
-    player = game.playerLocation;
-    lastFrameDelta = delta;
-
-    zoomScale = Math.round(
-      (1 - zoom.value) * 1e5 + Number.EPSILON
-    ) / 1e5;
-
-    zoom.update();
-    game.update();
+    return;
   }
 
-  function updateRifleAngle (event: CustomEvent): void {
-    visibleRifle = event.detail.visible;
-    rifleAngle = event.detail.angle;
-  }
+  raf = requestAnimationFrame(update);
+  player = game.playerLocation;
+  lastFrameDelta = delta;
 
-  function updateScale (): void {
-    mapRadius = window.innerWidth / 17.25;
-    scale = window.innerWidth / 175;
-  }
+  zoomScale = Math.round(
+    (1 - zoom.value) * 1e5 + Number.EPSILON
+  ) / 1e5;
 
-  GameEvents.add('game:pause', event => togglePause(event.data as boolean));
-  window.addEventListener('resize', updateScale);
+  zoom.update();
+  game.update();
+}
 
-  GameEvents.add('player:run', event => {
-    running = event.data as boolean;
-    zoom.set(~~running * 0.5);
-  });
+function updateRifleAngle (event: CustomEvent): void {
+  visibleRifle = event.detail.visible;
+  rifleAngle = event.detail.angle;
+}
 
-  onMount(() => {
-    main.prepend(game.scene);
-    updateScale();
-  });
+function updateScale (): void {
+  mapRadius = window.innerWidth / 17.25;
+  scale = window.innerWidth / 175;
+}
 
-  onDestroy(() => {
-    GameEvents.remove('player:run');
-    GameEvents.remove('pause');
-    cancelAnimationFrame(raf);
+GameEvents.add('game:pause', event => togglePause(event.data as boolean));
+window.addEventListener('resize', updateScale);
 
-    togglePause(true);
-    game.destroy();
-  });
+GameEvents.add('player:run', event => {
+  running = event.data as boolean;
+  zoom.set(~~running * 0.5);
+});
+
+onMount(() => {
+  main.prepend(game.scene);
+  updateScale();
+});
+
+onDestroy(() => {
+  GameEvents.remove('player:run');
+  GameEvents.remove('pause');
+  cancelAnimationFrame(raf);
+
+  togglePause(true);
+  game.destroy();
+});
 </script>
 
 <style lang="scss" global>

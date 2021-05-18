@@ -8,7 +8,7 @@ on:
       - synchronize
   push:
     branches:
-      - master
+      - main
       - 'dev/*'
 
 jobs:

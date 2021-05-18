@@ -12,6 +12,7 @@ import { DynamicCollider } from '@/utils/Material';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/managers/AssetsLoader';
+import { FrontSide } from 'three/src/constants';
 
 import { Mesh } from 'three/src/objects/Mesh';
 import { Line3 } from 'three/src/math/Line3';
@@ -70,6 +71,7 @@ export default class Character
           map: material.map,
           specular: 0x000000,
           transparent: true,
+          side: FrontSide,
           skinning: true,
           shininess: 0,
           opacity
@@ -90,6 +92,10 @@ export default class Character
 
   protected setAnimation (animation: CharacterAnimation): void {
     this.step = this.config.moves[animation];
+  }
+
+  protected setMixerTime (time: number): void {
+    this.mixer?.setTime(time);
   }
 
   private updateCharacterLocation (): void {

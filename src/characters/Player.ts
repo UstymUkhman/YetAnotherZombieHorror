@@ -34,7 +34,9 @@ export default class Player extends Character
   private shooting = false;
   private aiming = false;
 
+  private head?: Object3D;
   private hand?: Object3D;
+
   private pistol?: Pistol;
   private rifle?: Rifle;
 
@@ -178,15 +180,20 @@ export default class Player extends Character
     Camera.aimAnimation(this.running, true, 400);
 
     this.aimTime = this.equipRifle ? Date.now() : 0;
-    const next = this.equipRifle ? 'rifleAim' : this.getWeaponAnimation('Idle');
+    const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
+
+    this.weapon.setAim();
 
     if (this.lastAnimation !== next) {
       this.aimTimeout = this.updateAnimation('Idle', next);
-      this.weapon.setAim();
-
       this.running = false;
       this.moving = false;
     }
+
+    !this.equipRifle && setTimeout(() => {
+      this.currentAnimation.paused = true;
+      this.setMixerTime(0.5);
+    }, 400);
   }
 
   public stopAiming (): void {
@@ -194,8 +201,10 @@ export default class Player extends Character
     Camera.aimAnimation(this.running, false, duration);
 
     this.weapon.aim = this.aiming = false;
+    this.currentAnimation.paused = false;
+
+    this.weapon.cancelAim(duration);
     clearTimeout(this.aimTimeout);
-    this.weapon.cancelAim();
   }
 
   public startShooting (): void {
@@ -277,15 +286,20 @@ export default class Player extends Character
     const model = (await this.load()).scene;
 
     this.hand = model.getObjectByName('swatRightHand');
-    this.currentAnimation = this.animations.pistolIdle;
+    this.head = model.getObjectByName('Soldier_head_2');
 
     this.animations.rifleReload.clampWhenFinished = true;
     this.animations.rifleAim.clampWhenFinished = true;
     this.animations.death.clampWhenFinished = true;
 
+    this.currentAnimation = this.animations.pistolIdle;
     this.animations.rifleReload.setLoop(LoopOnce, 1);
     this.animations.rifleAim.setLoop(LoopOnce, 1);
     this.animations.death.setLoop(LoopOnce, 1);
+
+    if (this.head) {
+      this.head.visible = false;
+    }
 
     !Config.freeCamera && Camera.setTo(model);
     this.currentAnimation.play();

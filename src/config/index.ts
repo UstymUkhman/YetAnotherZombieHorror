@@ -49,14 +49,22 @@ export namespace Config
   export const hitBoxes = false;
 
   export const Settings = deepFreeze({
-    ammoPhysics: SettingsData.physics === 'ammo'
+    ammoPhysics: SettingsData.physics === 'ammo',
+    fpCamera: SettingsData.mode === 'fps'
   });
 
   export const Camera = deepFreeze({
-    fps: new Vector3(...CameraData.fps),
-    tps: new Vector3(...CameraData.tps),
-    aim: new Vector3(...CameraData.aim),
-    run: new Vector3(...CameraData.run)
+    fps: {
+      idle: new Vector3(...CameraData.fps.idle),
+      run: new Vector3(...CameraData.fps.idle),
+      aim: new Vector3(...CameraData.fps.aim)
+    },
+
+    tps: {
+      idle: new Vector3(...CameraData.tps.idle),
+      run: new Vector3(...CameraData.tps.run),
+      aim: new Vector3(...CameraData.tps.aim)
+    }
   });
 
   export const Level0 = deepFreeze({
