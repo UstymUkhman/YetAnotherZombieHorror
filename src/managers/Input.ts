@@ -147,6 +147,9 @@ export default class Input
       case 'KeyE':
         return this.player.changeWeapon();
 
+      case 'KeyC':
+        return this.player.changeCamera();
+
       case 'KeyR':
         return this.player.reload(() => ({
           directions: this.moves,

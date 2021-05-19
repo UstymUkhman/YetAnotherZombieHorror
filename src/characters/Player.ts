@@ -34,9 +34,7 @@ export default class Player extends Character
   private shooting = false;
   private aiming = false;
 
-  private head?: Object3D;
   private hand?: Object3D;
-
   private pistol?: Pistol;
   private rifle?: Rifle;
 
@@ -286,20 +284,15 @@ export default class Player extends Character
     const model = (await this.load()).scene;
 
     this.hand = model.getObjectByName('swatRightHand');
-    this.head = model.getObjectByName('Soldier_head_2');
+    this.currentAnimation = this.animations.pistolIdle;
 
     this.animations.rifleReload.clampWhenFinished = true;
     this.animations.rifleAim.clampWhenFinished = true;
     this.animations.death.clampWhenFinished = true;
 
-    this.currentAnimation = this.animations.pistolIdle;
     this.animations.rifleReload.setLoop(LoopOnce, 1);
     this.animations.rifleAim.setLoop(LoopOnce, 1);
     this.animations.death.setLoop(LoopOnce, 1);
-
-    if (this.head) {
-      this.head.visible = false;
-    }
 
     !Config.freeCamera && Camera.setTo(model);
     this.currentAnimation.play();
@@ -322,6 +315,7 @@ export default class Player extends Character
 
     rifle.targets = targets;
     this.hand?.add(rifle.model);
+    Camera.changeView(this.running, true);
   }
 
   public changeWeapon (): void {
@@ -332,6 +326,11 @@ export default class Player extends Character
         ? this.setRifle(targets, this.rifle as Rifle)
         : this.setPistol(targets, this.pistol as Pistol);
     }
+  }
+
+  public changeCamera (): void {
+    if (this.aiming || this.equipRifle) return;
+    Camera.changeView(this.running);
   }
 
   public pickRifle (rifle: Rifle): void {

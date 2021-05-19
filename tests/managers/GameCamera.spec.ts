@@ -1,4 +1,6 @@
 import '../globals';
+import { Config } from '@/config';
+
 import { Object3D } from 'three/src/core/Object3D';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';
@@ -8,7 +10,7 @@ describe('GameCamera', () => {
     expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
     expect(Camera.object).toStrictEqual(CameraObject);
 
-    expect(Camera.object.fov).toBeGreaterThan(55.4);
+    expect(Camera.object.fov).toBeGreaterThan(55.3);
     expect(Camera.object.fov).toBeLessThan(60.513);
   });
 
@@ -32,6 +34,15 @@ describe('GameCamera', () => {
     expect(setCamera).toHaveReturnedWith(undefined);
   });
 
+  test('changeView', () => {
+    const changeView = jest.fn(Camera.changeView.bind(Camera));
+    changeView(true);
+    expect(changeView).toHaveReturnedWith(undefined);
+
+    changeView(false, true);
+    expect(changeView).toHaveReturnedWith(undefined);
+  });
+
   test('aimAnimation', () => {
     const aimAnimation = jest.fn(Camera.aimAnimation.bind(Camera));
     aimAnimation(true, false, 400);
@@ -48,7 +59,7 @@ describe('GameCamera', () => {
   });
 
   test('shakeAnimation', () => {
-    const { x, y, z } = Camera.object.position;
+    const { x, y, z } = Config.Camera.tps.idle;
     const shakeAnimation = jest.fn(Camera.shakeAnimation.bind(Camera));
 
     shakeAnimation(0.0);

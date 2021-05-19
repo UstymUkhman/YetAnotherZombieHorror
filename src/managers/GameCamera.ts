@@ -21,13 +21,13 @@ class GameCamera
 {
   private run = 0;
   private shakeDuration = 0.0;
+  private fps = Config.Settings.fpCamera;
 
   private readonly shakePower = 0.025;
   private readonly shakeAttenuation = 1.0;
 
   private readonly clock = new Clock();
   private readonly camera: PerspectiveCamera;
-  private readonly fps = Config.Settings.fpCamera;
 
   private readonly audioListener = new AudioListener();
   private readonly onResize = this.updateAspectRatio.bind(this);
@@ -63,6 +63,29 @@ class GameCamera
     this.camera.rotation.set(0.0, Math.PI, 0.0);
     this.camera.setFocalLength(focalLength);
     this.camera.position.copy(idle);
+  }
+
+  public changeView (running: boolean, checkFPS?: boolean): void {
+    if (checkFPS && !this.fps) return;
+
+    this.fps = !this.fps;
+    const { idle, run } = this.position;
+    const { x, y, z } = running ? run : idle;
+
+    anime({
+      update: () => this.camera.updateProjectionMatrix(),
+      near: +this.fps * 0.215 + 0.1,
+      easing: 'easeInOutQuad',
+      targets: this.camera,
+      duration: 500
+    });
+
+    anime({
+      targets: this.camera.position,
+      easing: 'easeInOutQuad',
+      duration: 500,
+      x, y, z
+    });
   }
 
   public aimAnimation (running: boolean, aiming: boolean, duration: number): void {

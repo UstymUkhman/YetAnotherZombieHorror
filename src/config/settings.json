@@ -1,4 +1,4 @@
 {
   "physics": "ammo",
-  "mode": "fps"
+  "mode": "tps"
 }
