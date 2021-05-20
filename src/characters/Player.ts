@@ -95,12 +95,16 @@ export default class Player extends Character
 
   public rotate (x: number, y: number, maxTilt: number): void {
     const lookDown = y > 0;
+    const fps = +Camera.isFPS;
     const tilt = this.rotation.y;
     const model = this.getModel();
 
+    const minTilt = fps * -0.2 - 0.2;
+    maxTilt = Math.min(maxTilt + fps * maxTilt, 0.25);
+
     model.rotateOnWorldAxis(Vector.UP, x);
 
-    if ((lookDown && tilt >= -0.2) || (!lookDown && tilt <= maxTilt)) {
+    if ((lookDown && tilt >= minTilt) || (!lookDown && tilt <= maxTilt)) {
       model.rotateOnAxis(Vector.RIGHT, y);
     }
   }
@@ -112,6 +116,7 @@ export default class Player extends Character
     if (now - this.idleTime < 350) return;
     const idle = this.getWeaponAnimation('Idle');
 
+    Camera.updateNearPlane(false, this.aiming, this.equipRifle);
     GameEvents.dispatch('player:run', false);
     Camera.runAnimation(() => false, false);
 
@@ -135,7 +140,9 @@ export default class Player extends Character
 
     if (this.lastAnimation === animation) return;
 
+    Camera.updateNearPlane(false, this.aiming, this.equipRifle);
     this.updateAnimation(direction, animation);
+
     GameEvents.dispatch('player:run', false);
     Camera.runAnimation(() => false, false);
 
@@ -159,7 +166,9 @@ export default class Player extends Character
     }
 
     if (directions[Direction.UP]) {
+      Camera.updateNearPlane(true, false, this.equipRifle);
       Camera.runAnimation(() => this.running, true);
+
       GameEvents.dispatch('player:run', true);
       this.updateAnimation('Run', run);
 
@@ -176,6 +185,7 @@ export default class Player extends Character
 
     Camera.runAnimation(() => false, false);
     Camera.aimAnimation(this.running, true, 400);
+    Camera.updateNearPlane(false, true, this.equipRifle);
 
     this.aimTime = this.equipRifle ? Date.now() : 0;
     const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
@@ -197,6 +207,7 @@ export default class Player extends Character
   public stopAiming (): void {
     const duration = Math.min(Date.now() - this.aimTime, 400);
     Camera.aimAnimation(this.running, false, duration);
+    Camera.updateNearPlane(false, false, this.equipRifle);
 
     this.weapon.aim = this.aiming = false;
     this.currentAnimation.paused = false;
@@ -231,6 +242,8 @@ export default class Player extends Character
 
     this.updateAnimation('Idle', 'rifleReload');
     GameEvents.dispatch('player:run', false);
+
+    // Camera.updateNearPlane(false, false, this.equipRifle);
     Camera.runAnimation(() => false, false);
     this.weapon.startReloading();
 
@@ -315,7 +328,6 @@ export default class Player extends Character
 
     rifle.targets = targets;
     this.hand?.add(rifle.model);
-    Camera.changeView(this.running, true);
   }
 
   public changeWeapon (): void {
@@ -325,12 +337,13 @@ export default class Player extends Character
       !this.equipRifle
         ? this.setRifle(targets, this.rifle as Rifle)
         : this.setPistol(targets, this.pistol as Pistol);
+
+      Camera.updateNearPlane(this.running, this.aiming, this.equipRifle);
     }
   }
 
   public changeCamera (): void {
-    if (this.aiming || this.equipRifle) return;
-    Camera.changeView(this.running);
+    Camera.changeView(this.running, this.aiming, this.equipRifle);
   }
 
   public pickRifle (rifle: Rifle): void {

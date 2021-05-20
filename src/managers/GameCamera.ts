@@ -65,20 +65,26 @@ class GameCamera
     this.camera.position.copy(idle);
   }
 
-  public changeView (running: boolean, checkFPS?: boolean): void {
-    if (checkFPS && !this.fps) return;
+  public updateNearPlane (running: boolean, aiming: boolean, rifle: boolean): void {
+    const near = aiming ? 0.1 :
+      this.fps ? running && rifle
+        ? 0.5 : 0.315 : 0.1;
 
-    this.fps = !this.fps;
-    const { idle, run } = this.position;
-    const { x, y, z } = running ? run : idle;
-
-    anime({
+    this.camera.near !== near && anime({
       update: () => this.camera.updateProjectionMatrix(),
-      near: +this.fps * 0.215 + 0.1,
-      easing: 'easeInOutQuad',
       targets: this.camera,
-      duration: 500
+      easing: 'linear',
+      duration: 400,
+      near
     });
+  }
+
+  public changeView (running: boolean, aiming: boolean, rifle: boolean): void {
+    this.fps = !this.fps;
+    const { idle, run, aim } = this.position;
+    const { x, y, z } = running ? run : aiming ? aim : idle;
+
+    this.updateNearPlane(running, aiming, rifle);
 
     anime({
       targets: this.camera.position,
@@ -91,7 +97,6 @@ class GameCamera
   public aimAnimation (running: boolean, aiming: boolean, duration: number): void {
     const { idle, aim } = this.position;
     const { x, y, z } = aiming ? aim : idle;
-    const near = +(this.fps && +!aiming) * 0.215 + 0.1;
 
     anime.running.length = 0;
 
@@ -100,14 +105,6 @@ class GameCamera
       easing: 'linear',
       duration: 250,
       y: Math.PI
-    });
-
-    this.fps && anime({
-      update: () => this.camera.updateProjectionMatrix(),
-      easing: 'easeInOutQuad',
-      targets: this.camera,
-      delay: +aiming * 100,
-      duration, near
     });
 
     anime({
@@ -186,6 +183,10 @@ class GameCamera
 
   public get listener (): AudioListener {
     return this.audioListener;
+  }
+
+  public get isFPS (): boolean {
+    return this.fps;
   }
 }
 

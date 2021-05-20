@@ -21,7 +21,8 @@ export default class Pistol extends Weapon
       y: this.rotation.y + 0.015,
       x: this.rotation.x,
       easing: 'linear',
-      duration: 400,
+      duration: 200,
+      delay: 200,
       z: -0.06
     });
 
@@ -30,7 +31,8 @@ export default class Pistol extends Weapon
       x: this.position.x,
       z: this.position.z,
       easing: 'linear',
-      duration: 400,
+      duration: 200,
+      delay: 200,
       y: -4.45
     });
   }
