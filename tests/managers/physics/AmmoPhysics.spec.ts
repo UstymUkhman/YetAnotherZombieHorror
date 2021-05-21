@@ -2,7 +2,7 @@ import '../../globals';
 import { Config } from '@/config';
 import { Bounds } from '@/types.d';
 
-import Level0 from '@/environment/Level0';
+import Limbo from '@/environment/Limbo';
 import { Mesh } from 'three/src/objects/Mesh';
 
 import { Vector3 } from 'three/src/math/Vector3';
@@ -18,7 +18,7 @@ describe('AmmoPhysics', () => {
 
   test('createGround', () => {
     const createGround = jest.fn(Physics.createGround.bind(
-      Physics, Level0.minCoords, Level0.maxCoords
+      Physics, Limbo.minCoords, Limbo.maxCoords
     ));
 
     createGround();
@@ -26,12 +26,12 @@ describe('AmmoPhysics', () => {
   });
 
   test('createBounds', () => {
-    const { position, height, sidewalkHeight } = Config.Level0;
+    const { position, height, sidewalkHeight } = Config.Limbo;
 
     const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
-      borders: Level0.bounds, y: position.y, height
+      borders: Limbo.bounds, y: position.y, height
     }, {
-      borders: Config.Level0.sidewalk as Bounds,
+      borders: Config.Limbo.sidewalk as Bounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     }));

@@ -5,8 +5,8 @@ import { Euler } from 'three/src/math/Euler';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
-import Level0 from '@/config/level0.json';
 import Camera from '@/config/camera.json';
+import Limbo from '@/config/limbo.json';
 
 import Player from '@/config/player.json';
 import Enemy from '@/config/enemy.json';
@@ -59,28 +59,28 @@ describe('Settings', () => {
     expect(Config.Camera.tps.aim).toBeInstanceOf(Vector3);
   });
 
-  test('Level0', () => {
-    const levelPosition = new Vector3(...Level0.position);
-    const levelScale = new Vector3(...Level0.scale);
+  test('Limbo', () => {
+    const levelPosition = new Vector3(...Limbo.position);
+    const levelScale = new Vector3(...Limbo.scale);
 
-    expect(Config.Level0.model).toStrictEqual('level0.glb');
-    expect(Config.Level0.music).toStrictEqual('level0.mp3');
+    expect(Config.Limbo.model).toStrictEqual('limbo.glb');
+    expect(Config.Limbo.music).toStrictEqual('limbo.mp3');
 
-    expect(Config.Level0.skybox).toStrictEqual('level0');
+    expect(Config.Limbo.skybox).toStrictEqual('limbo');
 
-    expect(Config.Level0.height).toStrictEqual(10);
-    expect(Config.Level0.depth).toStrictEqual(100);
+    expect(Config.Limbo.height).toStrictEqual(10);
+    expect(Config.Limbo.depth).toStrictEqual(100);
 
-    expect(Config.Level0.scale).toBeInstanceOf(Vector3);
-    expect(Config.Level0.scale).toStrictEqual(levelScale);
+    expect(Config.Limbo.scale).toBeInstanceOf(Vector3);
+    expect(Config.Limbo.scale).toStrictEqual(levelScale);
 
-    expect(Config.Level0.position).toBeInstanceOf(Vector3);
-    expect(Config.Level0.position).toStrictEqual(levelPosition);
+    expect(Config.Limbo.position).toBeInstanceOf(Vector3);
+    expect(Config.Limbo.position).toStrictEqual(levelPosition);
 
-    expect(Config.Level0.sidewalkHeight).toBeLessThan(Config.Level0.height);
-    expect(Config.Level0.bounds.length).toBeGreaterThan(2);
+    expect(Config.Limbo.sidewalkHeight).toBeLessThan(Config.Limbo.height);
+    expect(Config.Limbo.bounds.length).toBeGreaterThan(2);
 
-    Config.Level0.bounds.forEach(
+    Config.Limbo.bounds.forEach(
       bound => expect(bound.length).toStrictEqual(2)
     );
   });
@@ -208,7 +208,7 @@ describe('Settings', () => {
   });
 
   test('Frozen', () => {
-    expect(Object.isFrozen(Config.Level0.scale)).toStrictEqual(true);
+    expect(Object.isFrozen(Config.Limbo.scale)).toStrictEqual(true);
     expect(() => { delete (Config.Player as any).scale; }).toThrow(TypeError);
     expect(() => { (Config.Enemy as any).position = [0, 0, 0]; }).toThrow(TypeError);
   });

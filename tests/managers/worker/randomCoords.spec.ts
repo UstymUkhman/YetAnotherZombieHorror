@@ -1,17 +1,17 @@
 import '../../globals';
-import Level0 from '@/environment/Level0';
+import Limbo from '@/environment/Limbo';
 import { Vector3 } from 'three/src/math/Vector3';
 import { getRandomCoord } from '@/managers/worker/randomCoords';
 
 describe('randomCoords', () => {
   test('getRandomCoord', () => {
-    const maxCoords = Level0.maxCoords;
-    const minCoords = Level0.minCoords;
+    const maxCoords = Limbo.maxCoords;
+    const minCoords = Limbo.minCoords;
 
     for (let i = 0; i < 10; i++) {
       const coords = getRandomCoord({
         player: new Vector3(),
-        bounds: Level0.bounds,
+        bounds: Limbo.bounds,
         minCoords: minCoords,
         maxCoords: maxCoords
       });

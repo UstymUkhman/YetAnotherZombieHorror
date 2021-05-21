@@ -25,21 +25,21 @@
   import Player from '@components/Player.svelte';
 
   import { onMount, onDestroy } from 'svelte';
-  import Level0 from '@/environment/Level0';
+  import Limbo from '@/environment/Limbo';
 
   const dispatch = createEventDispatcher();
 
-  const minCoords = Level0.minCoords.map(
+  const minCoords = Limbo.minCoords.map(
     coord => Math.abs(coord) + PADDING
   ) as unknown as Coords;
 
   let context: CanvasRenderingContext2D;
-  const maxCoords = Level0.maxCoords;
+  const maxCoords = Limbo.maxCoords;
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
-  const bounds = Level0.bounds;
+  const bounds = Limbo.bounds;
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 

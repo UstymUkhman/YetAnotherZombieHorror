@@ -67,7 +67,13 @@ export default abstract class PhysicsWorld
 
   private borderOverflow (border: Vector3) {
     const { x, z } = this.positionVector;
-    return Math.abs(x) > Math.abs(border.x) && Math.abs(z) > Math.abs(border.z);
+
+    return (
+      Math.abs(x) > Math.abs(border.x) &&
+      Math.abs(z) > Math.abs(border.z) &&
+      x - border.x <= 1.0 &&
+      z - border.z <= 1.0
+    );
   }
 
   protected createStaticCollider (material: MeshBasicMaterial): void {

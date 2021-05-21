@@ -1,16 +1,16 @@
 import '../globals';
 import { Coords } from '@/types.d';
-import Level0 from '@/environment/Level0';
+import Limbo from '@/environment/Limbo';
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
 
 describe('ComponentUtils', () => {
   test('getScaledCoords', () => {
-    expect(getScaledCoords([0, 0], Level0.minCoords, 1)).toStrictEqual(Level0.minCoords);
+    expect(getScaledCoords([0, 0], Limbo.minCoords, 1)).toStrictEqual(Limbo.minCoords);
 
     expect(getScaledCoords([50.0, 50.0], [0, 0], 5)).toStrictEqual([250.0, 250.0]);
 
-    expect(getScaledCoords([1, 1], Level0.minCoords, 2)).toStrictEqual([
-      Level0.minCoords[0] * 2 + 2, Level0.minCoords[1] * 2 + 2
+    expect(getScaledCoords([1, 1], Limbo.minCoords, 2)).toStrictEqual([
+      Limbo.minCoords[0] * 2 + 2, Limbo.minCoords[1] * 2 + 2
     ]);
   });
 

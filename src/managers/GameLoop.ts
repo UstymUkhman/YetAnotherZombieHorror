@@ -8,9 +8,9 @@ import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
 
 import { Clock } from 'three/src/core/Clock';
-import Level0 from '@/environment/Level0';
 import Physics from '@/managers/physics';
 import Player from '@/characters/Player';
+import Limbo from '@/environment/Limbo';
 import Enemy from '@/characters/Enemy';
 
 import Worker from '@/managers/worker';
@@ -22,7 +22,7 @@ import { Config } from '@/config';
 export default class GameLoop
 {
   private readonly clock = new Clock();
-  private readonly level = new Level0();
+  private readonly level = new Limbo();
 
   private readonly rifle = new Rifle();
   private readonly pistol = new Pistol();
@@ -89,9 +89,9 @@ export default class GameLoop
 
     this.worker.add('Level:coord', data =>
       this.rifle.spawn(data as Coords), {
-        minCoords: Level0.minCoords,
-        maxCoords: Level0.maxCoords,
-        bounds: Level0.bounds
+        minCoords: Limbo.minCoords,
+        maxCoords: Limbo.maxCoords,
+        bounds: Limbo.bounds
       }
     );
   }

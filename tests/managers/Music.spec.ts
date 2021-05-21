@@ -1,7 +1,7 @@
 import Music from '@/managers/Music';
 
 describe('Music', () => {
-  const music = new Music('level0.mp3');
+  const music = new Music('limbo.mp3');
 
   test('Create', () => {
     expect(music).toBeInstanceOf(Music);

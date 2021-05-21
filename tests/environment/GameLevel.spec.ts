@@ -1,7 +1,7 @@
 import '../globals';
 import GameLevel from '@/environment/GameLevel';
 
-describe('Level0', () => {
+describe('GameLevel', () => {
   const level = new GameLevel();
 
   test('Create', () => {
