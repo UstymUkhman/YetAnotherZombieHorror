@@ -65,32 +65,42 @@ class GameCamera
     this.camera.position.copy(idle);
   }
 
-  public updateNearPlane (running: boolean, aiming: boolean, rifle: boolean): void {
-    const near = aiming ? 0.1 :
-      this.fps ? running && rifle
-        ? 0.5 : 0.315 : 0.1;
-
-    this.camera.near !== near && anime({
-      update: () => this.camera.updateProjectionMatrix(),
-      targets: this.camera,
-      easing: 'linear',
-      duration: 400,
-      near
-    });
-  }
-
   public changeView (running: boolean, aiming: boolean, rifle: boolean): void {
     this.fps = !this.fps;
     const { idle, run, aim } = this.position;
     const { x, y, z } = running ? run : aiming ? aim : idle;
 
-    this.updateNearPlane(running, aiming, rifle);
+    this.updateNearPlane(aiming, rifle);
 
     anime({
       targets: this.camera.position,
       easing: 'easeInOutQuad',
       duration: 500,
       x, y, z
+    });
+  }
+
+  public updateNearPlane (aiming: boolean, rifle: boolean, running?: boolean): void {
+    const fpRifle = this.camera.near === 0.5;
+    const duration = +fpRifle * -300 + 400;
+
+    const near = aiming ? 0.1 : this.fps
+      ? rifle ? 0.5 : 0.315 : 0.1;
+
+    if (this.fps && running && rifle) {
+      this.camera.position.z = 0.2;
+    }
+
+    this.camera.near !== near &&
+      this.setNearPlane(near, duration);
+  }
+
+  public setNearPlane (near: number, duration: number): void {
+    anime({
+      update: () => this.camera.updateProjectionMatrix(),
+      targets: this.camera,
+      easing: 'linear',
+      duration, near
     });
   }
 

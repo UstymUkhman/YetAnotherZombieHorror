@@ -34,6 +34,22 @@ describe('GameCamera', () => {
     expect(setCamera).toHaveReturnedWith(undefined);
   });
 
+  test('changeView', () => {
+    const changeView = jest.fn(Camera.changeView.bind(Camera));
+
+    changeView(true, false, false);
+    expect(changeView).toHaveReturnedWith(undefined);
+
+    changeView(true, true, false);
+    expect(changeView).toHaveReturnedWith(undefined);
+
+    changeView(false, false, true);
+    expect(changeView).toHaveReturnedWith(undefined);
+
+    changeView(false, true, true);
+    expect(changeView).toHaveReturnedWith(undefined);
+  });
+
   test('updateNearPlane', () => {
     const updateNearPlane = jest.fn(Camera.updateNearPlane.bind(Camera));
 
@@ -62,20 +78,14 @@ describe('GameCamera', () => {
     expect(updateNearPlane).toHaveReturnedWith(undefined);
   });
 
-  test('changeView', () => {
-    const changeView = jest.fn(Camera.changeView.bind(Camera));
+  test('setNearPlane', () => {
+    const setNearPlane = jest.fn(Camera.setNearPlane.bind(Camera));
 
-    changeView(true, false, false);
-    expect(changeView).toHaveReturnedWith(undefined);
+    setNearPlane(0.1, 400);
+    expect(setNearPlane).toHaveReturnedWith(undefined);
 
-    changeView(true, true, false);
-    expect(changeView).toHaveReturnedWith(undefined);
-
-    changeView(false, false, true);
-    expect(changeView).toHaveReturnedWith(undefined);
-
-    changeView(false, true, true);
-    expect(changeView).toHaveReturnedWith(undefined);
+    setNearPlane(0.5, 100);
+    expect(setNearPlane).toHaveReturnedWith(undefined);
   });
 
   test('aimAnimation', () => {

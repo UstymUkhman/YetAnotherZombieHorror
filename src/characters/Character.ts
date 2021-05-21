@@ -10,9 +10,9 @@ import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { CameraListener } from '@/managers/GameCamera';
 import { DynamicCollider } from '@/utils/Material';
 
+import { DoubleSide } from 'three/src/constants';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/managers/AssetsLoader';
-import { FrontSide } from 'three/src/constants';
 
 import { Mesh } from 'three/src/objects/Mesh';
 import { Line3 } from 'three/src/math/Line3';
@@ -71,7 +71,7 @@ export default class Character
           map: material.map,
           specular: 0x000000,
           transparent: true,
-          side: FrontSide,
+          side: DoubleSide,
           skinning: true,
           shininess: 0,
           opacity
