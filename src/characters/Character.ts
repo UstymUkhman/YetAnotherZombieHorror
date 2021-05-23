@@ -6,20 +6,19 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
+import { FrontSide, DoubleSide } from 'three/src/constants';
 
 import { CameraListener } from '@/managers/GameCamera';
 import { DynamicCollider } from '@/utils/Material';
-
-import { DoubleSide } from 'three/src/constants';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/managers/AssetsLoader';
-
 import { Mesh } from 'three/src/objects/Mesh';
-import { Line3 } from 'three/src/math/Line3';
 
+import { Line3 } from 'three/src/math/Line3';
 import { camelCase } from '@/utils/String';
 import Physics from '@/managers/physics';
 import { Vector } from '@/utils/Vector';
+import { Color } from '@/utils/Color';
 
 export default class Character
 {
@@ -60,6 +59,8 @@ export default class Character
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
+    const side = opacity ? DoubleSide : FrontSide;
+
     character.traverse(child => {
       const childMesh = child as Mesh;
       const material = childMesh.material as MeshPhongMaterial;
@@ -68,13 +69,13 @@ export default class Character
         childMesh.castShadow = true;
 
         childMesh.material = new MeshPhongMaterial({
+          specular: Color.BLACK,
           map: material.map,
-          specular: 0x000000,
           transparent: true,
-          side: DoubleSide,
           skinning: true,
           shininess: 0,
-          opacity
+          opacity,
+          side
         });
       }
     });

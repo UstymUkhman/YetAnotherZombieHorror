@@ -23,8 +23,8 @@ export default class Rifle extends Weapon
 
   /** @Override */
   public setAim (): void {
-    this.model.rotation.set(this.rotation.x, Math.PI, -0.1);
-    this.model.position.set(this.position.x, 0.0, -1.0);
+    this.model.rotation.set(this.rotation.x - 0.1, Math.PI - 0.028, -0.1);
+    this.model.position.set(this.position.x, -1.0, -2.0);
   }
 
   /** @Override */

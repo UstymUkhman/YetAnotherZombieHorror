@@ -3,23 +3,23 @@
 </div>
 
 <script lang="typescript">
-  export let playerRotation: number;
-  let borderRotation: number;
-  export let angle: number;
+export let playerRotation: number;
+let borderRotation: number;
+export let angle: number;
 
-  function updateBorderRotation (): void {
-    borderRotation = angle - playerRotation;
-  }
+function updateBorderRotation (): void {
+  borderRotation = angle - playerRotation;
+}
 
-  $: (angle => {
-    if (!playerRotation) return;
-    updateBorderRotation();
-  })(angle);
+$: (angle => {
+  if (!playerRotation) return;
+  updateBorderRotation();
+})(angle);
 
-  $: (playerRotation => {
-    if (!angle) return;
-    updateBorderRotation();
-  })(playerRotation);
+$: (playerRotation => {
+  if (!angle) return;
+  updateBorderRotation();
+})(playerRotation);
 </script>
 
 <style lang="scss">

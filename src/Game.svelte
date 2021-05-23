@@ -9,7 +9,7 @@
     {#if game.pause || !lastFrameDelta}
       <Pause on:start={() => togglePause(false)} />
     {:else}
-      <Aim running={running} />
+      <Aim hide={running || aiming} />
 
       <Map
         playerRotation={player.rotation}
@@ -58,6 +58,8 @@ let mapRadius: number;
 
 let running = false;
 let loading = true;
+let aiming = false;
+
 let scale: number;
 let raf: number;
 
@@ -111,6 +113,10 @@ GameEvents.add('player:run', event => {
   zoom.set(~~running * 0.5);
 });
 
+GameEvents.add('player:aim', event => {
+  aiming = event.data as boolean;
+});
+
 onMount(() => {
   main.prepend(game.scene);
   updateScale();
@@ -118,6 +124,7 @@ onMount(() => {
 
 onDestroy(() => {
   GameEvents.remove('player:run');
+  GameEvents.remove('player:aim');
   GameEvents.remove('pause');
   cancelAnimationFrame(raf);
 

@@ -6,53 +6,53 @@
 </div>
 
 <script lang="typescript">
-  import { GameEvents, GameEvent } from '@/managers/GameEvents';
-  import { createEventDispatcher } from 'svelte';
+import { GameEvents, GameEvent } from '@/managers/GameEvents';
+import { createEventDispatcher } from 'svelte';
 
-  import { fade } from 'svelte/transition';
-  import { clamp } from '@/utils/Number';
+import { fade } from 'svelte/transition';
+import { clamp } from '@/utils/Number';
 
-  const dispatch = createEventDispatcher();
-  const assets = new Map();
+const dispatch = createEventDispatcher();
+const assets = new Map();
 
-  type ProgressData = {
-    progress: number
-    uuid: string
-  };
+type ProgressData = {
+  progress: number
+  uuid: string
+};
 
-  let progress = 0;
-  let loaded = 0;
-  let total = 0;
+let progress = 0;
+let loaded = 0;
+let total = 0;
 
-  function onStart (event: GameEvent): void {
-    assets.set(event.data, 0);
+function onStart (event: GameEvent): void {
+  assets.set(event.data, 0);
+}
+
+function onProgress (event: GameEvent): void {
+  const loading = event.data as ProgressData;
+
+  assets.set(loading.uuid, loading.progress);
+  assets.forEach(load => total += load);
+
+  total /= assets.size * 100;
+  progress = clamp(total, progress, 0.99);
+}
+
+function onLoad (event: GameEvent): void {
+  assets.set(event.data, 100);
+
+  if (assets.size === ++loaded) {
+    setTimeout(() => dispatch('loaded'), 1000);
+    GameEvents.remove('loading:progress');
+    GameEvents.remove('loading:start');
+    GameEvents.remove('loading:end');
+    progress = 1;
   }
+}
 
-  function onProgress (event: GameEvent): void {
-    const loading = event.data as ProgressData;
-
-    assets.set(loading.uuid, loading.progress);
-    assets.forEach(load => total += load);
-
-    total /= assets.size * 100;
-    progress = clamp(total, progress, 0.99);
-  }
-
-  function onLoad (event: GameEvent): void {
-    assets.set(event.data, 100);
-
-    if (assets.size === ++loaded) {
-      setTimeout(() => dispatch('loaded'), 1000);
-      GameEvents.remove('loading:progress');
-      GameEvents.remove('loading:start');
-      GameEvents.remove('loading:end');
-      progress = 1;
-    }
-  }
-
-  GameEvents.add('loading:progress', onProgress);
-  GameEvents.add('loading:start', onStart);
-  GameEvents.add('loading:end', onLoad);
+GameEvents.add('loading:progress', onProgress);
+GameEvents.add('loading:start', onStart);
+GameEvents.add('loading:end', onLoad);
 </script>
 
 <style lang="scss">

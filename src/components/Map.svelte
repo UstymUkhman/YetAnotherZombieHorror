@@ -14,129 +14,129 @@
 </div>
 
 <script lang="typescript">
-  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
-  import { GameEvents, GameEvent } from '@/managers/GameEvents';
-  type Vector3 = import('three/src/math/Vector3').Vector3;
-  import MapRifle from '@components/MapRifle.svelte';
+import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
+import { GameEvents, GameEvent } from '@/managers/GameEvents';
+type Vector3 = import('three/src/math/Vector3').Vector3;
+import MapRifle from '@components/MapRifle.svelte';
 
-  import { cloneBounds, max } from '@/utils/Array';
-  import type { Coords, Bounds } from '@/types.d';
-  import { createEventDispatcher } from 'svelte';
-  import Player from '@components/Player.svelte';
+import { cloneBounds, max } from '@/utils/Array';
+import type { Coords, Bounds } from '@/types.d';
+import { createEventDispatcher } from 'svelte';
+import Player from '@components/Player.svelte';
 
-  import { onMount, onDestroy } from 'svelte';
-  import Limbo from '@/environment/Limbo';
+import { onMount, onDestroy } from 'svelte';
+import Limbo from '@/environment/Limbo';
 
-  const dispatch = createEventDispatcher();
+const dispatch = createEventDispatcher();
 
-  const minCoords = Limbo.minCoords.map(
-    coord => Math.abs(coord) + PADDING
-  ) as unknown as Coords;
+const minCoords = Limbo.minCoords.map(
+  coord => Math.abs(coord) + PADDING
+) as unknown as Coords;
 
-  let context: CanvasRenderingContext2D;
-  const maxCoords = Limbo.maxCoords;
+let context: CanvasRenderingContext2D;
+const maxCoords = Limbo.maxCoords;
 
-  export let playerPosition: Vector3;
-  export let playerRotation: number;
+export let playerPosition: Vector3;
+export let playerRotation: number;
 
-  const bounds = Limbo.bounds;
-  let canvasTransform: string;
-  let map: HTMLCanvasElement;
+const bounds = Limbo.bounds;
+let canvasTransform: string;
+let map: HTMLCanvasElement;
 
-  let visibleRifle: boolean;
-  let renderRifle: boolean;
-  let rifleCoords: Coords;
+let visibleRifle: boolean;
+let renderRifle: boolean;
+let rifleCoords: Coords;
 
-  export let radius: number;
-  export let scale: number;
-  export let zoom: number;
+export let radius: number;
+export let scale: number;
+export let zoom: number;
 
-  let offset: number;
-  const PADDING = 1;
+let offset: number;
+const PADDING = 1;
 
-  function spawnRifle (event: GameEvent): void {
-    rifleCoords = getScaledCoords(event.data as Coords, minCoords, scale);
+function spawnRifle (event: GameEvent): void {
+  rifleCoords = getScaledCoords(event.data as Coords, minCoords, scale);
 
-    visibleRifle = true;
-    renderRifle = true;
-  }
+  visibleRifle = true;
+  renderRifle = true;
+}
 
-  function getNormalizedBounds (): Bounds {
-    const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
+function getNormalizedBounds (): Bounds {
+  const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
 
-    map.height = max(cBounds.map((coords: Coords) => coords[1])) + PADDING * 2;
-    map.width = max(cBounds.map((coords: Coords) => coords[0])) + PADDING * 2;
+  map.height = max(cBounds.map((coords: Coords) => coords[1])) + PADDING * 2;
+  map.width = max(cBounds.map((coords: Coords) => coords[0])) + PADDING * 2;
 
-    return cBounds;
-  }
+  return cBounds;
+}
 
-  function centerPosition (): void {
-    const px = playerPosition.x, pz = playerPosition.z;
+function centerPosition (): void {
+  const px = playerPosition.x, pz = playerPosition.z;
 
-    const x = (px - maxCoords[0]) * scale - offset;
-    const y = (pz - maxCoords[1]) * scale - offset;
+  const x = (px - maxCoords[0]) * scale - offset;
+  const y = (pz - maxCoords[1]) * scale - offset;
 
-    if (visibleRifle) {
-      const scaledCoords = getScaledCoords([px, pz], minCoords, scale);
+  if (visibleRifle) {
+    const scaledCoords = getScaledCoords([px, pz], minCoords, scale);
 
-      dispatch('rifle', {
-        visible: !pointInCircle(rifleCoords, scaledCoords, radius),
-        angle: getAngleToRifle(scaledCoords, rifleCoords)
-      });
-    }
-
-    canvasTransform = `translate(${x}px, ${y}px) scale3d(-1, -1, 1)`;
-  }
-
-  function drawBounds (): void {
-    const nBounds = getNormalizedBounds();
-    context = map.getContext('2d')!;
-
-    context.strokeStyle = '#000';
-    context.lineWidth = 2.0;
-    context.beginPath();
-
-    context.clearRect(0, 0, map.width, map.height);
-    context.moveTo(nBounds[0][0], nBounds[0][1]);
-
-    for (let b = 1; b < nBounds.length; b++) {
-      context.lineTo(nBounds[b][0], nBounds[b][1]);
-    }
-
-    context.closePath();
-    context.stroke();
-  }
-
-  function pickRifle (): void {
-    visibleRifle = false;
-
-    setTimeout(() => {
-      renderRifle = false;
-      drawBounds();
+    dispatch('rifle', {
+      visible: !pointInCircle(rifleCoords, scaledCoords, radius),
+      angle: getAngleToRifle(scaledCoords, rifleCoords)
     });
   }
 
-  GameEvents.add('rifle:spawn', spawnRifle);
-  GameEvents.add('rifle:pick', pickRifle);
+  canvasTransform = `translate(${x}px, ${y}px) scale3d(-1, -1, 1)`;
+}
 
-  onMount(drawBounds);
+function drawBounds (): void {
+  const nBounds = getNormalizedBounds();
+  context = map.getContext('2d')!;
 
-  onDestroy(() => {
-    GameEvents.remove('rifle:spawn');
-    GameEvents.remove('rifle:pick');
-  });
+  context.strokeStyle = '#000';
+  context.lineWidth = 2.0;
+  context.beginPath();
 
-  $: (position => {
-    map && position && centerPosition();
-  })(playerPosition);
+  context.clearRect(0, 0, map.width, map.height);
+  context.moveTo(nBounds[0][0], nBounds[0][1]);
 
-  $: (scale => {
-    if (!map || !scale) return;
-    offset = PADDING * scale / 2;
+  for (let b = 1; b < nBounds.length; b++) {
+    context.lineTo(nBounds[b][0], nBounds[b][1]);
+  }
 
+  context.closePath();
+  context.stroke();
+}
+
+function pickRifle (): void {
+  visibleRifle = false;
+
+  setTimeout(() => {
+    renderRifle = false;
     drawBounds();
-    centerPosition();
-  })(scale);
+  });
+}
+
+GameEvents.add('rifle:spawn', spawnRifle);
+GameEvents.add('rifle:pick', pickRifle);
+
+onMount(drawBounds);
+
+onDestroy(() => {
+  GameEvents.remove('rifle:spawn');
+  GameEvents.remove('rifle:pick');
+});
+
+$: (position => {
+  map && position && centerPosition();
+})(playerPosition);
+
+$: (scale => {
+  if (!map || !scale) return;
+  offset = PADDING * scale / 2;
+
+  drawBounds();
+  centerPosition();
+})(scale);
 </script>
 
 <style lang="scss">

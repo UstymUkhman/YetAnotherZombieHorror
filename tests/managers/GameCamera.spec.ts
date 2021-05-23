@@ -34,6 +34,14 @@ describe('GameCamera', () => {
     expect(setCamera).toHaveReturnedWith(undefined);
   });
 
+  test('getPosition', () => {
+    const сameraPrototype = Object.getPrototypeOf(Camera);
+    const getPosition = jest.fn(сameraPrototype.getPosition.bind(Camera));
+
+    getPosition();
+    expect(getPosition).toHaveReturnedWith(Config.Camera.tps.idle);
+  });
+
   test('changeView', () => {
     const changeView = jest.fn(Camera.changeView.bind(Camera));
 

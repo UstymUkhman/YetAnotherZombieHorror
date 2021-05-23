@@ -179,7 +179,7 @@ export default class Player extends Character
     this.weapon.aim = this.aiming = true;
 
     Camera.runAnimation(() => false, false);
-    Camera.aimAnimation(this.running, true, 400);
+    Camera.aimAnimation(true, this.equipRifle);
     Camera.updateNearPlane(true, this.equipRifle);
 
     this.aimTime = this.equipRifle ? Date.now() : 0;
@@ -193,6 +193,10 @@ export default class Player extends Character
       this.moving = false;
     }
 
+    Camera.isFPS && setTimeout(() =>
+      GameEvents.dispatch('player:aim', true)
+    , 300);
+
     !this.equipRifle && setTimeout(() => {
       this.currentAnimation.paused = true;
       this.setMixerTime(0.5);
@@ -201,9 +205,10 @@ export default class Player extends Character
 
   public stopAiming (): void {
     const duration = Math.min(Date.now() - this.aimTime, 400);
-    Camera.aimAnimation(this.running, false, duration);
+    Camera.aimAnimation(false, this.equipRifle, duration);
     Camera.updateNearPlane(false, this.equipRifle);
 
+    GameEvents.dispatch('player:aim', false);
     this.weapon.aim = this.aiming = false;
     this.currentAnimation.paused = false;
 
@@ -340,7 +345,12 @@ export default class Player extends Character
 
   public changeCamera (): void {
     Camera.changeView(this.running, this.aiming, this.equipRifle);
+    const aiming = Camera.isFPS && this.aiming;
     !Camera.isFPS && this.resetRotation();
+
+    setTimeout(() =>
+      GameEvents.dispatch('player:aim', aiming)
+    , +aiming * 300);
   }
 
   private resetRotation (): void {

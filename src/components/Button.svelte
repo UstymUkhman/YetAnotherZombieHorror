@@ -1,7 +1,7 @@
 <button on:click>{text}</button>
 
 <script lang="typescript">
-  export let text: string;
+export let text: string;
 </script>
 
 <style lang="scss">

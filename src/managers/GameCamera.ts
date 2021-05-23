@@ -1,21 +1,14 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { AudioListener } from 'three/src/audio/AudioListener';
-
 type Object3D = import('three/src/core/Object3D').Object3D;
-type Vector3 = import('three/src/math/Vector3').Vector3;
 
+import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
 import { Config } from '@/config';
 
 type RunCheck = () => boolean;
 import anime from 'animejs';
-
-type Positions = {
-  readonly idle: Vector3;
-  readonly aim: Vector3;
-  readonly run: Vector3;
-};
 
 class GameCamera
 {
@@ -30,8 +23,10 @@ class GameCamera
   private readonly camera: PerspectiveCamera;
 
   private readonly audioListener = new AudioListener();
+  private ratio = window.innerWidth / window.innerHeight;
+
   private readonly onResize = this.updateAspectRatio.bind(this);
-  private ratio: number = window.innerWidth / window.innerHeight;
+  private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
     const near = +this.fps * 0.215 + 0.1;
@@ -57,7 +52,7 @@ class GameCamera
   }
 
   private setCamera (): void {
-    const idle = this.position.idle;
+    const idle = this.getPosition();
     const focalLength = +!this.fps * 2.5 + 22.5;
 
     this.camera.rotation.set(0.0, Math.PI, 0.0);
@@ -65,10 +60,16 @@ class GameCamera
     this.camera.position.copy(idle);
   }
 
+  private getPosition (running = false, aiming = false, rifle = false): Vector3 {
+    const { idle, run, aim } = Config.Camera[this.fps ? 'fps' : 'tps'];
+    const position = (running ? run : aiming ? aim : idle) as Vector3;
+    return this.fps && aiming && rifle ? this.fpRifleAim : position;
+  }
+
   public changeView (running: boolean, aiming: boolean, rifle: boolean): void {
     this.fps = !this.fps;
-    const { idle, run, aim } = this.position;
-    const { x, y, z } = running ? run : aiming ? aim : idle;
+
+    const { x, y, z } = this.getPosition(running, aiming, rifle);
 
     this.updateNearPlane(aiming, rifle);
 
@@ -104,13 +105,12 @@ class GameCamera
     });
   }
 
-  public aimAnimation (running: boolean, aiming: boolean, duration: number): void {
-    const { idle, aim } = this.position;
-    const { x, y, z } = aiming ? aim : idle;
+  public aimAnimation (aiming: boolean, rifle: boolean, duration = 400): void {
+    const { x, y, z } = this.getPosition(false, aiming, rifle);
 
     anime.running.length = 0;
 
-    running && aiming && anime({
+    aiming && anime({
       targets: this.camera.rotation,
       easing: 'linear',
       duration: 250,
@@ -130,9 +130,7 @@ class GameCamera
     this.run *= -1;
 
     if (running !== undefined) {
-      const { idle, run } = this.position;
-      const { x, y, z } = running ? run : idle;
-
+      const { x, y, z } = this.getPosition(running);
       this.run = +running;
 
       anime({
@@ -169,7 +167,7 @@ class GameCamera
     }
 
     else {
-      this.camera.position.copy(this.position.idle);
+      this.camera.position.copy(this.getPosition());
     }
   }
 
@@ -181,10 +179,6 @@ class GameCamera
 
   public destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
-  }
-
-  private get position (): Positions {
-    return Config.Camera[this.fps ? 'fps' : 'tps'] as Positions;
   }
 
   public get object (): PerspectiveCamera {

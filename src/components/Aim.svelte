@@ -1,28 +1,28 @@
 <div class="container" >
-  <div bind:this={aim} class="aim" class:running class:shooting />
+  <div bind:this={aim} class="aim" class:hide class:shooting />
 </div>
 
 <script lang="typescript">
-  import { GameEvents } from '@/managers/GameEvents';
-  import { onMount, onDestroy } from 'svelte';
+import { GameEvents } from '@/managers/GameEvents';
+import { onMount, onDestroy } from 'svelte';
 
-  export let running: boolean;
-  let aim: HTMLDivElement;
-  let shooting = false;
+export let hide: boolean;
+let aim: HTMLDivElement;
+let shooting = false;
 
-  function onShoot (): void {
-    setTimeout(() => shooting = false, 150);
-    setTimeout(() => shooting = true);
-    shooting = false;
-  }
+function onShoot (): void {
+  setTimeout(() => shooting = false, 150);
+  setTimeout(() => shooting = true);
+  shooting = false;
+}
 
-  onMount(() => {
-    GameEvents.add('player:shoot', onShoot);
-  });
+onMount(() => {
+  GameEvents.add('player:shoot', onShoot);
+});
 
-  onDestroy(() => {
-    GameEvents.remove('player:shoot');
-  });
+onDestroy(() => {
+  GameEvents.remove('player:shoot');
+});
 </script>
 
 <style lang="scss">
@@ -63,14 +63,14 @@ div.container {
     padding: 0;
     margin: 0;
 
-    &.running {
+    &.shooting {
+      animation: shoot 150ms ease-out;
+    }
+
+    &.hide {
       transition-timing-function: ease-in;
       transform: scale(1.5);
       opacity: 0;
-    }
-
-    &.shooting {
-      animation: shoot 150ms ease-out;
     }
   }
 }
