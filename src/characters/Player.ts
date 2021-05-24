@@ -195,7 +195,7 @@ export default class Player extends Character
 
     Camera.isFPS && setTimeout(() =>
       GameEvents.dispatch('player:aim', true)
-    , 300);
+    , 300 + +this.equipRifle * 300);
 
     !this.equipRifle && setTimeout(() => {
       this.currentAnimation.paused = true;
@@ -331,6 +331,20 @@ export default class Player extends Character
     this.hand?.add(rifle.model);
   }
 
+  public changeCamera (view: boolean): void {
+    if (!view) Camera.changeShoulder();
+
+    else {
+      Camera.changeView(this.running, this.aiming, this.equipRifle);
+      const aiming = Camera.isFPS && this.aiming;
+      !Camera.isFPS && this.resetRotation();
+
+      setTimeout(() =>
+        GameEvents.dispatch('player:aim', aiming)
+      , +aiming * 300);
+    }
+  }
+
   public changeWeapon (): void {
     if (this.hasRifle && !this.aiming && !this.reloading) {
       const targets = this.weapon.targets;
@@ -341,16 +355,6 @@ export default class Player extends Character
 
       Camera.updateNearPlane(this.aiming, this.equipRifle, this.running);
     }
-  }
-
-  public changeCamera (): void {
-    Camera.changeView(this.running, this.aiming, this.equipRifle);
-    const aiming = Camera.isFPS && this.aiming;
-    !Camera.isFPS && this.resetRotation();
-
-    setTimeout(() =>
-      GameEvents.dispatch('player:aim', aiming)
-    , +aiming * 300);
   }
 
   private resetRotation (): void {

@@ -96,6 +96,16 @@ describe('GameCamera', () => {
     expect(setNearPlane).toHaveReturnedWith(undefined);
   });
 
+  test('changeShoulder', () => {
+    const changeShoulder = jest.fn(Camera.changeShoulder.bind(Camera));
+
+    changeShoulder();
+    expect(changeShoulder).toHaveReturnedWith(undefined);
+
+    changeShoulder();
+    expect(changeShoulder).toHaveReturnedWith(undefined);
+  });
+
   test('aimAnimation', () => {
     const aimAnimation = jest.fn(Camera.aimAnimation.bind(Camera));
     aimAnimation(true, false, 400);

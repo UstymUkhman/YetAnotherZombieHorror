@@ -14,9 +14,11 @@ class GameCamera
 {
   private run = 0;
   private shakeDuration = 0.0;
-  private fps = Config.Settings.fpCamera;
+  private rightShoulder = true;
+  private position = new Vector3();
 
   private readonly shakePower = 0.025;
+  private fps = Config.Settings.fpCamera;
   private readonly shakeAttenuation = 1.0;
 
   private readonly clock = new Clock();
@@ -61,17 +63,19 @@ class GameCamera
   }
 
   private getPosition (running = false, aiming = false, rifle = false): Vector3 {
+    if (this.fps && aiming && rifle) return this.fpRifleAim;
     const { idle, run, aim } = Config.Camera[this.fps ? 'fps' : 'tps'];
-    const position = (running ? run : aiming ? aim : idle) as Vector3;
-    return this.fps && aiming && rifle ? this.fpRifleAim : position;
+
+    this.position.copy((running ? run : aiming ? aim : idle) as Vector3);
+    this.position.x *= +(!this.fps && !this.rightShoulder) * -2 + 1;
+
+    return this.position;
   }
 
   public changeView (running: boolean, aiming: boolean, rifle: boolean): void {
     this.fps = !this.fps;
-
-    const { x, y, z } = this.getPosition(running, aiming, rifle);
-
     this.updateNearPlane(aiming, rifle);
+    const { x, y, z } = this.getPosition(running, aiming, rifle);
 
     anime({
       targets: this.camera.position,
@@ -86,7 +90,7 @@ class GameCamera
     const duration = +fpRifle * -300 + 400;
 
     const near = aiming ? 0.1 : this.fps
-      ? rifle ? 0.5 : 0.315 : 0.1;
+      ? rifle ? 0.5 : 0.32 : 0.1;
 
     if (this.fps && running && rifle) {
       this.camera.position.z = 0.2;
@@ -102,6 +106,17 @@ class GameCamera
       targets: this.camera,
       easing: 'linear',
       duration, near
+    });
+  }
+
+  public changeShoulder (): void {
+    this.rightShoulder = !this.rightShoulder;
+
+    !this.fps && anime({
+      targets: this.camera.position,
+      x: -this.camera.position.x,
+      easing: 'easeInOutQuad',
+      duration: 500
     });
   }
 

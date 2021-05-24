@@ -148,7 +148,10 @@ export default class Input
         return this.player.changeWeapon();
 
       case 'KeyC':
-        return this.player.changeCamera();
+        return this.player.changeCamera(true);
+
+      case 'KeyV':
+        return this.player.changeCamera(false);
 
       case 'KeyR':
         return this.player.reload(() => ({
