@@ -110,9 +110,10 @@ class GameCamera
   }
 
   public changeShoulder (): void {
+    if (this.fps) return;
     this.rightShoulder = !this.rightShoulder;
 
-    !this.fps && anime({
+    anime({
       targets: this.camera.position,
       x: -this.camera.position.x,
       easing: 'easeInOutQuad',

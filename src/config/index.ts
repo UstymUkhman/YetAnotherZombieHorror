@@ -73,6 +73,7 @@ export namespace Config
     scale: new Vector3(...LimboData.scale),
 
     sidewalk: LimboData.sidewalk,
+    portals: LimboData.portals,
     bounds: LimboData.bounds,
 
     skybox: LimboData.skybox,

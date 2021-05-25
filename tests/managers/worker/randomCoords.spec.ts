@@ -10,17 +10,36 @@ describe('randomCoords', () => {
 
     for (let i = 0; i < 10; i++) {
       const coords = getRandomCoord({
+        portals: Limbo.portals,
         player: new Vector3(),
         bounds: Limbo.bounds,
         minCoords: minCoords,
         maxCoords: maxCoords
       });
 
-      expect(coords[0]).toBeLessThan(maxCoords[0]);
-      expect(coords[1]).toBeLessThan(maxCoords[1]);
+      if (coords[1] > Limbo.portals[1][1]) {
+        const maxX = Limbo.portals[6][0];
+        const minX = Limbo.portals[0][0];
 
-      expect(coords[0]).toBeGreaterThan(minCoords[0]);
+        expect(coords[0]).toBeLessThan(maxX);
+        expect(coords[0]).toBeGreaterThan(minX);
+      }
+
+      else if (coords[1] < Limbo.portals[2][1]) {
+        const maxX = Limbo.portals[4][0];
+        const minX = Limbo.portals[2][0];
+
+        expect(coords[0]).toBeLessThan(maxX);
+        expect(coords[0]).toBeGreaterThan(minX);
+      }
+
+      else {
+        expect(coords[0]).toBeLessThan(44.5);
+        expect(coords[0]).toBeGreaterThan(-10.0);
+      }
+
       expect(coords[1]).toBeGreaterThan(minCoords[1]);
+      expect(coords[1]).toBeLessThan(maxCoords[1]);
     }
   });
 });

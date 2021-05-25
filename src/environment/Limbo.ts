@@ -103,6 +103,10 @@ export default class Limbo extends GameLevel
     ];
   }
 
+  public static get portals (): Bounds {
+    return Config.Limbo.portals as Bounds;
+  }
+
   public static get bounds (): Bounds {
     return Config.Limbo.bounds as Bounds;
   }

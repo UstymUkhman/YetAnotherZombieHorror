@@ -42,13 +42,17 @@ describe('Limbo', () => {
   });
 
   test('minCoords', () => {
-    expect(Limbo.minCoords[0]).toStrictEqual(-39.5);
+    expect(Limbo.minCoords[0]).toStrictEqual(-59.5);
     expect(Limbo.minCoords[1]).toStrictEqual(-144);
   });
 
   test('maxCoords', () => {
-    expect(Limbo.maxCoords[0]).toStrictEqual(74);
+    expect(Limbo.maxCoords[0]).toStrictEqual(94);
     expect(Limbo.maxCoords[1]).toStrictEqual(53);
+  });
+
+  test('portals', () => {
+    expect(Limbo.portals).toStrictEqual(LimboData.portals);
   });
 
   test('bounds', () => {

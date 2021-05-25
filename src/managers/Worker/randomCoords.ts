@@ -1,80 +1,90 @@
 type Vector3 = import('three/src/math/Vector3').Vector3;
+import { cloneBounds, min, max } from '@/utils/Array';
+
 import type { Coords, Bounds } from '@/types.d';
-import { cloneBounds } from '@/utils/Array';
 import { random } from '@/utils/Number';
 
-const MIN_PLAYER_DISTANCE = 10.0;
-const LEVEL0_TOP_COORD = 37.0;
+const MIN_PLAYER_DISTANCE = 7.0;
 const BOUND_OFFSET = 0.5;
 
 export type LevelParams = {
   minCoords: Coords,
   maxCoords: Coords,
+  portals: Bounds,
   player: Vector3,
   bounds: Bounds
 };
 
+const getRandomX = (minX: number, maxX: number, playerX: number): number => {
+  let x: number;
+
+  do {
+    x = random(minX, maxX);
+  } while (Math.abs(x - playerX) < MIN_PLAYER_DISTANCE);
+
+  return x;
+};
+
 export const getRandomCoord = (params: LevelParams): Coords => {
   const bounds = cloneBounds(params.bounds) as unknown as Array<Array<number>>;
-  bounds.push(bounds.shift() as Array<number>);
+  bounds.unshift(bounds.pop() as number[]);
 
-  const rightBounds = bounds.filter(bound => bound[0] < BOUND_OFFSET);
-  const leftBounds = bounds.filter(bound => bound[0] >= BOUND_OFFSET);
-
-  let minRightX = -Infinity, minLeftX = -Infinity,
-      minRightZ = -Infinity, minLeftZ = -Infinity,
-      maxRightX =  Infinity, maxLeftX =  Infinity,
-      maxRightZ =  Infinity, maxLeftZ =  Infinity;
+  const rightBounds = bounds.slice(0, bounds.length / 2).slice(4);
+  const leftBounds = bounds.slice(bounds.length / 2).slice(4);
 
   const minZ = params.minCoords[1] + BOUND_OFFSET,
         maxZ = params.maxCoords[1] - BOUND_OFFSET;
 
-  let tooCloseX: boolean, tooCloseZ: boolean;
-  let randomX: number, randomZ: number;
+  const bottomPortals = [
+    params.portals[2], params.portals[3],
+    params.portals[4], params.portals[5]
+  ];
+
+  const topPortals = [
+    params.portals[6], params.portals[7],
+    params.portals[0], params.portals[1]
+  ];
+
+  let randomZ: number;
 
   do {
     randomZ = random(minZ, maxZ);
-    tooCloseZ = Math.abs(randomZ - params.player.z) < MIN_PLAYER_DISTANCE;
-  } while (randomZ < LEVEL0_TOP_COORD && tooCloseZ);
+  } while (Math.abs(randomZ - params.player.z) < MIN_PLAYER_DISTANCE);
 
-  rightBounds.forEach(bound => {
-    const z = bound[1];
+  if (randomZ > topPortals[0][1]) {
+    const minX = min(topPortals.map(coords => coords[0]));
+    const maxX = max(topPortals.map(coords => coords[0]));
 
-    if (z < randomZ && z > minRightZ) {
-      minRightX = bound[0];
-      minRightZ = z;
+    return [getRandomX(minX, maxX, params.player.x), randomZ];
+  }
+
+  if (randomZ < bottomPortals[0][1]) {
+    const minX = min(bottomPortals.map(coords => coords[0]));
+    const maxX = max(bottomPortals.map(coords => coords[0]));
+
+    return [getRandomX(minX, maxX, params.player.x), randomZ];
+  }
+
+  let bottomRightX!: number, bottomLeftX!: number,
+      topRightX!: number, topLeftX!: number;
+
+  for (let b = 0, l = rightBounds.length - 1; b < l; b++) {
+    if (rightBounds[b][1] > randomZ && rightBounds[b + 1][1] < randomZ) {
+      topRightX = rightBounds[b][0] + BOUND_OFFSET;
+      bottomLeftX = leftBounds[l - b][0] - BOUND_OFFSET;
+
+      bottomRightX = rightBounds[b + 1][0] + BOUND_OFFSET;
+      topLeftX = leftBounds[l - b - 1][0] - BOUND_OFFSET;
+
+      break;
     }
+  }
 
-    if (z > randomZ && z < maxRightZ) {
-      maxRightX = bound[0];
-      maxRightZ = z;
-    }
-  });
-
-  leftBounds.forEach(bound => {
-    const z = bound[1];
-
-    if (z < randomZ && z > minLeftZ) {
-      minLeftX = bound[0];
-      minLeftZ = z;
-    }
-
-    if (z > randomZ && z < maxLeftZ) {
-      maxLeftX = bound[0];
-      maxLeftZ = z;
-    }
-  });
-
-  const minX = Math.max(minRightX, maxRightX) + BOUND_OFFSET;
-
-  const maxX = (
-    randomZ < LEVEL0_TOP_COORD ? Math.min : Math.max
-  )(minLeftX, maxLeftX) - BOUND_OFFSET;
-
-  do {
-    randomX = random(minX, maxX);
-    tooCloseX = Math.abs(randomX - params.player.x) < MIN_PLAYER_DISTANCE;
-  } while (tooCloseX && tooCloseZ);
-
-  return [randomX, randomZ];
+  return [
+    getRandomX(
+      Math.max(topRightX, bottomRightX),
+      Math.min(topLeftX, bottomLeftX),
+      params.player.x
+    ), randomZ
+  ];
 };

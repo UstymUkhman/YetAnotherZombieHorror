@@ -77,11 +77,20 @@ describe('Settings', () => {
     expect(Config.Limbo.position).toBeInstanceOf(Vector3);
     expect(Config.Limbo.position).toStrictEqual(levelPosition);
 
+    expect(Config.Limbo.bounds.length).toStrictEqual(Config.Limbo.sidewalk.length);
     expect(Config.Limbo.sidewalkHeight).toBeLessThan(Config.Limbo.height);
-    expect(Config.Limbo.bounds.length).toBeGreaterThan(2);
+    expect(Config.Limbo.portals.length).toStrictEqual(8);
 
-    Config.Limbo.bounds.forEach(
-      bound => expect(bound.length).toStrictEqual(2)
+    Config.Limbo.sidewalk.forEach(coords =>
+      expect(coords.length).toStrictEqual(2)
+    );
+
+    Config.Limbo.portals.forEach(coords =>
+      expect(coords.length).toStrictEqual(2)
+    );
+
+    Config.Limbo.bounds.forEach(coords =>
+      expect(coords.length).toStrictEqual(2)
     );
   });
 

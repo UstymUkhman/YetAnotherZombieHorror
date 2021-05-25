@@ -6,8 +6,8 @@ type Object3D = import('three/src/core/Object3D').Object3D;
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
-
 import { Clock } from 'three/src/core/Clock';
+
 import Physics from '@/managers/physics';
 import Player from '@/characters/Player';
 import Limbo from '@/environment/Limbo';
@@ -91,6 +91,7 @@ export default class GameLoop
       this.rifle.spawn(data as Coords), {
         minCoords: Limbo.minCoords,
         maxCoords: Limbo.maxCoords,
+        portals: Limbo.portals,
         bounds: Limbo.bounds
       }
     );
