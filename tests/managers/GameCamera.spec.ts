@@ -117,8 +117,20 @@ describe('GameCamera', () => {
 
   test('runAnimation', () => {
     const runAnimation = jest.fn(Camera.runAnimation.bind(Camera));
-    runAnimation(() => true, true);
+
+    runAnimation(true);
     expect(runAnimation).toHaveReturnedWith(undefined);
+
+    runAnimation(false);
+    expect(runAnimation).toHaveReturnedWith(undefined);
+  });
+
+  test('run', () => {
+    const сameraPrototype = Object.getPrototypeOf(Camera);
+    const run = jest.fn(сameraPrototype.run.bind(Camera));
+
+    run();
+    expect(run).toHaveReturnedWith(undefined);
   });
 
   test('shakeAnimation', () => {

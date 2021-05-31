@@ -116,8 +116,9 @@ export default class Player extends Character
     if (now - this.idleTime < 350) return;
     const idle = this.getWeaponAnimation('Idle');
 
+    GameEvents.dispatch('player:aim', false);
     GameEvents.dispatch('player:run', false);
-    Camera.runAnimation(() => false, false);
+    Camera.runAnimation(false);
 
     this.running = this.moving = false;
     this.idleTime = now;
@@ -141,7 +142,8 @@ export default class Player extends Character
     this.updateAnimation(direction, animation);
 
     GameEvents.dispatch('player:run', false);
-    Camera.runAnimation(() => false, false);
+    GameEvents.dispatch('player:aim', true);
+    Camera.runAnimation(false);
 
     this.running = false;
     this.moveTime = now;
@@ -163,9 +165,9 @@ export default class Player extends Character
     }
 
     if (directions[Direction.UP]) {
-      Camera.runAnimation(() => this.running, true);
       GameEvents.dispatch('player:run', true);
       this.updateAnimation('Run', run);
+      Camera.runAnimation(true);
 
       this.running = true;
       this.moving = true;
@@ -178,7 +180,7 @@ export default class Player extends Character
     GameEvents.dispatch('player:run', false);
     this.weapon.aim = this.aiming = true;
 
-    Camera.runAnimation(() => false, false);
+    Camera.runAnimation(false);
     Camera.aimAnimation(true, this.equipRifle);
     Camera.updateNearPlane(true, this.equipRifle);
 
@@ -220,7 +222,7 @@ export default class Player extends Character
     this.shooting = true;
     const now = Date.now();
 
-    if (this.running || this.hitting || this.reloading) return;
+    if (this.moving || this.hitting || this.reloading) return;
     if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
 
     if (this.weapon.shoot(this.position)) {
@@ -243,9 +245,9 @@ export default class Player extends Character
     this.updateAnimation('Idle', 'rifleReload');
     GameEvents.dispatch('player:run', false);
 
-    Camera.runAnimation(() => false, false);
     Camera.setNearPlane(0.15, 400);
     this.weapon.startReloading();
+    Camera.runAnimation(false);
 
     this.reloading = true;
     this.running = false;

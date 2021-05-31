@@ -6,24 +6,24 @@ import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
 import { Config } from '@/config';
-
-type RunCheck = () => boolean;
 import anime from 'animejs';
 
 class GameCamera
 {
-  private run = 0;
+  private raf!: number;
+  private runDelta!: number;
   private shakeDuration = 0.0;
   private rightShoulder = true;
   private position = new Vector3();
 
   private readonly shakePower = 0.025;
+  private readonly clock = new Clock();
+
   private fps = Config.Settings.fpCamera;
   private readonly shakeAttenuation = 1.0;
-
-  private readonly clock = new Clock();
   private readonly camera: PerspectiveCamera;
 
+  private readonly onRunning = this.run.bind(this);
   private readonly audioListener = new AudioListener();
   private ratio = window.innerWidth / window.innerHeight;
 
@@ -141,35 +141,6 @@ class GameCamera
     });
   }
 
-  public runAnimation (isRunning: RunCheck, running?: boolean): void {
-    if (!this.run && running === false) return;
-    this.run *= -1;
-
-    if (running !== undefined) {
-      const { x, y, z } = this.getPosition(running);
-      this.run = +running;
-
-      anime({
-        targets: this.camera.position,
-        delay: this.run * 100,
-        easing: 'easeOutQuad',
-        duration: 300,
-        x, y, z
-      });
-    }
-
-    anime({
-      easing: running ?? true ? 'linear' : 'easeOutQuad',
-      duration: +(isRunning() && !this.fps) * 250 + 250,
-      y: Math.PI + this.run * 0.025,
-      targets: this.camera.rotation,
-      delay: +!!running * 1000,
-
-      complete: () => isRunning() &&
-        this.runAnimation(isRunning)
-    });
-  }
-
   public shakeAnimation (duration: number): void {
     this.shakeDuration = Math.max(duration, 0);
 
@@ -185,6 +156,35 @@ class GameCamera
     else {
       this.camera.position.copy(this.getPosition());
     }
+  }
+
+  public runAnimation (running: boolean): void {
+    const { x, y, z } = this.getPosition(running);
+
+    this.runDelta = 0;
+
+    anime({
+      complete: () => running && requestAnimationFrame(this.onRunning),
+      begin: () => !running && cancelAnimationFrame(this.raf),
+
+      targets: this.camera.position,
+      delay: +running * 100,
+      easing: 'easeOutQuad',
+      duration: 300,
+      x, y, z
+    });
+  }
+
+  private run (): void {
+    this.runDelta += 0.1;
+    const offset = +this.fps + 1;
+
+    const sin = Math.sin(this.runDelta);
+    const cos = Math.cos(this.runDelta);
+
+    this.camera.position.y += sin * offset / 100;
+    this.camera.rotation.y -= cos * offset / 500;
+    this.raf = requestAnimationFrame(this.onRunning);
   }
 
   public deathAnimation (): void { return; }
