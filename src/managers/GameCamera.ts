@@ -176,11 +176,11 @@ class GameCamera
   }
 
   private run (): void {
-    this.runDelta += 0.1;
+    this.runDelta += 0.25;
     const offset = +this.fps + 1;
 
     const sin = Math.sin(this.runDelta);
-    const cos = Math.cos(this.runDelta);
+    const cos = Math.cos(this.runDelta / 2);
 
     this.camera.position.y += sin * offset / 100;
     this.camera.rotation.y -= cos * offset / 500;

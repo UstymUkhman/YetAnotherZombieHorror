@@ -72,7 +72,6 @@ export default class Character
           specular: Color.BLACK,
           map: material.map,
           transparent: true,
-          skinning: true,
           shininess: 0,
           opacity,
           side

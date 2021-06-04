@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 (global as any).PRODUCTION = false;
-(global as any).BUILD = '0.2.5';
+(global as any).BUILD = '0.3.5';
 
 describe('globals', () => {
   test('PRODUCTION', () => {
@@ -10,3 +11,5 @@ describe('globals', () => {
     expect(typeof (global as any).BUILD).toStrictEqual('string');
   });
 });
+
+/* eslint-enable @typescript-eslint/no-explicit-any */

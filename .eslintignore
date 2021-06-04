@@ -1,6 +1,3 @@
-tests/*
+dist/*
 build/*
-public/*
 coverage/*
-svelte.config.js
-webpack.config.js

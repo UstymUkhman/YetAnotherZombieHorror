@@ -5,7 +5,7 @@ type Movement = { directions: Directions, running: boolean };
 type Object3D = import('three/src/core/Object3D').Object3D;
 
 import { Direction, Directions } from '@/managers/Input';
-import { MathUtils } from 'three/src/math/MathUtils';
+import { radToDeg } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/managers/GameEvents';
 
 import { LoopOnce } from 'three/src/constants';
@@ -394,7 +394,7 @@ export default class Player extends Character
   public get location (): Location {
     return {
       position: this.position,
-      rotation: MathUtils.radToDeg(
+      rotation: radToDeg(
         Math.atan2(-this.rotation.x, this.rotation.z)
       )
     };

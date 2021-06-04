@@ -2,31 +2,31 @@
   <div bind:this={aim} class="aim" class:hide class:shooting />
 </div>
 
-<script lang="typescript">
-import { GameEvents } from '@/managers/GameEvents';
-import { onMount, onDestroy } from 'svelte';
+<script lang="ts">
+  import { GameEvents } from '@/managers/GameEvents';
+  import { onMount, onDestroy } from 'svelte';
 
-export let hide: boolean;
-let aim: HTMLDivElement;
-let shooting = false;
+  export let hide: boolean;
+  let aim: HTMLDivElement;
+  let shooting = false;
 
-function onShoot (): void {
-  setTimeout(() => shooting = false, 150);
-  setTimeout(() => shooting = true);
-  shooting = false;
-}
+  function onShoot (): void {
+    setTimeout(() => shooting = false, 150);
+    setTimeout(() => shooting = true);
+    shooting = false;
+  }
 
-onMount(() => {
-  GameEvents.add('player:shoot', onShoot);
-});
+  onMount(() => {
+    GameEvents.add('player:shoot', onShoot);
+  });
 
-onDestroy(() => {
-  GameEvents.remove('player:shoot');
-});
+  onDestroy(() => {
+    GameEvents.remove('player:shoot');
+  });
 </script>
 
 <style lang="scss">
-@import '@/variables';
+@use '@/variables' as var;
 
 div.container {
   position: absolute;
@@ -48,7 +48,7 @@ div.container {
     transform-origin: center center;
     transition-duration: 250ms;
 
-    border: 2px solid $white;
+    border: 2px solid var.$white;
     border-radius: 50%;
 
     position: absolute;

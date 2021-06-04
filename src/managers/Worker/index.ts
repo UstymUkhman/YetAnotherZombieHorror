@@ -1,11 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="./worker.d.ts" />
+import WebWorker from './worker?worker';
 
-type EventData = { callback: Callback, params?: EventParams };
-import WebWorker from 'worker-loader!./worker';
-
-type EventParams = Record<string, unknown>;
 type Callback = (data: unknown) => void;
+type EventParams = Record<string, unknown>;
+type EventData = { callback: Callback, params?: EventParams };
 
 export default class Worker
 {

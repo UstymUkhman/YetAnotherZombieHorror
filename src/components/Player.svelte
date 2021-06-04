@@ -1,15 +1,15 @@
 <div style="transform: rotate({rotation}deg);" />
 
-<script lang="typescript">
+<script lang="ts">
   export let rotation: number;
 </script>
 
 <style lang="scss">
-@import '@/variables';
+@use '@/variables' as var;
 
 div {
   clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0% 100%);
-  background-color: $black;
+  background-color: var.$black;
 
   position: absolute;
   display: block;

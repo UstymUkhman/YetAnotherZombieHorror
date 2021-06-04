@@ -14,9 +14,9 @@
 
 `cd YetAnotherZombieHorror`
 
-## Develop ##
-
 `yarn`
+
+## Develop ##
 
 `yarn start:web`
 
@@ -26,15 +26,19 @@
 
 `yarn lint:css`
 
+## Test ##
+
 `yarn test:run`
+
+`yarn test:cover`
+
+`yarn serve`
 
 ## Build ##
 
 `yarn build:web`
 
 `yarn build:app`
-
-`yarn serve`
 
 ## Distribute ##
 

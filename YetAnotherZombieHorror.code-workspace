@@ -15,7 +15,6 @@
 
 		"js-import.alias": {
 			"@components": "./src/components",
-			"@scss": "./src/components/scss",
 			"@": "./src"
 		}
 	},

@@ -6,7 +6,7 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { AudioLoader } from 'three/src/loaders/AudioLoader';
 
-import { MathUtils } from 'three/src/math/MathUtils';
+import { generateUUID } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/managers/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
@@ -40,7 +40,7 @@ export namespace Assets
     private readonly modelBasePath = './assets/models/';
     private readonly audioBasePath = './assets/sounds/';
 
-    private readonly uuid = MathUtils.generateUUID();
+    private readonly uuid = generateUUID();
 
     private readonly cubeTextures = [
       'px.jpg', 'nx.jpg',

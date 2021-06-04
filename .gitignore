@@ -2,17 +2,18 @@ tmp
 logs
 pids
 
-.idea
 *.log
 *.pid
 *.seed
+
+.idea
 .vscode
-
-coverage/
-build/**/*
-node_modules
 .lock-wscript
-!build/builder.yml
 
-public/**/*.txt
-public/**/*.map
+dist
+coverage
+node_modules
+
+build/**/*
+dist/**/*.map
+!build/builder.yml

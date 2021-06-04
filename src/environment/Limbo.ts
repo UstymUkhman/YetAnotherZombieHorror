@@ -23,7 +23,7 @@ export default class Limbo extends GameLevel
     super();
 
     if (Config.freeCamera) {
-      import(/* webpackChunkName: "orbit-controls" */ 'three/examples/jsm/controls/OrbitControls').then(Controls => {
+      import('three/examples/jsm/controls/OrbitControls').then(Controls => {
         this.controls = new Controls.OrbitControls(this.camera, this.canvas);
 
         this.camera.position.set(0, 10, -50);

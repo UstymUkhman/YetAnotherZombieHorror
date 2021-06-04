@@ -1,11 +1,10 @@
-import type PhysicsWorld from './PhysicsWorld';
 import { Config } from '@/config';
+import type PhysicsWorld from './PhysicsWorld';
 
-export default new (
-  (Config.Settings.ammoPhysics
-    ? require('./AmmoPhysics')
-    : require('./BVHPhysics')
-  ).default as {
-    new (): PhysicsWorld
+export default new (await import(
+  Config.Settings.ammoPhysics
+    ? './AmmoPhysics' : './BVHPhysics'
+  ) as {
+    default: { new (): PhysicsWorld }
   }
-);
+).default;

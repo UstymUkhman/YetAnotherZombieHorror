@@ -2,20 +2,20 @@
   <Button text="Start" on:click={() => dispatch('start')} />
 </div>
 
-<script lang="typescript">
-import { createEventDispatcher } from 'svelte';
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
 
-import Button from '@components/Button.svelte';
-import { fade } from 'svelte/transition';
+  import Button from '@components/Button.svelte';
+  import { fade } from 'svelte/transition';
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 </script>
 
 <style lang="scss">
-@import '@/variables';
+@use '@/variables' as var;
 
 div {
-  background-color: $black;
+  background-color: var.$black;
   position: absolute;
   display: block;
 

@@ -44,7 +44,7 @@ export default class GameLoop
     this.loadCharacters(); // .then(assets => this.enemyAssets = assets);
 
     if (Config.DEBUG) {
-      import(/* webpackChunkName: "stats.module" */ 'three/examples/jsm/libs/stats.module').then(Stats => {
+      import('three/examples/jsm/libs/stats.module').then(Stats => {
         this.stats = Stats.default();
         this.stats.showPanel(0);
         document.body.appendChild(this.stats.domElement);

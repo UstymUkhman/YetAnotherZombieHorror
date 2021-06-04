@@ -21,7 +21,7 @@ function createWindow(): void {
     frame: false
   });
 
-  game.loadFile(join(__dirname, '../public/index.html'));
+  game.loadFile(join(__dirname, '../dist/index.html'));
   if (!PRODUCTION) game.webContents.openDevTools();
   game.on('closed', (): void => game = null);
 }

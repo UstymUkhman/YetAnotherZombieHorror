@@ -8,7 +8,7 @@ describe('Worker', () => {
   });
 
   test('add', () => {
-    const add = jest.fn(worker.add.bind(worker, 'message', () => {}));
+    const add = jest.fn(worker.add.bind(worker, 'message', jest.fn));
     add();
     expect(add).toHaveReturnedWith(undefined);
   });

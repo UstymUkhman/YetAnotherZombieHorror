@@ -1,13 +1,10 @@
-export default class Stats {
-  public domElement: HTMLElement;
+export default jest.fn().mockImplementation(() => {
+  const canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
 
-  constructor () {
-    this.domElement = document.createElement('canvas');
-  }
-
-  showPanel () { }
-
-  begin () { }
-
-  end () { }
-}
+  return {
+    showPanel: jest.fn(),
+    domElement: canvas,
+    begin: jest.fn(),
+    end: jest.fn()
+  };
+});

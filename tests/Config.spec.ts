@@ -217,8 +217,10 @@ describe('Settings', () => {
   });
 
   test('Frozen', () => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     expect(Object.isFrozen(Config.Limbo.scale)).toStrictEqual(true);
     expect(() => { delete (Config.Player as any).scale; }).toThrow(TypeError);
     expect(() => { (Config.Enemy as any).position = [0, 0, 0]; }).toThrow(TypeError);
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   });
 });
