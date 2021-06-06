@@ -42,8 +42,8 @@
     "test:cover": "yarn test:run --coverage",
     "build:web": "vite build",
     "build:app": "yarn build:web && tsc --project app",
-    "pack:app": "electron-builder --dir --config build/builder.yml",
-    "dist:app": "electron-builder --config build/builder.yml"
+    "pack:app": "electron-builder --dir --config app/builder.yml",
+    "dist:app": "electron-builder --config app/builder.yml"
   },
   "dependencies": {
     "ammo.js": "^0.0.10",

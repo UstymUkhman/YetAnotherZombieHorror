@@ -5,6 +5,8 @@ import { version } from './package.json';
 import svelte from '@sveltejs/vite-plugin-svelte';
 import { UserConfigExport, defineConfig } from 'vite';
 
+// https://vitejs.dev/config/#config-file
+// https://vitejs.dev/guide/env-and-mode.html#modes
 export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
   assetsInclude: ['fbx', 'glb', 'gltf', 'wat'],
   plugins: [svelte(), glsl()],

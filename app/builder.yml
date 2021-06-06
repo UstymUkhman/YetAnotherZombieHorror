@@ -7,18 +7,18 @@ extraMetadata:
   main: build/main.js
 
 files:
+  - dist/**/*
   - build/**/*
-  - public/**/*
   - node_modules/**/*
   - package.json
 
 directories:
   output: build
-  buildResources: public/favicon
+  buildResources: dist/favicon
 
 win:
   legalTrademarks: Copyright © 2021 Ustym Ukhman
-  icon: public/favicon/favicon-512x512.png
+  icon: dist/favicon/favicon-512x512.png
   publisherName: Ustym Ukhman
 
   target:
@@ -36,7 +36,7 @@ win:
         - ia32
 
 linux:
-  icon: public/favicon/favicon-512x512.png
+  icon: dist/favicon/favicon-512x512.png
   maintainer: Ustym Ukhman
   category: game
 

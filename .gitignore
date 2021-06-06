@@ -10,10 +10,8 @@ pids
 .vscode
 .lock-wscript
 
-dist
-coverage
+dist/
+build/
+coverage/
 node_modules
-
-build/**/*
-dist/**/*.map
-!build/builder.yml
+# !build/builder.yml

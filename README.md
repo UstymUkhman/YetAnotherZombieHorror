@@ -4,7 +4,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub](https://img.shields.io/github/license/UstymUkhman/YetAnotherZombieHorror)
 
-# [Yet Another Zombie Horror](https://ustymukhman.github.io/YetAnotherZombieHorror/public/) #
+# Yet Another Zombie Horror #
 
 > or simply ***YAZH*** [[jɑːʒ](https://ustymukhman.github.io/YetAnotherZombieHorror/public/assets/sounds/YAZH.mp3)], is a first / third person zombie survival shooter.
 

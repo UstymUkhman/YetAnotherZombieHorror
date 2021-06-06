@@ -6,5 +6,5 @@ window.addEventListener('DOMContentLoaded', () => {
   console.info(`Electron : ${process.versions.electron}`);
 
   const closeButton = document.getElementById('close-button');
-  closeButton.addEventListener('click', () => ipcRenderer.send('close'), false);
+  closeButton?.addEventListener('click', () => ipcRenderer.send('close'), false);
 });

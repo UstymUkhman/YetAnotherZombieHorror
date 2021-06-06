@@ -1,16 +1,10 @@
 import '../../globals';
-import { Config } from '@/config';
 
-import PhysicsWorld from '@/managers/physics';
-import BVHPhysics from '@/managers/physics/BVHPhysics';
-import AmmoPhysics from '@/managers/physics/AmmoPhysics';
+import PhysicsManager from '@/managers/physics';
+import PhysicsWorld from '@/managers/physics/PhysicsWorld';
 
 describe('PhysicsWorld', () => {
-  const ammo = Config.Settings.ammoPhysics;
-
   test('Create', () => {
-    expect(PhysicsWorld).toBeInstanceOf(
-      ammo ? AmmoPhysics : BVHPhysics
-    );
+    expect(PhysicsManager).toBeInstanceOf(PhysicsWorld);
   });
 });

@@ -1,10 +1,24 @@
 {
   "compilerOptions": {
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "importHelpers": true,
     "noImplicitAny": true,
+
     "outDir": "../build",
     "module": "commonjs",
     "sourceMap": false,
+    "checkJs": false,
+    "allowJs": false,
     "baseUrl": ".",
+    "strict": true,
+
+    "typeRoots": [
+      "node_modules/@types"
+    ],
 
     "paths": {
       "*": ["../node_modules/*"]
