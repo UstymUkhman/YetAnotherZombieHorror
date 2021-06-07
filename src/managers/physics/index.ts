@@ -2,9 +2,6 @@ type Vector3 = import('three/src/math/Vector3').Vector3;
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { BoundsOptions } from './physics.d';
 
-type PhysicsMethod = (args: unknown) => void;
-type PhysicsMethodName = keyof PhysicsWorld;
-
 import PhysicsWorld from './PhysicsWorld';
 import type { Coords } from '@/types.d';
 import { Config } from '@/config';
@@ -12,7 +9,7 @@ import { Config } from '@/config';
 class PhysicsManager extends PhysicsWorld
 {
   protected addStaticCollider (): void { return; }
-  private calls: Map<string, unknown[]> = new Map();
+  private calls: Map<string, Array<unknown>> = new Map();
 
   private physics: Promise<PhysicsWorld> | PhysicsWorld = import(
     Config.Settings.ammoPhysics ? './AmmoPhysics' : './BVHPhysics'
@@ -22,63 +19,54 @@ class PhysicsManager extends PhysicsWorld
     this.physics = new Physics.default();
 
     for (const [fn, args] of this.calls) {
-      const method = fn as PhysicsMethodName;
-      const world = this.physics as PhysicsWorld;
-      const physicsMethod = world[method] as PhysicsMethod;
-
-      physicsMethod.apply(this.physics, args as [args: unknown]);
+      this.callPhysicsMethod(fn, args);
     }
 
     this.calls.clear();
     return this.physics;
   }
 
-  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+  private handleMethodCall (method: string, args: Array<unknown>): void {
     this.physics instanceof Promise
-      ? this.calls.set('createBounds', [bounds, sidewalk])
-      : this.physics.createBounds(bounds, sidewalk);
+      ? this.calls.set(method, args)
+      : this.callPhysicsMethod(method, args);
+  }
+
+  private callPhysicsMethod (method: string, args: Array<unknown>): void {
+    ((this.physics as PhysicsWorld)[method as keyof PhysicsWorld] as (args: unknown) => void)
+      .apply(this.physics, args as [args: unknown]);
+  }
+
+  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+    this.handleMethodCall('createBounds', [bounds, sidewalk]);
   }
 
   public createGround (min: Coords, max: Coords): void {
-    this.physics instanceof Promise
-      ? this.calls.set('createGround', [min, max])
-      : this.physics.createGround(min, max);
+    this.handleMethodCall('createGround', [min, max]);
   }
 
   public move (direction: Vector3): void {
-    this.physics instanceof Promise
-      ? this.calls.set('move', [direction])
-      : this.physics.move(direction);
+    (this.physics as PhysicsWorld).move(direction);
   }
 
   public setPlayer (player: Mesh): void {
-    this.physics instanceof Promise
-      ? this.calls.set('setPlayer', [player])
-      : this.physics.setPlayer(player);
+    (this.physics as PhysicsWorld).setPlayer(player);
   }
 
   public update (delta: number): void {
-    this.physics instanceof Promise
-      ? this.calls.set('update', [delta])
-      : this.physics.update(delta);
+    (this.physics as PhysicsWorld).update(delta);
   }
 
   public set pause (pause: boolean) {
-    this.physics instanceof Promise
-      ? this.calls.set('pause', [pause])
-      : this.physics.pause = pause;
+    (this.physics as PhysicsWorld).pause = pause;
   }
 
   public destroy (): void {
-    this.physics instanceof Promise
-      ? this.calls.set('destroy', [])
-      : this.physics.destroy();
+    (this.physics as PhysicsWorld).destroy();
   }
 
   public stop (): void {
-    this.physics instanceof Promise
-      ? this.calls.set('stop', [])
-      : this.physics.stop();
+    (this.physics as PhysicsWorld).stop();
   }
 }
 

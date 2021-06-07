@@ -1,8 +1,4 @@
 <main bind:this={main}>
-  {#if Config.APP}
-    <Close />
-  {/if}
-
   {#if loading}
     <Loader on:loaded={() => loading = false} />
   {:else}
@@ -32,7 +28,6 @@
 <script lang="ts">
   import BorderRifle from '@components/BorderRifle.svelte';
   import { GameEvents } from '@/managers/GameEvents';
-  import Close from '@components/CloseButton.svelte';
 
   import Loader from '@components/Loader.svelte';
   import Pause from '@components/Pause.svelte';
@@ -43,7 +38,6 @@
   import type { Location } from '@/types.d';
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
-  import { Config } from '@/config';
 
   const zoom = new Elastic.Number(0);
   const game = new GameLoop();

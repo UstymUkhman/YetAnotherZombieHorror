@@ -1,15 +1,15 @@
 import path from 'path';
 import glsl from 'vite-plugin-glsl';
-
 import { version } from './package.json';
+
 import svelte from '@sveltejs/vite-plugin-svelte';
 import { UserConfigExport, defineConfig } from 'vite';
 
-// https://vitejs.dev/config/#config-file
-// https://vitejs.dev/guide/env-and-mode.html#modes
 export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
   assetsInclude: ['fbx', 'glb', 'gltf', 'wat'],
+  build: { polyfillDynamicImport: true },
   plugins: [svelte(), glsl()],
+  base: './',
 
   define: {
     BUILD: JSON.stringify(version),
@@ -21,10 +21,6 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
     '@components': path.resolve(__dirname, 'src/components'),
     '@': path.resolve(__dirname, 'src')
   }},
-
-  build: {
-    polyfillDynamicImport: true
-  },
 
   server: {
     host: '0.0.0.0',

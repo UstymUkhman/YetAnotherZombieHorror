@@ -21,7 +21,7 @@ function createWindow(): void {
     frame: false
   });
 
-  game.loadFile(join(__dirname, '../dist/index.html'));
+  game.loadFile(join(__dirname, '../../dist/index.html'));
   game.on('closed', (): null | void => game = null);
   if (!PRODUCTION) game.webContents.openDevTools();
 }
@@ -50,4 +50,4 @@ app.on('window-all-closed', (): boolean | void =>
   process.platform !== 'darwin' && app.quit()
 );
 
-ipcMain.on('close', (): void => game?.close());
+ipcMain.on('exit', (): void => game?.close());

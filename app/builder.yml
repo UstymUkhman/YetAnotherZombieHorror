@@ -4,7 +4,7 @@ publish: null
 appId: yazh
 
 extraMetadata:
-  main: build/main.js
+  main: build/app/main.js
 
 files:
   - dist/**/*
