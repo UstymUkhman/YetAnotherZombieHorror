@@ -1,13 +1,16 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { CameraObject } from '@/managers/GameCamera';
+
 import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
+import { Color } from '@/utils/Color';
 
 export default class GameLevel
 {
   private readonly onResize = this.setRenderSize.bind(this);
 
-  private readonly renderer = new WebGLRenderer({
+  protected readonly renderer = new WebGLRenderer({
     antialias: true,
     alpha: false
   });
@@ -18,6 +21,7 @@ export default class GameLevel
 
   public constructor () {
     this.createRenderer();
+    this.createLights();
     this.createEvents();
   }
 
@@ -40,6 +44,10 @@ export default class GameLevel
 
   private setRenderSize (): void {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  private createLights (): void {
+    this.scene.add(new AmbientLight(Color.WHITE));
   }
 
   private createEvents (): void {

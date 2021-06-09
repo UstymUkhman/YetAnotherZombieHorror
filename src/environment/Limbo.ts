@@ -1,9 +1,9 @@
 type OrbitControls = import('three/examples/jsm/controls/OrbitControls').OrbitControls;
+type RenderTarget = import('three/src/renderers/webgl/WebGLRenderLists').RenderTarget;
 type Object3D = import('three/src/core/Object3D').Object3D;
 type Vector3 = import('three/src/math/Vector3').Vector3;
-import type { Coords, Bounds } from '@/types.d';
 
-import { AmbientLight } from 'three/src/lights/AmbientLight';
+import type { Coords, Bounds } from '@/types.d';
 import GameLevel from '@/environment/GameLevel';
 import Portals from '@/environment/Portals';
 
@@ -16,9 +16,11 @@ import { Config } from '@/config';
 
 export default class Limbo extends GameLevel
 {
+  private portals = new Portals(this.renderer, this.scene);
   private readonly music = new Music(Config.Limbo.music);
+
+  private renderTarget: RenderTarget | null = null;
   private controls?: OrbitControls;
-  private portals = new Portals();
 
   public constructor () {
     super();
@@ -35,9 +37,9 @@ export default class Limbo extends GameLevel
       });
     }
 
+    // this.renderer.localClippingEnabled = true;
     this.camera.far = Config.Limbo.depth;
     this.createEnvironment();
-    this.createLights();
   }
 
   private createEnvironment (): void {
@@ -53,10 +55,6 @@ export default class Limbo extends GameLevel
       level.position.copy(Config.Limbo.position as Vector3);
       level.scale.copy(Config.Limbo.scale as Vector3);
     });
-  }
-
-  private createLights (): void {
-    this.scene.add(new AmbientLight(Color.WHITE));
   }
 
   public createColliders (): void {
@@ -88,7 +86,11 @@ export default class Limbo extends GameLevel
   }
 
   public render (): void {
+    this.renderTarget = this.renderer.getRenderTarget();
     this.controls?.update();
+    this.portals.render();
+
+    this.renderer.setRenderTarget(this.renderTarget);
     super.render();
   }
 
