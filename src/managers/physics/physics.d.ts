@@ -33,6 +33,7 @@ interface AmmoBody {
     getWorldTransform: (transform: AmmoTransform) => void
   }
 
+  setWorldTransform: (transform: AmmoTransform) => void
   setAngularFactor: (angularFactor: Vector3) => void
   setLinearFactor: (linearFactor: Vector3) => void
 
@@ -52,7 +53,7 @@ type BoundsOptions = {
   y: number
 };
 
-type Collider = {
+type AmmoCollider = {
   body: AmmoBody
   mesh: Mesh
 };

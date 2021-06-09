@@ -1,9 +1,9 @@
-import type { AmmoWorld, AmmoBody, RigidBody, Collider } from './physics.d';
+import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from './physics.d';
 type Quaternion = import('three/src/math/Quaternion').Quaternion;
 type Vector3 = import('three/src/math/Vector3').Vector3;
+type Mesh = import('three/src/objects/Mesh').Mesh;
 
 import { GameEvents } from '@/managers/GameEvents';
-import { Mesh } from 'three/src/objects/Mesh';
 import PhysicsWorld from './PhysicsWorld';
 import Ammo from 'ammo.js';
 
@@ -12,11 +12,11 @@ const ENABLE = 1;
 
 export default class AmmoPhysics extends PhysicsWorld
 {
-  private readonly colliders: Map<string, Collider> = new Map();
+  private readonly colliders: Map<string, AmmoCollider> = new Map();
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
-  private player!: Collider;
+  private player!: AmmoCollider;
   private world: AmmoWorld;
   private paused = false;
 
@@ -79,8 +79,18 @@ export default class AmmoPhysics extends PhysicsWorld
 
   public setPlayer (player: Mesh): void {
     this.createCharacterCollider(player, 90);
-    this.player = this.colliders.get(player.uuid) as Collider;
+    this.player = this.colliders.get(player.uuid) as AmmoCollider;
     this.player.body.forceActivationState(DISABLE);
+  }
+
+  public teleportCollider (uuid: string): void {
+    const collider = this.colliders.get(uuid) as AmmoCollider;
+    const { position, quaternion } = collider.mesh;
+
+    this.transform.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
+    this.transform.setRotation(new Ammo.btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+
+    collider.body.setWorldTransform(this.transform);
   }
 
   public move (direction: Vector3): void {

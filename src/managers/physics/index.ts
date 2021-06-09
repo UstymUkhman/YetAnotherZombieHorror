@@ -45,12 +45,17 @@ class PhysicsManager extends PhysicsWorld
     this.handleMethodCall('createGround', [min, max]);
   }
 
-  public move (direction: Vector3): void {
-    (this.physics as PhysicsWorld).move(direction);
+  public teleportCollider (uuid: string): void {
+    const physics = this.physics as PhysicsWorld;
+    physics.teleportCollider && physics.teleportCollider(uuid);
   }
 
   public setPlayer (player: Mesh): void {
     (this.physics as PhysicsWorld).setPlayer(player);
+  }
+
+  public move (direction: Vector3): void {
+    (this.physics as PhysicsWorld).move(direction);
   }
 
   public update (delta: number): void {

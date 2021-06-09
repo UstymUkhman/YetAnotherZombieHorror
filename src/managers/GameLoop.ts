@@ -119,8 +119,11 @@ export default class GameLoop
   public update (): void {
     this.stats?.begin();
 
-    const playerPosition = this.player.location.position;
     const delta = Math.min(this.clock.getDelta(), 0.1);
+    const playerPosition = this.player.location.position;
+
+    const position = this.level.outOfBounds(playerPosition);
+    position !== null && this.player.teleport(position);
 
     this.rifle.update(playerPosition);
     this.player.update(delta);

@@ -4,8 +4,8 @@ type Vector3 = import('three/src/math/Vector3').Vector3;
 import type { Coords, Bounds } from '@/types.d';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
-import { FogExp2 } from 'three/src/scenes/FogExp2';
 import GameLevel from '@/environment/GameLevel';
+import Portals from '@/environment/Portals';
 
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/physics';
@@ -18,6 +18,7 @@ export default class Limbo extends GameLevel
 {
   private readonly music = new Music(Config.Limbo.music);
   private controls?: OrbitControls;
+  private portals = new Portals();
 
   public constructor () {
     super();
@@ -41,7 +42,12 @@ export default class Limbo extends GameLevel
 
   private createEnvironment (): void {
     this.createSkybox(Config.Limbo.skybox);
-    this.scene.fog = new FogExp2(Color.GREY, 0.1);
+
+    if (!Config.freeCamera) {
+      import('three/src/scenes/FogExp2').then(Fog =>
+        this.scene.fog = new Fog.FogExp2(Color.GREY, 0.1)
+      );
+    }
 
     this.loadLevel(Config.Limbo.model).then(level => {
       level.position.copy(Config.Limbo.position as Vector3);
@@ -64,6 +70,13 @@ export default class Limbo extends GameLevel
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
+  }
+
+  public outOfBounds (player: Vector3): Vector3 | null {
+    return (
+      this.portals.portalPassed(player) &&
+      this.portals.playerPosition
+    ) || null;
   }
 
   public removeObject (model: Object3D): void {

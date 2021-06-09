@@ -116,7 +116,7 @@
     updateScale();
   });
 
-  onDestroy(() => {
+  !import.meta.hot && onDestroy(() => {
     GameEvents.remove('player:run');
     GameEvents.remove('player:aim');
     GameEvents.remove('pause');

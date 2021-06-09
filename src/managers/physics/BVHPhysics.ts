@@ -27,9 +27,9 @@ export default class BVHPhysics extends PhysicsWorld
 
   private readonly matrix = new Matrix4();
   private readonly segment = new Line3();
+  private environmentCollider?: Mesh;
   private readonly box = new Box3();
 
-  private collider?: Mesh;
   private paused = false;
   private player!: Mesh;
   private delta = 0.0;
@@ -57,7 +57,7 @@ export default class BVHPhysics extends PhysicsWorld
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
     GameEvents.dispatch('add:object', this.environment);
-    this.collider = new Mesh(mergedGeometry);
+    this.environmentCollider = new Mesh(mergedGeometry);
   }
 
   protected addStaticCollider (collider: Mesh): void {
@@ -82,8 +82,8 @@ export default class BVHPhysics extends PhysicsWorld
 
   public move (direction: Vector3): void {
     const { segment, radius } = this.player.userData;
-    const colliderMatrix = this.collider?.matrixWorld as Matrix4;
-    const colliderGeometry = this.collider?.geometry as BVHGeometry;
+    const environmentMatrix = this.environmentCollider?.matrixWorld as Matrix4;
+    const environmentGeometry = this.environmentCollider?.geometry as BVHGeometry;
 
     this.playerVelocity.y += this.delta * this.GRAVITY;
     this.player.position.addScaledVector(this.playerVelocity, this.delta);
@@ -94,7 +94,7 @@ export default class BVHPhysics extends PhysicsWorld
     this.player.updateMatrixWorld();
     this.box.makeEmpty();
 
-    this.matrix.copy(colliderMatrix).invert();
+    this.matrix.copy(environmentMatrix).invert();
     this.segment.copy(segment);
 
     this.segment.start
@@ -111,8 +111,8 @@ export default class BVHPhysics extends PhysicsWorld
     this.box.min.addScalar(-radius);
     this.box.max.addScalar(radius);
 
-    colliderGeometry.boundsTree.shapecast(
-      this.collider,
+    environmentGeometry.boundsTree.shapecast(
+      this.environmentCollider,
       (box: Box3) => box.intersectsBox(this.box),
       (tri: SeparatingAxisTriangle) => {
         const capsule = this.capsule;
@@ -133,7 +133,7 @@ export default class BVHPhysics extends PhysicsWorld
     );
 
     const position = this.linearVelocity;
-    position.copy(this.segment.start).applyMatrix4(colliderMatrix);
+    position.copy(this.segment.start).applyMatrix4(environmentMatrix);
 
     const deltaVector = this.capsule;
     deltaVector.subVectors(position, this.player.position);
@@ -152,8 +152,8 @@ export default class BVHPhysics extends PhysicsWorld
   }
 
   public destroy (): void {
+    delete this.environmentCollider;
     this.environment.clear();
-    delete this.collider;
     this.paused = true;
   }
 

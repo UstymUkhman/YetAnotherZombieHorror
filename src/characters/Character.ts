@@ -186,6 +186,16 @@ export default class Character
     });
   }
 
+  public teleport (position: Vector3): void {
+    Physics.pause = true;
+
+    this.object.position.copy(position);
+    this.getModel().rotateOnWorldAxis(Vector.UP, Math.PI);
+
+    Physics.teleportCollider(this.object.uuid);
+    Physics.pause = false;
+  }
+
   public dispose (): void {
     const model = this.getModel();
     const children = model.children as Array<Object3D>;

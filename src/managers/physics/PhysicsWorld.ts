@@ -23,6 +23,7 @@ export default abstract class PhysicsWorld
 
   public abstract move (direction: Vector3): void;
   public abstract setPlayer (player: Mesh): void;
+  public teleportCollider? (uuid: string): void;
   public abstract update (delta: number): void;
 
   protected readonly GRAVITY = -9.81;

@@ -5,12 +5,16 @@ import { Scene } from 'three/src/scenes/Scene';
 
 export default class GameLevel
 {
-  private renderer = new WebGLRenderer({ antialias: true, alpha: false });
   private readonly onResize = this.setRenderSize.bind(this);
 
+  private readonly renderer = new WebGLRenderer({
+    antialias: true,
+    alpha: false
+  });
+
   private readonly loader = new Assets.Loader();
+  protected readonly camera = CameraObject;
   protected readonly scene = new Scene();
-  protected camera = CameraObject;
 
   public constructor () {
     this.createRenderer();
