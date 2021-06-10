@@ -14,6 +14,7 @@ import { Vector3 } from 'three/src/math/Vector3';
 import { Mesh } from 'three/src/objects/Mesh';
 import Limbo from '@/environment/Limbo';
 import { PI } from '@/utils/Number';
+import { Config } from '@/config';
 
 const TEXTURE_SIZE = 2 ** 12;
 const TRIGGER_OFFSET = -1.0;
@@ -68,6 +69,7 @@ export default class Portals
       new PlaneGeometry(size, size),
       new MeshBasicMaterial({
         map: portalTarget.texture,
+        toneMapped: false,
         fog: false
       })
     );
@@ -145,9 +147,12 @@ export default class Portals
 
   private renderPortal (entry: Mesh, exit: Mesh, target: WebGLRenderTarget): void {
     const { width, height } = (exit.geometry as PlaneGeometry).parameters;
-    const x = width / 2.0, y = height / 2.0;
 
-    CameraObject.getWorldPosition(this.reflection);
+    !Config.freeCamera
+      ? CameraObject.getWorldPosition(this.reflection)
+      : this.reflection.copy(CameraObject.position);
+
+    const x = width / 2.0, y = height / 2.0;
     entry.worldToLocal(this.reflection);
 
     this.reflection.x *= - 1.0;

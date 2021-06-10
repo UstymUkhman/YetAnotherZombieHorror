@@ -37,7 +37,6 @@ export default class Limbo extends GameLevel
       });
     }
 
-    // this.renderer.localClippingEnabled = true;
     this.camera.far = Config.Limbo.depth;
     this.createEnvironment();
   }
