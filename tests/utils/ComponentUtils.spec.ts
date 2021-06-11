@@ -1,5 +1,5 @@
 import '../globals';
-import { Coords } from '@/types.d';
+import type { Coords } from '@/types.d';
 import Limbo from '@/environment/Limbo';
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
 

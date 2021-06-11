@@ -1,6 +1,6 @@
 import { cloneBounds, min, max } from '@/utils/Array';
 import Limbo from '@/config/limbo.json';
-import { Bounds } from '@/types.d';
+import type { Bounds } from '@/types.d';
 
 describe('Array', () => {
   test('cloneBounds', () => {

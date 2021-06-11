@@ -102,7 +102,7 @@ export namespace Assets
       });
     }
 
-    public onProgress = (url: string, loaded: number, total: number): void => {
+    public override onProgress = (url: string, loaded: number, total: number): void => {
       const progress = loaded * 100 / total;
 
       GameEvents.dispatch('loading:progress', {
@@ -111,15 +111,15 @@ export namespace Assets
       });
     }
 
-    public onStart = (): void => {
+    public override onStart = (): void => {
       GameEvents.dispatch('loading:start', this.uuid);
     }
 
-    public onError = (url: string): void => {
+    public override onError = (url: string): void => {
       console.error(`Error occurred loading ${url}.`);
     }
 
-    public onLoad = (): void => {
+    public override onLoad = (): void => {
       GameEvents.dispatch('loading:end', this.uuid);
     }
   }

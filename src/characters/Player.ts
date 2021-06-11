@@ -372,12 +372,12 @@ export default class Player extends Character
     this.rifle.addAmmo();
   }
 
-  public update (delta: number): void {
+  public override update (delta: number): void {
     super.update(delta);
     this.shooting && this.startShooting();
   }
 
-  public dispose (): void {
+  public override dispose (): void {
     clearTimeout(this.reloadTimeout);
     clearTimeout(this.aimTimeout);
 

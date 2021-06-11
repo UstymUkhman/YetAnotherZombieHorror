@@ -21,19 +21,16 @@ export default class Rifle extends Weapon
     super(Config.Rifle);
   }
 
-  /** @Override */
-  public setAim (): void {
+  public override setAim (): void {
     this.model.rotation.set(this.rotation.x - 0.1, Math.PI - 0.028, -0.1);
     this.model.position.set(this.position.x, -1.0, -2.0);
   }
 
-  /** @Override */
-  public cancelAim (): void {
+  public override cancelAim (): void {
     this.reset();
   }
 
-  /** @Override */
-  public startReloading (): void {
+  public override startReloading (): void {
     this.model.position.set(this.position.x, this.position.y, 0);
     this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
 
@@ -41,8 +38,7 @@ export default class Rifle extends Weapon
     this.reloading = true;
   }
 
-  /** @Override */
-  public addAmmo (ammo = Config.Rifle.magazine): void {
+  public override addAmmo (ammo = Config.Rifle.magazine): void {
     if (ammo) this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
 
     else {
@@ -60,8 +56,7 @@ export default class Rifle extends Weapon
     }
   }
 
-  /** @Override */
-  public stopReloading (): void {
+  public override stopReloading (): void {
     this.reloading && this.stopSound('reload');
     this.reloading = false;
     this.reset();

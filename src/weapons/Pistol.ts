@@ -14,8 +14,7 @@ export default class Pistol extends Weapon
     super(Config.Pistol);
   }
 
-  /** @Override */
-  public setAim (): void {
+  public override setAim (): void {
     anime({
       targets: this.model.rotation,
       y: this.rotation.y + 0.015,
@@ -37,8 +36,7 @@ export default class Pistol extends Weapon
     });
   }
 
-  /** @Override */
-  public cancelAim (duration: number): void {
+  public override cancelAim (duration: number): void {
     anime({
       targets: this.model.rotation,
       x: this.rotation.x,

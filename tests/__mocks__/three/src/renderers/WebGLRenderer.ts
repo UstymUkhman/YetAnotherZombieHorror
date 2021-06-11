@@ -3,6 +3,7 @@ const WebGLRenderer = jest.fn().mockImplementation(() => {
 
   return {
     shadowMap: { enabled: false },
+    setClearColor: jest.fn(),
     setPixelRatio: jest.fn(),
     domElement: canvas,
 

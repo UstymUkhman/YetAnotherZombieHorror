@@ -83,7 +83,7 @@ export default class AmmoPhysics extends PhysicsWorld
     this.player.body.forceActivationState(DISABLE);
   }
 
-  public teleportCollider (uuid: string): void {
+  public override teleportCollider (uuid: string): void {
     const collider = this.colliders.get(uuid) as AmmoCollider;
     const { position, quaternion } = collider.mesh;
 

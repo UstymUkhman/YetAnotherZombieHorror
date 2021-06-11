@@ -37,15 +37,15 @@ class PhysicsManager extends PhysicsWorld
       .apply(this.physics, args as [args: unknown]);
   }
 
-  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+  public override createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
     this.handleMethodCall('createBounds', [bounds, sidewalk]);
   }
 
-  public createGround (min: Coords, max: Coords): void {
+  public override createGround (min: Coords, max: Coords): void {
     this.handleMethodCall('createGround', [min, max]);
   }
 
-  public teleportCollider (uuid: string): void {
+  public override teleportCollider (uuid: string): void {
     const physics = this.physics as PhysicsWorld;
     physics.teleportCollider && physics.teleportCollider(uuid);
   }

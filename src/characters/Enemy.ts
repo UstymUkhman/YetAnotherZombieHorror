@@ -147,7 +147,7 @@ export default class Enemy extends Character
     leftLeg.add(leftLegHitBox);
   }
 
-  public update (delta: number): void {
+  public override update (delta: number): void {
     super.update(delta);
 
     /* if (this.alive && this.character) {
@@ -155,7 +155,7 @@ export default class Enemy extends Character
     } */
   }
 
-  public dispose (): void {
+  public override dispose (): void {
     this.head?.remove(this.hitBoxes[0]);
 
     for (let box = this.hitBoxes.length; box--;) {

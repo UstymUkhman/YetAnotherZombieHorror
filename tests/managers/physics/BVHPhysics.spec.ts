@@ -1,6 +1,6 @@
 import '../../globals';
 import { Config } from '@/config';
-import { Bounds } from '@/types.d';
+import type { Bounds } from '@/types.d';
 
 import Limbo from '@/environment/Limbo';
 import { Vector } from '@/utils/Vector';
