@@ -1,7 +1,7 @@
 import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from './physics.d';
-type Quaternion = import('three/src/math/Quaternion').Quaternion;
-type Vector3 = import('three/src/math/Vector3').Vector3;
-type Mesh = import('three/src/objects/Mesh').Mesh;
+import type { Quaternion } from 'three/src/math/Quaternion';
+import type { Vector3 } from 'three/src/math/Vector3';
+import type { Mesh } from 'three/src/objects/Mesh';
 
 import { GameEvents } from '@/managers/GameEvents';
 import PhysicsWorld from './PhysicsWorld';

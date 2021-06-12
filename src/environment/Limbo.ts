@@ -1,23 +1,29 @@
-type OrbitControls = import('three/examples/jsm/controls/OrbitControls').OrbitControls;
-type Object3D = import('three/src/core/Object3D').Object3D;
-type Vector3 = import('three/src/math/Vector3').Vector3;
-
+import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import type { Object3D } from 'three/src/core/Object3D';
+import type { Assets } from '@/managers/AssetsLoader';
+import type { Mesh } from 'three/src/objects/Mesh';
 import type { Coords, Bounds } from '@/types.d';
-import GameLevel from '@/environment/GameLevel';
-import Portals from '@/environment/Portals';
 
+import { CSM } from 'three/examples/jsm/csm/CSM.js';
+import { Vector3 } from 'three/src/math/Vector3';
+import GameLevel from '@/environment/GameLevel';
+
+import Portals from '@/environment/Portals';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/physics';
 
-import { Color } from '@/utils/Color';
+// import { Color } from '@/utils/Color';
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
 export default class Limbo extends GameLevel
 {
   private readonly music = new Music(Config.Limbo.music);
+  private readonly onResize = this.resize.bind(this);
+
   private controls?: OrbitControls;
   private portals = new Portals();
+  private csm?: CSM;
 
   public constructor () {
     super();
@@ -36,21 +42,56 @@ export default class Limbo extends GameLevel
 
     this.camera.far = Config.Limbo.depth;
     this.createEnvironment();
+    this.createEvents();
   }
 
-  private createEnvironment (): void {
+  private async createEnvironment (): Promise<void> {
     this.createSkybox(Config.Limbo.skybox);
 
-    if (!Config.freeCamera) {
-      import('three/src/scenes/FogExp2').then(Fog =>
-        this.scene.fog = new Fog.FogExp2(Color.GREY, 0.1)
-      );
-    }
+    // if (!Config.freeCamera) {
+    //   import('three/src/scenes/FogExp2').then(Fog =>
+    //     this.scene.fog = new Fog.FogExp2(Color.GREY, 0.1)
+    //   );
+    // }
 
-    this.loadLevel(Config.Limbo.model).then(level => {
-      level.position.copy(Config.Limbo.position as Vector3);
-      level.scale.copy(Config.Limbo.scale as Vector3);
+    const level = await this.loadLevel(Config.Limbo.model);
+    level.position.copy(Config.Limbo.position as Vector3);
+    level.scale.copy(Config.Limbo.scale as Vector3);
+    this.createCascadedShadowMaps(level);
+  }
+
+  private createCascadedShadowMaps (level: Assets.GLTF): void {
+    const direction = new Vector3(0.925, -1.875, -1).normalize();
+
+    this.csm = new CSM({
+      lightFar: this.camera.far * 10,
+      lightDirection: direction,
+      maxFar: this.camera.far,
+      lightIntensity: 0.1,
+      mode: 'logarithmic',
+      camera: this.camera,
+      parent: this.scene,
+      cascades: 4,
+      fade: true
     });
+
+    level.traverse(child => {
+      const childMesh = child as Mesh;
+
+      if (childMesh.isMesh) {
+        childMesh.receiveShadow = true;
+        this.csm?.setupMaterial(childMesh.material);
+      }
+    });
+  }
+
+  private createEvents (): void {
+    window.addEventListener('resize', this.onResize, false);
+  }
+
+  private resize (): void {
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.csm?.updateFrustums();
   }
 
   public createColliders (): void {
@@ -83,11 +124,14 @@ export default class Limbo extends GameLevel
 
   public override render (): void {
     this.controls?.update();
+    this.csm?.update();
     super.render();
   }
 
   public override destroy (): void {
+    window.removeEventListener('resize', this.onResize, false);
     this.music.destroy();
+    this.csm?.dispose();
     super.destroy();
 
     if (Config.DEBUG) {

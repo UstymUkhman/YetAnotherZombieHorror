@@ -1,4 +1,4 @@
-type MeshBasicMaterial = import('three/src/materials/MeshBasicMaterial').MeshBasicMaterial;
+import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 

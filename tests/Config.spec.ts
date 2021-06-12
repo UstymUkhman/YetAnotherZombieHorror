@@ -68,7 +68,7 @@ describe('Settings', () => {
     expect(Config.Limbo.skybox).toStrictEqual('limbo');
 
     expect(Config.Limbo.height).toStrictEqual(10);
-    expect(Config.Limbo.depth).toStrictEqual(100);
+    expect(Config.Limbo.depth).toStrictEqual(200);
 
     expect(Config.Limbo.scale).toBeInstanceOf(Vector3);
     expect(Config.Limbo.scale).toStrictEqual(levelScale);

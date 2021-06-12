@@ -1,12 +1,11 @@
-type AnimationAction = import('three/src/animation/AnimationAction').AnimationAction;
-type GLTFModel = import('@/managers/AssetsLoader').Assets.GLTFModel;
-type Object3D = import('three/src/core/Object3D').Object3D;
-type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-import type { EnemyAnimations } from '@/types.d';
-
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
+import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
+
+import type { Object3D } from 'three/src/core/Object3D';
+import type { Assets } from '@/managers/AssetsLoader';
+import type { EnemyAnimations } from '@/types.d';
 
 import Character from '@/characters/Character';
 import { LoopOnce } from 'three/src/constants';
@@ -20,16 +19,16 @@ export default class Enemy extends Character
   private currentAnimation!: AnimationAction;
 
   private hitBoxes: Array<Object3D> = [];
-  private character!: GLTF;
+  private character!: Assets.GLTF;
   private head?: Object3D;
   private id: number;
 
-  public constructor (id = 0, model?: GLTFModel) {
+  public constructor (id = 0, model?: Assets.GLTFModel) {
     super(Config.Enemy);
     this.id = id;
 
     if (model !== undefined) {
-      this.character = SkeletonUtils.clone(model.scene) as GLTF;
+      this.character = SkeletonUtils.clone(model.scene) as Assets.GLTF;
       this.setCharacterMaterial(this.character, 0);
       this.createAnimations(model);
       this.setDefaultState();

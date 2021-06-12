@@ -1,14 +1,14 @@
+import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
+import type { Vector3 } from 'three/src/math/Vector3';
 import { Config } from '@/config';
 
-type Location = { position: import('three/src/math/Vector3').Vector3, rotation: number };
 type CharacterAnimations<Animation> = { [key in CharacterAnimation]: Animation };
-type PositionalAudio = import('three/src/audio/PositionalAudio').PositionalAudio;
-
 type CharacterSounds = Map<PlayerSounds | EnemySounds, PositionalAudio>;
 type WeaponSounds    = Map<PistolSounds | RifleSounds, PositionalAudio>;
 
 type CharacterConfig = typeof Config.Player | typeof Config.Enemy;
 type WeaponConfig    = typeof Config.Pistol | typeof Config.Rifle;
+type Location        = { position: Vector3, rotation: number };
 type Direction       = { z0: number, x0: number, x1: number };
 
 type CharacterMove      = { speed: number, direction: Direction };

@@ -1,6 +1,6 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { AudioListener } from 'three/src/audio/AudioListener';
-type Object3D = import('three/src/core/Object3D').Object3D;
+import type { Object3D } from 'three/src/core/Object3D';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';

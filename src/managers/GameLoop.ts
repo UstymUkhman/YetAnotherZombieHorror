@@ -1,8 +1,8 @@
 type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
-type Stats = import('three/examples/jsm/libs/stats.module').default;
 import type { CharacterSound, Location, Coords } from '@/types.d';
+import type Stats from 'three/examples/jsm/libs/stats.module';
 type CharacterSounds = { [sfx in CharacterSound]: string };
-type Object3D = import('three/src/core/Object3D').Object3D;
+import type { Object3D } from 'three/src/core/Object3D';
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';

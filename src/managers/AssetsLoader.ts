@@ -1,27 +1,30 @@
 import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
+import type { AnimationClip } from 'three/src/animation/AnimationClip';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { LoadingManager } from 'three/src/loaders/LoadingManager';
 
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { AudioLoader } from 'three/src/loaders/AudioLoader';
+import type { Texture } from 'three/src/textures/Texture';
 
 import { generateUUID } from 'three/src/math/MathUtils';
+import type { Group } from 'three/src/objects/Group';
 import { GameEvents } from '@/managers/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
 export namespace Assets
 {
-  export type Animations = Array<import('three/src/animation/AnimationClip').AnimationClip>;
-  type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
-
-  export type Texture = import ('three/src/textures/Texture').Texture;
   export type GLTFModel = { scene: GLTF, animations?: Animations };
-  export type GLTF = import('three/src/objects/Group').Group;
 
+  type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
   type ProgressEventTarget = EventTarget & { responseURL: string };
+
   type Assets = Texture | CubeTexture | GLTFModel | AudioBuffer;
   type Reject = (error: ErrorEvent) => void;
+
+  export type Animations = Array<AnimationClip>;
+  export type GLTF = Group;
 
   export interface Callbacks {
     onProgress: (event: ProgressEvent<EventTarget>) => void;
@@ -43,9 +46,9 @@ export namespace Assets
     private readonly uuid = generateUUID();
 
     private readonly cubeTextures = [
-      'px.jpg', 'nx.jpg',
-      'py.jpg', 'ny.jpg',
-      'pz.jpg', 'nz.jpg'
+      'px.png', 'nx.png',
+      'py.png', 'ny.png',
+      'pz.png', 'nz.png'
     ];
 
     private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {

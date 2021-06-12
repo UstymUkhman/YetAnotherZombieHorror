@@ -1,6 +1,6 @@
 import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from './physics.d';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
-type BufferGeometry = import ('three/src/core/BufferGeometry').BufferGeometry;
+import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 
 import { GameEvents } from '@/managers/GameEvents';
 import { Matrix4 } from 'three/src/math/Matrix4';

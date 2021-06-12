@@ -1,8 +1,8 @@
-type AnimationAction = import('three/src/animation/AnimationAction').AnimationAction;
 import type { Location, PlayerAnimations, CharacterAnimation } from '@/types.d';
+import type { AnimationAction } from 'three/src/animation/AnimationAction';
 
 type Movement = { directions: Directions, running: boolean };
-type Object3D = import('three/src/core/Object3D').Object3D;
+import type { Object3D } from 'three/src/core/Object3D';
 
 import { Direction, Directions } from '@/managers/Input';
 import { radToDeg } from 'three/src/math/MathUtils';

@@ -1,9 +1,9 @@
-type GLTF = import('@/managers/AssetsLoader').Assets.GLTF;
-type Vector3 = import('three/src/math/Vector3').Vector3;
-type Euler = import('three/src/math/Euler').Euler;
-import type { Coords } from '@/types.d';
-
+import type { Assets } from '@/managers/AssetsLoader';
+import type { Vector3 } from 'three/src/math/Vector3';
 import { GameEvents } from '@/managers/GameEvents';
+import type { Euler } from 'three/src/math/Euler';
+
+import type { Coords } from '@/types.d';
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
@@ -13,9 +13,9 @@ export default class Rifle extends Weapon
   private readonly rotation = Config.Rifle.rotation as Euler;
   private readonly maxStock = Config.Rifle.maxStock;
 
+  private clone?: Assets.GLTF;
   private reloading = false;
   private spawned = false;
-  private clone?: GLTF;
 
   public constructor () {
     super(Config.Rifle);

@@ -1,5 +1,5 @@
-type Vector3 = import('three/src/math/Vector3').Vector3;
-type Euler = import('three/src/math/Euler').Euler;
+import type { Vector3 } from 'three/src/math/Vector3';
+import type { Euler } from 'three/src/math/Euler';
 
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';

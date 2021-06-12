@@ -1,4 +1,4 @@
-import { ReinhardToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
+import { ACESFilmicToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 
@@ -9,8 +9,6 @@ import { Color } from '@/utils/Color';
 
 export default class GameLevel
 {
-  private readonly onResize = this.setRenderSize.bind(this);
-
   protected readonly renderer = new WebGLRenderer({
     antialias: true,
     alpha: false
@@ -22,8 +20,7 @@ export default class GameLevel
 
   public constructor () {
     this.createRenderer();
-    this.createLights();
-    this.createEvents();
+    this.createLight();
   }
 
   protected async loadLevel (file: string): Promise<Assets.GLTF> {
@@ -33,35 +30,26 @@ export default class GameLevel
   }
 
   protected createSkybox (folder: string): void {
-    this.loader.loadCubeTexture(folder)
-      .then(skybox => this.scene.background = skybox);
+    this.loader.loadCubeTexture(folder).then(
+      skybox => this.scene.background = skybox
+    );
   }
 
   private createRenderer (): void {
-    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(window.devicePixelRatio || 1.0);
+    this.renderer.setClearColor(Color.BLACK, 0.0);
 
-    this.renderer.toneMapping = ReinhardToneMapping;
+    this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
     this.renderer.outputEncoding = sRGBEncoding;
-    this.renderer.localClippingEnabled = true;
 
-    this.renderer.setClearColor(0x000000, 0);
-    this.renderer.toneMappingExposure = 0.8;
+    this.renderer.toneMappingExposure = 0.5;
     this.renderer.shadowMap.enabled = true;
-
-    this.setRenderSize();
   }
 
-  private setRenderSize (): void {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  private createLights (): void {
-    this.scene.add(new AmbientLight(Color.WHITE));
-  }
-
-  private createEvents (): void {
-    window.addEventListener('resize', this.onResize, false);
+  private createLight (): void {
+    this.scene.add(new AmbientLight(Color.WHITE, 0.5));
   }
 
   protected render (): void {
@@ -69,7 +57,6 @@ export default class GameLevel
   }
 
   protected destroy (): void {
-    window.removeEventListener('resize', this.onResize, false);
     this.renderer.dispose();
   }
 

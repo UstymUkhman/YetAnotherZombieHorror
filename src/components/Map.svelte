@@ -16,7 +16,7 @@
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
   import { GameEvents, GameEvent } from '@/managers/GameEvents';
-  type Vector3 = import('three/src/math/Vector3').Vector3;
+  import type { Vector3 } from 'three/src/math/Vector3';
   import MapRifle from '@components/MapRifle.svelte';
 
   import { cloneBounds, max } from '@/utils/Array';

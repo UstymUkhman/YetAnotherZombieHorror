@@ -1,9 +1,9 @@
 import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types.d';
-type Actions = { [name: string]: import('three/src/animation/AnimationAction').AnimationAction };
-type Object3D = import('three/src/core/Object3D').Object3D;
+import type { AnimationAction } from 'three/src/animation/AnimationAction';
+import type { Object3D } from 'three/src/core/Object3D';
 
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
+import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { FrontSide, DoubleSide } from 'three/src/constants';
@@ -18,11 +18,12 @@ import { Line3 } from 'three/src/math/Line3';
 import { camelCase } from '@/utils/String';
 import Physics from '@/managers/physics';
 import { Vector } from '@/utils/Vector';
-import { Color } from '@/utils/Color';
 
 export default class Character
 {
+  protected animations: { [name: string]: AnimationAction } = {};
   private step: CharacterMove = this.config.moves.Idle;
+
   private readonly sounds: CharacterSounds = new Map();
   private readonly loader = new Assets.Loader();
 
@@ -30,7 +31,6 @@ export default class Character
   protected readonly position  = new Vector3();
   protected readonly rotation  = new Vector3();
 
-  protected animations: Actions = {};
   private mixer?: AnimationMixer;
   private model?: Assets.GLTF;
   protected object: Mesh;
@@ -63,16 +63,14 @@ export default class Character
 
     character.traverse(child => {
       const childMesh = child as Mesh;
-      const material = childMesh.material as MeshPhongMaterial;
+      const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
         childMesh.castShadow = true;
 
-        childMesh.material = new MeshPhongMaterial({
-          specular: Color.BLACK,
+        childMesh.material = new MeshStandardMaterial({
           map: material.map,
           transparent: true,
-          shininess: 0,
           opacity,
           side
         });

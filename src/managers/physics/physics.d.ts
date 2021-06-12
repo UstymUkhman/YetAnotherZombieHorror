@@ -1,13 +1,13 @@
-type BufferGeometry = import ('three/src/core/BufferGeometry').BufferGeometry;
 type BVHGeometry = BufferGeometry & { boundsTree?: typeof MeshBVH };
-type Quaternion = import('three/src/math/Quaternion').Quaternion;
+import type { BufferGeometry } from 'three/src/core/BufferGeometry';
+import type { Quaternion } from 'three/src/math/Quaternion';
 
-type Triangle = import('three/src/math/Triangle').Triangle;
-type Vector3 = import('three/src/math/Vector3').Vector3;
+import type { Triangle } from 'three/src/math/Triangle';
+import type { Vector3 } from 'three/src/math/Vector3';
 import type MeshBVH from 'three-mesh-bvh/src/MeshBVH';
 
-type Line3 = import('three/src/math/Line3').Line3;
-type Mesh = import('three/src/objects/Mesh').Mesh;
+import type { Mesh } from 'three/src/objects/Mesh';
+import type { Line3 } from 'three/src/math/Line3';
 
 type LevelColliders = Map<number, Array<Mesh>>;
 import type { Bounds } from '@/types.d';

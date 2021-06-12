@@ -11,6 +11,23 @@ describe('Limbo', () => {
     expect(level).toBeInstanceOf(Limbo);
   });
 
+  test('createCascadedShadowMaps', () => {
+    const levelMock = { traverse: () => void 0 };
+    const limboPrototype = Object.getPrototypeOf(level);
+    const createCascadedShadowMaps = jest.fn(limboPrototype.createCascadedShadowMaps.bind(level));
+
+    createCascadedShadowMaps(levelMock);
+    expect(createCascadedShadowMaps).toHaveReturnedWith(undefined);
+  });
+
+  test('resize', () => {
+    const limboPrototype = Object.getPrototypeOf(level);
+    const resize = jest.fn(limboPrototype.resize.bind(level));
+
+    resize();
+    expect(resize).toHaveReturnedWith(undefined);
+  });
+
   test('createColliders', () => {
     const createColliders = jest.fn(level.createColliders.bind(level));
     createColliders();

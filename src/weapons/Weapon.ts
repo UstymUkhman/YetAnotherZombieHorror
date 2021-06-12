@@ -1,17 +1,17 @@
 import type { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types.d';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
+import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 
-type Object3D = import('three/src/core/Object3D').Object3D;
-type Vector3 = import('three/src/math/Vector3').Vector3;
+import type { Object3D } from 'three/src/core/Object3D';
+import type { Vector3 } from 'three/src/math/Vector3';
 
-import { GameEvents } from '@/managers/GameEvents';
 import { Raycaster } from 'three/src/core/Raycaster';
+import { GameEvents } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
 
-type Mesh = import('three/src/objects/Mesh').Mesh;
-type Euler = import('three/src/math/Euler').Euler;
+import type { Mesh } from 'three/src/objects/Mesh';
+import type { Euler } from 'three/src/math/Euler';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { FrontSide } from 'three/src/constants';
@@ -52,15 +52,19 @@ export default class Weapon
 
     this.weapon.traverse(child => {
       const childMesh = child as Mesh;
-      const material = childMesh.material as MeshPhongMaterial;
+      const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
         childMesh.castShadow = true;
 
-        childMesh.material = new MeshPhongMaterial({
-          specular: 0x2F2F2F,
+        childMesh.material = new MeshStandardMaterial({
+          emissiveIntensity: 0.025,
+          refractionRatio: 0.75,
+          emissive: 0xC0C0C0,
           map: material.map,
-          side: FrontSide
+          side: FrontSide,
+          roughness: 0.75,
+          metalness: 0.25
         });
       }
     });

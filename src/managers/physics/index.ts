@@ -1,4 +1,4 @@
-type Vector3 = import('three/src/math/Vector3').Vector3;
+import type { Vector3 } from 'three/src/math/Vector3';
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { BoundsOptions } from './physics.d';
 
