@@ -12,7 +12,6 @@ import Portals from '@/environment/Portals';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/physics';
 
-// import { Color } from '@/utils/Color';
 import Music from '@/managers/Music';
 import { Config } from '@/config';
 
@@ -46,17 +45,17 @@ export default class Limbo extends GameLevel
   }
 
   private async createEnvironment (): Promise<void> {
-    this.createSkybox(Config.Limbo.skybox);
-
-    // if (!Config.freeCamera) {
-    //   import('three/src/scenes/FogExp2').then(Fog =>
-    //     this.scene.fog = new Fog.FogExp2(Color.GREY, 0.1)
-    //   );
-    // }
+    !Config.freeCamera && import('@/environment/VolumetricFog').then(Fog => {
+      const fog = new Fog.default();
+      this.scene.add(fog.skybox);
+      this.scene.fog = fog;
+    });
 
     const level = await this.loadLevel(Config.Limbo.model);
     level.position.copy(Config.Limbo.position as Vector3);
     level.scale.copy(Config.Limbo.scale as Vector3);
+
+    this.createSkybox(Config.Limbo.skybox);
     this.createCascadedShadowMaps(level);
   }
 
@@ -79,6 +78,7 @@ export default class Limbo extends GameLevel
       const childMesh = child as Mesh;
 
       if (childMesh.isMesh) {
+        childMesh.renderOrder = 1;
         childMesh.receiveShadow = true;
         this.csm?.setupMaterial(childMesh.material);
       }

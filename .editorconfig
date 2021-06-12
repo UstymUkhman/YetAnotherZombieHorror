@@ -1,7 +1,6 @@
+[*.{svelte,ts,tsx,js,jsx,vs,fs,vert,frag,glsl}]
+
 root = true
-
-[*.{svelte,ts,tsx,js,jsx}]
-
 charset = utf-8
 indent_size = 2
 end_of_line = lf
