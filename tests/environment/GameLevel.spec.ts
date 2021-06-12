@@ -1,4 +1,3 @@
-import '../globals';
 import GameLevel from '@/environment/GameLevel';
 
 describe('GameLevel', () => {

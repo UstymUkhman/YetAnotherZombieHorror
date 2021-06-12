@@ -1,4 +1,3 @@
-import '../globals';
 import { Config } from '@/config';
 import { Color } from '@/utils/Color';
 

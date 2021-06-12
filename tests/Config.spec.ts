@@ -1,4 +1,3 @@
-import './globals';
 import { Config } from '@/config';
 import { Euler } from 'three/src/math/Euler';
 

@@ -1,6 +1,6 @@
-import '../globals';
 import Limbo from '@/environment/Limbo';
 import LimboData from '@/config/limbo.json';
+import { Vector3 } from 'three/src/math/Vector3';
 import { Object3D } from 'three/src/core/Object3D';
 
 describe('Limbo', () => {
@@ -15,6 +15,12 @@ describe('Limbo', () => {
     const createColliders = jest.fn(level.createColliders.bind(level));
     createColliders();
     expect(createColliders).toHaveReturnedWith(undefined);
+  });
+
+  test('outOfBounds', () => {
+    const outOfBounds = jest.fn(level.outOfBounds.bind(level));
+    outOfBounds(new Vector3());
+    expect(outOfBounds).toHaveReturnedWith(null);
   });
 
   test('removeObject', () => {

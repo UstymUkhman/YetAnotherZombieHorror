@@ -1,4 +1,3 @@
-import '../../globals';
 import { Config } from '@/config';
 import type { Bounds } from '@/types.d';
 
@@ -45,6 +44,17 @@ describe('AmmoPhysics', () => {
 
     setPlayer();
     expect(setPlayer).toHaveReturnedWith(undefined);
+  });
+
+  test('teleportCollider', () => {
+    const player = new Mesh();
+    const setPlayer = jest.fn(Physics.setPlayer.bind(Physics, player));
+    const teleportCollider = jest.fn(Physics.teleportCollider.bind(Physics, player.uuid));
+
+    setPlayer();
+    teleportCollider();
+
+    expect(teleportCollider).toHaveReturnedWith(undefined);
   });
 
   test('move', () => {

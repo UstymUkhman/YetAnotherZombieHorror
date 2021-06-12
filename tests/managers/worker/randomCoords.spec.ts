@@ -1,4 +1,3 @@
-import '../../globals';
 import Limbo from '@/environment/Limbo';
 import { Vector3 } from 'three/src/math/Vector3';
 import { getRandomCoord } from '@/managers/worker/randomCoords';

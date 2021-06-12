@@ -1,6 +1,4 @@
-import '../globals';
 import { Config } from '@/config';
-
 import { Object3D } from 'three/src/core/Object3D';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { Camera, CameraObject, CameraListener } from '@/managers/GameCamera';

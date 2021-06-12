@@ -1,4 +1,3 @@
-import '../../globals';
 import { Config } from '@/config';
 import type { Bounds } from '@/types.d';
 
