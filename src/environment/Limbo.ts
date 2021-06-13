@@ -31,8 +31,8 @@ export default class Limbo extends GameLevel
       import('three/examples/jsm/controls/OrbitControls').then(Controls => {
         this.controls = new Controls.OrbitControls(this.camera, this.canvas);
 
-        this.camera.position.set(0, 10, -50);
-        this.controls.target.set(0, 0, 25);
+        this.camera.position.set(0.0, 10.0, -50.0);
+        this.controls.target.set(0.0, 0.0, 25.0);
 
         this.camera.lookAt(0, 0, 0);
         this.controls.update();
@@ -45,11 +45,13 @@ export default class Limbo extends GameLevel
   }
 
   private async createEnvironment (): Promise<void> {
-    !Config.freeCamera && import('@/environment/VolumetricFog').then(Fog => {
-      const fog = new Fog.default();
-      this.scene.add(fog.skybox);
-      this.scene.fog = fog;
-    });
+    !Config.freeCamera && import('@/environment/VolumetricFog').then(
+      ({ VolumetricFog }) => {
+        const fog = new VolumetricFog();
+        this.scene.add(fog.skybox);
+        this.scene.fog = fog;
+      }
+    );
 
     const level = await this.loadLevel(Config.Limbo.model);
     level.position.copy(Config.Limbo.position as Vector3);
@@ -60,7 +62,7 @@ export default class Limbo extends GameLevel
   }
 
   private createCascadedShadowMaps (level: Assets.GLTF): void {
-    const direction = new Vector3(0.925, -1.875, -1).normalize();
+    const direction = new Vector3(0.925, -1.875, -1.0).normalize();
 
     this.csm = new CSM({
       lightFar: this.camera.far * 10,
