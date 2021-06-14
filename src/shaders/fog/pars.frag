@@ -1,4 +1,7 @@
 #ifdef USE_FOG
+  #include ../fBm;
+	uniform float fogTime;
+
 	uniform vec3 fogColor;
   varying vec3 vWorldPosition;
 

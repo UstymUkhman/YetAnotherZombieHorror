@@ -1,8 +1,8 @@
 // Simplex noise by Ian McEwan, Ashima Arts.:
 // https://github.com/ashima/webgl-noise
 
-#include ../permute;
-#include ../taylorInvSqrt;
+#include ../../permute;
+#include ../../taylorInvSqrt;
 
 precision highp float;
 

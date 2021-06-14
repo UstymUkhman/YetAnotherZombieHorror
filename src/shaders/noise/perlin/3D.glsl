@@ -1,14 +1,11 @@
 // Classic Perlin noise by Stefan Gustavson:
 // https://github.com/stegu/webgl-noise
 
-#include ../permute;
-#include ../taylorInvSqrt;
+#include ../../fade;
+#include ../../permute;
+#include ../../taylorInvSqrt;
 
 precision highp float;
-
-vec3 fade (vec3 t) {
-  return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-}
 
 float noise (vec3 Pi0, vec3 Pi1) {
   Pi0 = mod289(Pi0);
@@ -117,7 +114,7 @@ float cnoise (vec3 P) {
 }
 
 // Periodic variant:
-float pnoise(vec3 P, vec3 rep) {
+float pnoise (vec3 P, vec3 rep) {
   vec3 Pi0 = mod(floor(P), rep);
   vec3 Pi1 = mod(Pi0 + vec3(1.0), rep);
 

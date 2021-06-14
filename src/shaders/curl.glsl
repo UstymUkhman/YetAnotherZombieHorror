@@ -1,4 +1,4 @@
-#include noise/cnoise3D;
+#include noise/perlin/3D;
 
 precision highp float;
 

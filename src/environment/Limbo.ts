@@ -1,4 +1,7 @@
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import type { VolumetricFog } from '@/environment/VolumetricFog';
+import type { Material } from 'three/src/materials/Material';
+
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Assets } from '@/managers/AssetsLoader';
 import type { Mesh } from 'three/src/objects/Mesh';
@@ -22,6 +25,7 @@ export default class Limbo extends GameLevel
 
   private controls?: OrbitControls;
   private portals = new Portals();
+  private fog?: VolumetricFog;
   private csm?: CSM;
 
   public constructor () {
@@ -47,9 +51,9 @@ export default class Limbo extends GameLevel
   private async createEnvironment (): Promise<void> {
     !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
-        const fog = new VolumetricFog();
-        this.scene.add(fog.skybox);
-        this.scene.fog = fog;
+        this.fog = new VolumetricFog();
+        this.scene.add(this.fog.skybox);
+        this.scene.fog = this.fog;
       }
     );
 
@@ -78,11 +82,16 @@ export default class Limbo extends GameLevel
 
     level.traverse(child => {
       const childMesh = child as Mesh;
+      const material = childMesh.material as Material;
 
       if (childMesh.isMesh) {
         childMesh.renderOrder = 1;
         childMesh.receiveShadow = true;
         this.csm?.setupMaterial(childMesh.material);
+
+        if (this.fog) {
+          material.onBeforeCompile = this.fog.setUniforms;
+        }
       }
     });
   }
@@ -124,7 +133,8 @@ export default class Limbo extends GameLevel
     this.scene.add(model);
   }
 
-  public override render (): void {
+  public override render (delta?: number): void {
+    this.fog?.update(delta ?? 0);
     this.controls?.update();
     this.csm?.update();
     super.render();

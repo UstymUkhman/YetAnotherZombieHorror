@@ -127,12 +127,12 @@ export default class GameLoop
 
     this.rifle.update(playerPosition);
     this.player.update(delta);
+    this.level.render(delta);
 
     if (this.player.alive) {
       Physics.update(delta);
     }
 
-    this.level.render();
     this.stats?.end();
   }
 

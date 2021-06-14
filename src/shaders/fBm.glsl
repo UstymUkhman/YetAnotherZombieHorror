@@ -1,4 +1,8 @@
-#include noise/snoise3D;
+// Fractional Brownian Motion by Inigo Quilez:
+// https://www.iquilezles.org/www/articles/fbm/fbm.htm
+// https://www.iquilezles.org/www/articles/warp/warp.htm
+
+#include noise/simplex/3D;
 
 precision highp float;
 
