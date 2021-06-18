@@ -1,10 +1,8 @@
 // Simplex noise by Ian McEwan, Ashima Arts.:
 // https://github.com/ashima/webgl-noise
 
-#include ../../permute;
-#include ../../taylorInvSqrt;
-
-precision highp float;
+#include utils/permute;
+#include utils/taylorInvSqrt;
 
 float snoise (vec3 v) {
   const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);

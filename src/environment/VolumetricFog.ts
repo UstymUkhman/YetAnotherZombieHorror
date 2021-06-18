@@ -1,10 +1,13 @@
 import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { ShaderChunk } from 'three/src/renderers/shaders/ShaderChunk';
 import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
+
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
+import type { Texture } from 'three/src/textures/Texture';
 
 import { FogExp2 } from 'three/src/scenes/FogExp2';
 import { Vector3 } from 'three/src/math/Vector3';
+import { Assets } from '@/managers/AssetsLoader';
 
 import parsFrag from '@/shaders/fog/pars.frag';
 import parsVert from '@/shaders/fog/pars.vert';
@@ -30,25 +33,37 @@ export class VolumetricFog extends FogExp2
     Limbo.maxCoords[0], Config.Limbo.height, Limbo.maxCoords[1]
   );
 
+  private readonly loader = new Assets.Loader();
   private readonly sphere = this.createSkybox();
   private readonly shaders: Array<Shader> = [];
 
+  private noise?: Texture;
   private materials = 0;
   private time = 0.0;
 
   public constructor () {
     super(Color.GREY, 0.005);
 
-    ShaderChunk.fog_pars_fragment = parsFrag;
+    if (Config.Settings.bakedFog) {
+      this.loader.loadTexture('simplex.jpg').then(
+        noise => this.noise = noise
+      );
+    }
+
+    ShaderChunk.fog_pars_fragment = Config.Settings.bakedFog
+      ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
+
     ShaderChunk.fog_pars_vertex   = parsVert;
     ShaderChunk.fog_fragment      = fogFrag;
     ShaderChunk.fog_vertex        = fogVert;
   }
 
   private setShaderUniforms (shader: Shader): void {
-    this.materials = this.shaders.length + 1;
+    shader.uniforms.noise = { value: this.noise };
     shader.uniforms.fogTime = { value: 0 };
+
     this.shaders.push(shader);
+    this.materials = this.shaders.length;
   }
 
   private createSkybox (): Mesh {

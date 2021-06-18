@@ -1,5 +1,9 @@
 precision highp float;
 
+float mod289 (float x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
 vec2 mod289 (vec2 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }

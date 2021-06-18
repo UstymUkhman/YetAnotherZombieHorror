@@ -2,19 +2,31 @@
 // https://www.iquilezles.org/www/articles/fbm/fbm.htm
 // https://www.iquilezles.org/www/articles/warp/warp.htm
 
-#include noise/simplex/3D;
-
 precision highp float;
 
-float fBm (vec3 p) {
-  float v = 0.0;
-  float a = 0.5;
+#ifdef USE_BAKED_FOG
+  uniform sampler2D noise;
 
-  for (int i = 0; i < 6; i++) {
-    v += a * snoise(p);
-    p *= 2.0;
-    a *= 0.5;
+#else
+ #include snoise;
+#endif
+
+#ifndef USE_BAKED_FOG
+  float fBm (vec3 point, int octaves) {
+    float value = 0.0;
+    float amplitude = 0.5;
+
+    for (int o = 0; o < octaves; o++) {
+      value += amplitude * snoise(point);
+      point = point * 2.0 + 100.0;
+      amplitude *= 0.5;
+    }
+
+    return value;
   }
 
-  return v;
-}
+#else
+  float fBmTex (vec3 point) {
+    return texture(noise, point.zx).y * 0.5;
+  }
+#endif

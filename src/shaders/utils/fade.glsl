@@ -1,5 +1,9 @@
 precision highp float;
 
+float fade (float t) {
+  return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
+
 vec2 fade (vec2 t) {
   return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
 }

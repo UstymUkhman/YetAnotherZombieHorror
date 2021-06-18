@@ -50,6 +50,7 @@ export namespace Config
 
   export const Settings = deepFreeze({
     ammoPhysics: SettingsData.physics === 'ammo',
+    bakedFog: SettingsData.fog === 'baked',
     fpCamera: SettingsData.mode === 'fps'
   });
 
