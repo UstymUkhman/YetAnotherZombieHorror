@@ -13,7 +13,7 @@ import Enemy from '@/config/enemy.json';
 import Pistol from '@/config/pistol.json';
 import Rifle from '@/config/rifle.json';
 
-describe('Settings', () => {
+describe('Config', () => {
   test('Constants', () => {
     expect(typeof Config.colliders).toStrictEqual('boolean');
     expect(typeof Config.hitBoxes).toStrictEqual('boolean');
@@ -22,11 +22,6 @@ describe('Settings', () => {
     expect(Config.freeCamera).toStrictEqual(false);
     expect(Config.DEBUG).toStrictEqual(true);
     expect(Config.APP).toStrictEqual(false);
-  });
-
-  test('Settings', () => {
-    expect(typeof Config.Settings.ammoPhysics).toStrictEqual('boolean');
-    expect(typeof Config.Settings.fpCamera).toStrictEqual('boolean');
   });
 
   test('Camera.fps', () => {
@@ -68,7 +63,7 @@ describe('Settings', () => {
     expect(Config.Limbo.skybox).toStrictEqual('limbo');
 
     expect(Config.Limbo.height).toStrictEqual(10);
-    expect(Config.Limbo.depth).toStrictEqual(200);
+    expect(Config.Limbo.depth).toStrictEqual(250);
 
     expect(Config.Limbo.scale).toBeInstanceOf(Vector3);
     expect(Config.Limbo.scale).toStrictEqual(levelScale);

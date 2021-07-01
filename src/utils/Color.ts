@@ -9,7 +9,7 @@ export namespace Color
   export const MOON = 0xA8D9A7;
 
   export const BLUE = 0x2D78FF;
-  export const GRAY = 0x222222;
+  export const GRAY = 0x323232;
   export const RED = 0x8A0707;
 
   export const blend = (initial: string, target: string, p = 0.5): string => {

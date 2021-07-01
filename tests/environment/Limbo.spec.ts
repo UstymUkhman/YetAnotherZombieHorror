@@ -1,5 +1,6 @@
 import Limbo from '@/environment/Limbo';
 import LimboData from '@/config/limbo.json';
+import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Object3D } from 'three/src/core/Object3D';
 
@@ -64,6 +65,16 @@ describe('Limbo', () => {
     expect(destroy).toHaveReturnedWith(undefined);
   });
 
+  test('center', () => {
+    const x = (94 + -59.5) / 2.0;
+    const z = (53 + -144) / 2.0;
+
+    expect(Limbo.center).toBeInstanceOf(Vector3);
+    expect(Limbo.center.y).toStrictEqual(0.0);
+    expect(Limbo.center.x).toStrictEqual(x);
+    expect(Limbo.center.z).toStrictEqual(z);
+  });
+
   test('minCoords', () => {
     expect(Limbo.minCoords[0]).toStrictEqual(-59.5);
     expect(Limbo.minCoords[1]).toStrictEqual(-144);
@@ -80,5 +91,11 @@ describe('Limbo', () => {
 
   test('bounds', () => {
     expect(Limbo.bounds).toStrictEqual(LimboData.bounds);
+  });
+
+  test('size', () => {
+    expect(Limbo.size.x).toStrictEqual(94 - -59.5);
+    expect(Limbo.size.y).toStrictEqual(53 - -144);
+    expect(Limbo.size).toBeInstanceOf(Vector2);
   });
 });

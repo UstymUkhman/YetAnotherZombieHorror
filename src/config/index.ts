@@ -1,9 +1,6 @@
-import type { CharacterMove } from '@/types.d';
-
-import SettingsData from '@/config/settings.json';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
+import type { CharacterMove } from '@/types.d';
 
 import CameraData from '@/config/camera.json';
 import LimboData from '@/config/limbo.json';
@@ -47,12 +44,6 @@ export namespace Config
   export const freeCamera = false;
   export const colliders = false;
   export const hitBoxes = false;
-
-  export const Settings = deepFreeze({
-    ammoPhysics: SettingsData.physics === 'ammo',
-    bakedFog: SettingsData.fog === 'baked',
-    fpCamera: SettingsData.mode === 'fps'
-  });
 
   export const Camera = deepFreeze({
     fps: {

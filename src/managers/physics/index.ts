@@ -3,8 +3,8 @@ import type { Mesh } from 'three/src/objects/Mesh';
 import type { BoundsOptions } from './physics.d';
 
 import PhysicsWorld from './PhysicsWorld';
+import Settings from '@/config/settings';
 import type { Coords } from '@/types.d';
-import { Config } from '@/config';
 
 class PhysicsManager extends PhysicsWorld
 {
@@ -12,7 +12,7 @@ class PhysicsManager extends PhysicsWorld
   private calls: Map<string, Array<unknown>> = new Map();
 
   private physics: Promise<PhysicsWorld> | PhysicsWorld = import(
-    Config.Settings.ammoPhysics ? './AmmoPhysics' : './BVHPhysics'
+    Settings.ammoPhysics ? './AmmoPhysics' : './BVHPhysics'
   ).then(this.initializePhysics.bind(this));
 
   private initializePhysics (Physics: { default: new () => PhysicsWorld }) {

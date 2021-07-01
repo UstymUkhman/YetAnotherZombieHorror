@@ -15,11 +15,11 @@ import { Matrix4 } from 'three/src/math/Matrix4';
 import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
+import Settings from '@/config/settings';
 
 import { Vector } from '@/utils/Vector';
 import Limbo from '@/environment/Limbo';
 import { Color } from '@/utils/Color';
-
 
 export default class Clouds
 {
@@ -116,6 +116,8 @@ export default class Clouds
   }
 
   public update (): void {
+    if (!Settings.dynamicClouds) return;
+
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
 

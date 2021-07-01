@@ -73,9 +73,9 @@ export default class Limbo extends GameScene
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
 
     this.csm = new CSM({
-      lightFar: this.camera.far * 10,
+      maxFar: this.camera.far * 10,
       lightDirection: direction,
-      maxFar: this.camera.far,
+      lightFar: this.camera.far,
       lightIntensity: 0.25,
       mode: 'logarithmic',
       camera: this.camera,

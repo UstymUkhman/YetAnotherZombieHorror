@@ -11,8 +11,8 @@ import parsVert from '@/shaders/fog/pars.vert';
 import fogFrag from '@/shaders/fog/main.frag';
 import fogVert from '@/shaders/fog/main.vert';
 
+import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
-import { Config } from '@/config';
 
 export class VolumetricFog extends FogExp2
 {
@@ -26,11 +26,11 @@ export class VolumetricFog extends FogExp2
   public constructor () {
     super(Color.GRAY, 0.01);
 
-    if (Config.Settings.bakedFog) {
+    if (Settings.bakedFog) {
       this.noise = this.loader.load('./assets/images/simplex.jpg');
     }
 
-    ShaderChunk.fog_pars_fragment = Config.Settings.bakedFog
+    ShaderChunk.fog_pars_fragment = Settings.bakedFog
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
 
     ShaderChunk.fog_pars_vertex = parsVert;
@@ -47,7 +47,7 @@ export class VolumetricFog extends FogExp2
   }
 
   public update (delta: number): void {
-    this.time += delta * 0.05;
+    this.time += delta * 0.025;
 
     for (let s = 0; s < this.materials; s++) {
       this.shaders[s].uniforms.fogTime.value = this.time;
