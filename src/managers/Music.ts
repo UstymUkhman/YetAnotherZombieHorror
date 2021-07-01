@@ -17,22 +17,19 @@ export default class Music
     this.track.load();
   }
 
-  private toggle (play: boolean): void {
-    play ? this.track.play() : this.track.pause();
-    this.paused = !play;
-  }
-
   public play (): void {
-    this.toggle(true);
+    this.paused = false;
+    this.track.play();
   }
 
   public pause (): void {
-    this.toggle(false);
+    this.paused = true;
+    this.track.pause();
   }
 
   public destroy (): void {
     this.track.currentTime = 0;
-    this.toggle(false);
+    this.pause();
   }
 
   public set volume (volume: number) {

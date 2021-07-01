@@ -13,6 +13,6 @@
   "ammo": -1,
 
   "sounds": {
-    "shoot": "1911.mp3"
+    "shoot": "weapons/1911.mp3"
   }
 }

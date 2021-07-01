@@ -4,6 +4,7 @@
   const float fogHeight = 0.5;
 
   vec3 fogOrigin = cameraPosition;
+  float densityFactor = fogDensity;
   vec3 sampleCoord = vWorldPosition * 0.00025;
 
   float fogDepth = distance(vWorldPosition, fogOrigin);
@@ -17,6 +18,7 @@
     );
 
   #else
+    densityFactor = fogDensity * 2.0;
     sampleCoord += vec3(0.0, 0.0, fogTime * 0.05);
 
     noiseSample = fBm(sampleCoord + fBm(
@@ -28,13 +30,11 @@
   fogDepth *= mix(noiseSample * 0.5 + 0.5, 1.0, saturate((fogDepth - 5000.0) / 5000.0));
   fogDepth *= fogDepth;
 
-  float fogFactor = fogHeight * exp(-fogOrigin.y * fogDensity) * (
-    1.0 - exp(-fogDepth * fogDirection.y * fogDensity)
+  float fogFactor = fogHeight * exp(-fogOrigin.y * densityFactor) * (
+    1.0 - exp(-fogDepth * fogDirection.y * densityFactor)
   );
 
-  gl_FragColor.rgb = mix(
-    gl_FragColor.rgb, fogColor, saturate(
-      saturate(fogFactor / fogDirection.y)
-    ) * 0.75
-  );
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, saturate(
+    saturate(fogFactor / fogDirection.y)
+  ) * 0.75);
 #endif

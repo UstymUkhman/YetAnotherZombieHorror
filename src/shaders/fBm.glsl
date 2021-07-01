@@ -27,6 +27,9 @@ precision highp float;
 
 #else
   float fBmTex (vec3 point) {
+    // Use the green channel when sampling this texture due
+    // to the extra bit of precision provided for green in
+    // DXT-compressed and uncompressed RGB 565 formats.
     return texture(noise, point.zx).y * 0.5;
   }
 #endif

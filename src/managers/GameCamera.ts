@@ -124,6 +124,7 @@ class GameCamera
   public aimAnimation (aiming: boolean, rifle: boolean, duration = 400): void {
     const { x, y, z } = this.getPosition(false, aiming, rifle);
 
+    aiming && cancelAnimationFrame(this.raf);
     anime.running.length = 0;
 
     aiming && anime({

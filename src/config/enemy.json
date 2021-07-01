@@ -5,11 +5,11 @@
   "model": "enemy.glb",
 
   "sounds": {
-    "hardAttack": "hardAttack.mp3",
-    "softAttack": "softAttack.mp3",
-    "death": "enemyDeath.mp3",
-    "scream": "scream.mp3",
-    "hit": "enemyHit.mp3"
+    "hardAttack": "enemy/hardAttack.mp3",
+    "softAttack": "enemy/softAttack.mp3",
+    "scream": "enemy/scream.mp3",
+    "death": "enemy/death.mp3",
+    "hit": "enemy/hit.mp3"
   },
 
   "animations": {

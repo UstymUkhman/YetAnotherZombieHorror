@@ -5,8 +5,8 @@
   "model": "player.glb",
 
   "sounds": {
-    "death": "playerDeath.mp3",
-    "hit": "playerHit.mp3"
+    "death": "player/death.mp3",
+    "hit": "player/hit.mp3"
   },
 
   "animations": {

@@ -15,6 +15,8 @@ import Enemy from '@/characters/Enemy';
 
 import Worker from '@/managers/worker';
 import Pistol from '@/weapons/Pistol';
+import Music from '@/managers/Music';
+
 import Input from '@/managers/Input';
 import Rifle from '@/weapons/Rifle';
 import { Config } from '@/config';
@@ -33,7 +35,9 @@ export default class GameLoop
 
   private readonly worker = new Worker();
   private readonly loader = new Assets.Loader();
+
   private readonly input = new Input(this.player);
+  private readonly music = new Music(Config.Limbo.music);
 
   private paused = true;
   private stats?: Stats;
@@ -138,6 +142,7 @@ export default class GameLoop
 
   public destroy (): void {
     this.level.destroy();
+    this.music.destroy();
     Physics.destroy();
 
     if (Config.DEBUG) {
@@ -166,6 +171,7 @@ export default class GameLoop
   }
 
   public set pause (pause: boolean) {
+    // this.music[pause ? 'pause' : 'play']();
     Physics.pause = pause;
     this.paused = pause;
 

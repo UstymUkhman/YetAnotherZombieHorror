@@ -7,7 +7,7 @@ import { Assets } from '@/managers/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Color } from '@/utils/Color';
 
-export default class GameLevel
+export default class GameScene
 {
   protected readonly renderer = new WebGLRenderer({
     antialias: true,
@@ -44,12 +44,13 @@ export default class GameLevel
     this.renderer.shadowMap.type = PCFSoftShadowMap;
     this.renderer.outputEncoding = sRGBEncoding;
 
-    this.renderer.toneMappingExposure = 0.5;
+    // this.renderer.physicallyCorrectLights = true;
+    this.renderer.toneMappingExposure = 0.575;
     this.renderer.shadowMap.enabled = true;
   }
 
   private createLight (): void {
-    this.scene.add(new AmbientLight(Color.WHITE, 0.5));
+    this.scene.add(new AmbientLight(Color.WHITE, 0.1));
   }
 
   protected render (): void {

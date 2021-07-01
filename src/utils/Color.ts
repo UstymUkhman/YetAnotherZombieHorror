@@ -6,9 +6,9 @@ export namespace Color
 
   export const BLACK = 0x000000;
   export const WHITE = 0xFFFFFF;
+  export const MOON = 0xA8D9A7;
   export const GREY = 0x808080;
   export const RED = 0x8A0707;
-  export const SKY = 0x909090;
 
   export const blend = (initial: string, target: string, p = 0.5): string => {
     const iColor: RGB = hexToRGB(initial);

@@ -50,3 +50,35 @@
   - **Linux:** `yarn dist:app -l`
 
   - **Windows:** `yarn dist:app -w`
+
+## Credits ##
+
+  - *Level:*
+
+    - 
+
+  - *Skybox:*
+
+    - [wwwtyro](https://github.com/wwwtyro) - [space-3d](https://github.com/wwwtyro/space-3d)
+
+  - *Characters & Animations:*
+  
+    - [Mixamo](https://www.mixamo.com/#/)
+
+  - *Weapons:*
+
+    - 
+
+  - *Music:*
+
+    - [Hollywood Undead](https://www.hollywoodundead.com/) - Day Of The Dead
+  
+  - *SFX:*
+
+    - [Storyblocks](https://www.storyblocks.com/)
+    - [mixkit](https://mixkit.co/)
+
+  - *Effects:*
+
+    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8)
+    - [Red Stapler](https://redstapler.co/) - [Rain](https://redstapler.co/three-js-realistic-rain-tutorial/)

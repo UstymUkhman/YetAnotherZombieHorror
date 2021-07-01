@@ -9,22 +9,21 @@ import type { Coords, Bounds } from '@/types.d';
 
 import { CSM } from 'three/examples/jsm/csm/CSM.js';
 import { Vector3 } from 'three/src/math/Vector3';
-import GameLevel from '@/environment/GameLevel';
+import GameScene from '@/environment/GameScene';
 
 import Portals from '@/environment/Portals';
 import { min, max } from '@/utils/Array';
 import Physics from '@/managers/physics';
 
-import Music from '@/managers/Music';
+import { Color } from '@/utils/Color';
 import { Config } from '@/config';
 
-export default class Limbo extends GameLevel
+export default class Limbo extends GameScene
 {
-  private readonly music = new Music(Config.Limbo.music);
   private readonly onResize = this.resize.bind(this);
-
   private controls?: OrbitControls;
   private portals = new Portals();
+
   private fog?: VolumetricFog;
   private csm?: CSM;
 
@@ -52,7 +51,7 @@ export default class Limbo extends GameLevel
     !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
         this.fog = new VolumetricFog();
-        this.scene.add(this.fog.skybox);
+        // this.scene.add(this.fog.skybox);
         this.scene.fog = this.fog;
       }
     );
@@ -72,13 +71,17 @@ export default class Limbo extends GameLevel
       lightFar: this.camera.far * 10,
       lightDirection: direction,
       maxFar: this.camera.far,
-      lightIntensity: 0.1,
+      lightIntensity: 0.25,
       mode: 'logarithmic',
       camera: this.camera,
       parent: this.scene,
       cascades: 4,
       fade: true
     });
+
+    this.csm.lights.forEach(light =>
+      light.color.set(Color.MOON)
+    );
 
     level.traverse(child => {
       const childMesh = child as Mesh;
@@ -142,7 +145,7 @@ export default class Limbo extends GameLevel
 
   public override destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
-    this.music.destroy();
+
     this.csm?.dispose();
     super.destroy();
 
