@@ -7,23 +7,26 @@ import type { Assets } from '@/managers/AssetsLoader';
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Coords, Bounds } from '@/types.d';
 
-import { CSM } from 'three/examples/jsm/csm/CSM.js';
+import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
+import { CSM } from 'three/examples/jsm/csm/CSM';
 import GameScene from '@/environment/GameScene';
 
 import Portals from '@/environment/Portals';
-import { min, max } from '@/utils/Array';
+import Clouds from '@/environment/Clouds';
 import Physics from '@/managers/physics';
 
+import { min, max } from '@/utils/Array';
 import { Color } from '@/utils/Color';
 import { Config } from '@/config';
 
 export default class Limbo extends GameScene
 {
   private readonly onResize = this.resize.bind(this);
-  private controls?: OrbitControls;
-  private portals = new Portals();
+  private readonly clouds = new Clouds(300);
+  private readonly portals = new Portals();
 
+  private controls?: OrbitControls;
   private fog?: VolumetricFog;
   private csm?: CSM;
 
@@ -51,7 +54,6 @@ export default class Limbo extends GameScene
     !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
         this.fog = new VolumetricFog();
-        // this.scene.add(this.fog.skybox);
         this.scene.fog = this.fog;
       }
     );
@@ -62,6 +64,9 @@ export default class Limbo extends GameScene
 
     this.createSkybox(Config.Limbo.skybox);
     this.createCascadedShadowMaps(level);
+
+    this.scene.add(this.clouds.flash);
+    this.scene.add(this.clouds.sky);
   }
 
   private createCascadedShadowMaps (level: Assets.GLTF): void {
@@ -139,6 +144,7 @@ export default class Limbo extends GameScene
   public override render (delta?: number): void {
     this.fog?.update(delta ?? 0);
     this.controls?.update();
+    this.clouds.update();
     this.csm?.update();
     super.render();
   }
@@ -146,6 +152,7 @@ export default class Limbo extends GameScene
   public override destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
 
+    this.clouds.dispose();
     this.csm?.dispose();
     super.destroy();
 
@@ -153,6 +160,14 @@ export default class Limbo extends GameScene
       this.controls?.dispose();
       delete this.controls;
     }
+  }
+
+  public static get center (): Vector3 {
+    return new Vector3(
+      (Limbo.maxCoords[0] + Limbo.minCoords[0]) / 2.0,
+      0.0,
+      (Limbo.maxCoords[1] + Limbo.minCoords[1]) / 2.0
+    );
   }
 
   public static get minCoords (): Coords {
@@ -175,5 +190,12 @@ export default class Limbo extends GameScene
 
   public static get bounds (): Bounds {
     return Config.Limbo.bounds as Bounds;
+  }
+
+  public static get size (): Vector2 {
+    return new Vector2(
+      Limbo.maxCoords[0] - Limbo.minCoords[0],
+      Limbo.maxCoords[1] - Limbo.minCoords[1]
+    );
   }
 }

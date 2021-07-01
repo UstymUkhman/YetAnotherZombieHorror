@@ -1,7 +1,7 @@
 #ifdef USE_FOG
   float noiseSample;
   const int FBM_OCTAVES = 6;
-  const float fogHeight = 0.5;
+  const float fogHeight = 0.1;
 
   vec3 fogOrigin = cameraPosition;
   float densityFactor = fogDensity;
@@ -19,7 +19,7 @@
 
   #else
     densityFactor = fogDensity * 2.0;
-    sampleCoord += vec3(0.0, 0.0, fogTime * 0.05);
+    sampleCoord += vec3(0.0, 0.0, fogTime * 0.1);
 
     noiseSample = fBm(sampleCoord + fBm(
         sampleCoord, FBM_OCTAVES
@@ -36,5 +36,5 @@
 
   gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, saturate(
     saturate(fogFactor / fogDirection.y)
-  ) * 0.75);
+  ) * 0.95);
 #endif
