@@ -53,7 +53,8 @@ export default class GameScene
     this.scene.add(new AmbientLight(Color.WHITE, 0.1));
   }
 
-  protected render (): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected render (delta?: number): void {
     this.renderer.render(this.scene, this.camera);
   }
 

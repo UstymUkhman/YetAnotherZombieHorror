@@ -57,11 +57,6 @@ describe('Config', () => {
     const levelPosition = new Vector3(...Limbo.position);
     const levelScale = new Vector3(...Limbo.scale);
 
-    expect(Config.Limbo.model).toStrictEqual('limbo.glb');
-    expect(Config.Limbo.music).toStrictEqual('limbo.mp3');
-
-    expect(Config.Limbo.skybox).toStrictEqual('limbo');
-
     expect(Config.Limbo.height).toStrictEqual(10);
     expect(Config.Limbo.depth).toStrictEqual(250);
 
@@ -73,7 +68,14 @@ describe('Config', () => {
 
     expect(Config.Limbo.bounds.length).toStrictEqual(Config.Limbo.sidewalk.length);
     expect(Config.Limbo.sidewalkHeight).toBeLessThan(Config.Limbo.height);
+
+    expect(Config.Limbo.music).toStrictEqual('Day Of The Dead.mp3');
+    expect(Config.Limbo.model).toStrictEqual('limbo.glb');
+    expect(Config.Limbo.cloud).toStrictEqual('cloud.png');
+
     expect(Config.Limbo.portals.length).toStrictEqual(8);
+    expect(Config.Limbo.skybox).toStrictEqual('limbo');
+    expect(Config.Limbo.ambient).toContain('.mp3');
 
     Config.Limbo.sidewalk.forEach(coords =>
       expect(coords.length).toStrictEqual(2)
@@ -85,6 +87,14 @@ describe('Config', () => {
 
     Config.Limbo.bounds.forEach(coords =>
       expect(coords.length).toStrictEqual(2)
+    );
+
+    Config.Limbo.lighting.forEach(sound =>
+      expect(sound).toContain('.mp3')
+    );
+
+    Config.Limbo.rain.forEach(drop =>
+      expect(drop).toContain('.png')
     );
   });
 

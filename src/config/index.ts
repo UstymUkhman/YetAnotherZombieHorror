@@ -63,19 +63,21 @@ export namespace Config
     position: new Vector3(...LimboData.position),
     sidewalkHeight: LimboData.sidewalkHeight,
     scale: new Vector3(...LimboData.scale),
-    lighting: LimboData.lighting,
 
+    lighting: LimboData.lighting,
     sidewalk: LimboData.sidewalk,
+    ambient:  LimboData.ambient,
     portals: LimboData.portals,
-    bounds: LimboData.bounds,
 
     skybox: LimboData.skybox,
-    cloud: LimboData.cloud,
-    model: LimboData.model,
-    music: LimboData.music,
-
+    bounds: LimboData.bounds,
     height: LimboData.height,
-    depth: LimboData.depth
+    depth: LimboData.depth,
+
+    model: LimboData.model,
+    cloud: LimboData.cloud,
+    music: LimboData.music,
+    rain: LimboData.rain
   });
 
   export const Player = deepFreeze({

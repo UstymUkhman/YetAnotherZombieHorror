@@ -31,11 +31,10 @@ export default class Clouds
   private readonly onShowLighting = this.showLighting.bind(this);
   private readonly onHideLighting = this.hideLighting.bind(this);
 
-  private readonly radius = Math.max(Limbo.size.x, Limbo.size.y);
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
-
   private readonly loader = new Assets.Loader();
-  private readonly cloudMatrix = new Matrix4();
+  private readonly matrix = new Matrix4();
+  private readonly radius = Clouds.height;
 
   private thunder?: PositionalAudio;
   private clouds!: InstancedMesh;
@@ -80,8 +79,8 @@ export default class Clouds
   }
 
   private showLighting (): void {
-    this.clouds.getMatrixAt(randomInt(0, this.count - 1), this.cloudMatrix);
-    this.lighting.position.setFromMatrixPosition(this.cloudMatrix);
+    this.clouds.getMatrixAt(randomInt(0, this.count - 1), this.matrix);
+    this.lighting.position.setFromMatrixPosition(this.matrix);
 
     setTimeout(this.onHideLighting, Math.random() * 400 + 100);
     this.lighting.power = 100 + Math.random() * 150;
@@ -170,15 +169,15 @@ export default class Clouds
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
 
-      this.clouds.getMatrixAt(c, this.cloudMatrix);
-      const cloudMatrix = this.cloudMatrix.clone();
+      this.clouds.getMatrixAt(c, this.matrix);
+      const matrix = this.matrix.clone();
 
-      this.rotation.setFromRotationMatrix(cloudMatrix);
+      this.rotation.setFromRotationMatrix(matrix);
       this.rotation.z += Math.random() * direction * 0.002;
-      this.cloudMatrix.makeRotationFromEuler(this.rotation);
+      this.matrix.makeRotationFromEuler(this.rotation);
 
-      this.cloudMatrix.copyPosition(cloudMatrix);
-      this.clouds.setMatrixAt(c, this.cloudMatrix);
+      this.matrix.copyPosition(matrix);
+      this.clouds.setMatrixAt(c, this.matrix);
     }
 
     this.clouds.instanceMatrix.needsUpdate = true;
@@ -188,6 +187,10 @@ export default class Clouds
     this.thunder = undefined;
     this.lighting.remove();
     this.clouds.dispose();
+  }
+
+  public static get height (): number {
+    return Math.max(Limbo.size.x, Limbo.size.y);
   }
 
   public get sky (): InstancedMesh {

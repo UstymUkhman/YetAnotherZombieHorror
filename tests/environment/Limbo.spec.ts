@@ -55,7 +55,7 @@ describe('Limbo', () => {
 
   test('render', () => {
     const render = jest.fn(level.render.bind(level));
-    render();
+    render(0);
     expect(render).toHaveReturnedWith(undefined);
   });
 

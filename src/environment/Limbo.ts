@@ -18,17 +18,20 @@ import Physics from '@/managers/physics';
 
 import { min, max } from '@/utils/Array';
 import { Color } from '@/utils/Color';
+import Rain from '@/environment/Rain';
 import { Config } from '@/config';
 
 export default class Limbo extends GameScene
 {
+  private readonly rain = new Rain(this.renderer, this.scene);
   private readonly onResize = this.resize.bind(this);
+
   private readonly clouds = new Clouds(300);
   private readonly portals = new Portals();
 
   private controls?: OrbitControls;
   private fog?: VolumetricFog;
-  private csm?: CSM;
+  private csm!: CSM;
 
   public constructor () {
     super();
@@ -95,7 +98,7 @@ export default class Limbo extends GameScene
       if (childMesh.isMesh) {
         childMesh.renderOrder = 1;
         childMesh.receiveShadow = true;
-        this.csm?.setupMaterial(childMesh.material);
+        this.csm.setupMaterial(childMesh.material);
 
         if (this.fog) {
           material.onBeforeCompile = this.fog.setUniforms;
@@ -110,7 +113,8 @@ export default class Limbo extends GameScene
 
   private resize (): void {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.csm?.updateFrustums();
+    this.csm.updateFrustums();
+    this.rain.resize();
   }
 
   public createColliders (): void {
@@ -141,11 +145,13 @@ export default class Limbo extends GameScene
     this.scene.add(model);
   }
 
-  public override render (delta?: number): void {
-    this.fog?.update(delta ?? 0);
+  public override render (delta: number): void {
+    this.rain.update(delta / 2);
     this.controls?.update();
+    this.fog?.update(delta);
+
     this.clouds.update();
-    this.csm?.update();
+    this.csm.update();
     super.render();
   }
 
@@ -153,7 +159,8 @@ export default class Limbo extends GameScene
     window.removeEventListener('resize', this.onResize, false);
 
     this.clouds.dispose();
-    this.csm?.dispose();
+    this.rain.dispose();
+    this.csm.dispose();
     super.destroy();
 
     if (Config.DEBUG) {
@@ -197,5 +204,9 @@ export default class Limbo extends GameScene
       Limbo.maxCoords[0] - Limbo.minCoords[0],
       Limbo.maxCoords[1] - Limbo.minCoords[1]
     );
+  }
+
+  public set pause (pause: boolean) {
+    this.rain.pause = pause;
   }
 }

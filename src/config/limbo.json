@@ -1,9 +1,11 @@
 {
+  "ambient": "environment/rain.mp3",
+  "music": "Day Of The Dead.mp3",
+
   "position": [0, 4.98, 13.5],
   "sidewalkHeight": 0.216,
   "scale": [75, 75, 75],
 
-  "music": "limbo.mp3",
   "model": "limbo.glb",
   "cloud": "cloud.png",
   "skybox": "limbo",
@@ -17,6 +19,14 @@
     "environment/lightning2.mp3",
     "environment/lightning3.mp3",
     "environment/lightning4.mp3"
+  ],
+
+  "rain": [
+    "rain/drop0.png",
+    "rain/drop1.png",
+    "rain/drop2.png",
+    "rain/drop3.png",
+    "rain/drop4.png"
   ],
 
   "portals": [

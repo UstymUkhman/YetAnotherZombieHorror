@@ -1,6 +1,8 @@
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
+
 import Clouds from '@/environment/Clouds';
+import Limbo from '@/environment/Limbo';
 
 describe('Clouds', () => {
   const clouds = new Clouds(100);
@@ -40,6 +42,11 @@ describe('Clouds', () => {
 
     dispose();
     expect(dispose).toHaveReturnedWith(undefined);
+  });
+
+  test('height', () => {
+    expect(Clouds.height).toBeGreaterThanOrEqual(Limbo.size.x);
+    expect(Clouds.height).toBeGreaterThanOrEqual(Limbo.size.y);
   });
 
   test('sky', () => {

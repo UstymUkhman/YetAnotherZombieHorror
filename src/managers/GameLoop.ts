@@ -172,6 +172,8 @@ export default class GameLoop
 
   public set pause (pause: boolean) {
     // this.music[pause ? 'pause' : 'play']();
+
+    this.level.pause = pause;
     Physics.pause = pause;
     this.paused = pause;
 
