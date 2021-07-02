@@ -10,12 +10,12 @@ describe('Clouds', () => {
     expect(clouds).toBeInstanceOf(Clouds);
   });
 
-  test('showLighting', () => {
+  test('startLighting', () => {
     const cloudsPrototype = Object.getPrototypeOf(clouds);
-    const showLighting = jest.fn(cloudsPrototype.showLighting.bind(clouds));
+    const startLighting = jest.fn(cloudsPrototype.startLighting.bind(clouds));
 
-    showLighting();
-    expect(showLighting).toHaveReturnedWith(undefined);
+    startLighting();
+    expect(startLighting).toHaveReturnedWith(undefined);
   });
 
   test('hideLighting', () => {

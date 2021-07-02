@@ -1,37 +1,43 @@
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler';
 import { MeshLambertMaterial } from 'three/src/materials/MeshLambertMaterial';
-import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 
+import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
-import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 
 import { PointLight } from 'three/src/lights/PointLight';
-import { NormalBlending } from 'three/src/constants';
+import { CameraListener } from '@/managers/GameCamera';
 import { Object3D } from 'three/src/core/Object3D';
-import { Vector3 } from 'three/src/math/Vector3';
 
 import { Matrix4 } from 'three/src/math/Matrix4';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Assets } from '@/managers/AssetsLoader';
+
 import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
-import Settings from '@/config/settings';
 
+import Settings from '@/config/settings';
 import { Vector } from '@/utils/Vector';
 import Limbo from '@/environment/Limbo';
+
 import { Color } from '@/utils/Color';
+import { Config } from '@/config';
+import anime from 'animejs';
 
 export default class Clouds
 {
-  private readonly _showLighting = this.showLighting.bind(this);
-  private readonly _hideLighting = this.hideLighting.bind(this);
+  private readonly onShowLighting = this.showLighting.bind(this);
+  private readonly onHideLighting = this.hideLighting.bind(this);
 
   private readonly radius = Math.max(Limbo.size.x, Limbo.size.y);
-  private readonly rotation = new Euler(PI.d2, 0, 0);
+  private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
 
-  private readonly loader = new TextureLoader();
+  private readonly loader = new Assets.Loader();
   private readonly cloudMatrix = new Matrix4();
 
+  private thunder?: PositionalAudio;
   private clouds!: InstancedMesh;
   private lighting!: PointLight;
 
@@ -40,18 +46,36 @@ export default class Clouds
     this.createClouds();
   }
 
-  private createLighting (): void {
+  private async createLighting (): Promise<void> {
     this.lighting = new PointLight(Color.BLUE, 10, this.radius, 2.5);
     this.lighting.position.set(0.0, this.radius, 0.0);
+    this.addSounds(await this.loadLightingSounds());
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;
     this.startLighting();
   }
 
+  private async loadLightingSounds (): Promise<Array<AudioBuffer>> {
+    return await Promise.all(Config.Limbo.lighting.map(
+        this.loader.loadAudio.bind(this.loader)
+      )
+    );
+  }
+
+  private addSounds (sounds: Array<AudioBuffer>): void {
+    sounds.forEach(sound => {
+      const audio = new PositionalAudio(CameraListener);
+
+      audio.setBuffer(sound);
+      audio.setVolume(1.0);
+      this.lighting.add(audio);
+    });
+  }
+
   private startLighting (): void {
-    setTimeout(this._showLighting, 1e3 * (
-      Math.random() * 20 + 10
+    setTimeout(this.onShowLighting, 1e3 * (
+      Math.random() * 15 + 15
     ));
   }
 
@@ -59,12 +83,39 @@ export default class Clouds
     this.clouds.getMatrixAt(randomInt(0, this.count - 1), this.cloudMatrix);
     this.lighting.position.setFromMatrixPosition(this.cloudMatrix);
 
-    setTimeout(this._hideLighting, Math.random() * 400 + 100);
+    setTimeout(this.onHideLighting, Math.random() * 400 + 100);
     this.lighting.power = 100 + Math.random() * 150;
 
     this.lighting.position.y -= Math.random() * (
       this.lighting.position.y / 4.0
     );
+
+    this.startThunder(this.lighting.position);
+  }
+
+  private startThunder (position: Vector3): void {
+    const distance = position.distanceToSquared(CameraListener.position);
+    const thunder = randomInt(0, this.lighting.children.length - 1);
+
+    this.thunder = this.lighting.children[thunder] as PositionalAudio;
+    const duration = (this.thunder.buffer?.duration ?? 0) * 1e3;
+
+    this.thunder.setRefDistance(distance / Config.Limbo.depth);
+    this.thunder.setVolume(1.0);
+    this.thunder.play();
+
+    setTimeout(() => anime({
+      targets: { volume: this.thunder?.getVolume() },
+      complete: () => this.thunder?.stop(),
+
+      update: ({ animations }) => this.thunder?.setVolume(
+        +animations[0].currentValue
+      ),
+
+      easing: 'linear',
+      duration: 500,
+      volume: 0.0
+    }), duration - 500);
   }
 
   private hideLighting (): void {
@@ -72,10 +123,8 @@ export default class Clouds
     this.startLighting();
   }
 
-  private createClouds (): void {
+  private async createClouds (): Promise<void> {
     const cloudsGeometry = new SphereGeometry(this.radius, 16, 16, 0, Math.PI);
-    const smoke = this.loader.load('./assets/images/smoke.png');
-
     cloudsGeometry.parameters.phiLength = Math.PI;
     cloudsGeometry.rotateX(-PI.d2);
 
@@ -85,13 +134,10 @@ export default class Clouds
     this.clouds = new InstancedMesh(
       new PlaneGeometry(this.radius, this.radius),
       new MeshLambertMaterial({
-        blending: NormalBlending,
-        vertexColors: false,
         transparent: true,
         depthWrite: false,
         opacity: 0.25,
-        fog: false,
-        map: smoke
+        fog: false
       }),
 
       this.count
@@ -111,6 +157,9 @@ export default class Clouds
       this.clouds.setMatrixAt(i, cloud.matrix);
     }
 
+    (this.clouds.material as MeshLambertMaterial).map =
+      await this.loader.loadTexture(Config.Limbo.cloud);
+
     this.clouds.instanceMatrix.needsUpdate = true;
     this.clouds.position.copy(Limbo.center);
   }
@@ -125,7 +174,7 @@ export default class Clouds
       const cloudMatrix = this.cloudMatrix.clone();
 
       this.rotation.setFromRotationMatrix(cloudMatrix);
-      this.rotation.z += Math.random() * direction * 0.001;
+      this.rotation.z += Math.random() * direction * 0.002;
       this.cloudMatrix.makeRotationFromEuler(this.rotation);
 
       this.cloudMatrix.copyPosition(cloudMatrix);
@@ -136,6 +185,7 @@ export default class Clouds
   }
 
   public dispose (): void {
+    this.thunder = undefined;
     this.lighting.remove();
     this.clouds.dispose();
   }

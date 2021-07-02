@@ -5,10 +5,19 @@
 
   "music": "limbo.mp3",
   "model": "limbo.glb",
+  "cloud": "cloud.png",
   "skybox": "limbo",
 
   "height": 10,
   "depth": 250,
+
+  "lighting": [
+    "environment/lightning0.mp3",
+    "environment/lightning1.mp3",
+    "environment/lightning2.mp3",
+    "environment/lightning3.mp3",
+    "environment/lightning4.mp3"
+  ],
 
   "portals": [
     [-39.5,   53.0],

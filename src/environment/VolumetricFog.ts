@@ -24,7 +24,7 @@ export class VolumetricFog extends FogExp2
   private time = 0.0;
 
   public constructor () {
-    super(Color.GRAY, 0.01);
+    super(Color.GRAY, 0.02);
 
     if (Settings.bakedFog) {
       this.noise = this.loader.load('./assets/images/simplex.jpg');

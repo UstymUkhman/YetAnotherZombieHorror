@@ -150,8 +150,7 @@ export default class Weapon
 
   public stopReloading (): void { return; }
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  public addAmmo (ammo?: number): void { return; }
+  public addAmmo (): void { return; }
 
   protected getClone (): Assets.GLTF {
     const clone = this.asset as Assets.GLTF;

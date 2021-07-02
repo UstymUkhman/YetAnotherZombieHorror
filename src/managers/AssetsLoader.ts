@@ -39,7 +39,7 @@ export namespace Assets
     private readonly gltf = new GLTFLoader(this);
     private readonly audio = new AudioLoader();
 
-    private readonly textureBasePath = './assets/images';
+    private readonly textureBasePath = './assets/images/';
     private readonly modelBasePath = './assets/models/';
     private readonly audioBasePath = './assets/sounds/';
 
@@ -73,7 +73,7 @@ export namespace Assets
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-        this.cubeTexture.setPath(`${this.textureBasePath}/${folder}/`);
+        this.cubeTexture.setPath(`${this.textureBasePath + folder}/`);
         this.cubeTexture.load(this.cubeTextures, promise.onLoad, promise.onProgress, promise.onError);
       });
     }
@@ -82,7 +82,7 @@ export namespace Assets
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-        this.texture.setPath(`${this.textureBasePath}/`);
+        this.texture.setPath(this.textureBasePath);
         this.texture.load(file, promise.onLoad, promise.onProgress, promise.onError);
       });
     }

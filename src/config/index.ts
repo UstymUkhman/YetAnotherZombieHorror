@@ -63,12 +63,14 @@ export namespace Config
     position: new Vector3(...LimboData.position),
     sidewalkHeight: LimboData.sidewalkHeight,
     scale: new Vector3(...LimboData.scale),
+    lighting: LimboData.lighting,
 
     sidewalk: LimboData.sidewalk,
     portals: LimboData.portals,
     bounds: LimboData.bounds,
 
     skybox: LimboData.skybox,
+    cloud: LimboData.cloud,
     model: LimboData.model,
     music: LimboData.music,
 
