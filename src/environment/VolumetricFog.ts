@@ -27,7 +27,7 @@ export class VolumetricFog extends FogExp2
     super(Color.GRAY, 0.02);
 
     if (Settings.bakedFog) {
-      this.noise = this.loader.load('./assets/images/simplex.jpg');
+      this.noise = this.loader.load('./assets/images/noise.jpg');
     }
 
     ShaderChunk.fog_pars_fragment = Settings.bakedFog

@@ -146,8 +146,8 @@ export default class Limbo extends GameScene
   }
 
   public override render (delta: number): void {
-    this.rain.update(delta / 2);
     this.controls?.update();
+    this.rain.update(delta);
     this.fog?.update(delta);
 
     this.clouds.update();

@@ -7,10 +7,9 @@ import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
-import type { Color as TColor } from 'three/src/math/Color';
+
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/managers/AssetsLoader';
@@ -19,33 +18,38 @@ import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
 
 import { Audio } from 'three/src/audio/Audio';
+import { PI, random } from '@/utils/Number';
 import Clouds from '@/environment/Clouds';
+
 import Settings from '@/config/settings';
 import Limbo from '@/environment/Limbo';
-
 import { Color } from '@/utils/Color';
-import Spline from '@/utils/Spline';
 import { Config } from '@/config';
+
+const RATIO = Math.tan(PI.d3) * 3;
 
 type ParticleSettings = {
   position: Vector3,
   velocity: Vector3,
-  maxLife: number,
 
+  maxLife: number,
   alpha: number,
-  color: TColor,
-  size: number,
   life: number
 };
 
 export default class Rain
 {
+  private readonly minCoords = Limbo.minCoords.map(coord => coord - 5);
+  private readonly maxCoords = Limbo.maxCoords.map(coord => coord + 5);
+
   private readonly geometry = new BufferGeometry();
   private renderTargets!: Array<WebGLRenderTarget>;
   private particles: Array<ParticleSettings> = [];
 
   private readonly loader = new Assets.Loader();
-  private readonly alphaSpline = new Spline();
+  // private readonly alphaSpline = new Spline();
+
+  private readonly skyTop = Clouds.height;
   private readonly camera = CameraObject;
 
   private height = window.innerHeight;
@@ -88,47 +92,46 @@ export default class Rain
     });
   }
 
-  private async createParticles (vertexColors = false): Promise<void> {
+  private async createParticles (): Promise<void> {
     this.material = new ShaderMaterial({
       uniforms: {
         size: { value: new Vector2(this.width, this.height) },
         depth: { value: this.renderTargets[0].depthTexture },
+        color: { value: Color.getClass(Color.GRAY) },
+        ratio: { value: this.height / RATIO },
 
         near: { value: this.camera.near },
         far: { value: this.camera.far },
         diffuse: { value: null }
       },
 
-      vertexShader: !vertexColors ? vertRain :
-        `#define USE_VERTEX_COLORS\n\n${vertRain}`,
-
       blending: AdditiveBlending,
       fragmentShader: fragRain,
+      vertexShader: vertRain,
       glslVersion: GLSL3,
 
       transparent: true,
-      depthWrite: false,
-      vertexColors
+      depthWrite: false
     });
 
     this.geometry.setAttribute('position', new Float32BufferAttribute([], 3));
-    this.geometry.setAttribute('color', new Float32BufferAttribute([], 4));
+    this.geometry.setAttribute('alpha', new Float32BufferAttribute([], 1));
 
-    this.alphaSpline.addPoint(0.0, 0.0);
-    this.alphaSpline.addPoint(0.1, 0.9);
-    this.alphaSpline.addPoint(0.9, 0.9);
-    this.alphaSpline.addPoint(1.0, 0.0);
+    // this.alphaSpline.addPoint(0.0, 0.0);
+    // this.alphaSpline.addPoint(0.2, 1.0);
+    // this.alphaSpline.addPoint(0.9, 1.0);
+    // this.alphaSpline.addPoint(1.0, 0.0);
 
     this.addParticles();
     this.updateGeometry();
 
     this.drops = new Points(this.geometry, this.material);
-    const drop = await this.loader.loadTexture(Config.Limbo.rain[0]);
 
-    this.drops.position.set(Limbo.center.x, Clouds.height, Limbo.center.z);
-    // this.drops.scale.set(Clouds.height, 1.0, Clouds.height);
-    this.material.uniforms.diffuse.value = drop;
+    this.material.uniforms.diffuse.value = await Promise.all(
+      Config.Limbo.rain.map(this.loader.loadTexture.bind(this.loader))
+    );
 
+    this.drops.frustumCulled = false;
     this.drops.renderOrder = 2.0;
     this.scene.add(this.drops);
   }
@@ -138,29 +141,32 @@ export default class Rain
     this.ambient = new Audio(CameraListener);
 
     this.ambient.setBuffer(ambient);
-    this.ambient.setVolume(0.5);
+    this.ambient.setVolume(0.25);
     this.ambient.setLoop(true);
   }
 
   private addParticles (): void {
     const time = Math.floor(this.timeElapsed * 100.0);
     this.timeElapsed -= time / 100.0;
+    const particles = time * 50.0; // 25.0 | 22.125; | 20.0;
 
-    for (let i = 0; i < time; i++) {
+    for (let i = 0; i < particles; i++) {
+      const offset = Math.random();
+      const life = 5.25 - offset * 1.5;
+      const velocity = Math.random() * 25 + 25;
+
       this.particles.push({
-        velocity: new Vector3(0.0, -10.0, 0.0),
-        color: Color.getClass(Color.WHITE),
+        velocity: new Vector3(0.0, -velocity, 0.0),
 
         position: new Vector3(
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1
+          random(this.minCoords[0], this.maxCoords[0]),
+          this.skyTop - offset * 50,
+          random(this.minCoords[1], this.maxCoords[1])
         ),
 
-        maxLife: 50.0,
-        life: 50.0,
-        alpha: 0,
-        size: 1
+        maxLife: life,
+        alpha: 1, // 0
+        life
       });
     }
   }
@@ -172,11 +178,11 @@ export default class Rain
 
       if (particle.life <= 0.0) continue;
 
-      const deltaLife = 1.0 - particle.life / particle.maxLife;
+      // const deltaLife = 1.0 - particle.life / particle.maxLife;
       const drag = particle.velocity.clone();
       const { x, y, z } = drag;
 
-      particle.alpha = this.alphaSpline.getValue(deltaLife);
+      // particle.alpha = this.alphaSpline.getValue(deltaLife);
       particle.position.add(drag.multiplyScalar(delta));
 
       drag.multiplyScalar(0.1).set(
@@ -202,30 +208,24 @@ export default class Rain
 
   private updateGeometry (): void {
     const positions = [];
-    const colors = [];
+    const alphas = [];
 
     for (let p = 0, l = this.particles.length; p < l; p++) {
       const particle = this.particles[p];
+      alphas.push(particle.alpha);
 
       positions.push(
         particle.position.x,
         particle.position.y,
         particle.position.z
       );
-
-      colors.push(
-        particle.color.r,
-        particle.color.g,
-        particle.color.b,
-        particle.alpha
-      );
     }
 
     this.geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-    this.geometry.setAttribute('color', new Float32BufferAttribute(colors, 4));
+    this.geometry.setAttribute('alpha', new Float32BufferAttribute(alphas, 1));
 
     this.geometry.attributes.position.needsUpdate = true;
-    this.geometry.attributes.color.needsUpdate = true;
+    this.geometry.attributes.alpha.needsUpdate = true;
   }
 
   public update (delta: number): void {
@@ -255,6 +255,7 @@ export default class Rain
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
+    this.material.uniforms.ratio.value = this.height / RATIO;
     this.material.uniforms.size.value.set(this.width, this.height);
 
     this.renderTargets.forEach(renderTarget => {
@@ -271,12 +272,12 @@ export default class Rain
       renderTarget.dispose();
     });
 
-    this.alphaSpline.dispose();
+    // this.alphaSpline.dispose();
     this.particles.splice(0);
     this.geometry.dispose();
 
     this.material.dispose();
-    this.timeElapsed = 0.0;
+    this.timeElapsed = 0;
     this.drops.clear();
   }
 
