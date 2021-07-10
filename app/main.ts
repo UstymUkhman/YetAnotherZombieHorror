@@ -1,5 +1,5 @@
+import { BrowserWindow, app, screen, ipcMain } from 'electron';
 import { join } from 'path';
-import { WebPreferences, BrowserWindow, app, screen, ipcMain } from 'electron';
 
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -12,9 +12,15 @@ function createWindow(): void {
   if (game !== null) return;
 
   game = new BrowserWindow({
-    webPreferences: !PRODUCTION && ({
-      preload: join(__dirname, './preloader.js')
-    } as WebPreferences) || undefined,
+    webPreferences: {
+      ...(!PRODUCTION && {
+        preload: join(__dirname, './preloader.js')
+      }),
+
+      nodeIntegrationInWorker: false,
+      contextIsolation: true,
+      nodeIntegration: false
+    },
 
     backgroundColor: '#000000',
     fullscreen: PRODUCTION,
@@ -22,32 +28,33 @@ function createWindow(): void {
   });
 
   game.loadFile(join(__dirname, '../../dist/index.html'));
-  game.on('closed', (): null | void => game = null);
-  if (!PRODUCTION) game.webContents.openDevTools();
+  !PRODUCTION && game.webContents.openDevTools();
+  game.on('closed', () => game = null);
 }
 
 app.whenReady().then(() => {
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
 
-  const gameHeight = Math.round(height * screenRatio);
-  const gameWidth = Math.round(width * screenRatio);
+  const height = Math.round(screenHeight * screenRatio);
+  const width = Math.round(height / 9 * 16);
 
-  const marginTop = (height - gameHeight) / 2;
-  const marginLeft = (width - gameWidth) / 2;
+  const y = (screenHeight - height) / 2.0;
+  const x = (screenWidth - width) / 2.0;
 
-  game?.setBounds({
-    height: gameHeight,
-    width: gameWidth,
-    x: marginLeft,
-    y: marginTop
-  });
+  game?.setBounds({ height, width, x, y });
 });
 
 app.on('ready', createWindow);
 app.on('activate', createWindow);
 
-app.on('window-all-closed', (): boolean | void =>
+app.on('window-all-closed', () =>
   process.platform !== 'darwin' && app.quit()
 );
 
-ipcMain.on('exit', (): void => game?.close());
+app.on('web-contents-created', (_, contents) => {
+  contents.setWindowOpenHandler(() => ({
+    action: 'deny'
+  }));
+});
+
+ipcMain.on('exit', () => game?.close());

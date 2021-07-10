@@ -28,4 +28,3 @@ declare const PRODUCTION: boolean;
 
 declare module 'ammo.js';
 declare module 'three-mesh-bvh/src/MeshBVH';
-declare module 'three-mesh-bvh/src/MeshBVHVisualizer';
