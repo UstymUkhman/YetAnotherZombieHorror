@@ -12,9 +12,11 @@ import { random } from '@/utils/Number';
 // this.alphaSpline.dispose();
 
 let rainDrops: Array<RainParticle> = [];
+const position = new Vector3();
 let timeElapsed = 0.0;
 
 export const updateRainParticles = (params: RainParams): RainParticles => {
+  position.copy(params.camera);
   timeElapsed += params.delta;
 
   addParticles(params);
@@ -51,8 +53,6 @@ const addParticles = (params: RainParams): void => {
 };
 
 const updateParticles = (params: RainParams): void => {
-  const position = new Vector3().copy(params.camera);
-
   for (let p = 0; p < rainDrops.length; p++) {
     const particle = rainDrops[p];
     const { delta } = params;

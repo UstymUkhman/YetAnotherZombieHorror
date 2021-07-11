@@ -37,7 +37,7 @@ export default class Rain
   private readonly maxCoords = Limbo.maxCoords.map(coord => coord + 5);
 
   private readonly geometry = new BufferGeometry();
-  private renderTargets!: Array<WebGLRenderTarget>;
+  private renderTargets?: Array<WebGLRenderTarget>;
 
   private readonly loader = new Assets.Loader();
   private readonly worker = new Worker();
@@ -48,31 +48,21 @@ export default class Rain
   private material!: ShaderMaterial;
   private ambient!: Audio;
   private drops!: Points;
+  private delta = 0.0;
 
   public constructor (private readonly renderer: WebGLRenderer, private readonly scene: Scene) {
-    this.worker.add('Rain:particles', data =>
-      this.updateParticleGeometry(data as RainParticles), {
-        minCoords: this.minCoords,
-        maxCoords: this.maxCoords,
-        top: Clouds.height
-      }
-    );
-
     this.createRenderTargets();
+    this.createWorkerLoop();
     this.createParticles();
     this.createAmbient();
   }
 
-  private updateParticleGeometry (data: RainParticles): void {
-    this.geometry.setAttribute('position', new Float32BufferAttribute(data[0], 3));
-    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[1], 1));
-
-    this.geometry.attributes.position.needsUpdate = true;
-    this.geometry.attributes.alpha.needsUpdate = true;
-  }
-
   private createRenderTargets (): void {
-    const depthTexture = new DepthTexture(this.width, this.height, UnsignedInt248Type);
+    if (!Settings.softParticles) return;
+
+    const depthTexture = new DepthTexture(
+      this.width, this.height, UnsignedInt248Type
+    );
 
     this.renderTargets = [
       new WebGLRenderTarget(this.width, this.height),
@@ -96,19 +86,48 @@ export default class Rain
     });
   }
 
+  private createWorkerLoop (): void {
+    this.worker.add('Rain:particles', data =>
+      this.updateParticleGeometry(data as RainParticles), {
+        minCoords: this.minCoords,
+        maxCoords: this.maxCoords,
+        top: Clouds.height
+      }
+    );
+
+    this.worker.get('Rain:particles', {
+      camera: CameraObject.position,
+      delta: this.delta
+    });
+  }
+
+  private updateParticleGeometry (data: RainParticles): void {
+    this.geometry.setAttribute('position', new Float32BufferAttribute(data[0], 3));
+    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[1], 1));
+
+    this.geometry.attributes.position.needsUpdate = true;
+    this.geometry.attributes.alpha.needsUpdate = true;
+
+    this.worker.get('Rain:particles', {
+      camera: CameraObject.position,
+      delta: this.delta
+    });
+  }
+
   private async createParticles (): Promise<void> {
     this.material = new ShaderMaterial({
       uniforms: {
         screenSize: { value: new Vector2(this.width, this.height) },
-        depth: { value: this.renderTargets[0].depthTexture },
-
         color: { value: Color.getClass(Color.GRAY) },
         ratio: { value: this.height / DROP_RATIO },
+        soft: { value: Settings.softParticles },
 
         near: { value: CameraObject.near },
         far: { value: CameraObject.far },
         dropSize: { value: DROP_SIZE },
-        diffuse: { value: null }
+
+        diffuse: { value: null },
+        depth: { value: null }
       },
 
       blending: AdditiveBlending,
@@ -120,9 +139,14 @@ export default class Rain
       depthWrite: false
     });
 
+    const uniforms = this.material.uniforms;
     this.drops = new Points(this.geometry, this.material);
 
-    this.material.uniforms.diffuse.value = await Promise.all(
+    if (this.renderTargets) {
+      uniforms.depth.value = this.renderTargets[0].depthTexture;
+    }
+
+    uniforms.diffuse.value = await Promise.all(
       Config.Limbo.rain.map(this.loader.loadTexture.bind(this.loader))
     );
 
@@ -152,13 +176,11 @@ export default class Rain
   }
 
   public update (delta: number): void {
-    const lastRenderTarget = this.renderTargets[0];
+    this.delta = delta;
 
-    this.worker.get('Rain:particles', {
-      camera: CameraObject.position, delta
-    });
+    if (this.renderTargets) {
+      const lastRenderTarget = this.renderTargets[0];
 
-    if (Settings.softParticles) {
       this.material.uniforms.depth.value = this.renderTargets[0].depthTexture;
       this.material.uniforms.near.value = CameraObject.near;
       this.material.uniforms.far.value = CameraObject.far;
@@ -180,7 +202,7 @@ export default class Rain
     this.material.uniforms.ratio.value = this.height / DROP_RATIO;
     this.material.uniforms.screenSize.value.set(this.width, this.height);
 
-    this.renderTargets.forEach(renderTarget => {
+    this.renderTargets?.forEach(renderTarget => {
       renderTarget.setSize(this.width, this.height);
       renderTarget.depthTexture.needsUpdate = true;
       renderTarget.texture.needsUpdate = true;
@@ -188,15 +210,18 @@ export default class Rain
   }
 
   public dispose (): void {
-    this.renderTargets.forEach(renderTarget => {
+    this.renderTargets?.forEach(renderTarget => {
       renderTarget.depthTexture.dispose();
       renderTarget.texture.dispose();
       renderTarget.dispose();
     });
 
+    this.scene.remove(this.drops);
     this.geometry.dispose();
     this.material.dispose();
+
     this.drops.clear();
+    this.delta = 0.0;
   }
 
   public set pause (pause: boolean) {

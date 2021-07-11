@@ -2,7 +2,7 @@
   #include <common>
 #endif
 
-#include <packing>
+#include ./soft;
 
 uniform sampler2D diffuse[5];
 uniform sampler2D depth;
@@ -11,6 +11,8 @@ uniform vec2  screenSize;
 uniform float dropSize;
 
 uniform vec3  color;
+uniform bool  soft;
+
 uniform float near;
 uniform float far;
 
@@ -21,16 +23,12 @@ in float vPos;
 in vec2  vUv;
 
 void main (void) {
-  float depthBuffer = texture(depth, gl_FragCoord.xy / screenSize.xy).x;
-  float sceneDepth = perspectiveDepthToViewZ(depthBuffer, near, far);
-
-  float depthColor = (vPos - sceneDepth) / (dropSize * 0.25);
   int i = int(rand(vUv) * mod(dropSize, floor(dropSize)));
-  float alpha = clamp(depthColor, 0.0, 1.0);
-
   vec2 coords = vec2(1.0) - gl_PointCoord;
-  alpha = smoothstep(0.0, 1.0, alpha);
-  // or: alpha = pow(alpha, 2.0);
+
+  float alpha = !soft ? 1.0 : softAlpha(
+    depth, screenSize, dropSize, vPos, near, far
+  );
 
   // Workaround for dynamic array
   // indexing limitation in WebGL < 4.0:

@@ -54,6 +54,12 @@ export class VolumetricFog extends FogExp2
     }
   }
 
+  public dispose (): void {
+    this.shaders.splice(0);
+    this.noise?.dispose();
+    this.materials = 0;
+  }
+
   public get setUniforms (): (shader: Shader) => void {
     return this.setShaderUniforms.bind(this);
   }

@@ -14,6 +14,7 @@ import GameScene from '@/environment/GameScene';
 
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
+import Settings from '@/config/settings';
 import Physics from '@/managers/physics';
 
 import { min, max } from '@/utils/Array';
@@ -23,14 +24,14 @@ import { Config } from '@/config';
 
 export default class Limbo extends GameScene
 {
-  private readonly rain = new Rain(this.renderer, this.scene);
   private readonly onResize = this.resize.bind(this);
-
   private readonly clouds = new Clouds(300);
   private readonly portals = new Portals();
 
   private controls?: OrbitControls;
   private fog?: VolumetricFog;
+
+  private rain?: Rain;
   private csm!: CSM;
 
   public constructor () {
@@ -54,6 +55,8 @@ export default class Limbo extends GameScene
   }
 
   private async createEnvironment (): Promise<void> {
+    if (Settings.raining) this.rain = new Rain(this.renderer, this.scene);
+
     !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
         this.fog = new VolumetricFog();
@@ -114,7 +117,7 @@ export default class Limbo extends GameScene
   private resize (): void {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.csm.updateFrustums();
-    this.rain.resize();
+    this.rain?.resize();
   }
 
   public createColliders (): void {
@@ -147,7 +150,7 @@ export default class Limbo extends GameScene
 
   public override render (delta: number): void {
     this.controls?.update();
-    this.rain.update(delta);
+    this.rain?.update(delta);
     this.fog?.update(delta);
 
     this.clouds.update();
@@ -158,15 +161,20 @@ export default class Limbo extends GameScene
   public override destroy (): void {
     window.removeEventListener('resize', this.onResize, false);
 
-    this.clouds.dispose();
-    this.rain.dispose();
-    this.csm.dispose();
-    super.destroy();
+    this.scene.remove(this.clouds.flash);
+    this.scene.remove(this.clouds.sky);
 
     if (Config.DEBUG) {
       this.controls?.dispose();
       delete this.controls;
     }
+
+    this.clouds.dispose();
+    this.rain?.dispose();
+    this.fog?.dispose();
+
+    this.csm.dispose();
+    super.destroy();
   }
 
   public static get center (): Vector3 {
@@ -207,6 +215,6 @@ export default class Limbo extends GameScene
   }
 
   public set pause (pause: boolean) {
-    this.rain.pause = pause;
+    if (this.rain) this.rain.pause = pause;
   }
 }
