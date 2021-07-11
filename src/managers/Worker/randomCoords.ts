@@ -1,19 +1,9 @@
+import type { LevelParams, LevelCoords } from '@/managers/worker/types.d';
 import { cloneBounds, min, max } from '@/utils/Array';
-import type { Vector3 } from 'three/src/math/Vector3';
-
-import type { Coords, Bounds } from '@/types.d';
 import { random } from '@/utils/Number';
 
 const MIN_PLAYER_DISTANCE = 7.0;
 const BOUND_OFFSET = 0.5;
-
-export type LevelParams = {
-  minCoords: Coords,
-  maxCoords: Coords,
-  portals: Bounds,
-  player: Vector3,
-  bounds: Bounds
-};
 
 const getRandomX = (minX: number, maxX: number, playerX: number): number => {
   let x: number;
@@ -25,7 +15,7 @@ const getRandomX = (minX: number, maxX: number, playerX: number): number => {
   return x;
 };
 
-export const getRandomCoord = (params: LevelParams): Coords => {
+export const getRandomCoord = (params: LevelParams): LevelCoords => {
   const bounds = cloneBounds(params.bounds) as unknown as Array<Array<number>>;
   bounds.unshift(bounds.pop() as number[]);
 

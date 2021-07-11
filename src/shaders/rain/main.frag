@@ -7,24 +7,25 @@
 uniform sampler2D diffuse[5];
 uniform sampler2D depth;
 
+uniform vec2  screenSize;
+uniform float dropSize;
+
 uniform vec3  color;
-uniform vec2  size;
 uniform float near;
 uniform float far;
 
 out vec4 fragColor;
 
 in float vAlpha;
-in float vSize;
 in float vPos;
 in vec2  vUv;
 
 void main (void) {
-  float depthBuffer = texture(depth, gl_FragCoord.xy / size.xy).x;
+  float depthBuffer = texture(depth, gl_FragCoord.xy / screenSize.xy).x;
   float sceneDepth = perspectiveDepthToViewZ(depthBuffer, near, far);
 
-  float depthColor = (vPos - sceneDepth) / (vSize * 0.25);
-  int i = int(rand(vUv) * mod(vSize, floor(vSize)));
+  float depthColor = (vPos - sceneDepth) / (dropSize * 0.25);
+  int i = int(rand(vUv) * mod(dropSize, floor(dropSize)));
   float alpha = clamp(depthColor, 0.0, 1.0);
 
   vec2 coords = vec2(1.0) - gl_PointCoord;

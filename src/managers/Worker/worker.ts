@@ -1,8 +1,13 @@
-import { LevelParams, getRandomCoord } from './randomCoords';
+import type { LevelParams, RainParams } from '@/managers/worker/types.d';
+import { updateRainParticles } from './rainParticles';
+import { getRandomCoord } from './randomCoords';
 export const worker: Worker = self as never;
 
 const getEventData = (event: string, params?: unknown) => {
   switch (event) {
+    case 'Rain:particles':
+      return updateRainParticles(params as RainParams);
+
     case 'Level:coord':
       return getRandomCoord(params as LevelParams);
 
@@ -21,6 +26,4 @@ worker.onmessage = message => {
   });
 };
 
-worker.onerror = error => {
-  console.error(error);
-};
+worker.onerror = error => console.error(error);

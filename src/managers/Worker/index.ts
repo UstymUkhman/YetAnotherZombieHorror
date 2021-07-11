@@ -1,8 +1,5 @@
+import type { EventData, EventParams, Callback } from '@/managers/worker/types.d';
 import WebWorker from './worker?worker';
-
-type Callback = (data: unknown) => void;
-type EventParams = Record<string, unknown>;
-type EventData = { callback: Callback, params?: EventParams };
 
 export default class Worker
 {
