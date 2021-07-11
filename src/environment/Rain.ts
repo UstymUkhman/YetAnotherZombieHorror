@@ -29,7 +29,6 @@ import { Config } from '@/config';
 import anime from 'animejs';
 
 const DROP_RATIO = Math.tan(PI.d3) * 3;
-const DROP_SIZE  = 5.0;
 
 export default class Rain
 {
@@ -120,12 +119,12 @@ export default class Rain
         screenSize: { value: new Vector2(this.width, this.height) },
         color: { value: Color.getClass(Color.GRAY) },
         ratio: { value: this.height / DROP_RATIO },
-        soft: { value: Settings.softParticles },
 
+        soft: { value: Settings.softParticles },
         near: { value: CameraObject.near },
         far: { value: CameraObject.far },
-        dropSize: { value: DROP_SIZE },
 
+        dropSize: { value: 3.0 },
         diffuse: { value: null },
         depth: { value: null }
       },
@@ -216,6 +215,7 @@ export default class Rain
       renderTarget.dispose();
     });
 
+    this.worker.remove('Rain:particles');
     this.scene.remove(this.drops);
     this.geometry.dispose();
     this.material.dispose();

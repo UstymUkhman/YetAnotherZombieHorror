@@ -1,19 +1,17 @@
 import type { RainParams, RainParticles, RainParticle } from '@/managers/worker/types.d';
 import { Vector3 } from 'three/src/math/Vector3';
 import { random } from '@/utils/Number';
-
-// private readonly alphaSpline = new Spline();
-
-// this.alphaSpline.addPoint(0.0, 0.0);
-// this.alphaSpline.addPoint(0.2, 1.0);
-// this.alphaSpline.addPoint(0.9, 1.0);
-// this.alphaSpline.addPoint(1.0, 0.0);
-
-// this.alphaSpline.dispose();
+import Spline from '@/utils/Spline';
 
 let rainDrops: Array<RainParticle> = [];
+const alphaSpline = new Spline();
 const position = new Vector3();
 let timeElapsed = 0.0;
+
+alphaSpline.addPoint(0.0, 0.0);
+alphaSpline.addPoint(0.5, 0.0);
+alphaSpline.addPoint(0.8, 0.5);
+alphaSpline.addPoint(1.0, 0.5);
 
 export const updateRainParticles = (params: RainParams): RainParticles => {
   position.copy(params.camera);
@@ -34,7 +32,7 @@ const addParticles = (params: RainParams): void => {
   for (let i = 0; i < particles; i++) {
     const offset = Math.random();
     const life = 5.25 - offset * 1.5;
-    const velocity = Math.random() * 25 + 25;
+    const velocity = Math.random() * 25 + 50;
 
     rainDrops.push({
       velocity: new Vector3(0.0, -velocity, 0.0),
@@ -46,7 +44,7 @@ const addParticles = (params: RainParams): void => {
       ),
 
       maxLife: life,
-      alpha: 1, // 0
+      alpha: 0,
       life
     });
   }
@@ -59,12 +57,12 @@ const updateParticles = (params: RainParams): void => {
 
     if ((particle.life -= delta) <= 0.0) continue;
 
-    // const deltaLife = 1.0 - particle.life / particle.maxLife;
+    const life = 1.0 - particle.life / particle.maxLife;
     const drag = particle.velocity.clone();
     const { x, y, z } = drag;
 
-    // particle.alpha = this.alphaSpline.getValue(deltaLife);
     particle.position.add(drag.multiplyScalar(delta));
+    particle.alpha = alphaSpline.getValue(life);
 
     drag.multiplyScalar(0.1).set(
       Math.sign(x) * Math.min(Math.abs(drag.x), Math.abs(x)),
@@ -75,9 +73,8 @@ const updateParticles = (params: RainParams): void => {
     particle.velocity.sub(drag);
   }
 
-  rainDrops = rainDrops.filter(
-    particle => particle.life > 0.0
-  )
+  rainDrops = rainDrops
+    .filter(particle => particle.life > 0.0)
     .sort((a: RainParticle, b: RainParticle) => {
       const aDistance = position.distanceToSquared(a.position);
       const bDistance = position.distanceToSquared(b.position);
@@ -89,18 +86,15 @@ const updateParticles = (params: RainParams): void => {
 
 const updateGeometry = (): RainParticles => {
   const position = [];
-  const alpha = [];
+  const opacity = [];
 
   for (let p = 0, l = rainDrops.length; p < l; p++) {
-    const particle = rainDrops[p];
-    alpha.push(particle.alpha);
+    const { x, y, z } = rainDrops[p].position;
+    const { alpha } = rainDrops[p];
 
-    position.push(
-      particle.position.x,
-      particle.position.y,
-      particle.position.z
-    );
+    position.push(x, y, z);
+    opacity.push(alpha);
   }
 
-  return [position, alpha];
+  return [position, opacity];
 };

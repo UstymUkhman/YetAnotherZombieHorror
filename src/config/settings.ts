@@ -3,7 +3,6 @@ export default Object.freeze({
   softParticles: true,
   ammoPhysics: true,
 
-  fpCamera: false,
   bakedFog: true,
   raining: true
 });

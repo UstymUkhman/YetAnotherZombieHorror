@@ -36,9 +36,9 @@ export default class Clouds
   private readonly matrix = new Matrix4();
   private readonly radius = Clouds.height;
 
-  private thunder?: PositionalAudio;
   private clouds!: InstancedMesh;
   private lighting!: PointLight;
+  private paused = true;
 
   public constructor (private readonly count: number) {
     this.createLighting();
@@ -67,7 +67,6 @@ export default class Clouds
       const audio = new PositionalAudio(CameraListener);
 
       audio.setBuffer(sound);
-      audio.setVolume(1.0);
       this.lighting.add(audio);
     });
   }
@@ -94,20 +93,20 @@ export default class Clouds
 
   private startThunder (position: Vector3): void {
     const distance = position.distanceToSquared(CameraListener.position);
-    const thunder = randomInt(0, this.lighting.children.length - 1);
+    const audioIndex = randomInt(0, this.lighting.children.length - 1);
 
-    this.thunder = this.lighting.children[thunder] as PositionalAudio;
-    const duration = (this.thunder.buffer?.duration ?? 0) * 1e3;
+    const thunder = this.lighting.children[audioIndex] as PositionalAudio;
+    const duration = (thunder.buffer?.duration ?? 0) * 1e3;
 
-    this.thunder.setRefDistance(distance / Config.Limbo.depth);
-    this.thunder.setVolume(1.0);
-    this.thunder.play();
+    thunder.setRefDistance(distance / Config.Limbo.depth);
+    thunder.setVolume(+!this.paused);
+    thunder.play();
 
     setTimeout(() => anime({
-      targets: { volume: this.thunder?.getVolume() },
-      complete: () => this.thunder?.stop(),
+      targets: { volume: thunder?.getVolume() },
+      complete: () => thunder?.stop(),
 
-      update: ({ animations }) => this.thunder?.setVolume(
+      update: ({ animations }) => thunder?.setVolume(
         +animations[0].currentValue
       ),
 
@@ -184,13 +183,16 @@ export default class Clouds
   }
 
   public dispose (): void {
-    this.thunder = undefined;
     this.lighting.remove();
     this.clouds.dispose();
   }
 
   public static get height (): number {
     return Math.max(Limbo.size.x, Limbo.size.y);
+  }
+
+  public set pause (pause: boolean) {
+    this.paused = pause;
   }
 
   public get sky (): InstancedMesh {

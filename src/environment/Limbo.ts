@@ -216,5 +216,6 @@ export default class Limbo extends GameScene
 
   public set pause (pause: boolean) {
     if (this.rain) this.rain.pause = pause;
+    this.clouds.pause = pause;
   }
 }

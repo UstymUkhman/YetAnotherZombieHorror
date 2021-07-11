@@ -4,22 +4,20 @@ import type { Object3D } from 'three/src/core/Object3D';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';
-import Settings from '@/config/settings';
-
 import { Vector } from '@/utils/Vector';
 import { Config } from '@/config';
 import anime from 'animejs';
 
 class GameCamera
 {
+  private fps = false;
   private raf!: number;
+
   private runDelta!: number;
   private shakeDuration = 0.0;
   private rightShoulder = true;
 
-  private fps = Settings.fpCamera;
   private position = new Vector3();
-
   private readonly shakePower = 0.025;
   private readonly clock = new Clock();
 
