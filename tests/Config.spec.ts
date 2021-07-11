@@ -5,7 +5,7 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
 import Camera from '@/config/camera.json';
-import Limbo from '@/config/limbo.json';
+import Level from '@/config/level.json';
 
 import Player from '@/config/player.json';
 import Enemy from '@/config/enemy.json';
@@ -53,47 +53,47 @@ describe('Config', () => {
     expect(Config.Camera.tps.aim).toBeInstanceOf(Vector3);
   });
 
-  test('Limbo', () => {
-    const levelPosition = new Vector3(...Limbo.position);
-    const levelScale = new Vector3(...Limbo.scale);
+  test('Level', () => {
+    const levelPosition = new Vector3(...Level.position);
+    const levelScale = new Vector3(...Level.scale);
 
-    expect(Config.Limbo.height).toStrictEqual(10);
-    expect(Config.Limbo.depth).toStrictEqual(250);
+    expect(Config.Level.height).toStrictEqual(10);
+    expect(Config.Level.depth).toStrictEqual(250);
 
-    expect(Config.Limbo.scale).toBeInstanceOf(Vector3);
-    expect(Config.Limbo.scale).toStrictEqual(levelScale);
+    expect(Config.Level.scale).toBeInstanceOf(Vector3);
+    expect(Config.Level.scale).toStrictEqual(levelScale);
 
-    expect(Config.Limbo.position).toBeInstanceOf(Vector3);
-    expect(Config.Limbo.position).toStrictEqual(levelPosition);
+    expect(Config.Level.position).toBeInstanceOf(Vector3);
+    expect(Config.Level.position).toStrictEqual(levelPosition);
 
-    expect(Config.Limbo.bounds.length).toStrictEqual(Config.Limbo.sidewalk.length);
-    expect(Config.Limbo.sidewalkHeight).toBeLessThan(Config.Limbo.height);
+    expect(Config.Level.bounds.length).toStrictEqual(Config.Level.sidewalk.length);
+    expect(Config.Level.sidewalkHeight).toBeLessThan(Config.Level.height);
 
-    expect(Config.Limbo.music).toStrictEqual('Day Of The Dead.mp3');
-    expect(Config.Limbo.model).toStrictEqual('limbo.glb');
-    expect(Config.Limbo.cloud).toStrictEqual('cloud.png');
+    expect(Config.Level.music).toStrictEqual('Day Of The Dead.mp3');
+    expect(Config.Level.model).toStrictEqual('level.glb');
+    expect(Config.Level.cloud).toStrictEqual('cloud.png');
 
-    expect(Config.Limbo.portals.length).toStrictEqual(8);
-    expect(Config.Limbo.skybox).toStrictEqual('limbo');
-    expect(Config.Limbo.ambient).toContain('.mp3');
+    expect(Config.Level.portals.length).toStrictEqual(8);
+    expect(Config.Level.skybox).toStrictEqual('level');
+    expect(Config.Level.ambient).toContain('.mp3');
 
-    Config.Limbo.sidewalk.forEach(coords =>
+    Config.Level.sidewalk.forEach(coords =>
       expect(coords.length).toStrictEqual(2)
     );
 
-    Config.Limbo.portals.forEach(coords =>
+    Config.Level.portals.forEach(coords =>
       expect(coords.length).toStrictEqual(2)
     );
 
-    Config.Limbo.bounds.forEach(coords =>
+    Config.Level.bounds.forEach(coords =>
       expect(coords.length).toStrictEqual(2)
     );
 
-    Config.Limbo.lighting.forEach(sound =>
+    Config.Level.lighting.forEach(sound =>
       expect(sound).toContain('.mp3')
     );
 
-    Config.Limbo.rain.forEach(drop =>
+    Config.Level.rain.forEach(drop =>
       expect(drop).toContain('.png')
     );
   });
@@ -222,7 +222,7 @@ describe('Config', () => {
 
   test('Frozen', () => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    expect(Object.isFrozen(Config.Limbo.scale)).toStrictEqual(true);
+    expect(Object.isFrozen(Config.Level.scale)).toStrictEqual(true);
     expect(() => { delete (Config.Player as any).scale; }).toThrow(TypeError);
     expect(() => { (Config.Enemy as any).position = [0, 0, 0]; }).toThrow(TypeError);
     /* eslint-enable @typescript-eslint/no-explicit-any */

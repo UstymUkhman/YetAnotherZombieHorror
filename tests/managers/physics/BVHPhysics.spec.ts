@@ -1,7 +1,7 @@
 import { Config } from '@/config';
 import type { Bounds } from '@/types.d';
 
-import Limbo from '@/environment/Limbo';
+import GameLevel from '@/environment/GameLevel';
 import { Vector } from '@/utils/Vector';
 import { Line3 } from 'three/src/math/Line3';
 
@@ -25,7 +25,7 @@ describe('BVHPhysics', () => {
 
   test('createGround', () => {
     const createGround = jest.fn(Physics.createGround.bind(
-      Physics, Limbo.minCoords, Limbo.maxCoords
+      Physics, GameLevel.minCoords, GameLevel.maxCoords
     ));
 
     createGround();
@@ -33,12 +33,12 @@ describe('BVHPhysics', () => {
   });
 
   test('createBounds', () => {
-    const { position, height, sidewalkHeight } = Config.Limbo;
+    const { position, height, sidewalkHeight } = Config.Level;
 
     const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
-      borders: Limbo.bounds, y: position.y, height
+      borders: GameLevel.bounds, y: position.y, height
     }, {
-      borders: Config.Limbo.sidewalk as Bounds,
+      borders: Config.Level.sidewalk as Bounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     }));

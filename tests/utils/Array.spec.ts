@@ -1,11 +1,11 @@
 import { cloneBounds, min, max } from '@/utils/Array';
-import Limbo from '@/config/limbo.json';
+import Level from '@/config/level.json';
 import type { Bounds } from '@/types.d';
 
 describe('Array', () => {
   test('cloneBounds', () => {
-    const bounds = Limbo.bounds as unknown as Bounds;
-    expect(cloneBounds(bounds)).toStrictEqual(Limbo.bounds);
+    const bounds = Level.bounds as unknown as Bounds;
+    expect(cloneBounds(bounds)).toStrictEqual(Level.bounds);
   });
 
   test('min', () => {

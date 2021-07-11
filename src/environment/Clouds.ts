@@ -14,14 +14,13 @@ import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/managers/AssetsLoader';
 
+import GameLevel from '@/environment/GameLevel';
 import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
 import Settings from '@/config/settings';
 import { Vector } from '@/utils/Vector';
-import Limbo from '@/environment/Limbo';
-
 import { Color } from '@/utils/Color';
 import { Config } from '@/config';
 import anime from 'animejs';
@@ -56,7 +55,7 @@ export default class Clouds
   }
 
   private async loadLightingSounds (): Promise<Array<AudioBuffer>> {
-    return await Promise.all(Config.Limbo.lighting.map(
+    return await Promise.all(Config.Level.lighting.map(
         this.loader.loadAudio.bind(this.loader)
       )
     );
@@ -98,7 +97,7 @@ export default class Clouds
     const thunder = this.lighting.children[audioIndex] as PositionalAudio;
     const duration = (thunder.buffer?.duration ?? 0) * 1e3;
 
-    thunder.setRefDistance(distance / Config.Limbo.depth);
+    thunder.setRefDistance(distance / Config.Level.depth);
     thunder.setVolume(+!this.paused);
     thunder.play();
 
@@ -156,10 +155,10 @@ export default class Clouds
     }
 
     (this.clouds.material as MeshLambertMaterial).map =
-      await this.loader.loadTexture(Config.Limbo.cloud);
+      await this.loader.loadTexture(Config.Level.cloud);
 
     this.clouds.instanceMatrix.needsUpdate = true;
-    this.clouds.position.copy(Limbo.center);
+    this.clouds.position.copy(GameLevel.center);
   }
 
   public update (): void {
@@ -188,7 +187,7 @@ export default class Clouds
   }
 
   public static get height (): number {
-    return Math.max(Limbo.size.x, Limbo.size.y);
+    return Math.max(GameLevel.size.x, GameLevel.size.y);
   }
 
   public set pause (pause: boolean) {

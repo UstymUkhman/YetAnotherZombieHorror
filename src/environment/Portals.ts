@@ -1,14 +1,14 @@
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
-import Limbo from '@/environment/Limbo';
+import GameLevel from '@/environment/GameLevel';
 
 export default class Portals
 {
-  private readonly offset = new Vector2();
-  private readonly player = new Vector3();
-
-  private readonly portals = Limbo.portals;
+  private readonly portals = GameLevel.portals;
   private readonly position = new Vector3();
+
+  private readonly player = new Vector3();
+  private readonly offset = new Vector2();
 
   private readonly triggers = this.portals
     .filter((_, c) => !(c % 2))

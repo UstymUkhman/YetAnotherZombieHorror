@@ -1,8 +1,8 @@
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
 
+import GameLevel from '@/environment/GameLevel';
 import Clouds from '@/environment/Clouds';
-import Limbo from '@/environment/Limbo';
 
 describe('Clouds', () => {
   const clouds = new Clouds(100);
@@ -45,8 +45,8 @@ describe('Clouds', () => {
   });
 
   test('height', () => {
-    expect(Clouds.height).toBeGreaterThanOrEqual(Limbo.size.x);
-    expect(Clouds.height).toBeGreaterThanOrEqual(Limbo.size.y);
+    expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.x);
+    expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.y);
   });
 
   test('sky', () => {

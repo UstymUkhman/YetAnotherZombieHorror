@@ -1,32 +1,32 @@
-import Limbo from '@/environment/Limbo';
+import GameLevel from '@/environment/GameLevel';
 import { Vector3 } from 'three/src/math/Vector3';
 import { getRandomCoord } from '@/managers/worker/randomCoords';
 
 describe('randomCoords', () => {
   test('getRandomCoord', () => {
-    const maxCoords = Limbo.maxCoords;
-    const minCoords = Limbo.minCoords;
+    const maxCoords = GameLevel.maxCoords;
+    const minCoords = GameLevel.minCoords;
 
     for (let i = 0; i < 10; i++) {
       const coords = getRandomCoord({
-        portals: Limbo.portals,
+        portals: GameLevel.portals,
         player: new Vector3(),
-        bounds: Limbo.bounds,
+        bounds: GameLevel.bounds,
         minCoords: minCoords,
         maxCoords: maxCoords
       });
 
-      if (coords[1] > Limbo.portals[1][1]) {
-        const maxX = Limbo.portals[6][0];
-        const minX = Limbo.portals[0][0];
+      if (coords[1] > GameLevel.portals[1][1]) {
+        const maxX = GameLevel.portals[6][0];
+        const minX = GameLevel.portals[0][0];
 
         expect(coords[0]).toBeLessThan(maxX);
         expect(coords[0]).toBeGreaterThan(minX);
       }
 
-      else if (coords[1] < Limbo.portals[2][1]) {
-        const maxX = Limbo.portals[4][0];
-        const minX = Limbo.portals[2][0];
+      else if (coords[1] < GameLevel.portals[2][1]) {
+        const maxX = GameLevel.portals[4][0];
+        const minX = GameLevel.portals[2][0];
 
         expect(coords[0]).toBeLessThan(maxX);
         expect(coords[0]).toBeGreaterThan(minX);

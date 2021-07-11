@@ -6,11 +6,11 @@ import type { Object3D } from 'three/src/core/Object3D';
 
 import { GameEvents, GameEvent } from '@/managers/GameEvents';
 import { Assets } from '@/managers/AssetsLoader';
+import GameLevel from '@/environment/GameLevel';
 import { Clock } from 'three/src/core/Clock';
 
 import Physics from '@/managers/physics';
 import Player from '@/characters/Player';
-import Limbo from '@/environment/Limbo';
 import Enemy from '@/characters/Enemy';
 
 import Worker from '@/managers/worker';
@@ -24,11 +24,11 @@ import { Config } from '@/config';
 export default class GameLoop
 {
   private readonly clock = new Clock();
-  private readonly level = new Limbo();
-
   private readonly rifle = new Rifle();
+
   private readonly pistol = new Pistol();
   private readonly player = new Player();
+  private readonly level = new GameLevel();
 
   // private readonly enemyAssets?: EnemyAssets;
   private readonly enemies: Array<Enemy> = [];
@@ -37,7 +37,7 @@ export default class GameLoop
   private readonly loader = new Assets.Loader();
 
   private readonly input = new Input(this.player);
-  private readonly music = new Music(Config.Limbo.music);
+  private readonly music = new Music(Config.Level.music);
 
   private paused = true;
   private stats?: Stats;
@@ -93,10 +93,10 @@ export default class GameLoop
 
     this.worker.add('Level:coord', data =>
       this.rifle.spawn(data as Coords), {
-        minCoords: Limbo.minCoords,
-        maxCoords: Limbo.maxCoords,
-        portals: Limbo.portals,
-        bounds: Limbo.bounds
+        minCoords: GameLevel.minCoords,
+        maxCoords: GameLevel.maxCoords,
+        portals: GameLevel.portals,
+        bounds: GameLevel.bounds
       }
     );
   }

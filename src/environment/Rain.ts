@@ -17,10 +17,10 @@ import { Assets } from '@/managers/AssetsLoader';
 import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
 
+import GameLevel from '@/environment/GameLevel';
 import { Audio } from 'three/src/audio/Audio';
 import Clouds from '@/environment/Clouds';
 import Settings from '@/config/settings';
-import Limbo from '@/environment/Limbo';
 
 import Worker from '@/managers/worker';
 import { Color } from '@/utils/Color';
@@ -32,8 +32,8 @@ const DROP_RATIO = Math.tan(PI.d3) * 3;
 
 export default class Rain
 {
-  private readonly minCoords = Limbo.minCoords.map(coord => coord - 5);
-  private readonly maxCoords = Limbo.maxCoords.map(coord => coord + 5);
+  private readonly minCoords = GameLevel.minCoords.map(coord => coord - 5);
+  private readonly maxCoords = GameLevel.maxCoords.map(coord => coord + 5);
 
   private readonly geometry = new BufferGeometry();
   private renderTargets?: Array<WebGLRenderTarget>;
@@ -146,7 +146,7 @@ export default class Rain
     }
 
     uniforms.diffuse.value = await Promise.all(
-      Config.Limbo.rain.map(this.loader.loadTexture.bind(this.loader))
+      Config.Level.rain.map(this.loader.loadTexture.bind(this.loader))
     );
 
     this.drops.frustumCulled = false;
@@ -155,7 +155,7 @@ export default class Rain
   }
 
   private async createAmbient (): Promise<void> {
-    const ambient = await this.loader.loadAudio(Config.Limbo.ambient);
+    const ambient = await this.loader.loadAudio(Config.Level.ambient);
     this.ambient = new Audio(CameraListener);
 
     this.ambient.setBuffer(ambient);

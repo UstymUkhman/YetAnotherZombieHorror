@@ -6,9 +6,9 @@
   "sidewalkHeight": 0.216,
   "scale": [75, 75, 75],
 
-  "model": "limbo.glb",
+  "model": "level.glb",
   "cloud": "cloud.png",
-  "skybox": "limbo",
+  "skybox": "level",
 
   "height": 10,
   "depth": 250,

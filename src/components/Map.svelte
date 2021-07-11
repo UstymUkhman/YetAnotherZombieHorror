@@ -21,25 +21,25 @@
 
   import { cloneBounds, max } from '@/utils/Array';
   import type { Coords, Bounds } from '@/types.d';
+  import GameLevel from '@/environment/GameLevel';
+
   import { createEventDispatcher } from 'svelte';
   import Player from '@components/Player.svelte';
-
   import { onMount, onDestroy } from 'svelte';
-  import Limbo from '@/environment/Limbo';
 
-  const dispatch = createEventDispatcher();
-
-  const minCoords = Limbo.minCoords.map(
+  const minCoords = GameLevel.minCoords.map(
     coord => Math.abs(coord) + PADDING
   ) as unknown as Coords;
 
+  const dispatch = createEventDispatcher();
+
   let context: CanvasRenderingContext2D;
-  const maxCoords = Limbo.maxCoords;
+  const maxCoords = GameLevel.maxCoords;
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
-  const bounds = Limbo.bounds;
+  const bounds = GameLevel.bounds;
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 

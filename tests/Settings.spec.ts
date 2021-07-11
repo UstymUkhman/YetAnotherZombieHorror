@@ -5,6 +5,7 @@ test('Settings', () => {
   expect(typeof Settings.softParticles).toStrictEqual('boolean');
   expect(typeof Settings.ammoPhysics).toStrictEqual('boolean');
 
+  expect(typeof Settings.raindrops).toStrictEqual('boolean');
   expect(typeof Settings.bakedFog).toStrictEqual('boolean');
   expect(typeof Settings.raining).toStrictEqual('boolean');
 });

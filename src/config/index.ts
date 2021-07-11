@@ -3,7 +3,7 @@ import { Vector3 } from 'three/src/math/Vector3';
 import type { CharacterMove } from '@/types.d';
 
 import CameraData from '@/config/camera.json';
-import LimboData from '@/config/limbo.json';
+import LevelData from '@/config/level.json';
 
 import PlayerData from '@/config/player.json';
 import EnemyData from '@/config/enemy.json';
@@ -59,25 +59,25 @@ export namespace Config
     }
   });
 
-  export const Limbo = deepFreeze({
-    position: new Vector3(...LimboData.position),
-    sidewalkHeight: LimboData.sidewalkHeight,
-    scale: new Vector3(...LimboData.scale),
+  export const Level = deepFreeze({
+    position: new Vector3(...LevelData.position),
+    sidewalkHeight: LevelData.sidewalkHeight,
+    scale: new Vector3(...LevelData.scale),
 
-    lighting: LimboData.lighting,
-    sidewalk: LimboData.sidewalk,
-    ambient:  LimboData.ambient,
-    portals: LimboData.portals,
+    lighting: LevelData.lighting,
+    sidewalk: LevelData.sidewalk,
+    ambient:  LevelData.ambient,
+    portals: LevelData.portals,
 
-    skybox: LimboData.skybox,
-    bounds: LimboData.bounds,
-    height: LimboData.height,
-    depth: LimboData.depth,
+    skybox: LevelData.skybox,
+    bounds: LevelData.bounds,
+    height: LevelData.height,
+    depth: LevelData.depth,
 
-    model: LimboData.model,
-    cloud: LimboData.cloud,
-    music: LimboData.music,
-    rain: LimboData.rain
+    model: LevelData.model,
+    cloud: LevelData.cloud,
+    music: LevelData.music,
+    rain: LevelData.rain
   });
 
   export const Player = deepFreeze({
