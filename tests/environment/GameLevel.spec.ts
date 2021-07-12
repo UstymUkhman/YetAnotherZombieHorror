@@ -13,6 +13,28 @@ describe('GameLevel', () => {
     expect(level).toBeInstanceOf(GameLevel);
   });
 
+  test('createSkybox', () => {
+    const levelPrototype = Object.getPrototypeOf(level);
+    const createSkybox = jest.fn(levelPrototype.createSkybox.bind(level, LevelData.skybox));
+
+    createSkybox();
+    expect(createSkybox).toHaveReturnedWith(undefined);
+  });
+
+  test('createLights', () => {
+    const levelPrototype = Object.getPrototypeOf(level);
+    const createLights = jest.fn(levelPrototype.createLights.bind(level));
+
+    createLights();
+    expect(createLights).toHaveReturnedWith(undefined);
+  });
+
+  test('render', () => {
+    const render = jest.fn(level.render.bind(level));
+    render(0);
+    expect(render).toHaveReturnedWith(undefined);
+  });
+
   test('resize', () => {
     const levelPrototype = Object.getPrototypeOf(level);
     const resize = jest.fn(levelPrototype.resize.bind(level));
@@ -88,4 +110,10 @@ describe('GameLevel', () => {
     expect(GameLevel.size.y).toStrictEqual(53 - -144);
     expect(GameLevel.size).toBeInstanceOf(Vector2);
   });
+
+  /* test('pause', () => {
+    const pause = jest.fn(() => level.pause = true);
+    pause();
+    expect(pause).toHaveReturnedWith(true);
+  }); */
 });

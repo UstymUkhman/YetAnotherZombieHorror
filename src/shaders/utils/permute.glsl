@@ -1,6 +1,11 @@
 #include mod289;
 
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 float permute (float x) {
   return mod289(((x * 34.0) + 1.0) * x);

@@ -2,7 +2,12 @@
 // https://www.iquilezles.org/www/articles/fbm/fbm.htm
 // https://www.iquilezles.org/www/articles/warp/warp.htm
 
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 #ifdef USE_BAKED_FOG
   uniform sampler2D noise;

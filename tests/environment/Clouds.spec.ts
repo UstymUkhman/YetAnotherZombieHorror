@@ -1,6 +1,5 @@
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
-
 import GameLevel from '@/environment/GameLevel';
 import Clouds from '@/environment/Clouds';
 
@@ -10,6 +9,14 @@ describe('Clouds', () => {
   test('Create', () => {
     expect(Clouds).toBeDefined();
     expect(clouds).toBeInstanceOf(Clouds);
+  });
+
+  test('addSounds', () => {
+    const cloudsPrototype = Object.getPrototypeOf(clouds);
+    const addSounds = jest.fn(cloudsPrototype.addSounds.bind(clouds, []));
+
+    addSounds([]);
+    expect(addSounds).toHaveReturnedWith(undefined);
   });
 
   test('startLighting', () => {
@@ -47,6 +54,12 @@ describe('Clouds', () => {
   test('height', () => {
     expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.x);
     expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.y);
+  });
+
+  test('pause', () => {
+    const pause = jest.fn(() => clouds.pause = true);
+    pause();
+    expect(pause).toHaveReturnedWith(true);
   });
 
   test('sky', () => {

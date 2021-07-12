@@ -1,4 +1,9 @@
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 float fade (float t) {
   return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);

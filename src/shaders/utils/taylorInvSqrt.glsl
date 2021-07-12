@@ -1,4 +1,9 @@
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 float taylorInvSqrt (float r) {
   return 1.79284291400159 - 0.85373472095314 * r;

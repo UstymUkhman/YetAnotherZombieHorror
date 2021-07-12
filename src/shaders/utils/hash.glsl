@@ -3,7 +3,12 @@
 // Copyright (c) 2014 David Hoskins
 // https://www.shadertoy.com/view/4djSRW
 
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 float hash11 (float p) {
   p = fract(p * 0.1031);

@@ -82,6 +82,13 @@ describe('GameCamera', () => {
 
     updateNearPlane(true, true, true);
     expect(updateNearPlane).toHaveReturnedWith(undefined);
+
+    const changeView = jest.fn(Camera.changeView.bind(Camera));
+    changeView(false, false, false);
+
+    updateNearPlane(false, true, true);
+    expect(updateNearPlane).toHaveReturnedWith(undefined);
+    changeView(false, false, false);
   });
 
   test('setNearPlane', () => {

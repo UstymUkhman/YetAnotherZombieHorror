@@ -1,6 +1,13 @@
 // Simplex noise by Ian McEwan, Ashima Arts.:
 // https://github.com/ashima/webgl-noise
 
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
+
 #include utils/permute;
 #include utils/taylorInvSqrt;
 

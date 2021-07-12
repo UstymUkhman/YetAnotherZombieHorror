@@ -1,4 +1,9 @@
-precision highp float;
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
 
 float mod289 (float x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;

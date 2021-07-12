@@ -47,7 +47,7 @@ export default class Clouds
   private async createLighting (): Promise<void> {
     this.lighting = new PointLight(Color.BLUE, 10, this.radius, 2.5);
     this.lighting.position.set(0.0, this.radius, 0.0);
-    this.addSounds(await this.loadLightingSounds());
+    this.loadLightingSounds().then(this.addSounds);
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;
@@ -154,11 +154,11 @@ export default class Clouds
       this.clouds.setMatrixAt(i, cloud.matrix);
     }
 
+    this.clouds.position.copy(GameLevel.center);
+    this.clouds.instanceMatrix.needsUpdate = true;
+
     (this.clouds.material as MeshLambertMaterial).map =
       await this.loader.loadTexture(Config.Level.cloud);
-
-    this.clouds.instanceMatrix.needsUpdate = true;
-    this.clouds.position.copy(GameLevel.center);
   }
 
   public update (): void {

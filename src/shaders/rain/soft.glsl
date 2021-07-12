@@ -1,3 +1,10 @@
+#ifndef GL_FRAGMENT_PRECISION_HIGH
+  precision mediump float;
+
+#else
+  precision highp float;
+#endif
+
 #ifndef perspectiveDepthToViewZ
   #include <packing>
 #endif
