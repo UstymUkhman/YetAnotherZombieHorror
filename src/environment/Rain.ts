@@ -4,8 +4,8 @@ import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { CameraObject, CameraListener } from '@/managers/GameCamera';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
-import type { RainParticles } from '@/managers/worker/types.d';
 
+import type { RainParticles } from '@/managers/worker/types.d';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
 
@@ -25,6 +25,7 @@ import Settings from '@/config/settings';
 import Worker from '@/managers/worker';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
+import Raindrop from 'raindrop-fx';
 import { Config } from '@/config';
 import anime from 'animejs';
 
@@ -44,7 +45,10 @@ export default class Rain
   private height = window.innerHeight;
   private width = window.innerWidth;
 
+  private canvas?: HTMLCanvasElement;
   private material!: ShaderMaterial;
+  private raindrops?: Raindrop;
+
   private ambient!: Audio;
   private drops!: Points;
   private delta = 0.0;
@@ -53,6 +57,7 @@ export default class Rain
     this.createRenderTargets();
     this.createWorkerLoop();
     this.createParticles();
+    this.createRaindrop();
     this.createAmbient();
   }
 
@@ -154,6 +159,42 @@ export default class Rain
     this.scene.add(this.drops);
   }
 
+  private createRaindrop (): void {
+    if (!Settings.raindrops) return;
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
+
+    this.raindrops = new Raindrop({
+      background: this.renderer.domElement,
+      motionInterval: [0.25, 0.5],
+      spawnInterval: [0.1, 0.5],
+      spawnSize: [75.0, 100.0],
+
+      dropletsPerSeconds: 15,
+      backgroundBlurSteps: 0,
+      raindropLightBump: 0.5,
+      velocitySpread: 0.25,
+      canvas: this.canvas,
+
+      refractBase: 0.5,
+      mistBlurStep: 0,
+      spawnLimit: 50,
+      evaporate: 25,
+      mist: false
+    });
+
+    this.raindrops.start();
+
+    // Dirty hack to bypass the need of mandatory background blur:
+    // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const raindropsRenderer = this.raindrops?.renderer as any;
+    raindropsRenderer.blurryBackground = raindropsRenderer.background;
+  }
+
   private async createAmbient (): Promise<void> {
     const ambient = await this.loader.loadAudio(Config.Level.ambient);
     this.ambient = new Audio(CameraListener);
@@ -169,13 +210,14 @@ export default class Rain
       ),
 
       easing: 'linear',
-      duration: 3000,
+      duration: 2500,
       volume: 0.25
-    }), 7000);
+    }), 7500);
   }
 
   public update (delta: number): void {
     this.delta = delta;
+    this.raindrops?.setBackground(this.renderer.domElement);
 
     if (this.renderTargets) {
       const lastRenderTarget = this.renderTargets[0];
@@ -198,6 +240,7 @@ export default class Rain
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
+    this.raindrops?.resize(this.width, this.height);
     this.material.uniforms.ratio.value = this.height / DROP_RATIO;
     this.material.uniforms.screenSize.value.set(this.width, this.height);
 
@@ -219,6 +262,7 @@ export default class Rain
     this.scene.remove(this.drops);
     this.geometry.dispose();
     this.material.dispose();
+    this.raindrops?.stop();
 
     this.drops.clear();
     this.delta = 0.0;
@@ -226,5 +270,9 @@ export default class Rain
 
   public set pause (pause: boolean) {
     this.ambient[pause ? 'pause' : 'play']();
+  }
+
+  public get cameraDrops (): HTMLCanvasElement | undefined {
+    return this.canvas;
   }
 }

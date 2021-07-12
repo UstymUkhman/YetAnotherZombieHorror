@@ -73,8 +73,9 @@ describe('GameLevel', () => {
     expect(destroy).toHaveReturnedWith(undefined);
   });
 
-  test('canvas', () => {
-    expect(level.canvas.tagName).toBe('CANVAS');
+  test('scenes', () => {
+    expect(level.scenes.length).toBeGreaterThanOrEqual(1);
+    expect(level.scenes[1].tagName).toBe('CANVAS');
   });
 
   test('maxCoords', () => {
@@ -111,9 +112,9 @@ describe('GameLevel', () => {
     expect(GameLevel.size).toBeInstanceOf(Vector2);
   });
 
-  /* test('pause', () => {
+  test('pause', () => {
     const pause = jest.fn(() => level.pause = true);
     pause();
     expect(pause).toHaveReturnedWith(true);
-  }); */
+  });
 });

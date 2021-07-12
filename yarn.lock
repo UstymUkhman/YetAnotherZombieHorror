@@ -645,6 +645,14 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
+"@sardinefish/zogra-renderer@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@sardinefish/zogra-renderer/-/zogra-renderer-1.2.0.tgz#91ad6143d8ffe829fe0cf5c521b526a413a6d17f"
+  integrity sha512-0wbAzhi5AAtbHMF6zzVx3ISFPsqLmaJLhkZfm3dFbnThXDqGf/6Gj71nmXBPtzcV0oQOWm8bFpu1a0S7/pGLQg==
+  dependencies:
+    gl-matrix "^3.3.0"
+    reflect-metadata "^0.1.13"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -2548,6 +2556,11 @@ get-stream@^6.0.0:
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.1.tgz#a262d8eef67aced57c2852ad6167526a43cbf7b7"
   integrity sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==
 
+gl-matrix@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-3.3.0.tgz#232eef60b1c8b30a28cbbe75b2caf6c48fd6358b"
+  integrity sha512-COb7LDz+SXaHtl/h4LeaFcNdJdAQSDeVqjiIihSXNrkWObZLhDI4hIkZC11Aeqp7bcE72clzB0BnDXr2SmslRA==
+
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"
@@ -4447,6 +4460,13 @@ quick-lru@^4.0.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-4.0.1.tgz#5b8878f113a58217848c6482026c73e1ba57727f"
   integrity sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==
 
+raindrop-fx@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/raindrop-fx/-/raindrop-fx-1.0.8.tgz#228713b1649ffc6fc928165056c524ae421c5a63"
+  integrity sha512-KcCeENGsFN70jVpdmRTxUJiU012oUhrHdR0n6XmMy2euJu95QcB2Uv5Om/mzzZGoyRcD650+H5yP/Q54mdi1Pw==
+  dependencies:
+    "@sardinefish/zogra-renderer" "^1.2.0"
+
 rc@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
@@ -4528,6 +4548,11 @@ redent@^3.0.0:
   dependencies:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
+
+reflect-metadata@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
+  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
 
 regexpp@^3.1.0:
   version "3.2.0"

@@ -166,8 +166,8 @@ export default class GameLoop
     return this.player.location;
   }
 
-  public get scene (): HTMLCanvasElement {
-    return this.level.canvas;
+  public get scenes (): Array<HTMLCanvasElement> {
+    return this.level.scenes;
   }
 
   public set pause (pause: boolean) {

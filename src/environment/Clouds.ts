@@ -46,8 +46,8 @@ export default class Clouds
 
   private async createLighting (): Promise<void> {
     this.lighting = new PointLight(Color.BLUE, 10, this.radius, 2.5);
+    this.loadLightingSounds().then(this.addSounds.bind(this));
     this.lighting.position.set(0.0, this.radius, 0.0);
-    this.loadLightingSounds().then(this.addSounds);
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;

@@ -30,7 +30,9 @@ import { Config } from '@/config';
 export default class GameLevel
 {
   private readonly onResize = this.resize.bind(this);
+
   private readonly renderer = new WebGLRenderer({
+    preserveDrawingBuffer: true,
     antialias: true,
     alpha: false
   });
@@ -51,7 +53,9 @@ export default class GameLevel
   public constructor () {
     if (Config.freeCamera) {
       import('three/examples/jsm/controls/OrbitControls').then(Controls => {
-        this.controls = new Controls.OrbitControls(this.camera, this.canvas);
+        this.controls = new Controls.OrbitControls(
+          this.camera, this.renderer.domElement
+        );
 
         this.camera.position.set(0.0, 10.0, -50.0);
         this.controls.target.set(0.0, 0.0, 25.0);
@@ -68,7 +72,9 @@ export default class GameLevel
   }
 
   private async createEnvironment (): Promise<void> {
-    if (Settings.raining) this.rain = new Rain(this.renderer, this.scene);
+    if (Settings.raining) {
+      this.rain = new Rain(this.renderer, this.scene);
+    }
 
     !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
@@ -217,8 +223,12 @@ export default class GameLevel
     this.fog?.dispose();
   }
 
-  public get canvas (): HTMLCanvasElement {
-    return this.renderer.domElement;
+  public get scenes (): Array<HTMLCanvasElement> {
+    const scene = this.renderer.domElement;
+
+    return !Settings.raindrops ? [scene] : [
+      this.rain?.cameraDrops as HTMLCanvasElement, scene
+    ];
   }
 
   public static get maxCoords (): Coords {

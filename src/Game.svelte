@@ -112,13 +112,17 @@
   );
 
   onMount(() => {
-    main.prepend(game.scene);
     updateScale();
+
+    game.scenes.forEach(
+      scene => main.prepend(scene)
+    );
   });
 
   !import.meta.hot && onDestroy(() => {
     GameEvents.remove('player:run');
     GameEvents.remove('player:aim');
+
     GameEvents.remove('pause');
     cancelAnimationFrame(raf);
 
@@ -184,7 +188,11 @@ h3 {
   font-size: 3vw;
 }
 
-body > canvas {
+main > canvas {
+  &:nth-child(2) {
+    pointer-events: none;
+  }
+
   position: absolute;
   display: block;
 
