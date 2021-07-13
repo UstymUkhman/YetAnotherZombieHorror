@@ -19,10 +19,11 @@ import { Scene } from 'three/src/scenes/Scene';
 
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
+import { min, max } from '@/utils/Array';
 import Settings from '@/config/settings';
 import Physics from '@/managers/physics';
 
-import { min, max } from '@/utils/Array';
+import Viewport from '@/utils/Viewport';
 import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 import { Config } from '@/config';
@@ -51,24 +52,23 @@ export default class GameLevel
   private csm!: CSM;
 
   public constructor () {
-    if (Config.freeCamera) {
-      import('three/examples/jsm/controls/OrbitControls').then(Controls => {
-        this.controls = new Controls.OrbitControls(
-          this.camera, this.renderer.domElement
-        );
+    Config.freeCamera && import('three/examples/jsm/controls/OrbitControls').then(Controls => {
+      this.controls = new Controls.OrbitControls(
+        this.camera, this.renderer.domElement
+      );
 
-        this.camera.position.set(0.0, 10.0, -50.0);
-        this.controls.target.set(0.0, 0.0, 25.0);
+      this.camera.position.set(0.0, 10.0, -50.0);
+      this.controls.target.set(0.0, 0.0, 25.0);
 
-        this.camera.lookAt(0, 0, 0);
-        this.controls.update();
-      });
-    }
+      this.camera.lookAt(0, 0, 0);
+      this.controls.update();
+    });
 
+    Viewport.addResizeCallback(this.onResize);
     this.camera.far = Config.Level.depth;
+
     this.createEnvironment();
     this.createRenderer();
-    this.createEvents();
   }
 
   private async createEnvironment (): Promise<void> {
@@ -142,21 +142,16 @@ export default class GameLevel
   }
 
   private createRenderer (): void {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(Viewport.size.width, Viewport.size.height);
     this.renderer.setPixelRatio(window.devicePixelRatio || 1.0);
-    this.renderer.setClearColor(Color.BLACK, 0.0);
 
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.setClearColor(Color.BLACK, 0.0);
 
-    // this.renderer.physicallyCorrectLights = true;
+    this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.toneMappingExposure = 0.575;
     this.renderer.shadowMap.enabled = true;
-  }
-
-  private createEvents (): void {
-    window.addEventListener('resize', this.onResize, false);
   }
 
   public render (delta: number): void {
@@ -170,10 +165,10 @@ export default class GameLevel
     this.csm.update();
   }
 
-  private resize (): void {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  private resize (width: number, height: number): void {
+    this.renderer.setSize(width, height);
+    this.rain?.resize(width, height);
     this.csm?.updateFrustums();
-    this.rain?.resize();
   }
 
   public createColliders (): void {
@@ -205,7 +200,7 @@ export default class GameLevel
   }
 
   public destroy (): void {
-    window.removeEventListener('resize', this.onResize, false);
+    Viewport.removeResizeCallback(this.onResize);
 
     while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);

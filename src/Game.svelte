@@ -38,6 +38,7 @@
   import type { Location } from '@/types.d';
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
+  import Viewport from '@/utils/Viewport';
 
   const zoom = new Elastic.Number(0);
   const game = new GameLoop();
@@ -93,13 +94,13 @@
     rifleAngle = event.detail.angle;
   }
 
-  function updateScale (): void {
-    mapRadius = window.innerWidth / 17.25;
-    scale = window.innerWidth / 175;
+  function updateScale (width: number): void {
+    mapRadius = width / 17.25;
+    scale = width / 175;
   }
 
   GameEvents.add('game:pause', event => togglePause(event.data as boolean));
-  window.addEventListener('resize', updateScale);
+  Viewport.addResizeCallback(updateScale);
 
   GameEvents.add('player:run', event => {
     const running = event.data as boolean;
@@ -112,7 +113,7 @@
   );
 
   onMount(() => {
-    updateScale();
+    updateScale(Viewport.size.width);
 
     game.scenes.forEach(
       scene => main.prepend(scene)
@@ -120,6 +121,8 @@
   });
 
   !import.meta.hot && onDestroy(() => {
+    Viewport.removeResizeCallback(updateScale);
+
     GameEvents.remove('player:run');
     GameEvents.remove('player:aim');
 
@@ -193,16 +196,16 @@ main > canvas {
     pointer-events: none;
   }
 
+  transform: translate(-50%, -50%);
+  aspect-ratio: var(--ratio);
+
   position: absolute;
   display: block;
-
-  height: 100%;
-  width: 100%;
 
   padding: 0;
   margin: 0;
 
-  left: 0;
-  top: 0;
+  left: 50%;
+  top: 50%;
 }
 </style>

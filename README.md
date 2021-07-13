@@ -1,5 +1,4 @@
 # [Yet Another Zombie Horror](http://35.158.218.205/experiments/YetAnotherZombieHorror/) #
-
 > or simply ***YAZH*** [[jɑːʒ](http://35.158.218.205/experiments/YetAnotherZombieHorror/assets/sounds/YAZH.mp3)], is a first / third person zombie survival shooter.
 
 <br />
@@ -9,7 +8,6 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub](https://img.shields.io/github/license/UstymUkhman/YetAnotherZombieHorror)
-<!-- [![Coverage Status](https://img.shields.io/coveralls/github/UstymUkhman/YetAnotherZombieHorror)](https://coveralls.io/github/UstymUkhman/YetAnotherZombieHorror?branch=main) -->
 
 ## Download ##
 
@@ -35,7 +33,7 @@
 
 `yarn test:cover`
 
-`yarn serve`
+`yarn serve:web`
 
 ## Build ##
 
@@ -50,6 +48,23 @@
   - **Linux:** `yarn dist:app -l`
 
   - **Windows:** `yarn dist:app -w`
+
+## Controls ##
+
+| Action | Desktop PC |
+| ------ | ------ |
+| Move Forward | W |
+| Move Left | A |
+| Move Backward | S |
+| Move Right | D |
+| Run | Left Shift |
+| Shoot | *Mouse* Left Click |
+| Aim | *Mouse* Right Click |
+| Previous Weapon | Q |
+| Next Weapon | E |
+| Reload | R |
+| Change Camera | C |
+| Change Shoulder | V |
 
 ## Credits ##
 

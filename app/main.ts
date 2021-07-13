@@ -3,10 +3,11 @@ import { join } from 'path';
 
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
-
 const PRODUCTION = process.env.ENVIRONMENT !== 'development';
-let game: Electron.BrowserWindow | null = null;
-const screenRatio = 0.9 + +PRODUCTION * 0.1;
+
+const SCREEN_RATIO = 0.9 + +PRODUCTION * 0.1;
+let game: BrowserWindow | null = null;
+const TARGET_RATIO = 16 / 9;
 
 function createWindow(): void {
   if (game !== null) return;
@@ -35,8 +36,8 @@ function createWindow(): void {
 app.whenReady().then(() => {
   const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
 
-  const height = Math.round(screenHeight * screenRatio);
-  const width = Math.round(height / 9 * 16);
+  const width = Math.round(screenWidth * SCREEN_RATIO);
+  const height = Math.round(width / TARGET_RATIO);
 
   const y = (screenHeight - height) / 2.0;
   const x = (screenWidth - width) / 2.0;

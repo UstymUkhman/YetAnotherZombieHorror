@@ -21,6 +21,7 @@ import GameLevel from '@/environment/GameLevel';
 import { Audio } from 'three/src/audio/Audio';
 import Clouds from '@/environment/Clouds';
 import Settings from '@/config/settings';
+import Viewport from '@/utils/Viewport';
 
 import Worker from '@/managers/worker';
 import { Color } from '@/utils/Color';
@@ -42,9 +43,6 @@ export default class Rain
   private readonly loader = new Assets.Loader();
   private readonly worker = new Worker();
 
-  private height = window.innerHeight;
-  private width = window.innerWidth;
-
   private canvas?: HTMLCanvasElement;
   private material!: ShaderMaterial;
   private raindrops?: Raindrop;
@@ -63,14 +61,15 @@ export default class Rain
 
   private createRenderTargets (): void {
     if (!Settings.softParticles) return;
+    const { width, height } = Viewport.size;
 
     const depthTexture = new DepthTexture(
-      this.width, this.height, UnsignedInt248Type
+      width, height, UnsignedInt248Type
     );
 
     this.renderTargets = [
-      new WebGLRenderTarget(this.width, this.height),
-      new WebGLRenderTarget(this.width, this.height)
+      new WebGLRenderTarget(width, height),
+      new WebGLRenderTarget(width, height)
     ];
 
     depthTexture.format = DepthStencilFormat;
@@ -119,13 +118,15 @@ export default class Rain
   }
 
   private async createParticles (): Promise<void> {
+    const { width, height } = Viewport.size;
+
     this.material = new ShaderMaterial({
       uniforms: {
-        screenSize: { value: new Vector2(this.width, this.height) },
+        screenSize: { value: new Vector2(width, height) },
         color: { value: Color.getClass(Color.GRAY) },
-        ratio: { value: this.height / DROP_RATIO },
-
         soft: { value: Settings.softParticles },
+
+        ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },
         far: { value: CameraObject.far },
 
@@ -146,6 +147,10 @@ export default class Rain
     const uniforms = this.material.uniforms;
     this.drops = new Points(this.geometry, this.material);
 
+    this.drops.frustumCulled = false;
+    this.drops.renderOrder = 2.0;
+    this.scene.add(this.drops);
+
     if (this.renderTargets) {
       uniforms.depth.value = this.renderTargets[0].depthTexture;
     }
@@ -153,18 +158,14 @@ export default class Rain
     uniforms.diffuse.value = await Promise.all(
       Config.Level.rain.map(this.loader.loadTexture.bind(this.loader))
     );
-
-    this.drops.frustumCulled = false;
-    this.drops.renderOrder = 2.0;
-    this.scene.add(this.drops);
   }
 
   private createRaindrop (): void {
     if (!Settings.raindrops) return;
 
     this.canvas = document.createElement('canvas');
-    this.canvas.height = this.height;
-    this.canvas.width = this.width;
+    this.canvas.height = Viewport.size.height;
+    this.canvas.width = Viewport.size.width;
 
     this.raindrops = new Raindrop({
       background: this.renderer.domElement,
@@ -172,8 +173,8 @@ export default class Rain
       spawnInterval: [0.1, 0.5],
       spawnSize: [75.0, 100.0],
 
-      dropletsPerSeconds: 15,
       backgroundBlurSteps: 0,
+      dropletsPerSeconds: 15,
       raindropLightBump: 0.5,
       velocitySpread: 0.25,
       canvas: this.canvas,
@@ -185,14 +186,14 @@ export default class Rain
       mist: false
     });
 
-    this.raindrops.start();
-
     // Dirty hack to bypass the need of mandatory background blur:
     // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const raindropsRenderer = this.raindrops?.renderer as any;
+    const raindropsRenderer = this.raindrops.renderer as any;
     raindropsRenderer.blurryBackground = raindropsRenderer.background;
+
+    this.raindrops.start();
   }
 
   private async createAmbient (): Promise<void> {
@@ -236,18 +237,15 @@ export default class Rain
     }
   }
 
-  public resize (): void {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-
-    this.raindrops?.resize(this.width, this.height);
-    this.material.uniforms.ratio.value = this.height / DROP_RATIO;
-    this.material.uniforms.screenSize.value.set(this.width, this.height);
+  public resize (width: number, height: number): void {
+    this.raindrops?.resize(width, height);
+    this.material.uniforms.ratio.value = height / DROP_RATIO;
+    this.material.uniforms.screenSize.value.set(width, height);
 
     this.renderTargets?.forEach(renderTarget => {
-      renderTarget.setSize(this.width, this.height);
       renderTarget.depthTexture.needsUpdate = true;
       renderTarget.texture.needsUpdate = true;
+      renderTarget.setSize(width, height);
     });
   }
 
@@ -269,7 +267,7 @@ export default class Rain
   }
 
   public set pause (pause: boolean) {
-    this.ambient[pause ? 'pause' : 'play']();
+    this.ambient && this.ambient[pause ? 'pause' : 'play']();
   }
 
   public get cameraDrops (): HTMLCanvasElement | undefined {

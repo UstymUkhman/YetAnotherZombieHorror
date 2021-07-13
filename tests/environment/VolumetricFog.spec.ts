@@ -23,4 +23,11 @@ describe('VolumetricFog', () => {
     update(0);
     expect(update).toHaveReturnedWith(undefined);
   });
+
+  test('dispose', () => {
+    const dispose = jest.fn(fog.dispose.bind(fog));
+
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
+  });
 });

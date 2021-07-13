@@ -5,6 +5,8 @@ import type { Object3D } from 'three/src/core/Object3D';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
+
+import Viewport from '@/utils/Viewport';
 import { Config } from '@/config';
 import anime from 'animejs';
 
@@ -21,37 +23,25 @@ class GameCamera
   private readonly shakePower = 0.025;
   private readonly clock = new Clock();
 
+  private readonly onResize: () => void;
   private readonly shakeAttenuation = 1.0;
   private readonly camera: PerspectiveCamera;
 
   private readonly onRunning = this.run.bind(this);
   private readonly audioListener = new AudioListener();
-  private ratio = window.innerWidth / window.innerHeight;
-
-  private readonly onResize = this.updateAspectRatio.bind(this);
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
-    const near = +this.fps * 0.215 + 0.1;
-    this.camera = new PerspectiveCamera(45, this.ratio, near);
+    this.camera = new PerspectiveCamera(45, Viewport.ratio, +this.fps * 0.215 + 0.1);
+    this.onResize = this.camera.updateProjectionMatrix.bind(this.camera);
+    Viewport.addResizeCallback(this.onResize);
 
     this.addAudioListener();
-    this.createEvents();
     this.setCamera();
-  }
-
-  private updateAspectRatio (): void {
-    this.ratio = window.innerWidth / window.innerHeight;
-    this.camera.aspect = this.ratio;
-    this.camera.updateProjectionMatrix();
   }
 
   private addAudioListener (): void {
     this.camera.add(this.audioListener);
-  }
-
-  private createEvents (): void {
-    window.addEventListener('resize', this.onResize, false);
   }
 
   private setCamera (): void {
@@ -195,8 +185,9 @@ class GameCamera
     target.add(this.camera);
   }
 
-  public destroy (): void {
-    window.removeEventListener('resize', this.onResize, false);
+  public dispose (): void {
+    Viewport.removeResizeCallback(this.onResize);
+    cancelAnimationFrame(this.raf);
   }
 
   public get object (): PerspectiveCamera {

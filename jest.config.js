@@ -1,3 +1,5 @@
+const version = require('./package.json').version;
+
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
@@ -60,7 +62,7 @@ module.exports = {
   // A set of global variables that need to be available in all test environments
   globals: {
     PRODUCTION: false,
-    BUILD: '0.3.5'
+    BUILD: version
   },
 
   // The maximum amount of workers used to run your tests. Can be specified as % or a number.

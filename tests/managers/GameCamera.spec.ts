@@ -8,20 +8,12 @@ describe('GameCamera', () => {
     expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
     expect(Camera.object).toStrictEqual(CameraObject);
 
-    expect(Camera.object.fov).toBeGreaterThan(55.3);
-    expect(Camera.object.fov).toBeLessThan(60.513);
+    expect(Camera.object.fov).toBeGreaterThan(42.9);
+    expect(Camera.object.fov).toBeLessThan(43.0);
   });
 
   test('CameraListener', () => {
     expect(Camera.listener).toStrictEqual(CameraListener);
-  });
-
-  test('updateAspectRatio', () => {
-    const сameraPrototype = Object.getPrototypeOf(Camera);
-    const updateAspectRatio = jest.fn(сameraPrototype.updateAspectRatio.bind(Camera));
-
-    updateAspectRatio();
-    expect(updateAspectRatio).toHaveReturnedWith(undefined);
   });
 
   test('setCamera', () => {
@@ -171,10 +163,10 @@ describe('GameCamera', () => {
     expect(target.children[0]).toBe(Camera.object);
   });
 
-  test('destroy', () => {
-    const destroy = jest.fn(Camera.destroy.bind(Camera));
-    destroy();
-    expect(destroy).toHaveReturnedWith(undefined);
+  test('dispose', () => {
+    const dispose = jest.fn(Camera.dispose.bind(Camera));
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
   });
 
   test('isFPS', () => {
