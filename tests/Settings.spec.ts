@@ -8,4 +8,5 @@ test('Settings', () => {
   expect(typeof Settings.raindrops).toStrictEqual('boolean');
   expect(typeof Settings.bakedFog).toStrictEqual('boolean');
   expect(typeof Settings.raining).toStrictEqual('boolean');
+  expect(typeof Settings.fog).toStrictEqual('boolean');
 });

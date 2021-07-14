@@ -76,7 +76,7 @@ export default class GameLevel
       this.rain = new Rain(this.renderer, this.scene);
     }
 
-    !Config.freeCamera && import('@/environment/VolumetricFog').then(
+    Settings.fog && !Config.freeCamera && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
         this.fog = new VolumetricFog();
         this.scene.fog = this.fog;

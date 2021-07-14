@@ -37,6 +37,8 @@ export default class Clouds
 
   private clouds!: InstancedMesh;
   private lighting!: PointLight;
+
+  private interval?: number;
   private paused = true;
 
   public constructor (private readonly count: number) {
@@ -51,7 +53,6 @@ export default class Clouds
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;
-    this.startLighting();
   }
 
   private async loadLightingSounds (): Promise<Array<AudioBuffer>> {
@@ -71,9 +72,9 @@ export default class Clouds
   }
 
   private startLighting (): void {
-    setTimeout(this.onShowLighting, 1e3 * (
+    this.interval = setTimeout(this.onShowLighting, 1e3 * (
       Math.random() * 15 + 15
-    ));
+    )) as unknown as number;
   }
 
   private showLighting (): void {
@@ -98,7 +99,7 @@ export default class Clouds
     const duration = (thunder.buffer?.duration ?? 0) * 1e3;
 
     thunder.setRefDistance(distance / Config.Level.depth);
-    thunder.setVolume(+!this.paused);
+    thunder.setVolume(1.0);
     thunder.play();
 
     setTimeout(() => anime({
@@ -116,8 +117,8 @@ export default class Clouds
   }
 
   private hideLighting (): void {
+    !this.paused && this.startLighting();
     this.lighting.power = 0.0;
-    this.startLighting();
   }
 
   private async createClouds (): Promise<void> {
@@ -191,7 +192,9 @@ export default class Clouds
   }
 
   public set pause (pause: boolean) {
-    this.paused = pause;
+    !(this.paused = pause)
+      ? this.startLighting()
+      : clearInterval(this.interval);
   }
 
   public get sky (): InstancedMesh {

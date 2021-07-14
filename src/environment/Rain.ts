@@ -186,14 +186,14 @@ export default class Rain
       mist: false
     });
 
-    // Dirty hack to bypass the need of mandatory background blur:
-    // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
+    this.raindrops.start().then(() => {
+      // Dirty hack to bypass the need of mandatory background blur:
+      // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const raindropsRenderer = this.raindrops.renderer as any;
-    raindropsRenderer.blurryBackground = raindropsRenderer.background;
-
-    this.raindrops.start();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const raindropsRenderer = this.raindrops?.renderer as any;
+      raindropsRenderer.blurryBackground = raindropsRenderer.background;
+    });
   }
 
   private async createAmbient (): Promise<void> {

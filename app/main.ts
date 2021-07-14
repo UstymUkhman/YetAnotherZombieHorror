@@ -13,15 +13,13 @@ function createWindow(): void {
   if (game !== null) return;
 
   game = new BrowserWindow({
-    webPreferences: {
-      ...(!PRODUCTION && {
-        preload: join(__dirname, './preloader.js')
-      }),
-
+    webPreferences: !PRODUCTION && ({
+      preload: join(__dirname, './preloader.js'),
       nodeIntegrationInWorker: false,
+
       contextIsolation: true,
       nodeIntegration: false
-    },
+    }) || undefined,
 
     backgroundColor: '#000000',
     fullscreen: PRODUCTION,
