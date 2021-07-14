@@ -1,12 +1,13 @@
-import Viewport, { RATIO } from '@/utils/Viewport';
+import Viewport from '@/utils/Viewport';
 
 describe('Viewport', () => {
   test('Create', () => {
+    expect(Viewport).toBeDefined();
+  });
+
+  test('size', () => {
     const width = window.innerWidth;
     const height = window.innerWidth / Viewport.ratio;
-
-    expect(Viewport).toBeDefined();
-    expect(Viewport.ratio).toStrictEqual(16 / 9);
 
     expect(Viewport.size.width).toStrictEqual(width);
     expect(Viewport.size.height).toStrictEqual(height);
@@ -18,7 +19,7 @@ describe('Viewport', () => {
     expect(dispose).toHaveReturnedWith(undefined);
   });
 
-  test('RATIO', () => {
-    expect(RATIO).toStrictEqual(16 / 9);
+  test('ratio', () => {
+    expect(Viewport.ratio).toStrictEqual(16 / 9);
   });
 });

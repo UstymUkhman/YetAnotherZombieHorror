@@ -116,7 +116,7 @@
     updateScale(Viewport.size.width);
 
     game.scenes.forEach(
-      scene => main.prepend(scene)
+      scene => scene && main.prepend(scene)
     );
   });
 

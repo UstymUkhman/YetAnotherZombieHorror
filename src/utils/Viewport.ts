@@ -3,7 +3,7 @@ type Callback = (width: number, height: number) => void;
 
 class Viewport
 {
-  public readonly ratio = RATIO;
+  public readonly ratio = 16 / 9;
   private width = window.innerWidth;
   private height = window.innerHeight;
 
@@ -13,7 +13,7 @@ class Viewport
 
   public constructor () {
     window.addEventListener('resize', this.update, false);
-    this.root.setProperty('--ratio', Viewport.ratio);
+    this.root.setProperty('--ratio', '16 / 9');
     this.updateScreen();
   }
 
@@ -50,10 +50,6 @@ class Viewport
     this.callbacks.splice(0, this.callbacks.length);
   }
 
-  public static get ratio (): string {
-    return '16 / 9';
-  }
-
   public get size (): Size {
     return {
       width: this.width,
@@ -62,5 +58,4 @@ class Viewport
   }
 }
 
-export const RATIO = eval(Viewport.ratio);
 export default new Viewport();

@@ -1,9 +1,9 @@
 export default Object.freeze({
   dynamicClouds: true,
-  softParticles: false, // true
+  softParticles: true,
   ammoPhysics: true,
 
-  raindrops: false, // true
+  raindrops: true,
   bakedFog: true,
   raining: true,
   fog: true

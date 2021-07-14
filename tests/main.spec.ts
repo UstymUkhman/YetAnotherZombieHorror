@@ -9,6 +9,6 @@ jest.mock('@/Game.svelte', () => {
 describe('Game', () => {
   test('Create', () => {
     expect(Game).toBeDefined();
-    expect(Game.target).toStrictEqual(document.body);
+    expect(Game?.target).toStrictEqual(document.body);
   });
 });

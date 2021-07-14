@@ -27,6 +27,12 @@
 
 `yarn lint:css`
 
+## Build ##
+
+`yarn build:web`
+
+`yarn build:app`
+
 ## Test ##
 
 `yarn test:run`
@@ -34,12 +40,6 @@
 `yarn test:cover`
 
 `yarn serve:web`
-
-## Build ##
-
-`yarn build:web`
-
-`yarn build:app`
 
 ## Distribute ##
 
