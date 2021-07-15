@@ -1,9 +1,8 @@
 import { BrowserWindow, app, screen, ipcMain } from 'electron';
-import { join } from 'path';
-
-delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 const PRODUCTION = process.env.ENVIRONMENT !== 'development';
+
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 
 const SCREEN_RATIO = 0.9 + +PRODUCTION * 0.1;
 let game: BrowserWindow | null = null;
@@ -14,8 +13,8 @@ function createWindow(): void {
 
   game = new BrowserWindow({
     webPreferences: !PRODUCTION && ({
-      preload: join(__dirname, './preloader.js'),
       nodeIntegrationInWorker: false,
+      preload: './preloader.js',
 
       contextIsolation: true,
       nodeIntegration: false
@@ -26,8 +25,8 @@ function createWindow(): void {
     frame: false
   });
 
-  game.loadFile(join(__dirname, '../../dist/index.html'));
   !PRODUCTION && game.webContents.openDevTools();
+  game.loadFile('../../dist/index.html');
   game.on('closed', () => game = null);
 }
 

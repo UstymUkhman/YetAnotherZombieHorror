@@ -39,6 +39,11 @@
   import Aim from '@components/Aim.svelte';
   import Map from '@components/Map.svelte';
   import Viewport from '@/utils/Viewport';
+  import { PI } from '@/utils/Number';
+
+  const scaleRatio = Math.tan(PI.d3) + Number.EPSILON;
+  const scaleFactor = Math.round(scaleRatio * 100);
+  const radiusFactor = scaleFactor / 10.0;
 
   const zoom = new Elastic.Number(0);
   const game = new GameLoop();
@@ -95,8 +100,8 @@
   }
 
   function updateScale (width: number): void {
-    mapRadius = width / 17.25;
-    scale = width / 175;
+    mapRadius = width / radiusFactor;
+    scale = width / scaleFactor;
   }
 
   GameEvents.add('game:pause', event => togglePause(event.data as boolean));
@@ -191,13 +196,13 @@ h3 {
   font-size: 3vw;
 }
 
+main,
 main > canvas {
-  &:nth-child(2) {
-    pointer-events: none;
-  }
-
   transform: translate(-50%, -50%);
   aspect-ratio: var(--ratio);
+
+  height: var(--height);
+  width: var(--width);
 
   position: absolute;
   display: block;
@@ -207,5 +212,9 @@ main > canvas {
 
   left: 50%;
   top: 50%;
+}
+
+main > canvas:nth-child(2) {
+  pointer-events: none;
 }
 </style>
