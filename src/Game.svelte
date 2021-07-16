@@ -205,6 +205,7 @@ main > canvas {
   width: var(--width);
 
   position: absolute;
+  overflow: hidden;
   display: block;
 
   padding: 0;

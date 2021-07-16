@@ -20,14 +20,14 @@ class Viewport
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    if (window.innerWidth / window.innerHeight < this.ratio) {
-      this.height = window.innerWidth / this.ratio;
+    if (this.width / this.height < this.ratio) {
+      this.height = this.width / this.ratio;
     } else {
-      this.width = window.innerHeight * this.ratio;
+      this.width = this.height * this.ratio;
     }
 
-    this.root.setProperty('--height', `${Math.ceil(this.height)}px`);
-    this.root.setProperty('--width', `${Math.ceil(this.width)}px`);
+    this.root.setProperty('--height', `${this.height}px`);
+    this.root.setProperty('--width', `${this.width}px`);
 
     for (let c = this.callbacks.length; c--;) {
       this.callbacks[c](this.width, this.height);
