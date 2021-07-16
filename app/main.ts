@@ -1,6 +1,7 @@
+import { join } from 'path';
 import { BrowserWindow, app, screen, ipcMain } from 'electron';
-const PRODUCTION = process.env.ENVIRONMENT !== 'development';
 
+const PRODUCTION = process.env.ENVIRONMENT !== 'development';
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 
@@ -13,11 +14,7 @@ function createWindow(): void {
 
   game = new BrowserWindow({
     webPreferences: !PRODUCTION && ({
-      nodeIntegrationInWorker: false,
-      preload: './preloader.js',
-
-      contextIsolation: true,
-      nodeIntegration: false
+      preload: join(__dirname, './preloader.js')
     }) || undefined,
 
     backgroundColor: '#000000',
@@ -25,8 +22,8 @@ function createWindow(): void {
     frame: false
   });
 
+  game.loadFile(join(__dirname, '../../dist/index.html'));
   !PRODUCTION && game.webContents.openDevTools();
-  game.loadFile('../../dist/index.html');
   game.on('closed', () => game = null);
 }
 
