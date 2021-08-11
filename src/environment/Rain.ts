@@ -1,34 +1,33 @@
 import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthStencilFormat, GLSL3 } from 'three/src/constants';
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
+
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { CameraObject, CameraListener } from '@/managers/GameCamera';
+import { updateRainParticles } from '@/managers/worker/rainParticles';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
 import type { RainParticles } from '@/managers/worker/types.d';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
 
+import { CameraObject } from '@/managers/GameCamera';
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
+
 import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/managers/AssetsLoader';
+import GameLevel from '@/environment/GameLevel';
 
 import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
 
-import GameLevel from '@/environment/GameLevel';
-import { Audio } from 'three/src/audio/Audio';
-import Clouds from '@/environment/Clouds';
+import type Worker from '@/managers/worker';
 import Settings from '@/config/settings';
-import Viewport from '@/utils/Viewport';
 
-import Worker from '@/managers/worker';
+import type { Coords } from '@/types';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
-import Raindrop from 'raindrop-fx';
 import { Config } from '@/config';
-import anime from 'animejs';
 
 const DROP_RATIO = Math.tan(PI.d3) * 3;
 
@@ -39,29 +38,25 @@ export default class Rain
 
   private readonly geometry = new BufferGeometry();
   private renderTargets?: Array<WebGLRenderTarget>;
-
   private readonly loader = new Assets.Loader();
-  private readonly worker = new Worker();
 
-  private canvas?: HTMLCanvasElement;
   private material!: ShaderMaterial;
-  private raindrops?: Raindrop;
-
-  private ambient!: Audio;
+  private worker?: Worker;
   private drops!: Points;
   private delta = 0.0;
 
   public constructor (private readonly renderer: WebGLRenderer, private readonly scene: Scene) {
     this.createRenderTargets();
-    this.createWorkerLoop();
     this.createParticles();
-    this.createRaindrop();
-    this.createAmbient();
+
+    if (Config.workerRain /* or running in main thread */) {
+      this.createWorkerLoop();
+    }
   }
 
   private createRenderTargets (): void {
     if (!Settings.softParticles) return;
-    const { width, height } = Viewport.size;
+    const { width, height } = this.renderer.domElement;
 
     const depthTexture = new DepthTexture(
       width, height, UnsignedInt248Type
@@ -89,36 +84,8 @@ export default class Rain
     });
   }
 
-  private createWorkerLoop (): void {
-    this.worker.add('Rain:particles', data =>
-      this.updateParticleGeometry(data as RainParticles), {
-        minCoords: this.minCoords,
-        maxCoords: this.maxCoords,
-        top: Clouds.height
-      }
-    );
-
-    this.worker.get('Rain:particles', {
-      camera: CameraObject.position,
-      delta: this.delta
-    });
-  }
-
-  private updateParticleGeometry (data: RainParticles): void {
-    this.geometry.setAttribute('position', new Float32BufferAttribute(data[0], 3));
-    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[1], 1));
-
-    this.geometry.attributes.position.needsUpdate = true;
-    this.geometry.attributes.alpha.needsUpdate = true;
-
-    this.worker.get('Rain:particles', {
-      camera: CameraObject.position,
-      delta: this.delta
-    });
-  }
-
   private async createParticles (): Promise<void> {
-    const { width, height } = Viewport.size;
+    const { width, height } = this.renderer.domElement;
 
     this.material = new ShaderMaterial({
       uniforms: {
@@ -147,10 +114,6 @@ export default class Rain
     const uniforms = this.material.uniforms;
     this.drops = new Points(this.geometry, this.material);
 
-    this.drops.frustumCulled = false;
-    this.drops.renderOrder = 2.0;
-    this.scene.add(this.drops);
-
     if (this.renderTargets) {
       uniforms.depth.value = this.renderTargets[0].depthTexture;
     }
@@ -158,67 +121,36 @@ export default class Rain
     uniforms.diffuse.value = await Promise.all(
       Config.Level.rain.map(this.loader.loadTexture.bind(this.loader))
     );
+
+    this.drops.frustumCulled = false;
+    this.drops.renderOrder = 2.0;
+    this.scene.add(this.drops);
   }
 
-  private createRaindrop (): void {
-    if (!Settings.raindrops) return;
+  private createWorkerLoop (): void {
+    import('@/managers/worker').then(Worker => {
+      this.worker = new Worker.default();
 
-    this.canvas = document.createElement('canvas');
-    this.canvas.height = Viewport.size.height;
-    this.canvas.width = Viewport.size.width;
+      this.worker.add('Rain:particles', data =>
+        this.updateParticleGeometry(data as RainParticles), {
+          minCoords: this.minCoords,
+          maxCoords: this.maxCoords
+        }
+      );
 
-    this.raindrops = new Raindrop({
-      background: this.renderer.domElement,
-      motionInterval: [0.25, 0.5],
-      spawnInterval: [0.1, 0.5],
-      spawnSize: [75.0, 100.0],
-
-      backgroundBlurSteps: 0,
-      dropletsPerSeconds: 15,
-      raindropLightBump: 0.5,
-      velocitySpread: 0.25,
-      canvas: this.canvas,
-
-      refractBase: 0.5,
-      mistBlurStep: 0,
-      spawnLimit: 50,
-      evaporate: 25,
-      mist: false
+      this.worker.post('Rain:particles', {
+        camera: CameraObject.position,
+        delta: this.delta
+      });
     });
-
-    this.raindrops.start().then(() => {
-      // Dirty hack to bypass the need of mandatory background blur:
-      // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const raindropsRenderer = this.raindrops?.renderer as any;
-      raindropsRenderer.blurryBackground = raindropsRenderer.background;
-    });
-  }
-
-  private async createAmbient (): Promise<void> {
-    const ambient = await this.loader.loadAudio(Config.Level.ambient);
-    this.ambient = new Audio(CameraListener);
-
-    this.ambient.setBuffer(ambient);
-    this.ambient.setLoop(true);
-    this.ambient.setVolume(0);
-
-    setTimeout(() => anime({
-      targets: { volume: this.ambient.getVolume() },
-      update: ({ animations }) => this.ambient.setVolume(
-        +animations[0].currentValue
-      ),
-
-      easing: 'linear',
-      duration: 2500,
-      volume: 0.25
-    }), 7500);
   }
 
   public update (delta: number): void {
     this.delta = delta;
-    this.raindrops?.setBackground(this.renderer.domElement);
+
+    if (!Config.workerRain /* and not running in main thread */) {
+      this.updateParticles();
+    }
 
     if (this.renderTargets) {
       const lastRenderTarget = this.renderTargets[0];
@@ -237,8 +169,31 @@ export default class Rain
     }
   }
 
+  private updateParticles (): void {
+    this.updateParticleGeometry(
+      updateRainParticles({
+        minCoords: this.minCoords as unknown as Coords,
+        maxCoords: this.maxCoords as unknown as Coords,
+        camera: CameraObject.position,
+        delta: this.delta
+      })
+    );
+  }
+
+  private updateParticleGeometry (data: RainParticles): void {
+    this.geometry.setAttribute('position', new Float32BufferAttribute(data[0], 3));
+    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[1], 1));
+
+    this.geometry.attributes.position.needsUpdate = true;
+    this.geometry.attributes.alpha.needsUpdate = true;
+
+    this.worker?.post('Rain:particles', {
+      camera: CameraObject.position,
+      delta: this.delta
+    });
+  }
+
   public resize (width: number, height: number): void {
-    this.raindrops?.resize(width, height);
     this.material.uniforms.ratio.value = height / DROP_RATIO;
     this.material.uniforms.screenSize.value.set(width, height);
 
@@ -256,21 +211,12 @@ export default class Rain
       renderTarget.dispose();
     });
 
-    this.worker.remove('Rain:particles');
+    this.worker?.remove('Rain:particles');
     this.scene.remove(this.drops);
     this.geometry.dispose();
-    this.material.dispose();
-    this.raindrops?.stop();
 
+    this.material.dispose();
     this.drops.clear();
     this.delta = 0.0;
-  }
-
-  public set pause (pause: boolean) {
-    this.ambient && this.ambient[pause ? 'pause' : 'play']();
-  }
-
-  public get cameraDrops (): HTMLCanvasElement | undefined {
-    return this.canvas;
   }
 }

@@ -8,6 +8,7 @@
 
   "model": "level.glb",
   "cloud": "cloud.png",
+  "fog": "noise.jpg",
   "skybox": "level",
 
   "height": 10,

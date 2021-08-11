@@ -1,4 +1,4 @@
-import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from './physics.d';
+import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from './physics';
 import type { Quaternion } from 'three/src/math/Quaternion';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Mesh } from 'three/src/objects/Mesh';

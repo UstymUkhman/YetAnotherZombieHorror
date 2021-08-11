@@ -1,4 +1,4 @@
-import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from './physics.d';
+import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from './physics';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 

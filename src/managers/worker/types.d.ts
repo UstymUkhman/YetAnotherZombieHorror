@@ -17,7 +17,8 @@ type LevelParams = {
 };
 
 type RainParticles = [
-  Array<number>, Array<number>
+  Array<number>,
+  Array<number>
 ];
 
 type RainParticle = {
@@ -33,6 +34,5 @@ type RainParams = {
   minCoords: Coords,
   maxCoords: Coords,
   camera: Vector3,
-  delta: number,
-  top: number
+  delta: number
 };

@@ -42,6 +42,7 @@ export namespace Config
   /* eslint-enable no-undef */
 
   export const freeCamera = false;
+  export const workerRain = true;
   export const colliders = false;
   export const hitBoxes = false;
 
@@ -77,7 +78,8 @@ export namespace Config
     model: LevelData.model,
     cloud: LevelData.cloud,
     music: LevelData.music,
-    rain: LevelData.rain
+    rain: LevelData.rain,
+    fog: LevelData.fog
   });
 
   export const Player = deepFreeze({

@@ -4,16 +4,20 @@ type Size = { width: number, height: number };
 class Viewport
 {
   private readonly update = this.updateScreen.bind(this);
-  private readonly root = document.documentElement.style;
   private readonly callbacks: Array<Callback> = [];
+  private readonly root!: CSSStyleDeclaration;
 
-  private height = window.innerHeight;
-  private width = window.innerWidth;
+  private height = 0.0;
+  private width = 0.0;
 
   public constructor () {
-    window.addEventListener('resize', this.update, false);
-    this.root.setProperty('--ratio', '16 / 9');
-    this.updateScreen();
+    if (typeof window !== 'undefined') {
+      this.root = document.documentElement.style;
+      window.addEventListener('resize', this.update, false);
+
+      this.root.setProperty('--ratio', '16 / 9');
+      this.updateScreen();
+    }
   }
 
   private updateScreen () {

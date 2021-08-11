@@ -10,7 +10,7 @@ import type { Mesh } from 'three/src/objects/Mesh';
 import type { Line3 } from 'three/src/math/Line3';
 
 type LevelColliders = Map<number, Array<Mesh>>;
-import type { Bounds } from '@/types.d';
+import type { Bounds } from '@/types';
 
 interface SeparatingAxisTriangle extends Triangle {
   closestPointToSegment: (segment: Line3, target1?: Vector3, target2?: Vector3) => number

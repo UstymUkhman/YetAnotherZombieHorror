@@ -1,9 +1,9 @@
+import type { CanvasTexture } from 'three/src/textures/CanvasTexture';
 import { ShaderChunk } from 'three/src/renderers/shaders/ShaderChunk';
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 
-import { TextureLoader } from 'three/src/loaders/TextureLoader';
-import type { Texture } from 'three/src/textures/Texture';
 import { FogExp2 } from 'three/src/scenes/FogExp2';
+import { Assets } from '@/managers/AssetsLoader';
 
 import parsFrag from '@/shaders/fog/pars.frag';
 import parsVert from '@/shaders/fog/pars.vert';
@@ -13,22 +13,22 @@ import fogVert from '@/shaders/fog/main.vert';
 
 import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
+import { Config } from '@/config';
 
 export class VolumetricFog extends FogExp2
 {
-  private readonly loader = new TextureLoader();
+  private readonly loader = new Assets.Loader();
   private readonly shaders: Array<Shader> = [];
 
-  private noise?: Texture;
+  private noise?: CanvasTexture;
   private materials = 0;
   private time = 0.0;
 
   public constructor () {
     super(Color.GRAY, 0.02);
 
-    if (Settings.bakedFog) {
-      this.noise = this.loader.load('./assets/images/noise.jpg');
-    }
+    Settings.bakedFog && this.loader.loadTexture(Config.Level.fog)
+      .then(texture => this.noise = texture);
 
     ShaderChunk.fog_pars_fragment = Settings.bakedFog
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;

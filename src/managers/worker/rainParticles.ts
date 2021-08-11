@@ -1,5 +1,7 @@
-import type { RainParams, RainParticles, RainParticle } from '@/managers/worker/types.d';
+import type { RainParticles, RainParticle, RainParams } from '@/managers/worker/types.d';
 import { Vector3 } from 'three/src/math/Vector3';
+
+import Clouds from '@/environment/Clouds';
 import { random } from '@/utils/Number';
 import Spline from '@/utils/Spline';
 
@@ -14,16 +16,18 @@ alphaSpline.addPoint(0.8, 0.5);
 alphaSpline.addPoint(1.0, 0.5);
 
 export const updateRainParticles = (params: RainParams): RainParticles => {
-  position.copy(params.camera);
-  timeElapsed += params.delta;
+  const { camera, delta } = params;
+
+  position.copy(camera);
+  timeElapsed += delta;
 
   addParticles(params);
-  updateParticles(params);
+  updateParticles(delta);
   return updateGeometry();
 };
 
 const addParticles = (params: RainParams): void => {
-  const { minCoords, top, maxCoords } = params;
+  const { minCoords, maxCoords } = params;
   const time = Math.floor(timeElapsed * 100.0);
 
   timeElapsed -= time / 100.0;
@@ -39,7 +43,7 @@ const addParticles = (params: RainParams): void => {
 
       position: new Vector3(
         random(minCoords[0], maxCoords[0]),
-        top - offset * 50,
+        Clouds.height - offset * 50,
         random(minCoords[1], maxCoords[1])
       ),
 
@@ -50,10 +54,9 @@ const addParticles = (params: RainParams): void => {
   }
 };
 
-const updateParticles = (params: RainParams): void => {
+const updateParticles = (delta: number): void => {
   for (let p = 0; p < rainDrops.length; p++) {
     const particle = rainDrops[p];
-    const { delta } = params;
 
     if ((particle.life -= delta) <= 0.0) continue;
 
