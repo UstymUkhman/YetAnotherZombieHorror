@@ -2,20 +2,18 @@ import { LoadingManager } from 'three/src/loaders/LoadingManager';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { Texture } from 'three/src/textures/Texture';
 
-import { Assets } from '@/managers/AssetsLoader';
+import { Assets } from '@/loaders/AssetsLoader';
 import { Group } from 'three/src/objects/Group';
 import { RGBFormat } from 'three/src/constants';
 
 describe('AssetsLoader', () => {
-  const loader = new Assets.Loader();
-
   test('Create', () => {
     expect(Assets.Loader).toBeDefined();
-    expect(loader).toBeInstanceOf(LoadingManager);
+    expect(Assets.Loader).toBeInstanceOf(LoadingManager);
   });
 
   test('getPromiseCallbacks', done => {
-    const loaderPrototype = Object.getPrototypeOf(loader);
+    const loaderPrototype = Object.getPrototypeOf(Assets.Loader);
     const getPromiseCallbacks = jest.fn(loaderPrototype.getPromiseCallbacks.bind(loaderPrototype));
 
     new Promise((resolve, reject) => {
@@ -41,7 +39,7 @@ describe('AssetsLoader', () => {
   });
 
   test('loadCubeTexture', done => {
-    loader.loadCubeTexture('skybox').then(cubeTexture => {
+    Assets.Loader.loadCubeTexture('skybox').then(cubeTexture => {
       expect(cubeTexture).toBeInstanceOf(CubeTexture);
       expect(cubeTexture.images.length).toStrictEqual(6);
     });
@@ -50,7 +48,7 @@ describe('AssetsLoader', () => {
   });
 
   test('loadTexture', done => {
-    loader.loadTexture('AK47.png').then(texture => {
+    Assets.Loader.loadTexture('AK47.png').then(texture => {
       expect(texture).toBeInstanceOf(Texture);
       expect(texture.image).toBeInstanceOf(Image);
     });
@@ -59,7 +57,7 @@ describe('AssetsLoader', () => {
   });
 
   test('loadGLTF', done => {
-    loader.loadGLTF('AK47.glb').then(model => {
+    Assets.Loader.loadGLTF('AK47.glb').then(model => {
       expect(model.scene).toBeInstanceOf(Group);
       expect(model).toEqual({ scene: new Group() });
     });
@@ -68,7 +66,7 @@ describe('AssetsLoader', () => {
   });
 
   test('loadAudio', done => {
-    loader.loadAudio('scream.mp3').then(audio => {
+    Assets.Loader.loadAudio('scream.mp3').then(audio => {
       expect(audio).toBeInstanceOf(AudioBuffer);
     });
 
@@ -76,25 +74,25 @@ describe('AssetsLoader', () => {
   });
 
   test('onProgress', () => {
-    const onProgress = jest.fn(loader.onProgress);
+    const onProgress = jest.fn(Assets.Loader.onProgress);
     onProgress('', 1, 1);
     expect(onProgress).toHaveReturnedWith(undefined);
   });
 
   test('onError', () => {
-    const onError = jest.fn(loader.onError);
+    const onError = jest.fn(Assets.Loader.onError);
     onError('');
     expect(onError).toHaveReturnedWith(undefined);
   });
 
   test('onStart', () => {
-    const onStart = jest.fn(loader.onStart);
+    const onStart = jest.fn(Assets.Loader.onStart);
     onStart();
     expect(onStart).toHaveReturnedWith(undefined);
   });
 
   test('onLoad', () => {
-    const onLoad = jest.fn(loader.onLoad);
+    const onLoad = jest.fn(Assets.Loader.onLoad);
     onLoad();
     expect(onLoad).toHaveReturnedWith(undefined);
   });

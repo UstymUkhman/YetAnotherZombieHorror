@@ -1,16 +1,16 @@
 import LevelData from '@/config/level.json';
-import GameLevel from '@/environment/GameLevel';
+import LevelScene from '@/environment/LevelScene';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Object3D } from 'three/src/core/Object3D';
 
-describe('GameLevel', () => {
-  const level = new GameLevel();
+describe('LevelScene', () => {
+  const level = new LevelScene();
 
   test('Create', () => {
-    expect(GameLevel).toBeDefined();
-    expect(level).toBeInstanceOf(GameLevel);
+    expect(LevelScene).toBeDefined();
+    expect(level).toBeInstanceOf(LevelScene);
   });
 
   test('createSkybox', () => {
@@ -79,37 +79,37 @@ describe('GameLevel', () => {
   });
 
   test('maxCoords', () => {
-    expect(GameLevel.maxCoords[0]).toStrictEqual(94);
-    expect(GameLevel.maxCoords[1]).toStrictEqual(53);
+    expect(LevelScene.maxCoords[0]).toStrictEqual(94);
+    expect(LevelScene.maxCoords[1]).toStrictEqual(53);
   });
 
   test('minCoords', () => {
-    expect(GameLevel.minCoords[0]).toStrictEqual(-59.5);
-    expect(GameLevel.minCoords[1]).toStrictEqual(-144);
+    expect(LevelScene.minCoords[0]).toStrictEqual(-59.5);
+    expect(LevelScene.minCoords[1]).toStrictEqual(-144);
   });
 
   test('portals', () => {
-    expect(GameLevel.portals).toStrictEqual(LevelData.portals);
+    expect(LevelScene.portals).toStrictEqual(LevelData.portals);
   });
 
   test('center', () => {
     const x = (94 + -59.5) / 2.0;
     const z = (53 + -144) / 2.0;
 
-    expect(GameLevel.center).toBeInstanceOf(Vector3);
-    expect(GameLevel.center.y).toStrictEqual(0.0);
-    expect(GameLevel.center.x).toStrictEqual(x);
-    expect(GameLevel.center.z).toStrictEqual(z);
+    expect(LevelScene.center).toBeInstanceOf(Vector3);
+    expect(LevelScene.center.y).toStrictEqual(0.0);
+    expect(LevelScene.center.x).toStrictEqual(x);
+    expect(LevelScene.center.z).toStrictEqual(z);
   });
 
   test('bounds', () => {
-    expect(GameLevel.bounds).toStrictEqual(LevelData.bounds);
+    expect(LevelScene.bounds).toStrictEqual(LevelData.bounds);
   });
 
   test('size', () => {
-    expect(GameLevel.size.x).toStrictEqual(94 - -59.5);
-    expect(GameLevel.size.y).toStrictEqual(53 - -144);
-    expect(GameLevel.size).toBeInstanceOf(Vector2);
+    expect(LevelScene.size.x).toStrictEqual(94 - -59.5);
+    expect(LevelScene.size.y).toStrictEqual(53 - -144);
+    expect(LevelScene.size).toBeInstanceOf(Vector2);
   });
 
   test('pause', () => {

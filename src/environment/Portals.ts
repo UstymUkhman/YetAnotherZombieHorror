@@ -1,10 +1,10 @@
+import LevelScene from '@/environment/LevelScene';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
-import GameLevel from '@/environment/GameLevel';
 
 export default class Portals
 {
-  private readonly portals = GameLevel.portals;
+  private readonly portals = LevelScene.portals;
   private readonly position = new Vector3();
 
   private readonly player = new Vector3();

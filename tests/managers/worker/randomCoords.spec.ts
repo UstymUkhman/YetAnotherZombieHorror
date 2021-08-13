@@ -1,32 +1,32 @@
-import GameLevel from '@/environment/GameLevel';
+import LevelScene from '@/environment/LevelScene';
 import { Vector3 } from 'three/src/math/Vector3';
 import { getRandomCoord } from '@/managers/worker/randomCoords';
 
 describe('randomCoords', () => {
   test('getRandomCoord', () => {
-    const maxCoords = GameLevel.maxCoords;
-    const minCoords = GameLevel.minCoords;
+    const maxCoords = LevelScene.maxCoords;
+    const minCoords = LevelScene.minCoords;
 
     for (let i = 0; i < 10; i++) {
       const coords = getRandomCoord({
-        portals: GameLevel.portals,
+        portals: LevelScene.portals,
         player: new Vector3(),
-        bounds: GameLevel.bounds,
+        bounds: LevelScene.bounds,
         minCoords: minCoords,
         maxCoords: maxCoords
       });
 
-      if (coords[1] > GameLevel.portals[1][1]) {
-        const maxX = GameLevel.portals[6][0];
-        const minX = GameLevel.portals[0][0];
+      if (coords[1] > LevelScene.portals[1][1]) {
+        const maxX = LevelScene.portals[6][0];
+        const minX = LevelScene.portals[0][0];
 
         expect(coords[0]).toBeLessThan(maxX);
         expect(coords[0]).toBeGreaterThan(minX);
       }
 
-      else if (coords[1] < GameLevel.portals[2][1]) {
-        const maxX = GameLevel.portals[4][0];
-        const minX = GameLevel.portals[2][0];
+      else if (coords[1] < LevelScene.portals[2][1]) {
+        const maxX = LevelScene.portals[4][0];
+        const minX = LevelScene.portals[2][0];
 
         expect(coords[0]).toBeLessThan(maxX);
         expect(coords[0]).toBeGreaterThan(minX);

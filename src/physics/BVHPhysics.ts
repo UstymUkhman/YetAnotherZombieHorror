@@ -1,8 +1,9 @@
-import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from './physics';
+import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from '@/physics/types';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 
-import { GameEvents } from '@/managers/GameEvents';
+import PhysicsWorld from '@/physics/PhysicsWorld';
+import { GameEvents } from '@/events/GameEvents';
 import { Matrix4 } from 'three/src/math/Matrix4';
 import MeshBVH from 'three-mesh-bvh/src/MeshBVH';
 
@@ -12,7 +13,6 @@ import { Mesh } from 'three/src/objects/Mesh';
 
 import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
-import PhysicsWorld from './PhysicsWorld';
 import { Vector } from '@/utils/Vector';
 
 const SPEED = 5.0;
@@ -56,7 +56,7 @@ export default class BVHPhysics extends PhysicsWorld
 		const mergedGeometry: BVHGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
-    GameEvents.dispatch('add:object', this.environment);
+    GameEvents.dispatch('Add:object', this.environment);
     this.environmentCollider = new Mesh(mergedGeometry);
   }
 

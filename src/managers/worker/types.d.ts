@@ -1,5 +1,7 @@
+/// <reference lib="WebWorker" />
+
 import type { Vector3 } from 'three/src/math/Vector3';
-import type { Coords, Bounds } from '@/types.d';
+import type { Coords, Bounds } from '@/types';
 
 type EventData   = { callback: Callback, params?: EventParams };
 type EventParams = Record<string, unknown>;

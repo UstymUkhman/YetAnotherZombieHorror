@@ -1,15 +1,15 @@
 import type { Coords } from '@/types.d';
-import GameLevel from '@/environment/GameLevel';
+import LevelScene from '@/environment/LevelScene';
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
 
 describe('ComponentUtils', () => {
   test('getScaledCoords', () => {
-    expect(getScaledCoords([0, 0], GameLevel.minCoords, 1)).toStrictEqual(GameLevel.minCoords);
+    expect(getScaledCoords([0, 0], LevelScene.minCoords, 1)).toStrictEqual(LevelScene.minCoords);
 
     expect(getScaledCoords([50.0, 50.0], [0, 0], 5)).toStrictEqual([250.0, 250.0]);
 
-    expect(getScaledCoords([1, 1], GameLevel.minCoords, 2)).toStrictEqual([
-      GameLevel.minCoords[0] * 2 + 2, GameLevel.minCoords[1] * 2 + 2
+    expect(getScaledCoords([1, 1], LevelScene.minCoords, 2)).toStrictEqual([
+      LevelScene.minCoords[0] * 2 + 2, LevelScene.minCoords[1] * 2 + 2
     ]);
   });
 

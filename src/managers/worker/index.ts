@@ -1,5 +1,5 @@
-import type { EventData, EventParams, Callback } from '@/managers/worker/types.d';
-import WebWorker from './worker?worker';
+import type { EventData, EventParams, Callback } from '@/managers/worker/types';
+import WebWorker from '@/managers/worker/worker?worker';
 
 export default class Worker
 {

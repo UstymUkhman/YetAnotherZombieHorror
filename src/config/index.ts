@@ -1,6 +1,5 @@
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
-import type { CharacterMove } from '@/types.d';
 
 import CameraData from '@/config/camera.json';
 import LevelData from '@/config/level.json';
@@ -11,6 +10,7 @@ import EnemyData from '@/config/enemy.json';
 import PistolData from '@/config/pistol.json';
 import RifleData from '@/config/rifle.json';
 
+import type { CharacterMove } from '@/types';
 import { Euler } from 'three/src/math/Euler';
 import deepFreeze from '@/utils/deepFreeze';
 
@@ -36,9 +36,14 @@ export namespace Config
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
 
+  export const WORKER = (
+    typeof WorkerGlobalScope !== 'undefined'
+    && self instanceof WorkerGlobalScope
+  );
+
   /* eslint-disable no-undef */
-  export const VERSION: string = BUILD;
   export const DEBUG = !PRODUCTION;
+  export const VERSION = BUILD;
   /* eslint-enable no-undef */
 
   export const freeCamera = false;

@@ -1,7 +1,7 @@
 import { Config } from '@/config';
 import type { Bounds } from '@/types.d';
 
-import GameLevel from '@/environment/GameLevel';
+import LevelScene from '@/environment/LevelScene';
 import { Vector } from '@/utils/Vector';
 import { Line3 } from 'three/src/math/Line3';
 
@@ -25,7 +25,7 @@ describe('BVHPhysics', () => {
 
   test('createGround', () => {
     const createGround = jest.fn(Physics.createGround.bind(
-      Physics, GameLevel.minCoords, GameLevel.maxCoords
+      Physics, LevelScene.minCoords, LevelScene.maxCoords
     ));
 
     createGround();
@@ -36,7 +36,7 @@ describe('BVHPhysics', () => {
     const { position, height, sidewalkHeight } = Config.Level;
 
     const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
-      borders: GameLevel.bounds, y: position.y, height
+      borders: LevelScene.bounds, y: position.y, height
     }, {
       borders: Config.Level.sidewalk as Bounds,
       height: sidewalkHeight,

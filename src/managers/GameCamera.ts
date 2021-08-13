@@ -1,6 +1,6 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
-import { AudioListener } from 'three/src/audio/AudioListener';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { Clock } from 'three/src/core/Clock';
@@ -10,7 +10,15 @@ import Viewport from '@/utils/Viewport';
 import { Config } from '@/config';
 import anime from 'animejs';
 
-class GameCamera
+type CameraState = {
+  matrix: Matrix4,
+  aspect: number,
+  near: number,
+  far: number,
+  fov: number
+};
+
+export class GameCamera
 {
   private fps = false;
   private raf!: number;
@@ -20,28 +28,23 @@ class GameCamera
   private rightShoulder = true;
 
   private position = new Vector3();
+  private static state: CameraState;
+
   private readonly shakePower = 0.025;
   private readonly clock = new Clock();
 
-  private readonly onResize: () => void;
   private readonly shakeAttenuation = 1.0;
   private readonly camera: PerspectiveCamera;
 
   private readonly onRunning = this.run.bind(this);
-  private readonly audioListener = new AudioListener();
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
     this.camera = new PerspectiveCamera(45, Viewport.ratio, +this.fps * 0.215 + 0.1);
-    this.onResize = this.camera.updateProjectionMatrix.bind(this.camera);
-    Viewport.addResizeCallback(this.onResize);
+    this.camera.far = Config.Level.depth;
 
-    this.addAudioListener();
     this.setCamera();
-  }
-
-  private addAudioListener (): void {
-    this.camera.add(this.audioListener);
+    this.updateState();
   }
 
   private setCamera (): void {
@@ -51,6 +54,15 @@ class GameCamera
     this.camera.rotation.set(0.0, Math.PI, 0.0);
     this.camera.setFocalLength(focalLength);
     this.camera.position.copy(idle);
+  }
+
+  public updateState (): void {
+    const { aspect, near, far, fov } = this.camera;
+
+    GameCamera.state = {
+      matrix: this.camera.matrixWorld,
+      aspect, near, far, fov
+    };
   }
 
   private getPosition (running = false, aiming = false, rifle = false): Vector3 {
@@ -176,6 +188,7 @@ class GameCamera
 
     this.camera.position.y += sin * offset / 100;
     this.camera.rotation.y -= cos * offset / 500;
+
     this.raf = requestAnimationFrame(this.onRunning);
   }
 
@@ -185,17 +198,20 @@ class GameCamera
     target.add(this.camera);
   }
 
+  public resize (): void {
+    this.camera.updateProjectionMatrix();
+  }
+
   public dispose (): void {
-    Viewport.removeResizeCallback(this.onResize);
     cancelAnimationFrame(this.raf);
+  }
+
+  public static get config (): CameraState {
+    return GameCamera.state;
   }
 
   public get object (): PerspectiveCamera {
     return this.camera;
-  }
-
-  public get listener (): AudioListener {
-    return this.audioListener;
   }
 
   public get isFPS (): boolean {
@@ -203,6 +219,7 @@ class GameCamera
   }
 }
 
-export const Camera = new GameCamera();
+const Camera = new GameCamera();
+
 export const CameraObject = Camera.object;
-export const CameraListener = Camera.listener;
+export default Camera;

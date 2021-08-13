@@ -1,6 +1,6 @@
 export default class Music
 {
-  private readonly basePath = './assets/music';
+  private readonly basePath = '/assets/music';
   private track: HTMLAudioElement;
 
   private paused = true;

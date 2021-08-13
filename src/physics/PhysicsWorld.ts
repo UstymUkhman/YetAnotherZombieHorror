@@ -2,13 +2,14 @@ import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 
-import { GameEvents } from '@/managers/GameEvents';
+import type { BoundsOptions } from '@/physics/types';
+import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
+
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
-import type { BoundsOptions } from './physics.d';
-import type { Coords } from '@/types.d';
+import type { Coords } from '@/types';
 import { PI } from '@/utils/Number';
 
 const MIN_SIZE = 0.01;
@@ -84,7 +85,7 @@ export default abstract class PhysicsWorld
     collider.position.copy(this.positionVector);
     collider.rotation.copy(this.rotationVector);
 
-    GameEvents.dispatch('add:object', collider);
+    GameEvents.dispatch('Add:object', collider);
     this.addStaticCollider(collider);
   }
 

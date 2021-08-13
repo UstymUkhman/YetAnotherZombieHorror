@@ -1,10 +1,10 @@
-import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from './physics';
+import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from '@/physics/types';
 import type { Quaternion } from 'three/src/math/Quaternion';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Mesh } from 'three/src/objects/Mesh';
 
-import { GameEvents } from '@/managers/GameEvents';
-import PhysicsWorld from './PhysicsWorld';
+import PhysicsWorld from '@/physics/PhysicsWorld';
+import { GameEvents } from '@/events/GameEvents';
 import Ammo from 'ammo.js';
 
 const DISABLE = 5;
@@ -65,7 +65,7 @@ export default class AmmoPhysics extends PhysicsWorld
 
     this.colliders.set(mesh.uuid, { mesh, body });
     this.world.addRigidBody(body, 128, 0xFFFF);
-    GameEvents.dispatch('add:object', mesh);
+    GameEvents.dispatch('Add:object', mesh);
   }
 
   protected addStaticCollider (collider: Mesh): void {

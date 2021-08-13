@@ -1,18 +1,20 @@
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { BoundsOptions } from '@/physics/types';
 import type { Mesh } from 'three/src/objects/Mesh';
-import type { BoundsOptions } from './physics.d';
+import PhysicsWorld from '@/physics/PhysicsWorld';
 
-import PhysicsWorld from './PhysicsWorld';
 import Settings from '@/config/settings';
-import type { Coords } from '@/types.d';
+import type { Coords } from '@/types';
 
-class PhysicsManager extends PhysicsWorld
+class Physics extends PhysicsWorld
 {
   protected addStaticCollider (): void { return; }
   private calls: Map<string, Array<unknown>> = new Map();
 
   private physics: Promise<PhysicsWorld> | PhysicsWorld = import(
-    Settings.ammoPhysics ? './AmmoPhysics' : './BVHPhysics'
+    Settings.ammoPhysics
+      ? '@/physics/AmmoPhysics'
+      : '@/physics/BVHPhysics'
   ).then(this.initializePhysics.bind(this));
 
   private initializePhysics (Physics: { default: new () => PhysicsWorld }) {
@@ -75,4 +77,4 @@ class PhysicsManager extends PhysicsWorld
   }
 }
 
-export default new PhysicsManager();
+export default new Physics();

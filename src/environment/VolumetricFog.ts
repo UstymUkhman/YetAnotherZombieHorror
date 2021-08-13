@@ -3,7 +3,7 @@ import { ShaderChunk } from 'three/src/renderers/shaders/ShaderChunk';
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 
 import { FogExp2 } from 'three/src/scenes/FogExp2';
-import { Assets } from '@/managers/AssetsLoader';
+import { Assets } from '@/loaders/AssetsLoader';
 
 import parsFrag from '@/shaders/fog/pars.frag';
 import parsVert from '@/shaders/fog/pars.vert';
@@ -17,17 +17,16 @@ import { Config } from '@/config';
 
 export class VolumetricFog extends FogExp2
 {
-  private readonly loader = new Assets.Loader();
   private readonly shaders: Array<Shader> = [];
-
   private noise?: CanvasTexture;
+
   private materials = 0;
   private time = 0.0;
 
   public constructor () {
     super(Color.GRAY, 0.02);
 
-    Settings.bakedFog && this.loader.loadTexture(Config.Level.fog)
+    Settings.bakedFog && Assets.Loader.loadTexture(Config.Level.fog)
       .then(texture => this.noise = texture);
 
     ShaderChunk.fog_pars_fragment = Settings.bakedFog

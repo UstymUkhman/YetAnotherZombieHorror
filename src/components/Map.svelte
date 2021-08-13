@@ -19,27 +19,27 @@
   import type { Vector3 } from 'three/src/math/Vector3';
   import MapRifle from '@components/MapRifle.svelte';
 
+  import LevelScene from '@/environment/LevelScene';
   import { cloneBounds, max } from '@/utils/Array';
-  import type { Coords, Bounds } from '@/types.d';
-  import GameLevel from '@/environment/GameLevel';
 
   import { createEventDispatcher } from 'svelte';
   import Player from '@components/Player.svelte';
+  import type { Coords, Bounds } from '@/types';
   import { onMount, onDestroy } from 'svelte';
 
-  const minCoords = GameLevel.minCoords.map(
+  const minCoords = LevelScene.minCoords.map(
     coord => Math.abs(coord) + PADDING
   ) as unknown as Coords;
 
   const dispatch = createEventDispatcher();
 
   let context: CanvasRenderingContext2D;
-  const maxCoords = GameLevel.maxCoords;
+  const maxCoords = LevelScene.maxCoords;
 
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
-  const bounds = GameLevel.bounds;
+  const bounds = LevelScene.bounds;
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 

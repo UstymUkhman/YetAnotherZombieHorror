@@ -1,13 +1,11 @@
-export type Directions = { [way in Direction]: number };
-export const enum Direction { UP, RIGHT, DOWN, LEFT }
-
-import { GameEvents } from '@/managers/GameEvents';
+import { Directions, Direction } from '@/inputs';
+import { GameEvents } from '@/events/GameEvents';
 import type Player from '@/characters/Player';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
 
-export default class Input
+export default class Keyboard
 {
   private readonly pointerLockChange = this.onPointerLockChange.bind(this);
   private readonly pointerLockError = this.onPointerLockError.bind(this);
@@ -187,7 +185,7 @@ export default class Input
     event.preventDefault();
 
     this.paused = !this.pointerLocked;
-    GameEvents.dispatch('game:pause', this.paused);
+    GameEvents.dispatch('Game:pause', this.paused);
   }
 
   private onPointerLockError (event: Event): void {

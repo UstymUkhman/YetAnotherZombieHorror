@@ -1,7 +1,7 @@
 <script lang="ts">
   import { PI, easeOutSine } from '@/utils/Number';
   export let context: CanvasRenderingContext2D;
-  import type { Coords } from '@/types.d';
+  import type { Coords } from '@/types';
   import { onDestroy } from 'svelte';
 
   export let visible: boolean;

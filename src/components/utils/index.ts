@@ -1,4 +1,4 @@
-import type { Coords } from '@/types.d';
+import type { Coords } from '@/types';
 
 export const getScaledCoords = (coords: Coords, minCoords: Coords, scale: number): Coords =>
   [coords[0] * scale + scale * minCoords[0], coords[1] * scale + scale * minCoords[1]];

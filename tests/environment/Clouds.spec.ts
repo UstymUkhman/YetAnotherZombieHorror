@@ -1,6 +1,6 @@
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
-import GameLevel from '@/environment/GameLevel';
+import LevelScene from '@/environment/LevelScene';
 import Clouds from '@/environment/Clouds';
 
 describe('Clouds', () => {
@@ -52,8 +52,8 @@ describe('Clouds', () => {
   });
 
   test('height', () => {
-    expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.x);
-    expect(Clouds.height).toBeGreaterThanOrEqual(GameLevel.size.y);
+    expect(Clouds.height).toBeGreaterThanOrEqual(LevelScene.size.x);
+    expect(Clouds.height).toBeGreaterThanOrEqual(LevelScene.size.y);
   });
 
   test('pause', () => {

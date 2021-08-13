@@ -1,9 +1,11 @@
-import type { Assets } from '@/managers/AssetsLoader';
+import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
-import { GameEvents } from '@/managers/GameEvents';
-import type { Euler } from 'three/src/math/Euler';
+import type { Assets } from '@/loaders/AssetsLoader';
 
-import type { Coords } from '@/types.d';
+import type { Euler } from 'three/src/math/Euler';
+import { GameEvents } from '@/events/GameEvents';
+
+import type { Coords } from '@/types';
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
@@ -17,8 +19,8 @@ export default class Rifle extends Weapon
   private reloading = false;
   private spawned = false;
 
-  public constructor () {
-    super(Config.Rifle);
+  public constructor (envMap: Texture) {
+    super(Config.Rifle, envMap);
   }
 
   public override setAim (): void {
@@ -48,7 +50,7 @@ export default class Rifle extends Weapon
       setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;
 
-      GameEvents.dispatch('weapon:reload', {
+      GameEvents.dispatch('Weapon:reload', {
         loaded: this.loadedAmmo,
         inStock: this.inStock,
         ammo: this.totalAmmo
@@ -69,8 +71,8 @@ export default class Rifle extends Weapon
     const playerDistance = this.clone.position.distanceTo(player);
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
-      GameEvents.dispatch('weapon:pick', this.clone);
-      GameEvents.dispatch('rifle:pick');
+      GameEvents.dispatch('Weapon:pick', this.clone);
+      GameEvents.dispatch('Rifle:pick');
       this.spawned = false;
     }
   }
@@ -83,8 +85,8 @@ export default class Rifle extends Weapon
     this.clone.scale.copy(worldScale);
     this.clone.rotation.set(0, 0, 0);
 
-    GameEvents.dispatch('add:object', this.clone);
-    GameEvents.dispatch('rifle:spawn', coords);
+    GameEvents.dispatch('Add:object', this.clone);
+    GameEvents.dispatch('Rifle:spawn', coords);
 
     this.spawned = true;
   }

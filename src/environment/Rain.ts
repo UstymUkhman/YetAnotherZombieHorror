@@ -6,17 +6,17 @@ import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { updateRainParticles } from '@/managers/worker/rainParticles';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
-import type { RainParticles } from '@/managers/worker/types.d';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
+import type { RainParticles } from '@/managers/worker/types';
 
 import { CameraObject } from '@/managers/GameCamera';
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
 
+import LevelScene from '@/environment/LevelScene';
 import { Vector2 } from 'three/src/math/Vector2';
-import { Assets } from '@/managers/AssetsLoader';
-import GameLevel from '@/environment/GameLevel';
+import { Assets } from '@/loaders/AssetsLoader';
 
 import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
@@ -33,12 +33,11 @@ const DROP_RATIO = Math.tan(PI.d3) * 3;
 
 export default class Rain
 {
-  private readonly minCoords = GameLevel.minCoords.map(coord => coord - 5);
-  private readonly maxCoords = GameLevel.maxCoords.map(coord => coord + 5);
+  private readonly minCoords = LevelScene.minCoords.map(coord => coord - 5);
+  private readonly maxCoords = LevelScene.maxCoords.map(coord => coord + 5);
 
   private readonly geometry = new BufferGeometry();
   private renderTargets?: Array<WebGLRenderTarget>;
-  private readonly loader = new Assets.Loader();
 
   private material!: ShaderMaterial;
   private worker?: Worker;
@@ -119,7 +118,9 @@ export default class Rain
     }
 
     uniforms.diffuse.value = await Promise.all(
-      Config.Level.rain.map(this.loader.loadTexture.bind(this.loader))
+      Config.Level.rain.map(
+        Assets.Loader.loadTexture.bind(Assets.Loader)
+      )
     );
 
     this.drops.frustumCulled = false;

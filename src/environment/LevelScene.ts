@@ -1,0 +1,270 @@
+import { ACESFilmicToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
+import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+
+import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import type { VolumetricFog } from '@/environment/VolumetricFog';
+import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
+
+import { AmbientLight } from 'three/src/lights/AmbientLight';
+import { GameEvents, GameEvent } from '@/events/GameEvents';
+import type { Texture } from 'three/src/textures/Texture';
+
+import type { Object3D } from 'three/src/core/Object3D';
+import { CameraObject } from '@/managers/GameCamera';
+import type { Mesh } from 'three/src/objects/Mesh';
+
+import { Vector2 } from 'three/src/math/Vector2';
+import { Vector3 } from 'three/src/math/Vector3';
+import { CSM } from 'three/examples/jsm/csm/CSM';
+
+import { Assets } from '@/loaders/AssetsLoader';
+import { Scene } from 'three/src/scenes/Scene';
+
+import type { Coords, Bounds } from '@/types';
+import Portals from '@/environment/Portals';
+import Clouds from '@/environment/Clouds';
+
+import { min, max } from '@/utils/Array';
+import Settings from '@/config/settings';
+
+import { Color } from '@/utils/Color';
+import Rain from '@/environment/Rain';
+
+import { Config } from '@/config';
+import Physics from '@/physics';
+
+export default class LevelScene
+{
+  private readonly clouds = new Clouds(300);
+  private readonly renderer: WebGLRenderer;
+  private readonly portals = new Portals();
+
+  private readonly pmrem: PMREMGenerator;
+  private readonly scene = new Scene();
+
+  private fog?: VolumetricFog;
+  private rain?: Rain;
+  private csm?: CSM;
+
+  public constructor (canvas: HTMLCanvasElement, pixelRatio: number) {
+    this.renderer = new WebGLRenderer({
+      preserveDrawingBuffer: true,
+      antialias: true,
+      alpha: false,
+      canvas
+    });
+
+    this.createEnvironment();
+    this.createRenderer(pixelRatio);
+    this.pmrem = new PMREMGenerator(this.renderer);
+
+    GameEvents.add('Add:object', this.addObject.bind(this));
+    GameEvents.add('Remove:object', this.removeObject.bind(this));
+  }
+
+  private async createEnvironment (): Promise<void> {
+    if (Settings.raining) {
+      this.rain = new Rain(this.renderer, this.scene);
+    }
+
+    Settings.fog && import('@/environment/VolumetricFog').then(
+      ({ VolumetricFog }) => {
+        this.fog = new VolumetricFog();
+        this.scene.fog = this.fog;
+      }
+    );
+
+    const skyboxMap = await this.createSkybox(Config.Level.skybox);
+    const level = await this.loadLevel(Config.Level.model);
+
+    level.position.copy(Config.Level.position as Vector3);
+    level.scale.copy(Config.Level.scale as Vector3);
+
+    this.scene.add(this.clouds.flash);
+    this.scene.add(this.clouds.sky);
+    this.createLights();
+
+    level.traverse(child => {
+      const childMesh = child as Mesh;
+      const material = childMesh.material as MeshStandardMaterial;
+
+      if (childMesh.isMesh) {
+        childMesh.renderOrder = 1;
+        material.envMap = skyboxMap;
+
+        childMesh.receiveShadow = true;
+        this.csm?.setupMaterial(childMesh.material);
+
+        if (this.fog) {
+          material.onBeforeCompile = this.fog.setUniforms;
+        }
+      }
+    });
+
+    const envMap = this.getSceneEnvMap().clone();
+    GameEvents.dispatch('Scene:envMap', envMap);
+  }
+
+  private async loadLevel (file: string): Promise<Assets.GLTF> {
+    const level = await Assets.Loader.loadGLTF(file);
+    this.scene.add(level.scene);
+    return level.scene;
+  }
+
+  private async createSkybox (folder: string): Promise<Texture> {
+    const skybox = await Assets.Loader.loadCubeTexture(folder);
+
+    skybox.encoding = sRGBEncoding;
+    this.scene.background = skybox;
+
+    this.pmrem.compileCubemapShader();
+    return this.pmrem.fromCubemap(skybox).texture;
+  }
+
+  private createLights (): void {
+    this.scene.add(new AmbientLight(Color.WHITE, 0.1));
+    const direction = new Vector3(0.925, -1.875, -1.0).normalize();
+
+    this.csm = new CSM({
+      maxFar: CameraObject.far * 10,
+      lightFar: CameraObject.far,
+      lightDirection: direction,
+
+      camera: CameraObject,
+      lightIntensity: 0.25,
+      mode: 'logarithmic',
+
+      parent: this.scene,
+      cascades: 4,
+      fade: true
+    });
+
+    this.csm.lights.forEach(light =>
+      light.color.set(Color.MOON)
+    );
+  }
+
+  private getSceneEnvMap (): Texture {
+    return this.pmrem.fromScene(
+      this.scene, 0.0,
+      CameraObject.near,
+      CameraObject.far
+    ).texture;
+  }
+
+  private createRenderer (pixelRatio: number): void {
+    this.renderer.toneMapping = ACESFilmicToneMapping;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
+
+    this.renderer.setClearColor(Color.BLACK, 0.0);
+    // this.renderer.physicallyCorrectLights = true;
+
+    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.toneMappingExposure = 0.575;
+
+    this.renderer.setPixelRatio(pixelRatio);
+    this.renderer.shadowMap.enabled = true;
+  }
+
+  private removeObject (event: GameEvent): void {
+    const model = event.data as Object3D;
+    this.scene.remove(model);
+  }
+
+  private addObject (event: GameEvent): void {
+    const model = event.data as Object3D;
+    this.scene.add(model);
+  }
+
+  public render (delta: number): void {
+    this.renderer.render(this.scene, CameraObject);
+
+    this.rain?.update(delta);
+    this.fog?.update(delta);
+
+    this.clouds.update();
+    this.csm?.update();
+  }
+
+  public resize (width: number, height: number): void {
+    this.renderer.setSize(width, height, false);
+    this.rain?.resize(width, height);
+    this.csm?.updateFrustums();
+  }
+
+  public createColliders (): void {
+    const { position, height, sidewalkHeight } = Config.Level;
+    Physics.createGround(LevelScene.minCoords, LevelScene.maxCoords);
+
+    Physics.createBounds({
+      borders: LevelScene.bounds, y: position.y, height
+    }, {
+      borders: Config.Level.sidewalk as Bounds,
+      height: sidewalkHeight,
+      y: sidewalkHeight / 2
+    });
+  }
+
+  public outOfBounds (player: Vector3): Vector3 | null {
+    return (
+      this.portals.portalPassed(player) &&
+      this.portals.playerPosition
+    ) || null;
+  }
+
+  public dispose (): void {
+    GameEvents.remove('Add:object');
+    GameEvents.remove('Remove:object');
+
+    while (this.scene.children.length > 0) {
+      this.scene.remove(this.scene.children[0]);
+    }
+
+    this.renderer.dispose();
+    this.clouds.dispose();
+    this.rain?.dispose();
+    this.csm?.dispose();
+    this.fog?.dispose();
+  }
+
+  public static get maxCoords (): Coords {
+    return [
+      max(LevelScene.bounds.map(coords => coords[0])),
+      max(LevelScene.bounds.map(coords => coords[1]))
+    ];
+  }
+
+  public static get minCoords (): Coords {
+    return [
+      min(LevelScene.bounds.map(coords => coords[0])),
+      min(LevelScene.bounds.map(coords => coords[1]))
+    ];
+  }
+
+  public static get portals (): Bounds {
+    return Config.Level.portals as Bounds;
+  }
+
+  public static get center (): Vector3 {
+    return new Vector3(
+      (LevelScene.maxCoords[0] + LevelScene.minCoords[0]) / 2.0,
+      0.0,
+      (LevelScene.maxCoords[1] + LevelScene.minCoords[1]) / 2.0
+    );
+  }
+
+  public static get bounds (): Bounds {
+    return Config.Level.bounds as Bounds;
+  }
+
+  public static get size (): Vector2 {
+    return new Vector2(
+      LevelScene.maxCoords[0] - LevelScene.minCoords[0],
+      LevelScene.maxCoords[1] - LevelScene.minCoords[1]
+    );
+  }
+
+  public set pause (pause: boolean) {
+    this.clouds.pause = pause;
+  }
+}

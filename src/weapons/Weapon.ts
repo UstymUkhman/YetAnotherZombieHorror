@@ -1,32 +1,32 @@
-import type { WeaponConfig, WeaponSounds, WeaponSound, Recoil } from '@/types.d';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import { CameraObject, CameraListener } from '@/managers/GameCamera';
-import { PositionalAudio } from 'three/src/audio/PositionalAudio';
+import type { WeaponConfig, WeaponSound, Recoil } from '@/weapons/types';
 
+import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 
+import { CameraObject } from '@/managers/GameCamera';
 import { Raycaster } from 'three/src/core/Raycaster';
-import { GameEvents } from '@/managers/GameEvents';
-import { Assets } from '@/managers/AssetsLoader';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
+import { GameEvents } from '@/events/GameEvents';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { FrontSide } from 'three/src/constants';
+import { Assets } from '@/loaders/AssetsLoader';
+
 import { random } from '@/utils/Number';
+import { Color } from '@/utils/Color';
 
 export default class Weapon
 {
-  private readonly sounds: WeaponSounds = new Map();
-  private readonly loader = new Assets.Loader();
   private readonly raycaster = new Raycaster();
-
   private readonly origin = new Vector2();
-  public targets: Array<Object3D> = [];
 
+  public targets: Array<Object3D> = [];
   protected readonly magazine: number;
+
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
 
@@ -37,18 +37,18 @@ export default class Weapon
   protected totalAmmo: number;
   private aiming = false;
 
-  public constructor (private readonly config: WeaponConfig) {
+  public constructor (private readonly config: WeaponConfig, envMap: Texture) {
     this.raycaster.near = this.near;
     this.magazine = config.magazine;
 
     this.loadedAmmo = config.ammo;
     this.totalAmmo = config.ammo;
 
-    this.load();
+    this.load(envMap);
   }
 
-  private async load (): Promise<void> {
-    this.weapon = (await this.loader.loadGLTF(this.config.model)).scene;
+  private async load (envMap: Texture): Promise<void> {
+    this.weapon = (await Assets.Loader.loadGLTF(this.config.model)).scene;
 
     this.weapon.traverse(child => {
       const childMesh = child as Mesh;
@@ -56,15 +56,18 @@ export default class Weapon
 
       if (childMesh.isMesh) {
         childMesh.castShadow = true;
+        childMesh.receiveShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
           emissiveIntensity: 0.025,
+          emissive: Color.SILVER,
           refractionRatio: 0.75,
-          emissive: 0xC0C0C0,
           map: material.map,
+
           side: FrontSide,
           roughness: 0.75,
-          metalness: 0.25
+          metalness: 0.25,
+          envMap
         });
       }
     });
@@ -73,50 +76,29 @@ export default class Weapon
     this.weapon.rotation.copy(this.config.rotation as Euler);
     this.weapon.scale.copy(this.config.scale as Vector3);
 
-    this.asset = this.model.clone() as Assets.GLTF;
-    this.addSounds(await this.loadSounds());
-  }
-
-  private addSounds (sounds: Array<AudioBuffer>): void {
-    const sfx = Object.keys(this.config.sounds) as unknown as Array<WeaponSound>;
-
-    sounds.forEach((sound, s) => {
-      const audio = new PositionalAudio(CameraListener);
-      const volume = sfx[s] === 'shoot' ? 10 : 5;
-
-      audio.setBuffer(sound);
-      audio.setVolume(volume);
-
-      this.sounds.set(sfx[s], audio);
-      this.model.add(audio);
-    });
-  }
-
-  private async loadSounds (): Promise<Array<AudioBuffer>> {
-    return await Promise.all(
-      Object.values(this.config.sounds)
-        .map(this.loader.loadAudio.bind(this.loader))
-    );
+    this.asset = this.model.clone();
   }
 
   private getEvent (index: number): string {
     const hitBox = index % 6;
-    return !hitBox ? 'hit:head' :
-      hitBox === 1 ? 'hit:body' : 'hit:leg';
-  }
-
-  protected stopSound (sfx: WeaponSound): PositionalAudio {
-    const sound = this.sounds.get(sfx) as PositionalAudio;
-    if (sound.isPlaying) sound.stop();
-    return sound;
+    return !hitBox ? 'Hit:head' :
+      hitBox === 1 ? 'Hit:body' : 'Hit:leg';
   }
 
   protected playSound (sfx: WeaponSound, stop: boolean): void {
-    const sound = stop
-      ? this.stopSound(sfx)
-      : this.sounds.get(sfx) as PositionalAudio;
+    stop && this.stopSound(sfx);
 
-    !sound.isPlaying && sound.play();
+    GameEvents.dispatch('SFX:Weapon', {
+      matrix: this.model.matrixWorld,
+      play: true, sfx
+    }, true);
+  }
+
+  protected stopSound (sfx: WeaponSound): void {
+    GameEvents.dispatch('SFX:Weapon', {
+      matrix: this.model.matrixWorld,
+      play: false, sfx
+    }, true);
   }
 
   public setAim (): void { return; }
@@ -132,7 +114,7 @@ export default class Weapon
 
     else {
       const hitBox = this.targets[target];
-      GameEvents.dispatch('player:shoot');
+      GameEvents.dispatch('Player:shoot');
 
       this.playSound('shoot', true);
       this.loadedAmmo--;
@@ -153,9 +135,7 @@ export default class Weapon
   public addAmmo (): void { return; }
 
   protected getClone (): Assets.GLTF {
-    const clone = this.asset as Assets.GLTF;
-    this.sounds.forEach(sound => clone.add(sound));
-    return clone;
+    return this.asset as Assets.GLTF;
   }
 
   private get target (): number {
