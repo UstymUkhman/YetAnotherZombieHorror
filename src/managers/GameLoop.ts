@@ -1,156 +1,195 @@
-type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
-import type { CharacterSound, Location, Coords } from '@/types.d';
-import type Stats from 'three/examples/jsm/libs/stats.module';
-type CharacterSounds = { [sfx in CharacterSound]: string };
+// type EnemyAssets = { model: Assets.GLTFModel, sounds: Array<AudioBuffer> };
+// import type { CharacterSound, Location, Coords } from '@/types';
+// type CharacterSounds = { [sfx in CharacterSound]: string };
+
+import { GameEvents, GameEvent } from '@/events/GameEvents';
+import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 
-import { GameEvents, GameEvent } from '@/managers/GameEvents';
-import { Assets } from '@/managers/AssetsLoader';
-import GameLevel from '@/environment/GameLevel';
+// import { Assets } from '@/managers/AssetsLoader';
+import LevelScene from '@/environment/LevelScene';
 import { Clock } from 'three/src/core/Clock';
+import type Enemy from '@/characters/Enemy';
 
-import Physics from '@/managers/physics';
+import Camera from '@/managers/GameCamera';
 import Player from '@/characters/Player';
-import Enemy from '@/characters/Enemy';
 
-import Worker from '@/managers/worker';
+// import Worker from '@/managers/worker';
 import Pistol from '@/weapons/Pistol';
-import Music from '@/managers/Music';
+// import Music from '@/managers/Music';
 
-import Input from '@/managers/Input';
+// import Input from '@/managers/Input';
 import Rifle from '@/weapons/Rifle';
-import { Config } from '@/config';
+// import { Config } from '@/config';
+import Physics from '@/physics';
 
 export default class GameLoop
 {
+  private rifle!: Rifle;
+  private pistol!: Pistol;
+
+  private readonly level: LevelScene;
   private readonly clock = new Clock();
-  private readonly rifle = new Rifle();
 
-  private readonly pistol = new Pistol();
   private readonly player = new Player();
-  private readonly level = new GameLevel();
-
   // private readonly enemyAssets?: EnemyAssets;
   private readonly enemies: Array<Enemy> = [];
 
-  private readonly worker = new Worker();
-  private readonly loader = new Assets.Loader();
+  // private readonly worker = new Worker();
+  // private readonly loader = new Assets.Loader();
 
-  private readonly input = new Input(this.player);
-  private readonly music = new Music(Config.Level.music);
+  // private readonly input = new Input(this.player);
+  // private readonly music = new Music(Config.Level.music);
+
+  private readonly loop = this.update.bind(this);
+  private readonly onSceneLoad = this.onLoad.bind(this);
 
   private paused = true;
-  private stats?: Stats;
+  private raf!: number;
 
-  public constructor () {
-    this.addEventListeners();
-    this.level.createColliders();
-    this.loadCharacters(); // .then(assets => this.enemyAssets = assets);
-
-    if (Config.DEBUG) {
-      import('three/examples/jsm/libs/stats.module').then(Stats => {
-        this.stats = Stats.default();
-        this.stats.showPanel(0);
-        document.body.appendChild(this.stats.domElement);
-      });
-    }
+  public constructor (scene: HTMLCanvasElement, pixelRatio: number) {
+    GameEvents.add('Scene:envMap', this.onSceneLoad);
+    this.level = new LevelScene(scene, pixelRatio);
   }
 
-  private async loadCharacters (): Promise<EnemyAssets> {
-    this.level.addObject(await this.player.loadCharacter());
+  private async onLoad (event: GameEvent): Promise<void> {
+    const envMap = event.data as Texture;
 
-    this.player.addSounds(await this.loadCharacterSounds(
-      Config.Player.sounds as CharacterSounds
-    ));
+    this.pistol = new Pistol(envMap);
+    this.rifle = new Rifle(envMap);
+
+    /* this.enemyAssets = await */ this.loadCharacters();
+    this.raf = requestAnimationFrame(this.loop);
+  }
+
+  private async loadCharacters (): Promise<void> /* Promise<EnemyAssets> */ {
+    const player = await this.player.loadCharacter();
+    GameEvents.dispatch('Add:object', player);
+
+    // this.player.addSounds(await this.loadCharacterSounds(
+    //   Config.Player.sounds as CharacterSounds
+    // ));
 
     this.player.setPistol(this.enemyColliders, this.pistol);
     Physics.setPlayer(this.player.collider);
 
-    return await this.loadEnemyAssets();
+    // return await this.loadEnemyAssets();
   }
 
-  private async loadEnemyAssets (): Promise<EnemyAssets> {
-    return {
-      model: await new Enemy().load(),
-      sounds: await this.loadCharacterSounds(
-        Config.Enemy.sounds as CharacterSounds
-      )
-    };
-  }
+  // private async loadEnemyAssets (): Promise<EnemyAssets> {
+  //   return {
+  //     model: await new Enemy().load(),
+  //     sounds: await this.loadCharacterSounds(
+  //       Config.Enemy.sounds as CharacterSounds
+  //     )
+  //   };
+  // }
 
-  private async loadCharacterSounds (sounds: CharacterSounds): Promise<Array<AudioBuffer>> {
-    return await Promise.all(
-      Object.values(sounds).map(
-        this.loader.loadAudio.bind(this.loader)
-      )
-    );
-  }
+  // private async loadCharacterSounds (sounds: CharacterSounds): Promise<Array<AudioBuffer>> {
+  //   return await Promise.all(
+  //     Object.values(sounds).map(
+  //       this.loader.loadAudio.bind(this.loader)
+  //     )
+  //   );
+  // }
 
-  private addEventListeners (): void {
-    GameEvents.add('remove:object', this.removeGameObject.bind(this));
-    GameEvents.add('add:object', this.addGameObject.bind(this));
-    GameEvents.add('weapon:pick', this.pickRifle.bind(this));
-
-    this.worker.add('Level:coord', data =>
-      this.rifle.spawn(data as Coords), {
-        minCoords: GameLevel.minCoords,
-        maxCoords: GameLevel.maxCoords,
-        portals: GameLevel.portals,
-        bounds: GameLevel.bounds
-      }
-    );
-  }
-
-  private removeGameObject (event: GameEvent): void {
-    this.level.removeObject(event.data as Object3D);
-  }
-
-  private addGameObject (event: GameEvent): void {
-    this.level.addObject(event.data as Object3D);
-  }
-
-  private pickRifle (event: GameEvent): void {
-    this.player.pickRifle(this.rifle);
-    this.removeGameObject(event);
-  }
-
-  /* private spawnRifle (): void {
-    if (this.rifle.onStage) return;
-    const player = this.playerLocation.position;
-    this.worker.get('Level:coord', { player });
-  } */
-
-  public update (): void {
-    this.stats?.begin();
-
+  private update (): void {
+    this.raf = requestAnimationFrame(this.loop);
     const delta = Math.min(this.clock.getDelta(), 0.1);
-    const playerPosition = this.player.location.position;
 
-    const position = this.level.outOfBounds(playerPosition);
-    position !== null && this.player.teleport(position);
+    // const playerPosition = this.player.location.position;
 
-    this.rifle.update(playerPosition);
-    this.player.update(delta);
+    // const position = this.level.outOfBounds(playerPosition);
+    // position !== null && this.player.teleport(position);
+
+    // this.rifle.update(playerPosition);
+    // this.player.update(delta);
+    Camera.updateState();
     this.level.render(delta);
 
-    if (this.player.alive) {
-      Physics.update(delta);
-    }
-
-    this.stats?.end();
+    // if (this.player.alive) {
+    //   Physics.update(delta);
+    // }
   }
 
-  public destroy (): void {
-    this.level.destroy();
-    this.music.destroy();
-    Physics.destroy();
-
-    if (Config.DEBUG) {
-      const stats = this.stats?.domElement as HTMLDivElement;
-      document.body.removeChild(stats);
-      delete this.stats;
-    }
+  public resize (width: number, height: number): void {
+    this.level.resize(width, height);
+    Camera.resize();
   }
+
+  public dispose (): void {
+    cancelAnimationFrame(this.raf);
+
+    this.level.dispose();
+    // this.music.dispose();
+    // Physics.dispose();
+  }
+
+  public set pause (pause: boolean) {
+    // this.music[pause ? 'pause' : 'play']();
+
+    // this.level.pause = pause;
+    // Physics.pause = pause;
+    this.paused = pause;
+
+    // this.paused
+    //   ? this.input.exitPointerLock()
+    //   : this.input.requestPointerLock();
+  }
+
+  public get pause (): boolean {
+    return this.paused;
+  }
+
+  // private addEventListeners (): void {
+  //   GameEvents.add('remove:object', this.removeGameObject.bind(this));
+  //   GameEvents.add('add:object', this.addGameObject.bind(this));
+  //   GameEvents.add('weapon:pick', this.pickRifle.bind(this));
+
+  //   this.worker.add('Level:coord', data =>
+  //     this.rifle.spawn(data as Coords), {
+  //       minCoords: LevelScene.minCoords,
+  //       maxCoords: LevelScene.maxCoords,
+  //       portals: LevelScene.portals,
+  //       bounds: LevelScene.bounds
+  //     }
+  //   );
+  // }
+
+  // private removeGameObject (event: GameEvent): void {
+  //   this.level.removeObject(event.data as Object3D);
+  // }
+
+  // private addGameObject (event: GameEvent): void {
+  //   this.level.addObject(event.data as Object3D);
+  // }
+
+  // private pickRifle (event: GameEvent): void {
+  //   this.player.pickRifle(this.rifle);
+  //   this.removeGameObject(event);
+  // }
+
+  // public update (): void {
+  //   const delta = Math.min(this.clock.getDelta(), 0.1);
+  //   const playerPosition = this.player.location.position;
+
+  //   const position = this.level.outOfBounds(playerPosition);
+  //   position !== null && this.player.teleport(position);
+
+  //   this.rifle.update(playerPosition);
+  //   this.player.update(delta);
+  //   this.level.render(delta);
+
+  //   if (this.player.alive) {
+  //     Physics.update(delta);
+  //   }
+  // }
+
+  // public destroy (): void {
+  //   this.level.destroy();
+  //   this.music.destroy();
+  //   Physics.destroy();
+  // }
 
   private get enemyColliders (): Array<Object3D> {
     const colliders = [];
@@ -162,29 +201,29 @@ export default class GameLoop
     return colliders;
   }
 
-  public get playerLocation (): Location {
-    return this.player.location;
-  }
+  // public get playerLocation (): Location {
+  //   return this.player.location;
+  // }
 
-  public get scenes (): Array<HTMLCanvasElement> {
-    return this.level.scenes;
-  }
+  // public get scenes (): Array<HTMLCanvasElement> {
+  //   return this.level.scenes;
+  // }
 
-  public set pause (pause: boolean) {
-    this.music[pause ? 'pause' : 'play']();
+  // public set pause (pause: boolean) {
+  //   this.music[pause ? 'pause' : 'play']();
 
-    this.level.pause = pause;
-    Physics.pause = pause;
-    this.paused = pause;
+  //   this.level.pause = pause;
+  //   Physics.pause = pause;
+  //   this.paused = pause;
 
-    if (!Config.freeCamera) {
-      this.paused
-        ? this.input.exitPointerLock()
-        : this.input.requestPointerLock();
-    }
-  }
+  //   if (!Config.freeCamera) {
+  //     this.paused
+  //       ? this.input.exitPointerLock()
+  //       : this.input.requestPointerLock();
+  //   }
+  // }
 
-  public get pause (): boolean {
-    return this.paused;
-  }
+  // public get pause (): boolean {
+  //   return this.paused;
+  // }
 }

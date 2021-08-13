@@ -1,31 +1,29 @@
-import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds, CharacterSound } from '@/types.d';
+import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds /* , CharacterSound */ } from '@/types';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import type { Object3D } from 'three/src/core/Object3D';
 
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
-import { PositionalAudio } from 'three/src/audio/PositionalAudio';
+// import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { FrontSide, DoubleSide } from 'three/src/constants';
 
-import { CameraListener } from '@/managers/GameCamera';
+// import { CameraListener } from '@/managers/GameCamera';
 import { DynamicCollider } from '@/utils/Material';
 import { Vector3 } from 'three/src/math/Vector3';
-import { Assets } from '@/managers/AssetsLoader';
+import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
 
 import { Line3 } from 'three/src/math/Line3';
 import { camelCase } from '@/utils/String';
-import Physics from '@/managers/physics';
 import { Vector } from '@/utils/Vector';
+import Physics from '@/physics';
 
 export default class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
-  private step: CharacterMove = this.config.moves.Idle;
-
   private readonly sounds: CharacterSounds = new Map();
-  private readonly loader = new Assets.Loader();
+  private step: CharacterMove = this.config.moves.Idle;
 
   protected readonly direction = new Vector3();
   protected readonly position  = new Vector3();
@@ -151,7 +149,7 @@ export default class Character
   }
 
   public async load (): Promise<Assets.GLTFModel> {
-    const character = await this.loader.loadGLTF(this.config.model);
+    const character = await Assets.Loader.loadGLTF(this.config.model);
     character.scene.position.set(0, this.config.collider.z, 0);
 
     this.object.position.copy(this.config.position as Vector3);
@@ -170,19 +168,19 @@ export default class Character
     return character;
   }
 
-  public addSounds (sounds: Array<AudioBuffer>): void {
-    const sfx = Object.keys(this.config.sounds) as unknown as Array<CharacterSound>;
+  // public addSounds (sounds: Array<AudioBuffer>): void {
+  //   const sfx = Object.keys(this.config.sounds) as unknown as Array<CharacterSound>;
 
-    sounds.forEach((sound, s) => {
-      const audio = new PositionalAudio(CameraListener);
+  //   sounds.forEach((sound, s) => {
+  //     const audio = new PositionalAudio(CameraListener);
 
-      this.sounds.set(sfx[s], audio);
-      this.object.add(audio);
+  //     this.sounds.set(sfx[s], audio);
+  //     this.object.add(audio);
 
-      audio.setBuffer(sound);
-      audio.setVolume(10);
-    });
-  }
+  //     audio.setBuffer(sound);
+  //     audio.setVolume(10);
+  //   });
+  // }
 
   public teleport (position: Vector3): void {
     Physics.pause = true;
