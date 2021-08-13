@@ -36,9 +36,14 @@ export namespace Config
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
 
-  export const WORKER = (
-    typeof WorkerGlobalScope !== 'undefined'
-    && self instanceof WorkerGlobalScope
+  export const offscreen = (
+    typeof HTMLCanvasElement !== 'undefined' &&
+    !!HTMLCanvasElement.prototype.transferControlToOffscreen
+  );
+
+  export const worker = (
+    typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope
   );
 
   /* eslint-disable no-undef */

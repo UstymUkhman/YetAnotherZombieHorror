@@ -19,8 +19,8 @@ import { CSM } from 'three/examples/jsm/csm/CSM';
 
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
-
 import type { Coords, Bounds } from '@/types';
+
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
 
@@ -54,12 +54,26 @@ export default class LevelScene
       canvas
     });
 
+    this.createColliders();
     this.createEnvironment();
     this.createRenderer(pixelRatio);
-    this.pmrem = new PMREMGenerator(this.renderer);
 
+    this.pmrem = new PMREMGenerator(this.renderer);
     GameEvents.add('Add:object', this.addObject.bind(this));
     GameEvents.add('Remove:object', this.removeObject.bind(this));
+  }
+
+  private createColliders (): void {
+    const { position, height, sidewalkHeight } = Config.Level;
+    Physics.createGround(LevelScene.minCoords, LevelScene.maxCoords);
+
+    Physics.createBounds({
+      borders: LevelScene.bounds, y: position.y, height
+    }, {
+      borders: Config.Level.sidewalk as Bounds,
+      height: sidewalkHeight,
+      y: sidewalkHeight / 2
+    });
   }
 
   private async createEnvironment (): Promise<void> {
@@ -190,19 +204,6 @@ export default class LevelScene
     this.renderer.setSize(width, height, false);
     this.rain?.resize(width, height);
     this.csm?.updateFrustums();
-  }
-
-  public createColliders (): void {
-    const { position, height, sidewalkHeight } = Config.Level;
-    Physics.createGround(LevelScene.minCoords, LevelScene.maxCoords);
-
-    Physics.createBounds({
-      borders: LevelScene.bounds, y: position.y, height
-    }, {
-      borders: Config.Level.sidewalk as Bounds,
-      height: sidewalkHeight,
-      y: sidewalkHeight / 2
-    });
   }
 
   public outOfBounds (player: Vector3): Vector3 | null {

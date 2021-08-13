@@ -4,12 +4,13 @@ import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 
 import type { Object3D } from 'three/src/core/Object3D';
-import type { Assets } from '@/managers/AssetsLoader';
-import type { EnemyAnimations } from '@/types.d';
+import type { Assets } from '@/loaders/AssetsLoader';
+import type { EnemyAnimations } from '@/types';
 
 import Character from '@/characters/Character';
 import { LoopOnce } from 'three/src/constants';
 import { Mesh } from 'three/src/objects/Mesh';
+
 import { HitBox } from '@/utils/Material';
 import { Config } from '@/config';
 
