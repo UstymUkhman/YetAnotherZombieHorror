@@ -1,10 +1,10 @@
-import type { Location, PlayerAnimations, CharacterAnimation } from '@/types';
+import type { PlayerAnimations, CharacterAnimation, PlayerLocation, PlayerMovement } from '@/characters/types';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 
-type Movement = { directions: Directions, running: boolean };
+import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
-
 import { radToDeg } from 'three/src/math/MathUtils';
+
 import { Direction, Directions } from '@/inputs';
 import { GameEvents } from '@/events/GameEvents';
 
@@ -45,6 +45,25 @@ export default class Player extends Character
 
   public constructor () {
     super(Config.Player);
+  }
+
+  public async loadCharacter (envMap: Texture): Promise<void> {
+    const character = await this.load(envMap);
+
+    this.hand = character.scene.getObjectByName('swatRightHand');
+    this.currentAnimation = this.animations.pistolIdle;
+
+    this.animations.rifleReload.clampWhenFinished = true;
+    this.animations.rifleAim.clampWhenFinished = true;
+    this.animations.death.clampWhenFinished = true;
+
+    this.animations.rifleReload.setLoop(LoopOnce, 1);
+    this.animations.rifleAim.setLoop(LoopOnce, 1);
+    this.animations.death.setLoop(LoopOnce, 1);
+
+    !Config.freeCamera && Camera.setTo(character.scene);
+    GameEvents.dispatch('Add:object', this.object);
+    this.currentAnimation.play();
   }
 
   private getMovementAnimation (directions: Directions): PlayerAnimations {
@@ -238,7 +257,7 @@ export default class Player extends Character
     this.shooting = false;
   }
 
-  public reload (getMovement: () => Movement): void {
+  public reload (getMovement: () => PlayerMovement): void {
     if (this.blockingAnimation()) return;
     if (this.weapon.full || !this.weapon.inStock) return;
 
@@ -294,25 +313,6 @@ export default class Player extends Character
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[action];
     }, duration * 1000) as unknown as number;
-  }
-
-  public async loadCharacter (): Promise<Object3D> {
-    const model = (await this.load()).scene;
-
-    this.hand = model.getObjectByName('swatRightHand');
-    this.currentAnimation = this.animations.pistolIdle;
-
-    this.animations.rifleReload.clampWhenFinished = true;
-    this.animations.rifleAim.clampWhenFinished = true;
-    this.animations.death.clampWhenFinished = true;
-
-    this.animations.rifleReload.setLoop(LoopOnce, 1);
-    this.animations.rifleAim.setLoop(LoopOnce, 1);
-    this.animations.death.setLoop(LoopOnce, 1);
-
-    !Config.freeCamera && Camera.setTo(model);
-    this.currentAnimation.play();
-    return this.object;
   }
 
   public setPistol (targets: Array<Object3D>, pistol: Pistol): void {
@@ -391,7 +391,7 @@ export default class Player extends Character
     super.dispose();
   }
 
-  public get location (): Location {
+  public get location (): PlayerLocation {
     return {
       position: this.position,
       rotation: radToDeg(

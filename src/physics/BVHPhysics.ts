@@ -151,7 +151,7 @@ export default class BVHPhysics extends PhysicsWorld
     this.delta = delta / 5;
   }
 
-  public destroy (): void {
+  public dispose (): void {
     delete this.environmentCollider;
     this.environment.clear();
     this.paused = true;

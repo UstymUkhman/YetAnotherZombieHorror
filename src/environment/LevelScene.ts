@@ -19,7 +19,6 @@ import { CSM } from 'three/examples/jsm/csm/CSM';
 
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
-import type { Coords, Bounds } from '@/types';
 
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
@@ -32,6 +31,9 @@ import Rain from '@/environment/Rain';
 
 import { Config } from '@/config';
 import Physics from '@/physics';
+
+export type Coords = Readonly<[number, number]>;
+export type Bounds = Readonly<Array<Coords>>;
 
 export default class LevelScene
 {
@@ -167,14 +169,15 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
+    const exposure = +Config.worker * 0.5 + 0.5;
+
+    this.renderer.physicallyCorrectLights = Config.worker;
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 
     this.renderer.setClearColor(Color.BLACK, 0.0);
-    // this.renderer.physicallyCorrectLights = true;
-
+    this.renderer.toneMappingExposure = exposure;
     this.renderer.outputEncoding = sRGBEncoding;
-    this.renderer.toneMappingExposure = 0.575;
 
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.shadowMap.enabled = true;

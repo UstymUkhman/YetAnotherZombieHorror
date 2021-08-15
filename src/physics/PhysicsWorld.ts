@@ -6,10 +6,9 @@ import type { BoundsOptions } from '@/physics/types';
 import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
 
+import type { Coords } from '@/physics/types';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
-
-import type { Coords } from '@/types';
 import { PI } from '@/utils/Number';
 
 const MIN_SIZE = 0.01;
@@ -29,7 +28,7 @@ export default abstract class PhysicsWorld
 
   protected readonly GRAVITY = -9.81;
 
-  public abstract destroy (): void;
+  public abstract dispose (): void;
   public abstract pause: boolean;
   public abstract stop (): void;
 

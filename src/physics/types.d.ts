@@ -1,22 +1,19 @@
-type BVHGeometry = BufferGeometry & { boundsTree?: typeof MeshBVH };
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
+export type { Coords, Bounds } from '@/environment/LevelScene';
 import type { Quaternion } from 'three/src/math/Quaternion';
 
 import type { Triangle } from 'three/src/math/Triangle';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type MeshBVH from 'three-mesh-bvh/src/MeshBVH';
-
-import type { Mesh } from 'three/src/objects/Mesh';
 import type { Line3 } from 'three/src/math/Line3';
 
-type LevelColliders = Map<number, Array<Mesh>>;
-import type { Bounds } from '@/types';
+export type BVHGeometry = BufferGeometry & { boundsTree?: typeof MeshBVH };
 
-interface SeparatingAxisTriangle extends Triangle {
+export interface SeparatingAxisTriangle extends Triangle {
   closestPointToSegment: (segment: Line3, target1?: Vector3, target2?: Vector3) => number
 }
 
-interface AmmoWorld {
+export interface AmmoWorld {
   addRigidBody: (body: AmmoBody, group?: number, mask?: number) => void
   stepSimulation: (timeStep: number, maxSubSteps?: number) => void
 
@@ -24,11 +21,11 @@ interface AmmoWorld {
   __destroy__: () => void
 }
 
-interface RigidBody {
+export interface RigidBody {
   calculateLocalInertia: (mass: number, inertia: Vector3) => void
 }
 
-interface AmmoBody {
+export interface AmmoBody {
   getMotionState: () => undefined | {
     getWorldTransform: (transform: AmmoTransform) => void
   }
@@ -47,13 +44,13 @@ interface AmmoTransform {
   setIdentity: () => void
 }
 
-type BoundsOptions = {
+export type BoundsOptions = {
   borders: Bounds
   height: number
   y: number
 };
 
-type AmmoCollider = {
+export type AmmoCollider = {
   body: AmmoBody
   mesh: Mesh
 };

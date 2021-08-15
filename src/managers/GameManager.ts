@@ -11,7 +11,16 @@ class GameWorker
 
   public takeControl (params: OffscreenParams): void {
     const canvas = params.element as unknown as HTMLCanvasElement;
+    this.performSomeAwfulHaksInOrderToRunAnimeJSInWebWorker();
     this.game = new GameLoop(canvas, params.pixelRatio);
+  }
+
+  private performSomeAwfulHaksInOrderToRunAnimeJSInWebWorker (): void {
+    (self.HTMLCollection as unknown) = self.DedicatedWorkerGlobalScope;
+    (self.SVGElement as unknown) = self.DedicatedWorkerGlobalScope;
+    (self.NodeList as unknown) = self.DedicatedWorkerGlobalScope;
+    (self.document as unknown) = DedicatedWorkerGlobalScope;
+    (self.window as unknown) = self;
   }
 
   /* public setEventTarget (data: EventData): void {

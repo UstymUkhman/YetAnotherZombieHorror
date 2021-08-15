@@ -35,16 +35,17 @@ export default class Clouds
   private clouds!: InstancedMesh;
   private lighting!: PointLight;
 
-  private interval?: number;
+  private timeout?: number;
   private paused = true;
 
   public constructor (private readonly count: number) {
     this.createLighting();
+    this.startLighting();
     this.createClouds();
   }
 
   private async createLighting (): Promise<void> {
-    this.lighting = new PointLight(Color.BLUE, 10, this.radius, 2.5);
+    this.lighting = new PointLight(Color.BLUE, 10.0, this.radius, 2.0);
     this.lighting.position.set(0.0, this.radius, 0.0);
 
     this.lighting.castShadow = true;
@@ -52,7 +53,7 @@ export default class Clouds
   }
 
   private startLighting (): void {
-    this.interval = setTimeout(this.onShowLighting, 1e3 * (
+    this.timeout = setTimeout(this.onShowLighting, 1e3 * (
       Math.random() * 15 + 15
     )) as unknown as number;
   }
@@ -149,7 +150,7 @@ export default class Clouds
   public set pause (pause: boolean) {
     !(this.paused = pause)
       ? this.startLighting()
-      : clearInterval(this.interval);
+      : clearTimeout(this.timeout);
   }
 
   public get sky (): InstancedMesh {

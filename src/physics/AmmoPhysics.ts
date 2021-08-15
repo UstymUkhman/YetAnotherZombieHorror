@@ -125,7 +125,7 @@ export default class AmmoPhysics extends PhysicsWorld
     });
   }
 
-  public destroy (): void {
+  public dispose (): void {
     this.world.__destroy__();
     this.colliders.clear();
     this.paused = true;

@@ -10,6 +10,7 @@ import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
 import type { RainParticles } from '@/managers/worker/types';
 
+import type { Coords } from '@/environment/LevelScene';
 import { CameraObject } from '@/managers/GameCamera';
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
@@ -24,7 +25,6 @@ import fragRain from '@/shaders/rain/main.frag';
 import type Worker from '@/managers/worker';
 import Settings from '@/config/settings';
 
-import type { Coords } from '@/types';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
 import { Config } from '@/config';
@@ -48,7 +48,7 @@ export default class Rain
     this.createRenderTargets();
     this.createParticles();
 
-    if (Config.workerRain /* or running in main thread */) {
+    if (!Config.worker || Config.workerRain) {
       this.createWorkerLoop();
     }
   }
@@ -149,7 +149,7 @@ export default class Rain
   public update (delta: number): void {
     this.delta = delta;
 
-    if (!Config.workerRain /* and not running in main thread */) {
+    if (Config.worker && !Config.workerRain) {
       this.updateParticles();
     }
 

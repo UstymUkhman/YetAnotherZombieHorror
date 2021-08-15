@@ -1,6 +1,7 @@
-import type { SoundsConfig, SoundConfig, WeaponSounds, WeaponSound } from '@/weapons/types';
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+import type { CharacterSoundsConfig, CharacterSoundConfig, CharacterSounds, CharacterSound } from '@/characters/types';
+import type { WeaponSoundsConfig, WeaponSoundConfig, WeaponSounds, WeaponSound } from '@/weapons/types';
 
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AudioListener } from 'three/src/audio/AudioListener';
@@ -20,8 +21,12 @@ import anime from 'animejs';
 
 export default class AudioScene
 {
+  private readonly characterSounds: CharacterSounds = new Map();
   private readonly weaponSounds: WeaponSounds = new Map();
+
+  private readonly onCharacter = this.playCharacter.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
+
   private readonly onWeapon = this.playWeapon.bind(this);
   private readonly onUpdate = this.update.bind(this);
 
@@ -33,6 +38,7 @@ export default class AudioScene
   private readonly listener = new AudioListener();
   private readonly renderer = new WebGLRenderer();
 
+  private readonly character = new Object3D();
   private readonly thunder = new Object3D();
   private readonly weapon = new Object3D();
   private readonly scene = new Scene();
@@ -42,8 +48,11 @@ export default class AudioScene
 
   public constructor () {
     this.camera.matrixAutoUpdate = false;
-    this.scene.autoUpdate = false;
     this.camera.add(this.listener);
+    this.scene.autoUpdate = false;
+
+    this.createCharacterSounds(Config.Player.sounds);
+    this.createCharacterSounds(Config.Enemy.sounds);
 
     this.createWeaponSounds(Config.Pistol.sounds);
     this.createWeaponSounds(Config.Rifle.sounds);
@@ -59,7 +68,22 @@ export default class AudioScene
     ));
   }
 
-  private async createWeaponSounds (sfx: SoundsConfig): Promise<void> {
+  private async createCharacterSounds (sfx: CharacterSoundsConfig): Promise<void> {
+    const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
+    const sounds = await this.loadSounds(Object.values(sfx));
+
+    sounds.forEach((sound, s) => {
+      const audio = new PositionalAudio(this.listener);
+
+      audio.setBuffer(sound);
+      audio.setVolume(10.0);
+
+      this.characterSounds.set(names[s], audio);
+      this.character.add(audio);
+    });
+  }
+
+  private async createWeaponSounds (sfx: WeaponSoundsConfig): Promise<void> {
     const names = Object.keys(sfx) as unknown as Array<WeaponSound>;
     const sounds = await this.loadSounds(Object.values(sfx));
 
@@ -98,6 +122,7 @@ export default class AudioScene
   }
 
   private addEventListeners (): void {
+    GameEvents.add('SFX:Character', this.onCharacter, true);
     GameEvents.add('SFX:Thunder', this.onThunder, true);
     GameEvents.add('SFX:Weapon', this.onWeapon, true);
     this.raf = requestAnimationFrame(this.onUpdate);
@@ -130,9 +155,18 @@ export default class AudioScene
     }), duration - 500);
   }
 
+  private playCharacter (config: unknown): void {
+    const { matrix, sfx } = config as CharacterSoundConfig;
+    const sound = this.characterSounds.get(sfx) as PositionalAudio;
+
+    this.character.matrixWorld.copy(matrix);
+    this.character.updateMatrixWorld();
+    !sound.isPlaying && sound.play();
+  }
+
   private playWeapon (config: unknown): void {
-    const { matrix, sfx, play } = config as SoundConfig;
-    const sound = this.weaponSounds.get(sfx);
+    const { matrix, sfx, play } = config as WeaponSoundConfig;
+    const sound = this.weaponSounds.get(sfx) as PositionalAudio;
 
     this.weapon.matrixWorld.copy(matrix);
     this.weapon.updateMatrixWorld();
@@ -186,12 +220,14 @@ export default class AudioScene
 
   public dispose (): void {
     cancelAnimationFrame(this.raf);
-    GameEvents.remove('SFX:Weapon', true);
-    GameEvents.remove('SFX:Thunder', true);
 
     while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);
     }
+
+    GameEvents.remove('SFX:Character', true);
+    GameEvents.remove('SFX:Thunder', true);
+    GameEvents.remove('SFX:Weapon', true);
 
     this.renderer.dispose();
   }

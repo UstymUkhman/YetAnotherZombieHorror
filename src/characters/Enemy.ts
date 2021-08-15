@@ -3,9 +3,10 @@ import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 
+import type { EnemyAnimations } from '@/characters/types';
+import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Assets } from '@/loaders/AssetsLoader';
-import type { EnemyAnimations } from '@/types';
 
 import Character from '@/characters/Character';
 import { LoopOnce } from 'three/src/constants';
@@ -21,19 +22,25 @@ export default class Enemy extends Character
 
   private hitBoxes: Array<Object3D> = [];
   private character!: Assets.GLTF;
+
   private head?: Object3D;
   private id: number;
 
-  public constructor (id = 0, model?: Assets.GLTFModel) {
+  public constructor (model?: Assets.GLTFModel, envMap?: Texture, id = 0) {
     super(Config.Enemy);
     this.id = id;
 
-    if (model !== undefined) {
+    if (model && envMap) {
       this.character = SkeletonUtils.clone(model.scene) as Assets.GLTF;
-      this.setCharacterMaterial(this.character, 0);
+      this.setCharacterMaterial(this.character, envMap, 0.0);
+
       this.createAnimations(model);
       this.setDefaultState();
     }
+  }
+
+  public async loadCharacter (envMap: Texture): Promise<Assets.GLTFModel> {
+    return this.load(envMap);
   }
 
   private setDefaultState (): void {

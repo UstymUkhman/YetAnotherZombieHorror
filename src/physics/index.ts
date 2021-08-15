@@ -3,8 +3,8 @@ import type { BoundsOptions } from '@/physics/types';
 import type { Mesh } from 'three/src/objects/Mesh';
 import PhysicsWorld from '@/physics/PhysicsWorld';
 
+import type { Coords } from '@/physics/types';
 import Settings from '@/config/settings';
-import type { Coords } from '@/types';
 
 class Physics extends PhysicsWorld
 {
@@ -68,8 +68,8 @@ class Physics extends PhysicsWorld
     (this.physics as PhysicsWorld).pause = pause;
   }
 
-  public destroy (): void {
-    (this.physics as PhysicsWorld).destroy();
+  public dispose (): void {
+    (this.physics as PhysicsWorld).dispose();
   }
 
   public stop (): void {

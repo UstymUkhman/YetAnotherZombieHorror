@@ -1,15 +1,15 @@
-import type { CharacterConfig, CharacterAnimation, CharacterMove, CharacterSounds /* , CharacterSound */ } from '@/types';
-import type { AnimationAction } from 'three/src/animation/AnimationAction';
-import type { Object3D } from 'three/src/core/Object3D';
-
+import type { CharacterConfig, CharacterAnimation, CharacterMove } from '@/characters/types';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
-// import { PositionalAudio } from 'three/src/audio/PositionalAudio';
-import { FrontSide, DoubleSide } from 'three/src/constants';
 
-// import { CameraListener } from '@/managers/GameCamera';
+import { FrontSide, DoubleSide } from 'three/src/constants';
+import type { Texture } from 'three/src/textures/Texture';
+import type { Object3D } from 'three/src/core/Object3D';
 import { DynamicCollider } from '@/utils/Material';
+
+import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -22,7 +22,6 @@ import Physics from '@/physics';
 export default class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
-  private readonly sounds: CharacterSounds = new Map();
   private step: CharacterMove = this.config.moves.Idle;
 
   protected readonly direction = new Vector3();
@@ -56,7 +55,27 @@ export default class Character
     };
   }
 
-  protected setCharacterMaterial (character: Assets.GLTF, opacity = 1): void {
+  protected async load (envMap: Texture): Promise<Assets.GLTFModel> {
+    const character = await Assets.Loader.loadGLTF(this.config.model);
+    character.scene.position.set(0.0, this.config.collider.z, 0.0);
+
+    this.object.position.copy(this.config.position as Vector3);
+    this.object.scale.copy(this.config.scale as Vector3);
+    this.object.rotation.toVector3(this.rotation);
+
+    this.setCharacterMaterial(character.scene, envMap);
+    this.position.copy(this.object.position);
+    this.object.add(character.scene);
+
+    if (character.animations) {
+      this.createAnimations(character);
+    }
+
+    this.model = character.scene;
+    return character;
+  }
+
+  protected setCharacterMaterial (character: Assets.GLTF, envMap: Texture, opacity = 1): void {
     const side = opacity ? DoubleSide : FrontSide;
 
     character.traverse(child => {
@@ -70,6 +89,7 @@ export default class Character
           map: material.map,
           transparent: true,
           opacity,
+          envMap,
           side
         });
       }
@@ -140,47 +160,18 @@ export default class Character
   }
 
   protected death (): void {
-    this.sounds.get('death')?.play();
+    GameEvents.dispatch('SFX:Character', {
+      matrix: this.object.matrixWorld,
+      sfx: 'death'
+    }, true);
+
     this.hitting = false;
     this.running = false;
     this.moving = false;
+
     this.still = false;
     this.dead = true;
   }
-
-  public async load (): Promise<Assets.GLTFModel> {
-    const character = await Assets.Loader.loadGLTF(this.config.model);
-    character.scene.position.set(0, this.config.collider.z, 0);
-
-    this.object.position.copy(this.config.position as Vector3);
-    this.object.scale.copy(this.config.scale as Vector3);
-    this.object.rotation.toVector3(this.rotation);
-
-    this.setCharacterMaterial(character.scene);
-    this.position.copy(this.object.position);
-    this.object.add(character.scene);
-
-    if (character.animations) {
-      this.createAnimations(character);
-    }
-
-    this.model = character.scene;
-    return character;
-  }
-
-  // public addSounds (sounds: Array<AudioBuffer>): void {
-  //   const sfx = Object.keys(this.config.sounds) as unknown as Array<CharacterSound>;
-
-  //   sounds.forEach((sound, s) => {
-  //     const audio = new PositionalAudio(CameraListener);
-
-  //     this.sounds.set(sfx[s], audio);
-  //     this.object.add(audio);
-
-  //     audio.setBuffer(sound);
-  //     audio.setVolume(10);
-  //   });
-  // }
 
   public teleport (position: Vector3): void {
     Physics.pause = true;
