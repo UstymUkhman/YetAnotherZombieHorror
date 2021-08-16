@@ -1,10 +1,18 @@
-<main id="game">
-  <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
-  <canvas width={`${width}px`} height={`${height}px`} bind:this={raindrops}></canvas>
+<main>
+  {#if app?.pause}
+    <Pause on:start={() => app.pause = !app.pause} />
+  {/if}
+
+  <div id="game">
+    <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
+    <canvas width={`${width}px`} height={`${height}px`} bind:this={raindrops}></canvas>
+  </div>
 </main>
 
 <script lang="ts">
+  import Pause from '@components/Pause.svelte';
   import { onMount, onDestroy } from 'svelte';
+
   import Application from '@/Application';
   import Viewport from '@/utils/Viewport';
 
@@ -81,8 +89,20 @@ h3 {
   font-size: 3vw;
 }
 
-main,
-main > canvas {
+main {
+  position: absolute;
+  overflow: hidden;
+  display: block;
+
+  height: 100%;
+  width: 100%;
+
+  padding: 0;
+  margin: 0;
+}
+
+div#game,
+div#game > canvas {
   transform: translate(-50%, -50%);
   aspect-ratio: var(--ratio);
 
@@ -100,7 +120,7 @@ main > canvas {
   top: 50%;
 }
 
-main > canvas:nth-child(2) {
+div#game > canvas:nth-child(2) {
   pointer-events: none;
 }
 </style>

@@ -10,14 +10,15 @@ import Viewport from '@/utils/Viewport';
 
 export default class Application
 {
-  // private paused = true;
+  private paused = true;
+  private started = false;
   private raindrops?: Raindrops;
 
   private readonly audioScene: AudioScene;
   private readonly worker = new WebWorker();
   private readonly offscreen: OffscreenCanvas;
 
-  private readonly onPause = this.pause.bind(this);
+  // private readonly onPause = this.pause.bind(this);
   private readonly onResize = this.resize.bind(this);
 
   public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
@@ -41,7 +42,7 @@ export default class Application
   }
 
   private addEventListeners (): void {
-    GameEvents.add('Game::Pause', this.onPause);
+    GameEvents.add('Game::Pause', () => this.pause = true);
     Viewport.addResizeCallback(this.onResize);
   }
 
@@ -49,22 +50,33 @@ export default class Application
     this.offscreen.resize(width, height);
   }
 
-  // public start (): void {
-  //   this.audioScene.playAmbient();
-  // }
-
-  private pause (paused: unknown): void {
-    this.audioScene.pause = paused as boolean;
-    // this.paused = paused as boolean;
-
-    if (this.raindrops) {
-      this.raindrops.pause = paused as boolean;
-    }
+  private start (): void {
+    this.audioScene.playAmbient();
+    this.started = true;
   }
 
   public destroy (): void {
-    Viewport.removeResizeCallback(this.onResize);
+    this.pause = true;
     this.raindrops?.dispose();
-    // this.paused = true;
+
+    GameEvents.remove('Game::Pause');
+    Viewport.removeResizeCallback(this.onResize);
+  }
+
+  public set pause (paused: boolean) {
+    if (this.raindrops) {
+      this.raindrops.pause = paused;
+    }
+
+    if (!this.started && !paused) {
+      this.start();
+    }
+
+    this.audioScene.pause = paused;
+    this.paused = paused;
+  }
+
+  public get pause (): boolean {
+    return this.paused;
   }
 }

@@ -116,9 +116,9 @@ export default class AudioScene
 
     this.ambient.setBuffer(ambient);
     this.ambient.autoplay = false;
+
+    this.ambient.setVolume(0.25);
     this.ambient.setLoop(true);
-    this.ambient.setVolume(0);
-    this.playAmbient();
   }
 
   private addEventListeners (): void {
@@ -179,7 +179,7 @@ export default class AudioScene
   public playAmbient (): void {
     this.ambient.play();
 
-    anime({
+    /* anime({
       targets: { volume: this.ambient.getVolume() },
       update: ({ animations }) => this.ambient.setVolume(
         +animations[0].currentValue
@@ -188,7 +188,7 @@ export default class AudioScene
       easing: 'linear',
       duration: 1000,
       volume: 0.25
-    });
+    }); */
   }
 
   private update (): void {

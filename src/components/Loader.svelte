@@ -43,16 +43,16 @@
 
     if (assets.size === ++loaded) {
       setTimeout(() => dispatch('loaded'), 1000);
-      GameEvents.remove('Loading::Progress');
       GameEvents.remove('Loading::Start');
-      GameEvents.remove('Loading::End');
+      GameEvents.remove('Loading::Progress');
+      GameEvents.remove('Loading::Complete');
       progress = 1;
     }
   }
 
-  GameEvents.add('Loading::Progress', onProgress);
   GameEvents.add('Loading::Start', onStart);
-  GameEvents.add('Loading::End', onLoad);
+  GameEvents.add('Loading::Progress', onProgress);
+  GameEvents.add('Loading::Complete', onLoad);
 </script>
 
 <style lang="scss">
