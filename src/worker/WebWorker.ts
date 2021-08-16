@@ -1,10 +1,10 @@
-import type { EventData, EventParams, Callback } from '@/managers/worker/types';
-import WebWorker from '@/managers/worker/worker?worker';
+import type { EventData, EventParams, Callback } from '@/worker/types';
+import WorkerManager from '@/worker/WorkerManager?worker';
 
-export default class Worker
+export default class WebWorker
 {
   private events: Map<string, EventData> = new Map();
-  private worker = new WebWorker();
+  private worker = new WorkerManager();
 
   public constructor () {
     this.worker.onmessage = this.onMessage.bind(this);
@@ -16,7 +16,7 @@ export default class Worker
   }
 
   public transfer (element: Transferable, params?: EventParams): void {
-    this.worker.postMessage({ event: 'transfer',
+    this.worker.postMessage({ event: 'Offscreen::Transfer',
       params: { element, ...params }
     }, [element]);
   }

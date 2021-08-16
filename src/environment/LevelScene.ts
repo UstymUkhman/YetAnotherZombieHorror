@@ -10,8 +10,8 @@ import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
 
 import type { Object3D } from 'three/src/core/Object3D';
-import { CameraObject } from '@/managers/GameCamera';
 import type { Mesh } from 'three/src/objects/Mesh';
+import { CameraObject } from '@/managers/Camera';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
@@ -61,8 +61,8 @@ export default class LevelScene
     this.createRenderer(pixelRatio);
 
     this.pmrem = new PMREMGenerator(this.renderer);
-    GameEvents.add('Add:object', this.addObject.bind(this));
-    GameEvents.add('Remove:object', this.removeObject.bind(this));
+    GameEvents.add('Level::AddModel', this.addModel.bind(this));
+    GameEvents.add('Level::RemoveModel', this.removeModel.bind(this));
   }
 
   private createColliders (): void {
@@ -118,7 +118,7 @@ export default class LevelScene
     });
 
     const envMap = this.getSceneEnvMap().clone();
-    GameEvents.dispatch('Scene:envMap', envMap);
+    GameEvents.dispatch('Level::EnvMap', envMap);
   }
 
   private async loadLevel (file: string): Promise<Assets.GLTF> {
@@ -183,12 +183,12 @@ export default class LevelScene
     this.renderer.shadowMap.enabled = true;
   }
 
-  private removeObject (event: GameEvent): void {
+  public removeModel (event: GameEvent): void {
     const model = event.data as Object3D;
     this.scene.remove(model);
   }
 
-  private addObject (event: GameEvent): void {
+  private addModel (event: GameEvent): void {
     const model = event.data as Object3D;
     this.scene.add(model);
   }
@@ -217,8 +217,8 @@ export default class LevelScene
   }
 
   public dispose (): void {
-    GameEvents.remove('Add:object');
-    GameEvents.remove('Remove:object');
+    GameEvents.remove('Level::AddModel');
+    GameEvents.remove('Level::RemoveModel');
 
     while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);

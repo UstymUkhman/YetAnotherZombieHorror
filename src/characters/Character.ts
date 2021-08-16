@@ -160,7 +160,7 @@ export default class Character
   }
 
   protected death (): void {
-    GameEvents.dispatch('SFX:Character', {
+    GameEvents.dispatch('SFX::Character', {
       matrix: this.object.matrixWorld,
       sfx: 'death'
     }, true);

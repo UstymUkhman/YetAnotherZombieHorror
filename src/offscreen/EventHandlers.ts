@@ -1,4 +1,6 @@
-const copyEventProps = (event: Event, props: Array<string>, data: EventData): void => {
+import type { Event } from 'three/src/core/EventDispatcher';
+
+const copyEventProps = (event: Event, props: Array<string>, data: Event): void => {
   for (const prop of props) {
     const name = prop as keyof Event;
     data[name] = event[name];
@@ -7,25 +9,24 @@ const copyEventProps = (event: Event, props: Array<string>, data: EventData): vo
 
 const eventPropsHandler = (props: Array<string>): EventHandler =>
   (event: Event, callback: EventCallback) => {
-    const data: EventData = { type: event.type };
+    const data: Event = { type: event.type };
 
     copyEventProps(event, props, data);
     callback(data);
   };
 
-/* export const stopPropagation = (event: Event): void =>
-  event.stopPropagation(); */
-
-export const preventDefault = (event: Event): void =>
+export const prevent = (event: Event): void =>
   event.preventDefault();
+
+/* export const stop = (event: Event): void =>
+  event.stopPropagation(); */
 
 // Mouse Events:
 
-type EventData = Record<string, unknown>;
-export type EventCallback = (data: EventData) => void;
+export type EventCallback = (data: Event) => void;
 type EventHandler = (event: Event, callback: EventCallback) => void;
 
-export const onMouseEvent = eventPropsHandler([
+export const mouseEvent = eventPropsHandler([
   'button' // , 'pointerType', 'pointerId',
   // 'ctrlKey', 'metaKey', 'shiftKey',
   // 'clientX', 'clientY',
@@ -34,18 +35,18 @@ export const onMouseEvent = eventPropsHandler([
 
 // Wheel Events:
 
-const wheelEvent = eventPropsHandler([
+const onWheelEvent = eventPropsHandler([
   'deltaX', 'deltaY'
 ]);
 
-export function onWheelEvent (event: Event, callback: EventCallback): void {
+export function wheelEvent (event: Event, callback: EventCallback): void {
   event.preventDefault();
-  wheelEvent(event, callback);
+  onWheelEvent(event, callback);
 }
 
 // Keyboard Events:
 
-const keyboardEvent = eventPropsHandler([
+const onKeyboardEvent = eventPropsHandler([
   'code' //, 'ctrlKey', 'metaKey', 'shiftKey', 'keyCode'
 ]);
 
@@ -59,18 +60,18 @@ const keys: ActiveKeys = Object.freeze({
   // 'ArrowDown' : true
 });
 
-export function onKeyboardEvent (event: Event, callback: EventCallback): void {
+export function keyboardEvent (event: Event, callback: EventCallback): void {
   if (!keys[(event as KeyboardEvent).code]) return;
 
   event.preventDefault();
-  keyboardEvent(event, callback);
+  onKeyboardEvent(event, callback);
 }
 
 // Touch Events:
 
 type Touches = Array<Record<'pageX' | 'pageY', number>>;
 
-export function onTouchEvent (event: Event, callback: EventCallback): void {
+export function touchEvent (event: Event, callback: EventCallback): void {
   const eventTouches = (event as TouchEvent).touches;
   const touches: Touches = [];
 

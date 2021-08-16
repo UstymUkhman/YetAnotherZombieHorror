@@ -64,8 +64,8 @@ export default class AmmoPhysics extends PhysicsWorld
     body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
 
     this.colliders.set(mesh.uuid, { mesh, body });
+    GameEvents.dispatch('Level::AddModel', mesh);
     this.world.addRigidBody(body, 128, 0xFFFF);
-    GameEvents.dispatch('Add:object', mesh);
   }
 
   protected addStaticCollider (collider: Mesh): void {

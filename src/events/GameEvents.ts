@@ -1,15 +1,15 @@
-import type { Callback } from '@/managers/worker/types';
+import { CustomEvents } from '@/events/CustomEvents';
 import WorkerEvents from '@/events/WorkerEvents';
 
-import { CustomEvents } from '@/events/CustomEvents';
-import type Worker from '@/managers/worker';
+import type WebWorker from '@/worker/WebWorker';
+import type { Callback } from '@/worker/types';
 import { Config } from '@/config';
 
 class Events extends CustomEvents
 {
   private workerEvents?: WorkerEvents;
 
-  public createWorkerEvents (worker: Worker): void {
+  public createWorkerEvents (worker: WebWorker): void {
     this.workerEvents = new WorkerEvents(worker);
   }
 

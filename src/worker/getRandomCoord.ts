@@ -1,4 +1,4 @@
-import type { LevelParams, LevelCoords } from '@/managers/worker/types';
+import type { LevelParams, LevelCoords } from '@/worker/types';
 import { cloneBounds, min, max } from '@/utils/Array';
 import { random } from '@/utils/Number';
 

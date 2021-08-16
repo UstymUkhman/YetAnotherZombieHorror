@@ -11,11 +11,11 @@ import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 
-import Camera from '@/managers/GameCamera';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
 import { Vector } from '@/utils/Vector';
+import Camera from '@/managers/Camera';
 import { Config } from '@/config';
 
 export default class Player extends Character
@@ -62,7 +62,7 @@ export default class Player extends Character
     this.animations.death.setLoop(LoopOnce, 1);
 
     !Config.freeCamera && Camera.setTo(character.scene);
-    GameEvents.dispatch('Add:object', this.object);
+    GameEvents.dispatch('Level::AddModel', this.object);
     this.currentAnimation.play();
   }
 
@@ -92,7 +92,7 @@ export default class Player extends Character
       this.lastAnimation.replace('pistol', 'rifle') :
       this.lastAnimation.replace('rifle', 'pistol');
 
-    GameEvents.dispatch('Weapon:change', rifle);
+    GameEvents.dispatch('Weapon::Change', rifle);
     this.hand?.remove(this.weapon?.model);
 
     if (!rifle && !this.animations[animation]) {
@@ -135,8 +135,8 @@ export default class Player extends Character
     if (now - this.idleTime < 350) return;
     const idle = this.getWeaponAnimation('Idle');
 
-    GameEvents.dispatch('Player:aim', false);
-    GameEvents.dispatch('Player:run', false);
+    GameEvents.dispatch('Player::Aim', false);
+    GameEvents.dispatch('Player::Run', false);
     Camera.runAnimation(false);
 
     this.running = this.moving = false;
@@ -160,8 +160,8 @@ export default class Player extends Character
     if (this.lastAnimation === animation) return;
     this.updateAnimation(direction, animation);
 
-    GameEvents.dispatch('Player:run', false);
-    GameEvents.dispatch('Player:aim', true);
+    GameEvents.dispatch('Player::Run', false);
+    GameEvents.dispatch('Player::Aim', true);
     Camera.runAnimation(false);
 
     this.running = false;
@@ -184,7 +184,7 @@ export default class Player extends Character
     }
 
     if (directions[Direction.UP]) {
-      GameEvents.dispatch('Player:run', true);
+      GameEvents.dispatch('Player::Run', true);
       this.updateAnimation('Run', run);
       Camera.runAnimation(true);
 
@@ -196,7 +196,7 @@ export default class Player extends Character
   public startAiming (): void {
     if (this.blockingAnimation()) return;
 
-    GameEvents.dispatch('Player:run', false);
+    GameEvents.dispatch('Player::Run', false);
     this.weapon.aim = this.aiming = true;
 
     Camera.runAnimation(false);
@@ -215,7 +215,7 @@ export default class Player extends Character
     }
 
     Camera.isFPS && setTimeout(() =>
-      GameEvents.dispatch('Player:aim', true)
+      GameEvents.dispatch('Player::Aim', true)
     , 300 + +this.equipRifle * 300);
 
     !this.equipRifle && setTimeout(() => {
@@ -229,7 +229,7 @@ export default class Player extends Character
     Camera.aimAnimation(false, this.equipRifle, duration);
     Camera.updateNearPlane(false, this.equipRifle);
 
-    GameEvents.dispatch('Player:aim', false);
+    GameEvents.dispatch('Player::Aim', false);
     this.weapon.aim = this.aiming = false;
     this.currentAnimation.paused = false;
 
@@ -262,7 +262,7 @@ export default class Player extends Character
     if (this.weapon.full || !this.weapon.inStock) return;
 
     this.updateAnimation('Idle', 'rifleReload');
-    GameEvents.dispatch('Player:run', false);
+    GameEvents.dispatch('Player::Run', false);
 
     Camera.setNearPlane(0.15, 400);
     this.weapon.startReloading();
@@ -288,7 +288,7 @@ export default class Player extends Character
 
   public die (): void {
     this.updateAnimation('Idle', 'death', 0.5);
-    GameEvents.dispatch('Player:death');
+    GameEvents.dispatch('Player::Death');
     clearTimeout(this.reloadTimeout);
 
     this.weapon.stopReloading();
@@ -342,7 +342,7 @@ export default class Player extends Character
       !Camera.isFPS && this.resetRotation();
 
       setTimeout(() =>
-        GameEvents.dispatch('Player:aim', aiming)
+        GameEvents.dispatch('Player::Aim', aiming)
       , +aiming * 300);
     }
   }

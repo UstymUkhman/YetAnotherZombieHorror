@@ -15,7 +15,8 @@
 
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
-  import { GameEvents, GameEvent } from '@/managers/GameEvents';
+  import type { Coords, Bounds } from '@/environment/LevelScene';
+  import { GameEvents, GameEvent } from '@/events/GameEvents';
   import type { Vector3 } from 'three/src/math/Vector3';
   import MapRifle from '@components/MapRifle.svelte';
 
@@ -24,7 +25,6 @@
 
   import { createEventDispatcher } from 'svelte';
   import Player from '@components/Player.svelte';
-  import type { Coords, Bounds } from '@/types';
   import { onMount, onDestroy } from 'svelte';
 
   const minCoords = LevelScene.minCoords.map(
@@ -116,14 +116,14 @@
     });
   }
 
-  GameEvents.add('rifle:spawn', spawnRifle);
-  GameEvents.add('rifle:pick', pickRifle);
+  GameEvents.add('Rifle::Spawn', spawnRifle);
+  GameEvents.add('Rifle::Pick', pickRifle);
 
   onMount(drawBounds);
 
   onDestroy(() => {
-    GameEvents.remove('rifle:spawn');
-    GameEvents.remove('rifle:pick');
+    GameEvents.remove('Rifle::Spawn');
+    GameEvents.remove('Rifle::Pick');
   });
 
   $: (position => {

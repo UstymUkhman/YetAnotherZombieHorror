@@ -1,30 +1,28 @@
 import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthStencilFormat, GLSL3 } from 'three/src/constants';
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
-
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { updateRainParticles } from '@/managers/worker/rainParticles';
-import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
+import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
+import { updateRainParticles } from '@/worker/updateRainParticles';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
-import type { RainParticles } from '@/managers/worker/types';
 
 import type { Coords } from '@/environment/LevelScene';
-import { CameraObject } from '@/managers/GameCamera';
+import type { RainParticles } from '@/worker/types';
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
-
 import LevelScene from '@/environment/LevelScene';
+
+import { CameraObject } from '@/managers/Camera';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
+import type WebWorker from '@/worker/WebWorker';
 
 import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
 
-import type Worker from '@/managers/worker';
 import Settings from '@/config/settings';
-
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
 import { Config } from '@/config';
@@ -40,7 +38,7 @@ export default class Rain
   private renderTargets?: Array<WebGLRenderTarget>;
 
   private material!: ShaderMaterial;
-  private worker?: Worker;
+  private worker?: WebWorker;
   private drops!: Points;
   private delta = 0.0;
 
@@ -129,17 +127,17 @@ export default class Rain
   }
 
   private createWorkerLoop (): void {
-    import('@/managers/worker').then(Worker => {
-      this.worker = new Worker.default();
+    import('@/worker/WebWorker').then(WebWorker => {
+      this.worker = new WebWorker.default();
 
-      this.worker.add('Rain:particles', data =>
+      this.worker.add('Rain::UpdateParticles', data =>
         this.updateParticleGeometry(data as RainParticles), {
           minCoords: this.minCoords,
           maxCoords: this.maxCoords
         }
       );
 
-      this.worker.post('Rain:particles', {
+      this.worker.post('Rain::UpdateParticles', {
         camera: CameraObject.position,
         delta: this.delta
       });
@@ -188,7 +186,7 @@ export default class Rain
     this.geometry.attributes.position.needsUpdate = true;
     this.geometry.attributes.alpha.needsUpdate = true;
 
-    this.worker?.post('Rain:particles', {
+    this.worker?.post('Rain::UpdateParticles', {
       camera: CameraObject.position,
       delta: this.delta
     });
@@ -206,13 +204,14 @@ export default class Rain
   }
 
   public dispose (): void {
+    this.worker?.remove('Rain::UpdateParticles');
+
     this.renderTargets?.forEach(renderTarget => {
       renderTarget.depthTexture.dispose();
       renderTarget.texture.dispose();
       renderTarget.dispose();
     });
 
-    this.worker?.remove('Rain:particles');
     this.scene.remove(this.drops);
     this.geometry.dispose();
 

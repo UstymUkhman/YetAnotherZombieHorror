@@ -1,11 +1,12 @@
 import type { Texture } from 'three/src/textures/Texture';
+import type { Coords } from '@/environment/LevelScene';
+
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
-import type { Coords } from '@/types';
 import Weapon from '@/weapons/Weapon';
 import { Config } from '@/config';
 
@@ -50,7 +51,7 @@ export default class Rifle extends Weapon
       setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;
 
-      GameEvents.dispatch('Weapon:reload', {
+      GameEvents.dispatch('Weapon::Reload', {
         loaded: this.loadedAmmo,
         inStock: this.inStock,
         ammo: this.totalAmmo
@@ -71,8 +72,7 @@ export default class Rifle extends Weapon
     const playerDistance = this.clone.position.distanceTo(player);
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
-      GameEvents.dispatch('Weapon:pick', this.clone);
-      GameEvents.dispatch('Rifle:pick');
+      GameEvents.dispatch('Rifle::Pick', this.clone);
       this.spawned = false;
     }
   }
@@ -85,8 +85,8 @@ export default class Rifle extends Weapon
     this.clone.scale.copy(worldScale);
     this.clone.rotation.set(0, 0, 0);
 
-    GameEvents.dispatch('Add:object', this.clone);
-    GameEvents.dispatch('Rifle:spawn', coords);
+    GameEvents.dispatch('Level::AddModel', this.clone);
+    GameEvents.dispatch('Rifle::Spawn', coords);
 
     this.spawned = true;
   }

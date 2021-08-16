@@ -1,4 +1,4 @@
-import type { RainParticles, RainParticle, RainParams } from '@/managers/worker/types';
+import type { RainParticles, RainParticle, RainParams } from '@/worker/types';
 import { Vector3 } from 'three/src/math/Vector3';
 
 import Clouds from '@/environment/Clouds';

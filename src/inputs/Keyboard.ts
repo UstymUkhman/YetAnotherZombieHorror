@@ -1,22 +1,27 @@
+import type { Event } from 'three/src/core/EventDispatcher';
+import EventsTarget from '@/offscreen/EventsTarget';
+
 import { Directions, Direction } from '@/inputs';
-import { GameEvents } from '@/events/GameEvents';
 import type Player from '@/characters/Player';
+import { Config } from '@/config';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
 
 export default class Keyboard
 {
-  private readonly pointerLockChange = this.onPointerLockChange.bind(this);
-  private readonly pointerLockError = this.onPointerLockError.bind(this);
+  private readonly events = Object.entries({
+    // pointerlockchange: this.onPointerLockChange.bind(this),
+    // pointerlockerror: this.onPointerLockError.bind(this),
+    contextmenu: this.onContextMenu.bind(this),
 
-  private readonly contextMenu = this.onContextMenu.bind(this);
-  private readonly mouseDown = this.onMouseDown.bind(this);
-  private readonly mouseMove = this.onMouseMove.bind(this);
-  private readonly mouseUp = this.onMouseUp.bind(this);
+    mousedown: this.onMouseDown.bind(this),
+    mousemove: this.onMouseMove.bind(this),
+    mouseup: this.onMouseUp.bind(this),
 
-  private readonly keyDown = this.onKeyDown.bind(this);
-  private readonly keyUp = this.onKeyUp.bind(this);
+    keydown: this.onKeyDown.bind(this),
+    keyup: this.onKeyUp.bind(this)
+  });
 
   private moves: Directions = [0, 0, 0, 0];
 
@@ -28,10 +33,39 @@ export default class Keyboard
   private move = IDLING;
 
   public constructor (private readonly player: Player) {
-    this.addEvents();
+    this.addEventListeners();
   }
 
-  private onMouseDown (event: MouseEvent): void {
+  private addEventListeners (): void {
+    const target = Config.worker ? EventsTarget : document;
+
+    for (const [event, listener] of this.events) {
+      target.addEventListener(event, listener, false);
+    }
+  }
+
+  /* private onPointerLockChange (event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.paused = !this.pointerLocked;
+    GameEvents.dispatch('Game::Pause', this.paused);
+  } */
+
+  /* private onPointerLockError (event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    console.error(event);
+  } */
+
+  private onContextMenu (event: Event): boolean | void {
+    if (this.paused) return;
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  }
+
+  private onMouseDown (event: Event | MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -47,7 +81,7 @@ export default class Keyboard
     }
   }
 
-  private onMouseMove (event: MouseEvent): void {
+  private onMouseMove (event: Event | MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -55,7 +89,7 @@ export default class Keyboard
     this.player.rotate(event.movementX / -100, event.movementY / 400, 0.15);
   }
 
-  private onMouseUp (event: MouseEvent): void {
+  private onMouseUp (event: Event | MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -78,7 +112,7 @@ export default class Keyboard
     }
   }
 
-  private onKeyDown (event: KeyboardEvent): void {
+  private onKeyDown (event: Event | KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -117,7 +151,7 @@ export default class Keyboard
     this.move = move;
   }
 
-  private onKeyUp (event: KeyboardEvent): void {
+  private onKeyUp (event: Event | KeyboardEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -180,68 +214,29 @@ export default class Keyboard
     }
   }
 
-  private onPointerLockChange (event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
+  private removeEventListeners (): void {
+    const target = Config.worker ? EventsTarget : document;
 
-    this.paused = !this.pointerLocked;
-    GameEvents.dispatch('Game:pause', this.paused);
+    for (const [event, listener] of this.events) {
+      target.removeEventListener(event, listener, false);
+    }
   }
 
-  private onPointerLockError (event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-    console.error(event);
-  }
-
-  private onContextMenu (event: Event): boolean | void {
-    if (this.paused) return;
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  }
-
-  private addEvents (): void {
-    document.addEventListener('pointerlockchange', this.pointerLockChange, false);
-    document.addEventListener('pointerlockerror', this.pointerLockError, false);
-
-    document.addEventListener('contextmenu', this.contextMenu, false);
-    document.addEventListener('mousedown', this.mouseDown, false);
-    document.addEventListener('mousemove', this.mouseMove, false);
-    document.addEventListener('mouseup', this.mouseUp, false);
-
-    document.addEventListener('keydown', this.keyDown, false);
-    document.addEventListener('keyup', this.keyUp, false);
-  }
-
-  private removeEvents (): void {
-    document.removeEventListener('pointerlockchange', this.pointerLockChange, false);
-    document.removeEventListener('pointerlockerror', this.pointerLockError, false);
-
-    document.removeEventListener('contextmenu', this.contextMenu, false);
-    document.removeEventListener('mousedown', this.mouseDown, false);
-    document.removeEventListener('mousemove', this.mouseMove, false);
-    document.removeEventListener('mouseup', this.mouseUp, false);
-
-    document.removeEventListener('keydown', this.keyDown, false);
-    document.removeEventListener('keyup', this.keyUp, false);
-  }
-
-  public requestPointerLock (): void {
+  /* public requestPointerLock (): void {
     document.documentElement.requestPointerLock();
-  }
+  } */
 
-  public exitPointerLock (): void {
+  /* public exitPointerLock (): void {
     document.exitPointerLock();
-  }
+  } */
 
   public dispose (): void {
-    this.removeEvents();
+    this.removeEventListeners();
   }
 
-  private get pointerLocked (): boolean {
+  /* private get pointerLocked (): boolean {
     return !!document.pointerLockElement;
-  }
+  } */
 
   private get disabled (): boolean {
     return this.paused || !this.player.alive;

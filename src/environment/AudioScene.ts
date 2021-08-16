@@ -7,10 +7,10 @@ import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AudioListener } from 'three/src/audio/AudioListener';
 
 import type { Vector3 } from 'three/src/math/Vector3';
-import { GameCamera } from '@/managers/GameCamera';
 import { Object3D } from 'three/src/core/Object3D';
-
+import { CameraManager } from '@/managers/Camera';
 import { GameEvents } from '@/events/GameEvents';
+
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Audio } from 'three/src/audio/Audio';
@@ -31,8 +31,8 @@ export default class AudioScene
   private readonly onUpdate = this.update.bind(this);
 
   private readonly camera = new PerspectiveCamera(
-    GameCamera.config.fov, GameCamera.config.aspect,
-    GameCamera.config.near, GameCamera.config.far
+    CameraManager.config.fov, CameraManager.config.aspect,
+    CameraManager.config.near, CameraManager.config.far
   );
 
   private readonly listener = new AudioListener();
@@ -122,9 +122,9 @@ export default class AudioScene
   }
 
   private addEventListeners (): void {
-    GameEvents.add('SFX:Character', this.onCharacter, true);
-    GameEvents.add('SFX:Thunder', this.onThunder, true);
-    GameEvents.add('SFX:Weapon', this.onWeapon, true);
+    GameEvents.add('SFX::Character', this.onCharacter, true);
+    GameEvents.add('SFX::Thunder', this.onThunder, true);
+    GameEvents.add('SFX::Weapon', this.onWeapon, true);
     this.raf = requestAnimationFrame(this.onUpdate);
   }
 
@@ -198,7 +198,7 @@ export default class AudioScene
   }
 
   private updateCameraState (): void {
-    const { fov, aspect, near, far, matrix } = GameCamera.config;
+    const { fov, aspect, near, far, matrix } = CameraManager.config;
 
     this.camera.matrixWorld.copy(matrix);
     this.camera.updateMatrixWorld();
@@ -225,9 +225,9 @@ export default class AudioScene
       this.scene.remove(this.scene.children[0]);
     }
 
-    GameEvents.remove('SFX:Character', true);
-    GameEvents.remove('SFX:Thunder', true);
-    GameEvents.remove('SFX:Weapon', true);
+    GameEvents.remove('SFX::Character', true);
+    GameEvents.remove('SFX::Thunder', true);
+    GameEvents.remove('SFX::Weapon', true);
 
     this.renderer.dispose();
   }

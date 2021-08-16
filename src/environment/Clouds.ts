@@ -69,7 +69,7 @@ export default class Clouds
       this.lighting.position.y / 4.0
     );
 
-    GameEvents.dispatch('SFX:Thunder', this.lighting.position, true);
+    GameEvents.dispatch('SFX::Thunder', this.lighting.position, true);
   }
 
   private hideLighting (): void {

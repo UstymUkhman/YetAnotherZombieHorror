@@ -18,7 +18,7 @@ type CameraState = {
   fov: number
 };
 
-export class GameCamera
+export class CameraManager
 {
   private fps = false;
   private raf!: number;
@@ -59,7 +59,7 @@ export class GameCamera
   public updateState (): void {
     const { aspect, near, far, fov } = this.camera;
 
-    GameCamera.state = {
+    CameraManager.state = {
       matrix: this.camera.matrixWorld,
       aspect, near, far, fov
     };
@@ -207,7 +207,7 @@ export class GameCamera
   }
 
   public static get config (): CameraState {
-    return GameCamera.state;
+    return CameraManager.state;
   }
 
   public get object (): PerspectiveCamera {
@@ -219,7 +219,7 @@ export class GameCamera
   }
 }
 
-const Camera = new GameCamera();
+const Camera = new CameraManager();
 
 export const CameraObject = Camera.object;
 export default Camera;

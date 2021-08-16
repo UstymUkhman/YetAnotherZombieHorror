@@ -89,9 +89,7 @@ main > canvas {
   height: var(--height);
   width: var(--width);
 
-  pointer-events: none;
   position: absolute;
-
   overflow: hidden;
   display: block;
 
@@ -100,5 +98,9 @@ main > canvas {
 
   left: 50%;
   top: 50%;
+}
+
+main > canvas:nth-child(2) {
+  pointer-events: none;
 }
 </style>

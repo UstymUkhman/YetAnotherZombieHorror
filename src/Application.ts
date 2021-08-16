@@ -1,20 +1,21 @@
+import OffscreenCanvas from '@/offscreen/OffscreenCanvas';
 import type Raindrops from '@/environment/Raindrops';
+
 import AudioScene from '@/environment/AudioScene';
 import { GameEvents } from '@/events/GameEvents';
 
-import Offscreen from '@/managers/Offscreen';
+import WebWorker from '@/worker/WebWorker';
 import Settings from '@/config/settings';
 import Viewport from '@/utils/Viewport';
-import Worker from '@/managers/worker';
 
 export default class Application
 {
   // private paused = true;
   private raindrops?: Raindrops;
 
-  private readonly offscreen: Offscreen;
-  private readonly worker = new Worker();
   private readonly audioScene: AudioScene;
+  private readonly worker = new WebWorker();
+  private readonly offscreen: OffscreenCanvas;
 
   private readonly onPause = this.pause.bind(this);
   private readonly onResize = this.resize.bind(this);
@@ -23,7 +24,7 @@ export default class Application
     GameEvents.createWorkerEvents(this.worker);
     this.audioScene = new AudioScene();
 
-    this.offscreen = new Offscreen(
+    this.offscreen = new OffscreenCanvas(
       scene, this.worker, window.devicePixelRatio || 1.0
     );
 
@@ -40,7 +41,7 @@ export default class Application
   }
 
   private addEventListeners (): void {
-    GameEvents.add('Game:pause', this.onPause);
+    GameEvents.add('Game::Pause', this.onPause);
     Viewport.addResizeCallback(this.onResize);
   }
 

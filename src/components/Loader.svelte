@@ -6,7 +6,7 @@
 </div>
 
 <script lang="ts">
-  import { GameEvents, GameEvent } from '@/managers/GameEvents';
+  import { GameEvents, GameEvent } from '@/events/GameEvents';
   import { createEventDispatcher } from 'svelte';
 
   import { fade } from 'svelte/transition';
@@ -43,16 +43,16 @@
 
     if (assets.size === ++loaded) {
       setTimeout(() => dispatch('loaded'), 1000);
-      GameEvents.remove('loading:progress');
-      GameEvents.remove('loading:start');
-      GameEvents.remove('loading:end');
+      GameEvents.remove('Loading::Progress');
+      GameEvents.remove('Loading::Start');
+      GameEvents.remove('Loading::End');
       progress = 1;
     }
   }
 
-  GameEvents.add('loading:progress', onProgress);
-  GameEvents.add('loading:start', onStart);
-  GameEvents.add('loading:end', onLoad);
+  GameEvents.add('Loading::Progress', onProgress);
+  GameEvents.add('Loading::Start', onStart);
+  GameEvents.add('Loading::End', onLoad);
 </script>
 
 <style lang="scss">

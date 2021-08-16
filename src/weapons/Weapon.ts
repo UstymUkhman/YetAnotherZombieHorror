@@ -4,12 +4,11 @@ import type { WeaponConfig, WeaponSound, Recoil } from '@/weapons/types';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
-
-import { CameraObject } from '@/managers/GameCamera';
 import { Raycaster } from 'three/src/core/Raycaster';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
+import { CameraObject } from '@/managers/Camera';
 import { GameEvents } from '@/events/GameEvents';
 
 import { Vector2 } from 'three/src/math/Vector2';
@@ -88,14 +87,14 @@ export default class Weapon
   protected playSound (sfx: WeaponSound, stop: boolean): void {
     stop && this.stopSound(sfx);
 
-    GameEvents.dispatch('SFX:Weapon', {
+    GameEvents.dispatch('SFX::Weapon', {
       matrix: this.model.matrixWorld,
       play: true, sfx
     }, true);
   }
 
   protected stopSound (sfx: WeaponSound): void {
-    GameEvents.dispatch('SFX:Weapon', {
+    GameEvents.dispatch('SFX::Weapon', {
       matrix: this.model.matrixWorld,
       play: false, sfx
     }, true);
@@ -114,7 +113,7 @@ export default class Weapon
 
     else {
       const hitBox = this.targets[target];
-      GameEvents.dispatch('Player:shoot');
+      GameEvents.dispatch('Player::Shoot');
 
       this.playSound('shoot', true);
       this.loadedAmmo--;

@@ -1,6 +1,6 @@
 import LevelScene from '@/environment/LevelScene';
 import { Vector3 } from 'three/src/math/Vector3';
-import { getRandomCoord } from '@/managers/worker/randomCoords';
+import { getRandomCoord } from '@/managers/worker/getRandomCoordrd';
 
 describe('randomCoords', () => {
   test('getRandomCoord', () => {

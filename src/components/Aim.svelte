@@ -3,7 +3,7 @@
 </div>
 
 <script lang="ts">
-  import { GameEvents } from '@/managers/GameEvents';
+  import { GameEvents } from '@/events/GameEvents';
   import { onMount, onDestroy } from 'svelte';
 
   export let hide: boolean;
@@ -17,11 +17,11 @@
   }
 
   onMount(() => {
-    GameEvents.add('player:shoot', onShoot);
+    GameEvents.add('Player::Shoot', onShoot);
   });
 
   onDestroy(() => {
-    GameEvents.remove('player:shoot');
+    GameEvents.remove('Player::Shoot');
   });
 </script>
 
