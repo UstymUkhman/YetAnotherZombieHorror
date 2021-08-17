@@ -3,9 +3,9 @@
     <Loader on:start={onStart} />
   {/if}
 
-  <!-- {#if app?.pause}
-    <Pause on:start={() => app.pause = !app.pause} />
-  {/if} -->
+  {#if gamePaused}
+    <Pause on:continue={() => togglePause(false)} />
+  {/if}
 
   <div id="game">
     <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
@@ -14,14 +14,16 @@
 </main>
 
 <script lang="ts">
+  import { GameEvents } from '@/events/GameEvents';
   import Loader from '@components/Loader.svelte';
-  // import Pause from '@components/Pause.svelte';
+  import Pause from '@components/Pause.svelte';
   import { onMount, onDestroy } from 'svelte';
 
   import Application from '@/Application';
   import Viewport from '@/utils/Viewport';
 
   let app: Application;
+  let gamePaused = false;
   let visibleLoading = true;
 
   let scene: HTMLCanvasElement;
@@ -30,18 +32,28 @@
   const width = Viewport.size.width;
   const height = Viewport.size.height;
 
-  onMount(() => {
-    app = new Application(scene, raindrops);
-  });
+  onMount(() =>
+    app = new Application(scene, raindrops)
+  );
 
-  function onStart () {
+  function onStart (): void {
     visibleLoading = false;
     app.start();
   }
 
+  function togglePause (paused: boolean): void {
+    gamePaused = paused;
+    app.pause = paused;
+  }
+
   !import.meta.hot && onDestroy(() => {
+    GameEvents.remove('Game::Pause');
     app.destroy();
   });
+
+  GameEvents.add('Game::Pause', () =>
+    togglePause(true)
+  );
 </script>
 
 <style lang="scss" global>

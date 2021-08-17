@@ -6,12 +6,18 @@ import { GameEvents } from '@/events/GameEvents';
 
 import WebWorker from '@/worker/WebWorker';
 import Settings from '@/config/settings';
+
+import Pointer from '@/managers/Pointer';
 import Viewport from '@/utils/Viewport';
+import Music from '@/managers/Music';
 
 export default class Application
 {
   private raindrops?: Raindrops;
+  private readonly music = new Music();
   private readonly audioScene: AudioScene;
+
+  private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
   private readonly offscreen: OffscreenCanvas;
@@ -19,6 +25,8 @@ export default class Application
 
   public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
     GameEvents.createWorkerEvents(this.worker);
+    Viewport.addResizeCallback(this.onResize);
+
     this.audioScene = new AudioScene();
 
     this.offscreen = new OffscreenCanvas(
@@ -28,18 +36,11 @@ export default class Application
     if (Settings.raindrops) {
       this.createRaindrops(scene, raindrops);
     }
-
-    this.addEventListeners();
   }
 
   private async createRaindrops (scene: HTMLCanvasElement, canvas: HTMLCanvasElement): Promise<void> {
     const Raindrops = await import('@/environment/Raindrops');
     this.raindrops = new Raindrops.default(scene, canvas);
-  }
-
-  private addEventListeners (): void {
-    GameEvents.add('Game::Pause', () => this.pause = true);
-    Viewport.addResizeCallback(this.onResize);
   }
 
   private resize (width: number, height: number): void {
@@ -53,14 +54,17 @@ export default class Application
 
   public destroy (): void {
     this.pause = true;
+    this.music.destroy();
     this.raindrops?.dispose();
-
-    GameEvents.remove('Game::Pause');
     Viewport.removeResizeCallback(this.onResize);
   }
 
   public set pause (paused: boolean) {
-    // this.music[paused ? 'pause' : 'play']();
+    this.music[paused ? 'pause' : 'play']();
+
+    paused
+      ? this.pointer.exitPointerLock()
+      : this.pointer.requestPointerLock();
 
     if (this.raindrops) {
       this.raindrops.pause = paused;

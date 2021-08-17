@@ -20,7 +20,6 @@
 
   function onComplete (): void {
     GameEvents.remove('Loading::Complete', true);
-    console.log('Loading::Complete');
     loading = false;
   }
 

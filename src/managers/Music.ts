@@ -1,14 +1,18 @@
+import { Config } from '@/config';
+
 export default class Music
 {
-  private readonly basePath = '/assets/music';
+  private readonly path = '/assets/music';
   private track: HTMLAudioElement;
 
   private paused = true;
   private mute = false;
   private vol = 0.1;
 
-  public constructor (track: string) {
-    this.track = new Audio(`${this.basePath}/${track}`);
+  public constructor () {
+    const track = Config.Level.music;
+
+    this.track = new Audio(`${this.path}/${track}`);
     this.track.autoplay = !this.paused;
     this.track.volume = this.vol;
 

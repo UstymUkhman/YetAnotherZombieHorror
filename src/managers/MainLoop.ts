@@ -19,8 +19,6 @@ import Physics from '@/physics';
 export default class MainLoop
 {
   private raf!: number;
-  private paused = true;
-
   private rifle!: Rifle;
   private pistol!: Pistol;
   private enemies!: Enemies;
@@ -124,13 +122,8 @@ export default class MainLoop
   public set pause (paused: boolean) {
     this.level.pause = paused;
     Physics.pause = paused;
-    this.paused = paused;
 
-    // this.paused
-    //   ? this.input.exitPointerLock()
-    //   : this.input.requestPointerLock();
-
-    this.paused
+    paused
       ? cancelAnimationFrame(this.raf)
       : this.raf = requestAnimationFrame(this.loop);
   }

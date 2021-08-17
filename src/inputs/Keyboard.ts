@@ -11,8 +11,6 @@ const IDLING = '0000';
 export default class Keyboard
 {
   private readonly events = Object.entries({
-    // pointerlockchange: this.onPointerLockChange.bind(this),
-    // pointerlockerror: this.onPointerLockError.bind(this),
     contextmenu: this.onContextMenu.bind(this),
 
     mousedown: this.onMouseDown.bind(this),
@@ -43,20 +41,6 @@ export default class Keyboard
       target.addEventListener(event, listener, false);
     }
   }
-
-  /* private onPointerLockChange (event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-
-    this.paused = !this.pointerLocked;
-    GameEvents.dispatch('Game::Pause', this.paused);
-  } */
-
-  /* private onPointerLockError (event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-    console.error(event);
-  } */
 
   private onContextMenu (event: Event): boolean | void {
     if (this.paused) return;
@@ -222,21 +206,9 @@ export default class Keyboard
     }
   }
 
-  /* public requestPointerLock (): void {
-    document.documentElement.requestPointerLock();
-  } */
-
-  /* public exitPointerLock (): void {
-    document.exitPointerLock();
-  } */
-
   public dispose (): void {
     this.removeEventListeners();
   }
-
-  /* private get pointerLocked (): boolean {
-    return !!document.pointerLockElement;
-  } */
 
   private get disabled (): boolean {
     return this.paused || !this.player.alive;

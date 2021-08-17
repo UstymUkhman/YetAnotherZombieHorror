@@ -1,5 +1,5 @@
 <div transition:fade>
-  <Button text="Start" on:click={() => dispatch('start')} />
+  <Button text="Continue" on:click={() => dispatch('continue')} />
 </div>
 
 <script lang="ts">
