@@ -1,4 +1,5 @@
-import { GameEvents, GameEvent } from '@/managers/GameEvents';
+import { GameEvents, GameEvent } from '@/events/GameEvents';
+import WebWorker from '@/worker/WebWorker';
 
 const timestamp = Date.now();
 
@@ -26,15 +27,31 @@ describe('GameEvents', () => {
     expect(GameEvents).toBeDefined();
   });
 
+  test('createWorkerEvents', () => {
+    const webWorker = new WebWorker();
+    const createWorkerEvents = jest.fn(GameEvents.createWorkerEvents.bind(GameEvents, webWorker));
+
+    createWorkerEvents();
+    expect(createWorkerEvents).toHaveReturnedWith(undefined);
+  });
+
   test('add & dispatch', () => {
     GameEvents.add('time', callback);
+    GameEvents.add('time', callback, true);
+
     GameEvents.dispatch('time', timestamp);
+    GameEvents.dispatch('time', timestamp, true);
+
     expect(callback).toHaveBeenCalledWith(gameEvent);
   });
 
   test('remove', () => {
     GameEvents.remove('time');
+    GameEvents.remove('time', true);
+
     GameEvents.dispatch('time', timestamp);
+    GameEvents.dispatch('time', timestamp, true);
+
     expect(callback).not.toHaveBeenCalled();
   });
 

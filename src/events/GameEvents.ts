@@ -3,7 +3,7 @@ import WorkerEvents from '@/events/WorkerEvents';
 
 import type WebWorker from '@/worker/WebWorker';
 import type { Callback } from '@/worker/types';
-import { Config } from '@/config';
+import Config from '@/config';
 
 class Events extends CustomEvents
 {

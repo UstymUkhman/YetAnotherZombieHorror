@@ -3,7 +3,7 @@ import type { Vector3 } from 'three/src/math/Vector3';
 import type { Euler } from 'three/src/math/Euler';
 
 import Weapon from '@/weapons/Weapon';
-import { Config } from '@/config';
+import Config from '@/config';
 import anime from 'animejs';
 
 export default class Pistol extends Weapon

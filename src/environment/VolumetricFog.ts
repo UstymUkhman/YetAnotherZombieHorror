@@ -13,7 +13,7 @@ import fogVert from '@/shaders/fog/main.vert';
 
 import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
-import { Config } from '@/config';
+import Config from '@/config';
 
 export class VolumetricFog extends FogExp2
 {

@@ -1,14 +1,22 @@
-import { Config } from '@/config';
-import type { Bounds } from '@/types.d';
-
-import { Mesh } from 'three/src/objects/Mesh';
+import type { LevelBounds } from '@/environment/types';
 import LevelScene from '@/environment/LevelScene';
-
 import { Vector3 } from 'three/src/math/Vector3';
-import AmmoPhysics from '@/managers/physics/AmmoPhysics';
 
-describe('AmmoPhysics', () => {
-  const Physics = new AmmoPhysics();
+import BVHPhysics from '@/physics/BVHPhysics';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Line3 } from 'three/src/math/Line3';
+
+import { Vector } from '@/utils/Vector';
+import Config from '@/config';
+
+describe('BVHPhysics', () => {
+  const Physics = new BVHPhysics();
+  const player = new Mesh().add(new Mesh());
+
+  player.userData = {
+    segment: new Line3(new Vector3(), Vector.random()),
+    height: Math.random(), radius: Math.random()
+  };
 
   test('Create', () => {
     expect(Physics).toBeDefined();
@@ -30,7 +38,7 @@ describe('AmmoPhysics', () => {
     const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
       borders: LevelScene.bounds, y: position.y, height
     }, {
-      borders: Config.Level.sidewalk as Bounds,
+      borders: Config.Level.sidewalk as LevelBounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     }));
@@ -40,21 +48,12 @@ describe('AmmoPhysics', () => {
   });
 
   test('setPlayer', () => {
-    const setPlayer = jest.fn(Physics.setPlayer.bind(Physics, new Mesh()));
+    const setPlayer = jest.fn(Physics.setPlayer.bind(
+      Physics, player
+    ));
 
     setPlayer();
     expect(setPlayer).toHaveReturnedWith(undefined);
-  });
-
-  test('teleportCollider', () => {
-    const player = new Mesh();
-    const setPlayer = jest.fn(Physics.setPlayer.bind(Physics, player));
-    const teleportCollider = jest.fn(Physics.teleportCollider.bind(Physics, player.uuid));
-
-    setPlayer();
-    teleportCollider();
-
-    expect(teleportCollider).toHaveReturnedWith(undefined);
   });
 
   test('move', () => {
@@ -76,10 +75,10 @@ describe('AmmoPhysics', () => {
     expect(update).toHaveReturnedWith(undefined);
   });
 
-  test('destroy', () => {
-    const destroy = jest.fn(Physics.destroy.bind(Physics));
-    destroy();
-    expect(destroy).toHaveReturnedWith(undefined);
+  test('dispose', () => {
+    const dispose = jest.fn(Physics.dispose.bind(Physics));
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
   });
 
   test('pause', () => {

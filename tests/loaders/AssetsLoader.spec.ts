@@ -1,3 +1,4 @@
+import type { CanvasTexture } from 'three/src/textures/CanvasTexture';
 import { LoadingManager } from 'three/src/loaders/LoadingManager';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { Texture } from 'three/src/textures/Texture';
@@ -5,6 +6,15 @@ import { Texture } from 'three/src/textures/Texture';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Group } from 'three/src/objects/Group';
 import { RGBFormat } from 'three/src/constants';
+
+type AssetTypes = CanvasTexture | CubeTexture | Assets.GLTFModel | AudioBuffer;
+type Reject = (error: ErrorEvent) => void;
+
+type Callbacks = {
+  onProgress: (event: ProgressEvent<EventTarget>) => void
+  onLoad: (asset: AssetTypes) => void
+  onError: Reject
+}
 
 describe('AssetsLoader', () => {
   test('Create', () => {
@@ -17,7 +27,7 @@ describe('AssetsLoader', () => {
     const getPromiseCallbacks = jest.fn(loaderPrototype.getPromiseCallbacks.bind(loaderPrototype));
 
     new Promise((resolve, reject) => {
-      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
       expect(callbacks.onLoad(new CubeTexture())).toHaveReturnedWith(undefined);
     }).then(asset => {
       expect(asset).toBeInstanceOf(CubeTexture);
@@ -25,13 +35,13 @@ describe('AssetsLoader', () => {
     });
 
     new Promise((resolve, reject) => {
-      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
       expect(callbacks.onProgress(new ProgressEvent('loading'))).toHaveReturnedWith(undefined);
     });
 
     new Promise((resolve, reject) => {
       const error = new ErrorEvent('loading');
-      const callbacks = getPromiseCallbacks(resolve, reject) as Assets.Callbacks;
+      const callbacks = getPromiseCallbacks(resolve, reject) as Callbacks;
       expect(callbacks.onError(error)).rejects.toStrictEqual(error);
     });
 

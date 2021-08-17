@@ -3,6 +3,8 @@ type Call = (delta?: number) => void;
 class RAF
 {
   private raf!: number;
+  private paused = true;
+
   private readonly calls: Array<Call> = [];
   private readonly onUpdate = this.update.bind(this);
 
@@ -36,7 +38,10 @@ class RAF
   }
 
   public set pause (paused: boolean) {
-    paused
+    if (this.paused === paused) return;
+    this.paused = paused;
+
+    this.paused
       ? cancelAnimationFrame(this.raf)
       : this.raf = requestAnimationFrame(this.onUpdate);
   }

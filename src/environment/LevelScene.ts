@@ -30,8 +30,8 @@ import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 
-import { Config } from '@/config';
 import Physics from '@/physics';
+import Config from '@/config';
 
 export default class LevelScene
 {

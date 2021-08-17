@@ -13,7 +13,7 @@ import { LoopOnce } from 'three/src/constants';
 import { Mesh } from 'three/src/objects/Mesh';
 
 import { HitBox } from '@/utils/Material';
-import { Config } from '@/config';
+import Config from '@/config';
 
 export default class Enemy extends Character
 {

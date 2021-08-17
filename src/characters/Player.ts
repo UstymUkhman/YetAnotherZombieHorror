@@ -16,7 +16,7 @@ import type Rifle from '@/weapons/Rifle';
 
 import { Vector } from '@/utils/Vector';
 import Camera from '@/managers/Camera';
-import { Config } from '@/config';
+import Config from '@/config';
 
 export default class Player extends Character
 {

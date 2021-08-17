@@ -16,9 +16,9 @@ import { Scene } from 'three/src/scenes/Scene';
 import { Audio } from 'three/src/audio/Audio';
 
 import { randomInt } from '@/utils/Number';
-import { Config } from '@/config';
-
 import RAF from '@/managers/RAF';
+
+import Config from '@/config';
 import anime from 'animejs';
 
 export default class AudioScene
@@ -44,7 +44,6 @@ export default class AudioScene
   private readonly weapon = new Object3D();
 
   private readonly player = new Object3D();
-  private readonly enemy = new Object3D();
   private readonly scene = new Scene();
 
   private ambient!: Audio;
@@ -52,7 +51,9 @@ export default class AudioScene
   public constructor () {
     this.camera.matrixAutoUpdate = false;
     this.camera.add(this.listener);
+
     this.scene.autoUpdate = false;
+    this.scene.add(this.player);
 
     this.createCharacterSounds(Config.Player.sounds, true);
     this.createCharacterSounds(Config.Enemy.sounds, false);
@@ -78,14 +79,13 @@ export default class AudioScene
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
-      const character = player ? this.player : this.enemy;
       const audio = new PositionalAudio(this.listener);
 
       audio.setBuffer(sound);
       audio.setVolume(10.0);
 
       this.characterSounds.set(names[s], audio);
-      character.add(audio);
+      player && this.player.add(audio);
     });
   }
 
@@ -163,11 +163,19 @@ export default class AudioScene
   private playCharacter (config: unknown): void {
     const { matrix, player, sfx } = config as CharacterSoundConfig;
     const sound = this.characterSounds.get(sfx) as PositionalAudio;
-    const character = player ? this.player : this.enemy;
+    const character = player ? this.player : new Object3D();
 
+    !player && this.playEnemy(character, sound);
     character.matrixWorld.copy(matrix);
+
     character.updateMatrixWorld();
     !sound.isPlaying && sound.play();
+  }
+
+  private playEnemy (enemy: Object3D, sound: PositionalAudio) {
+    enemy.add(sound);
+    this.scene.add(enemy);
+    sound.onEnded = () => this.scene.remove(enemy);
   }
 
   private playWeapon (config: unknown): void {

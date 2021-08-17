@@ -1,8 +1,8 @@
-import { Config } from '@/config';
-import { Color } from '@/utils/Color';
-
-import { Color as TColor } from 'three/src/math/Color';
 import { DynamicCollider, StaticCollider, HitBox, Transparent } from '@/utils/Material';
+import { Color as TColor } from 'three/src/math/Color';
+
+import { Color } from '@/utils/Color';
+import Config from '@/config';
 
 describe('Material', () => {
   test('DynamicCollider', () => {

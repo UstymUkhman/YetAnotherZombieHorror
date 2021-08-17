@@ -1,27 +1,24 @@
-import { Config } from '@/config';
-import { Object3D } from 'three/src/core/Object3D';
-import Camera, { CameraObject } from '@/managers/Camera';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+import { CameraManager, CameraObject } from '@/managers/Camera';
 
-describe('GameCamera', () => {
-  test('CameraObject', () => {
-    expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
-    expect(Camera.object).toStrictEqual(CameraObject);
+import { Object3D } from 'three/src/core/Object3D';
+import Camera from '@/managers/Camera';
+import Config from '@/config';
 
-    expect(Camera.object.fov).toBeGreaterThan(42.9);
-    expect(Camera.object.fov).toBeLessThan(43.0);
-  });
-
-  // test('CameraListener', () => {
-  //   expect(Camera.listener).toStrictEqual(CameraListener);
-  // });
-
+describe('Camera', () => {
   test('setCamera', () => {
     const сameraPrototype = Object.getPrototypeOf(Camera);
     const setCamera = jest.fn(сameraPrototype.setCamera.bind(Camera));
 
     setCamera();
     expect(setCamera).toHaveReturnedWith(undefined);
+  });
+
+  test('updateState', () => {
+    const updateState = jest.fn(Camera.updateState.bind(Camera));
+
+    updateState();
+    expect(updateState).toHaveReturnedWith(undefined);
   });
 
   test('getPosition', () => {
@@ -112,24 +109,6 @@ describe('GameCamera', () => {
     expect(aimAnimation).toHaveReturnedWith(undefined);
   });
 
-  test('runAnimation', () => {
-    const runAnimation = jest.fn(Camera.runAnimation.bind(Camera));
-
-    runAnimation(true);
-    expect(runAnimation).toHaveReturnedWith(undefined);
-
-    runAnimation(false);
-    expect(runAnimation).toHaveReturnedWith(undefined);
-  });
-
-  test('run', () => {
-    const сameraPrototype = Object.getPrototypeOf(Camera);
-    const run = jest.fn(сameraPrototype.run.bind(Camera));
-
-    run();
-    expect(run).toHaveReturnedWith(undefined);
-  });
-
   test('shakeAnimation', () => {
     const { x, y, z } = Config.Camera.tps.idle;
     const shakeAnimation = jest.fn(Camera.shakeAnimation.bind(Camera));
@@ -149,6 +128,24 @@ describe('GameCamera', () => {
     expect(shakeAnimation).toHaveReturnedWith(undefined);
   });
 
+  test('runAnimation', () => {
+    const runAnimation = jest.fn(Camera.runAnimation.bind(Camera));
+
+    runAnimation(true);
+    expect(runAnimation).toHaveReturnedWith(undefined);
+
+    runAnimation(false);
+    expect(runAnimation).toHaveReturnedWith(undefined);
+  });
+
+  test('run', () => {
+    const сameraPrototype = Object.getPrototypeOf(Camera);
+    const run = jest.fn(сameraPrototype.run.bind(Camera));
+
+    run();
+    expect(run).toHaveReturnedWith(undefined);
+  });
+
   test('deathAnimation', () => {
     const deathAnimation = jest.fn(Camera.deathAnimation.bind(Camera));
     deathAnimation();
@@ -163,10 +160,33 @@ describe('GameCamera', () => {
     expect(target.children[0]).toBe(Camera.object);
   });
 
+  test('resize', () => {
+    const resize = jest.fn(Camera.resize.bind(Camera));
+    resize();
+    expect(resize).toHaveReturnedWith(undefined);
+  });
+
   test('dispose', () => {
     const dispose = jest.fn(Camera.dispose.bind(Camera));
     dispose();
     expect(dispose).toHaveReturnedWith(undefined);
+  });
+
+  test('config', () => {
+    const { aspect, near, far, fov } = CameraManager.config;
+
+    expect(aspect).toStrictEqual(CameraObject.aspect);
+    expect(near).toStrictEqual(CameraObject.near);
+    expect(far).toStrictEqual(CameraObject.far);
+    expect(fov).toStrictEqual(CameraObject.fov);
+  });
+
+  test('CameraObject', () => {
+    expect(Camera.object).toBeInstanceOf(PerspectiveCamera);
+    expect(Camera.object).toStrictEqual(CameraObject);
+
+    expect(Camera.object.fov).toBeGreaterThan(42.9);
+    expect(Camera.object.fov).toBeLessThan(43.0);
   });
 
   test('isFPS', () => {

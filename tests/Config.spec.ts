@@ -1,8 +1,6 @@
-import { Config } from '@/config';
-import { Euler } from 'three/src/math/Euler';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
+import { Euler } from 'three/src/math/Euler';
 
 import Camera from '@/config/camera.json';
 import Level from '@/config/level.json';
@@ -12,14 +10,19 @@ import Enemy from '@/config/enemy.json';
 
 import Pistol from '@/config/pistol.json';
 import Rifle from '@/config/rifle.json';
+import Config from '@/config';
 
 describe('Config', () => {
   test('Constants', () => {
+    expect(typeof Config.offscreen).toStrictEqual('boolean');
     expect(typeof Config.colliders).toStrictEqual('boolean');
     expect(typeof Config.hitBoxes).toStrictEqual('boolean');
     expect(typeof Config.VERSION).toStrictEqual('string');
+    expect(typeof Config.worker).toStrictEqual('boolean');
 
     expect(Config.freeCamera).toStrictEqual(false);
+    expect(Config.offscreen).toStrictEqual(false);
+    expect(Config.worker).toStrictEqual(false);
     expect(Config.DEBUG).toStrictEqual(true);
     expect(Config.APP).toStrictEqual(false);
   });

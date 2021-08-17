@@ -1,7 +1,7 @@
 import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
-import { Config } from '@/config';
+import Config from '@/config';
 
 type PlayerMovement        = { directions: Directions, running: boolean };
 type CharacterConfig       = typeof Config.Player | typeof Config.Enemy;

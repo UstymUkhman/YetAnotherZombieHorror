@@ -24,7 +24,7 @@ import fragRain from '@/shaders/rain/main.frag';
 import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
-import { Config } from '@/config';
+import Config from '@/config';
 
 const DROP_RATIO = Math.tan(PI.d3) * 3;
 
@@ -114,11 +114,9 @@ export default class Rain
       uniforms.depth.value = this.renderTargets[0].depthTexture;
     }
 
-    uniforms.diffuse.value = await Promise.all(
-      Config.Level.rain.map(
-        Assets.Loader.loadTexture.bind(Assets.Loader)
-      )
-    );
+    Promise.all(Config.Level.rain.map(
+      Assets.Loader.loadTexture.bind(Assets.Loader)
+    )).then(textures => uniforms.diffuse.value = textures);
 
     this.drops.frustumCulled = false;
     this.drops.renderOrder = 2.0;

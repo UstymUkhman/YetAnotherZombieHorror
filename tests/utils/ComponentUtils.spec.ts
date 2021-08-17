@@ -1,6 +1,6 @@
-import type { Coords } from '@/types.d';
-import LevelScene from '@/environment/LevelScene';
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
+import type { LevelCoords } from '@/environment/types';
+import LevelScene from '@/environment/LevelScene';
 
 describe('ComponentUtils', () => {
   test('getScaledCoords', () => {
@@ -14,8 +14,8 @@ describe('ComponentUtils', () => {
   });
 
   test('pointInCircle', () => {
-    const pCoords = [Math.random(), Math.random()] as Coords;
-    const cCoords = [Math.random(), Math.random()] as Coords;
+    const pCoords = [Math.random(), Math.random()] as LevelCoords;
+    const cCoords = [Math.random(), Math.random()] as LevelCoords;
 
     expect(pointInCircle([1.25, 1.25], [0.5, 0.5], 1)).toStrictEqual(false);
     expect(pointInCircle([0, 0], [0.5, 0.5], 0.75)).toStrictEqual(true);

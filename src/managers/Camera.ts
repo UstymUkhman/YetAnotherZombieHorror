@@ -7,9 +7,8 @@ import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
 
 import Viewport from '@/utils/Viewport';
-import { Config } from '@/config';
-
 import RAF from '@/managers/RAF';
+import Config from '@/config';
 import anime from 'animejs';
 
 type CameraState = {

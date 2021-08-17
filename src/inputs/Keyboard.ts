@@ -3,7 +3,7 @@ import EventsTarget from '@/offscreen/EventsTarget';
 
 import { Directions, Direction } from '@/inputs';
 import type Player from '@/characters/Player';
-import { Config } from '@/config';
+import Config from '@/config';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';

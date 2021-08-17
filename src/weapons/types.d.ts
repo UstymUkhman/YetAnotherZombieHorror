@@ -1,6 +1,6 @@
-import { Config } from '@/config';
-import type { Matrix4 } from 'three/src/math/Matrix4';
 import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
+import type { Matrix4 } from 'three/src/math/Matrix4';
+import Config from '@/config';
 
 type WeaponSoundConfig  = { matrix: Matrix4, sfx: WeaponSound, play: boolean };
 type WeaponConfig       = typeof Config.Pistol | typeof Config.Rifle;

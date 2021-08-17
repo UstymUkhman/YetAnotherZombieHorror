@@ -15,7 +15,7 @@ import RifleData from '@/config/rifle.json';
 import { Euler } from 'three/src/math/Euler';
 import deepFreeze from '@/utils/deepFreeze';
 
-export namespace Config
+namespace Config
 {
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
@@ -57,20 +57,6 @@ export namespace Config
   export const colliders = false;
   export const hitBoxes = false;
 
-  export const Camera = deepFreeze({
-    fps: {
-      idle: new Vector3(...CameraData.fps.idle),
-      run: new Vector3(...CameraData.fps.idle),
-      aim: new Vector3(...CameraData.fps.aim)
-    },
-
-    tps: {
-      idle: new Vector3(...CameraData.tps.idle),
-      run: new Vector3(...CameraData.tps.run),
-      aim: new Vector3(...CameraData.tps.aim)
-    }
-  });
-
   export const Level = deepFreeze({
     position: new Vector3(...LevelData.position),
     sidewalkHeight: LevelData.sidewalkHeight,
@@ -91,6 +77,20 @@ export namespace Config
     music: LevelData.music,
     rain: LevelData.rain,
     fog: LevelData.fog
+  });
+
+  export const Camera = deepFreeze({
+    fps: {
+      idle: new Vector3(...CameraData.fps.idle),
+      run: new Vector3(...CameraData.fps.idle),
+      aim: new Vector3(...CameraData.fps.aim)
+    },
+
+    tps: {
+      idle: new Vector3(...CameraData.tps.idle),
+      run: new Vector3(...CameraData.tps.run),
+      aim: new Vector3(...CameraData.tps.aim)
+    }
   });
 
   export const Player = deepFreeze({
@@ -153,3 +153,5 @@ export namespace Config
     model: RifleData.model
   });
 }
+
+export default Config;

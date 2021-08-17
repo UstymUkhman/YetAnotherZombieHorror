@@ -1,8 +1,8 @@
+import { getRandomCoord } from '@/worker/getRandomCoord';
 import LevelScene from '@/environment/LevelScene';
 import { Vector3 } from 'three/src/math/Vector3';
-import { getRandomCoord } from '@/managers/worker/getRandomCoordrd';
 
-describe('randomCoords', () => {
+describe('getRandomCoord', () => {
   test('getRandomCoord', () => {
     const maxCoords = LevelScene.maxCoords;
     const minCoords = LevelScene.minCoords;

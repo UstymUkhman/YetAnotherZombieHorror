@@ -21,7 +21,7 @@ import { Euler } from 'three/src/math/Euler';
 import Settings from '@/config/settings';
 import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
-import { Config } from '@/config';
+import Config from '@/config';
 
 export default class Clouds
 {

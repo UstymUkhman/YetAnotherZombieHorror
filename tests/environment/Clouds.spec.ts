@@ -11,20 +11,20 @@ describe('Clouds', () => {
     expect(clouds).toBeInstanceOf(Clouds);
   });
 
-  test('addSounds', () => {
-    const cloudsPrototype = Object.getPrototypeOf(clouds);
-    const addSounds = jest.fn(cloudsPrototype.addSounds.bind(clouds, []));
-
-    addSounds([]);
-    expect(addSounds).toHaveReturnedWith(undefined);
-  });
-
   test('startLighting', () => {
     const cloudsPrototype = Object.getPrototypeOf(clouds);
     const startLighting = jest.fn(cloudsPrototype.startLighting.bind(clouds));
 
     startLighting();
     expect(startLighting).toHaveReturnedWith(undefined);
+  });
+
+  test('showLighting', () => {
+    const cloudsPrototype = Object.getPrototypeOf(clouds);
+    const showLighting = jest.fn(cloudsPrototype.showLighting.bind(clouds));
+
+    showLighting();
+    expect(showLighting).toHaveReturnedWith(undefined);
   });
 
   test('hideLighting', () => {
@@ -35,17 +35,23 @@ describe('Clouds', () => {
     expect(hideLighting).toHaveReturnedWith(undefined);
   });
 
-  test('update', () => {
+  test('createClouds', () => {
     const cloudsPrototype = Object.getPrototypeOf(clouds);
-    const update = jest.fn(cloudsPrototype.update.bind(clouds));
+    const createClouds = jest.fn(cloudsPrototype.createClouds.bind(clouds));
+
+    const createdClouds = createClouds();
+    expect(createdClouds).toBeInstanceOf(Object);
+  });
+
+  test('update', () => {
+    const update = jest.fn(clouds.update.bind(clouds));
 
     update();
     expect(update).toHaveReturnedWith(undefined);
   });
 
   test('dispose', () => {
-    const cloudsPrototype = Object.getPrototypeOf(clouds);
-    const dispose = jest.fn(cloudsPrototype.dispose.bind(clouds));
+    const dispose = jest.fn(clouds.dispose.bind(clouds));
 
     dispose();
     expect(dispose).toHaveReturnedWith(undefined);

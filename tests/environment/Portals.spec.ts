@@ -1,6 +1,6 @@
-import Portals from '@/environment/Portals';
-import LevelData from '@/config/level.json';
 import { Vector3 } from 'three/src/math/Vector3';
+import LevelData from '@/config/level.json';
+import Portals from '@/environment/Portals';
 
 describe('Portals', () => {
   const player = new Vector3();

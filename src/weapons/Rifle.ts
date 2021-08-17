@@ -1,5 +1,5 @@
 import type { Texture } from 'three/src/textures/Texture';
-import type { Coords } from '@/environment/LevelScene';
+import type { LevelCoords } from '@/environment/types';
 
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
@@ -8,7 +8,7 @@ import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
 import Weapon from '@/weapons/Weapon';
-import { Config } from '@/config';
+import Config from '@/config';
 
 export default class Rifle extends Weapon
 {
@@ -77,7 +77,7 @@ export default class Rifle extends Weapon
     }
   }
 
-  public spawn (coords: Coords): void {
+  public spawn (coords: LevelCoords): void {
     const worldScale = Config.Rifle.worldScale as Vector3;
     this.clone = this.clone || this.getClone();
 
