@@ -10,15 +10,11 @@ import Viewport from '@/utils/Viewport';
 
 export default class Application
 {
-  private paused = true;
-  private started = false;
   private raindrops?: Raindrops;
-
   private readonly audioScene: AudioScene;
   private readonly worker = new WebWorker();
-  private readonly offscreen: OffscreenCanvas;
 
-  // private readonly onPause = this.pause.bind(this);
+  private readonly offscreen: OffscreenCanvas;
   private readonly onResize = this.resize.bind(this);
 
   public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
@@ -50,9 +46,9 @@ export default class Application
     this.offscreen.resize(width, height);
   }
 
-  private start (): void {
+  public start (): void {
     this.audioScene.playAmbient();
-    this.started = true;
+    this.pause = false;
   }
 
   public destroy (): void {
@@ -64,19 +60,13 @@ export default class Application
   }
 
   public set pause (paused: boolean) {
+    // this.music[paused ? 'pause' : 'play']();
+
     if (this.raindrops) {
       this.raindrops.pause = paused;
     }
 
-    if (!this.started && !paused) {
-      this.start();
-    }
-
     this.audioScene.pause = paused;
-    this.paused = paused;
-  }
-
-  public get pause (): boolean {
-    return this.paused;
+    this.offscreen.pause = paused;
   }
 }

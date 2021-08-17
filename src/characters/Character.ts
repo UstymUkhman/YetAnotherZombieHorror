@@ -159,10 +159,11 @@ export default class Character
     return this.model as Assets.GLTF;
   }
 
-  protected death (): void {
+  protected death (player = false): void {
     GameEvents.dispatch('SFX::Character', {
       matrix: this.object.matrixWorld,
-      sfx: 'death'
+      sfx: 'death',
+      player
     }, true);
 
     this.hitting = false;

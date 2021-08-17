@@ -1,6 +1,6 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-import type { Coords } from '@/environment/LevelScene';
+import type { LevelCoords } from '@/environment/types';
 
 import LevelScene from '@/environment/LevelScene';
 import { Clock } from 'three/src/core/Clock';
@@ -44,7 +44,7 @@ export default class MainLoop
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
     this.worker.add('Level::GetRandomCoord', data =>
-      this.rifle.spawn(data as Coords), {
+      this.rifle.spawn(data as LevelCoords), {
         minCoords: LevelScene.minCoords,
         maxCoords: LevelScene.maxCoords,
         portals: LevelScene.portals,
@@ -58,9 +58,8 @@ export default class MainLoop
 
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.enemies.colliders, this.pistol);
-      this.raf = requestAnimationFrame(this.loop);
+      GameEvents.dispatch('Loading::Complete', null, true);
       Physics.setPlayer(this.player.collider);
-      this.pause = false;
     });
 
     this.enemies = new Enemies(envMap);
@@ -123,8 +122,6 @@ export default class MainLoop
   // }
 
   public set pause (paused: boolean) {
-    // this.music[paused ? 'pause' : 'play']();
-
     this.level.pause = paused;
     Physics.pause = paused;
     this.paused = paused;
@@ -132,9 +129,9 @@ export default class MainLoop
     // this.paused
     //   ? this.input.exitPointerLock()
     //   : this.input.requestPointerLock();
-  }
 
-  public get pause (): boolean {
-    return this.paused;
+    this.paused
+      ? cancelAnimationFrame(this.raf)
+      : this.raf = requestAnimationFrame(this.loop);
   }
 }

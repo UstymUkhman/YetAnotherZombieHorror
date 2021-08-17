@@ -114,11 +114,11 @@ export namespace Assets
     }
 
     public override onStart = (): void => {
-      GameEvents.dispatch('Loading::Start', this.uuid, true);
+      // GameEvents.dispatch('Loading::Start', this.uuid, true);
     }
 
     public override onLoad = (): void => {
-      GameEvents.dispatch('Loading::Complete', this.uuid, true);
+      // GameEvents.dispatch('Loading::Complete', this.uuid, true);
     }
   }
 

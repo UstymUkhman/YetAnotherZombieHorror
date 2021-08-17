@@ -1,7 +1,11 @@
 <main>
-  {#if app?.pause}
-    <Pause on:start={() => app.pause = !app.pause} />
+  {#if app && visibleLoading}
+    <Loader on:start={onStart} />
   {/if}
+
+  <!-- {#if app?.pause}
+    <Pause on:start={() => app.pause = !app.pause} />
+  {/if} -->
 
   <div id="game">
     <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
@@ -10,13 +14,16 @@
 </main>
 
 <script lang="ts">
-  import Pause from '@components/Pause.svelte';
+  import Loader from '@components/Loader.svelte';
+  // import Pause from '@components/Pause.svelte';
   import { onMount, onDestroy } from 'svelte';
 
   import Application from '@/Application';
   import Viewport from '@/utils/Viewport';
 
   let app: Application;
+  let visibleLoading = true;
+
   let scene: HTMLCanvasElement;
   let raindrops: HTMLCanvasElement;
 
@@ -26,6 +33,11 @@
   onMount(() => {
     app = new Application(scene, raindrops);
   });
+
+  function onStart () {
+    visibleLoading = false;
+    app.start();
+  }
 
   !import.meta.hot && onDestroy(() => {
     app.destroy();

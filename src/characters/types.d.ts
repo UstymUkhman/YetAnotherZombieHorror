@@ -3,9 +3,7 @@ import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 import { Config } from '@/config';
 
-type CharacterSoundConfig  = { matrix: Matrix4, sfx: WeaponSound, play: boolean };
 type PlayerMovement        = { directions: Directions, running: boolean };
-
 type CharacterConfig       = typeof Config.Player | typeof Config.Enemy;
 type CharacterSound        = keyof PlayerSounds | keyof EnemySounds;
 
@@ -25,4 +23,11 @@ type CharacterSoundsConfig = PlayerSounds | EnemySounds;
 
 type CharacterAnimations<Animation> = {
   [key in CharacterAnimation]: Animation
+};
+
+type CharacterSoundConfig = {
+  sfx: WeaponSound,
+  matrix: Matrix4,
+  player: boolean,
+  play: boolean
 };

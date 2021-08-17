@@ -15,4 +15,8 @@ export default class OffscreenCanvas
   public resize (width: number, height: number): void {
     this.worker.post('Game::Resize', { width, height });
   }
+
+  public set pause (paused: boolean) {
+    this.worker.post('Game::Pause', { paused });
+  }
 }

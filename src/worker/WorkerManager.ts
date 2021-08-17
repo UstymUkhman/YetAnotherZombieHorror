@@ -1,8 +1,9 @@
 import type { OffscreenParams, SizeParams } from '@/offscreen/types';
+import type { LevelParams, RainParams } from '@/environment/types';
+
 import { updateRainParticles } from '@/worker/updateRainParticles';
 import { OffscreenManager } from '@/offscreen/OffscreenManager';
 
-import type { LevelParams, RainParams } from '@/worker/types';
 import type { Event } from 'three/src/core/EventDispatcher';
 import { getRandomCoord } from '@/worker/getRandomCoord';
 
@@ -19,6 +20,11 @@ const parseMessage = (event: string, params?: unknown) => {
 
     case 'Game::Resize':
       return OffscreenManager.resize(params as SizeParams);
+
+    case 'Game::Pause': {
+      const { paused } = params as { paused: boolean };
+      return OffscreenManager.pause = paused;
+    }
 
     case 'EventsTarget::Dispatch':
       return OffscreenManager.dispatch(params as Event);

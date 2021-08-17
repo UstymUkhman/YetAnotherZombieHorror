@@ -299,7 +299,7 @@ export default class Player extends Character
     this.shooting = false;
     this.aiming = false;
 
-    this.death();
+    this.death(true);
   }
 
   private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): number {

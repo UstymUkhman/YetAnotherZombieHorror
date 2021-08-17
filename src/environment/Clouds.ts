@@ -4,8 +4,8 @@ import { MeshLambertMaterial } from 'three/src/materials/MeshLambertMaterial';
 import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
-
 import { PointLight } from 'three/src/lights/PointLight';
+
 import { Object3D } from 'three/src/core/Object3D';
 import LevelScene from '@/environment/LevelScene';
 import { GameEvents } from '@/events/GameEvents';

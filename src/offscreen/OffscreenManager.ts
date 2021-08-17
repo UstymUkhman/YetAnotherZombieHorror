@@ -33,6 +33,10 @@ class OffscreenApplication
     const { width, height } = size;
     this.loop.resize(width, height);
   }
+
+  public set pause (paused: boolean) {
+    this.loop.pause = paused;
+  }
 }
 
 export const OffscreenManager = new OffscreenApplication();

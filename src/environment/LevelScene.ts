@@ -1,5 +1,6 @@
 import { ACESFilmicToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { LevelCoords, LevelBounds } from '@/environment/types';
 
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import type { VolumetricFog } from '@/environment/VolumetricFog';
@@ -31,9 +32,6 @@ import Rain from '@/environment/Rain';
 
 import { Config } from '@/config';
 import Physics from '@/physics';
-
-export type Coords = Readonly<[number, number]>;
-export type Bounds = Readonly<Array<Coords>>;
 
 export default class LevelScene
 {
@@ -72,7 +70,7 @@ export default class LevelScene
     Physics.createBounds({
       borders: LevelScene.bounds, y: position.y, height
     }, {
-      borders: Config.Level.sidewalk as Bounds,
+      borders: Config.Level.sidewalk as LevelBounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
@@ -231,22 +229,22 @@ export default class LevelScene
     this.fog?.dispose();
   }
 
-  public static get maxCoords (): Coords {
+  public static get maxCoords (): LevelCoords {
     return [
       max(LevelScene.bounds.map(coords => coords[0])),
       max(LevelScene.bounds.map(coords => coords[1]))
     ];
   }
 
-  public static get minCoords (): Coords {
+  public static get minCoords (): LevelCoords {
     return [
       min(LevelScene.bounds.map(coords => coords[0])),
       min(LevelScene.bounds.map(coords => coords[1]))
     ];
   }
 
-  public static get portals (): Bounds {
-    return Config.Level.portals as Bounds;
+  public static get portals (): LevelBounds {
+    return Config.Level.portals as LevelBounds;
   }
 
   public static get center (): Vector3 {
@@ -257,8 +255,8 @@ export default class LevelScene
     );
   }
 
-  public static get bounds (): Bounds {
-    return Config.Level.bounds as Bounds;
+  public static get bounds (): LevelBounds {
+    return Config.Level.bounds as LevelBounds;
   }
 
   public static get size (): Vector2 {

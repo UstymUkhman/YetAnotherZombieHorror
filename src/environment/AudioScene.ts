@@ -38,9 +38,11 @@ export default class AudioScene
   private readonly listener = new AudioListener();
   private readonly renderer = new WebGLRenderer();
 
-  private readonly character = new Object3D();
   private readonly thunder = new Object3D();
   private readonly weapon = new Object3D();
+
+  private readonly player = new Object3D();
+  private readonly enemy = new Object3D();
   private readonly scene = new Scene();
 
   private ambient!: Audio;
@@ -51,8 +53,8 @@ export default class AudioScene
     this.camera.add(this.listener);
     this.scene.autoUpdate = false;
 
-    this.createCharacterSounds(Config.Player.sounds);
-    this.createCharacterSounds(Config.Enemy.sounds);
+    this.createCharacterSounds(Config.Player.sounds, true);
+    this.createCharacterSounds(Config.Enemy.sounds, false);
 
     this.createWeaponSounds(Config.Pistol.sounds);
     this.createWeaponSounds(Config.Rifle.sounds);
@@ -60,6 +62,9 @@ export default class AudioScene
     this.createThunderSounds();
     this.createAmbientSound();
     this.addEventListeners();
+
+    this.scene.updateMatrixWorld(true);
+    this.raf = requestAnimationFrame(this.onUpdate);
   }
 
   private async loadSounds (sounds: ReadonlyArray<string>): Promise<Array<AudioBuffer>> {
@@ -68,18 +73,19 @@ export default class AudioScene
     ));
   }
 
-  private async createCharacterSounds (sfx: CharacterSoundsConfig): Promise<void> {
+  private async createCharacterSounds (sfx: CharacterSoundsConfig, player: boolean): Promise<void> {
     const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
+      const character = player ? this.player : this.enemy;
       const audio = new PositionalAudio(this.listener);
 
       audio.setBuffer(sound);
       audio.setVolume(10.0);
 
       this.characterSounds.set(names[s], audio);
-      this.character.add(audio);
+      character.add(audio);
     });
   }
 
@@ -125,7 +131,6 @@ export default class AudioScene
     GameEvents.add('SFX::Character', this.onCharacter, true);
     GameEvents.add('SFX::Thunder', this.onThunder, true);
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
-    this.raf = requestAnimationFrame(this.onUpdate);
   }
 
   private playThuder (position: unknown): void {
@@ -156,11 +161,12 @@ export default class AudioScene
   }
 
   private playCharacter (config: unknown): void {
-    const { matrix, sfx } = config as CharacterSoundConfig;
+    const { matrix, player, sfx } = config as CharacterSoundConfig;
     const sound = this.characterSounds.get(sfx) as PositionalAudio;
+    const character = player ? this.player : this.enemy;
 
-    this.character.matrixWorld.copy(matrix);
-    this.character.updateMatrixWorld();
+    character.matrixWorld.copy(matrix);
+    character.updateMatrixWorld();
     !sound.isPlaying && sound.play();
   }
 

@@ -2,14 +2,13 @@ import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthSt
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import type { LevelCoords, RainParticles } from '@/environment/types';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { updateRainParticles } from '@/worker/updateRainParticles';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
 
-import type { Coords } from '@/environment/LevelScene';
-import type { RainParticles } from '@/worker/types';
 import type { Scene } from 'three/src/scenes/Scene';
 import { Points } from 'three/src/objects/Points';
 import LevelScene from '@/environment/LevelScene';
@@ -169,11 +168,14 @@ export default class Rain
   }
 
   private updateParticles (): void {
+    const minCoords = this.minCoords as unknown as LevelCoords;
+    const maxCoords = this.maxCoords as unknown as LevelCoords;
+
     this.updateParticleGeometry(
       updateRainParticles({
-        minCoords: this.minCoords as unknown as Coords,
-        maxCoords: this.maxCoords as unknown as Coords,
         camera: CameraObject.position,
+        minCoords: minCoords,
+        maxCoords: maxCoords,
         delta: this.delta
       })
     );
