@@ -20,7 +20,7 @@ class Viewport
     }
   }
 
-  private updateScreen () {
+  private updateScreen (): void {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
@@ -38,17 +38,17 @@ class Viewport
     }
   }
 
-  public addResizeCallback (callback: Callback) {
+  public addResizeCallback (callback: Callback): void {
     const index = this.callbacks.indexOf(callback);
     index === -1 && this.callbacks.push(callback);
   }
 
-  public removeResizeCallback (callback: Callback) {
+  public removeResizeCallback (callback: Callback): void {
     const index = this.callbacks.indexOf(callback);
     index !== -1 && this.callbacks.splice(index, 1);
   }
 
-  public dispose () {
+  public dispose (): void {
     window.removeEventListener('resize', this.update, false);
     this.callbacks.splice(0, this.callbacks.length);
   }

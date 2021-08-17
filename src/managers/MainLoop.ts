@@ -13,12 +13,12 @@ import Camera from '@/managers/Camera';
 import Pistol from '@/weapons/Pistol';
 import Rifle from '@/weapons/Rifle';
 
+import RAF from '@/managers/RAF';
 import Physics from '@/physics';
-// import Input from '@/inputs';
+import Input from '@/inputs';
 
 export default class MainLoop
 {
-  private raf!: number;
   private rifle!: Rifle;
   private pistol!: Pistol;
   private enemies!: Enemies;
@@ -29,7 +29,7 @@ export default class MainLoop
   private readonly worker = new WebWorker();
 
   private readonly loop = this.update.bind(this);
-  // private readonly input = new Input(this.player);
+  private readonly input = new Input(this.player);
   private readonly onSceneLoad = this.onLoad.bind(this);
 
   public constructor (scene: HTMLCanvasElement, pixelRatio: number) {
@@ -57,7 +57,9 @@ export default class MainLoop
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.enemies.colliders, this.pistol);
       GameEvents.dispatch('Loading::Complete', null, true);
+
       Physics.setPlayer(this.player.collider);
+      RAF.add(this.loop);
     });
 
     this.enemies = new Enemies(envMap);
@@ -77,8 +79,6 @@ export default class MainLoop
   }
 
   private update (): void {
-    this.raf = requestAnimationFrame(this.loop);
-
     const delta = Math.min(this.clock.getDelta(), 0.1);
     const playerPosition = this.player.location.position;
 
@@ -108,11 +108,10 @@ export default class MainLoop
   }
 
   public dispose (): void {
-    cancelAnimationFrame(this.raf);
     this.removeEventListeners();
-
     this.level.dispose();
     Physics.dispose();
+    RAF.dispose();
   }
 
   // public get playerLocation (): Location {
@@ -121,10 +120,9 @@ export default class MainLoop
 
   public set pause (paused: boolean) {
     this.level.pause = paused;
-    Physics.pause = paused;
+    this.input.pause = paused;
 
-    paused
-      ? cancelAnimationFrame(this.raf)
-      : this.raf = requestAnimationFrame(this.loop);
+    Physics.pause = paused;
+    RAF.pause = paused;
   }
 }

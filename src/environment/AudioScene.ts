@@ -17,6 +17,8 @@ import { Audio } from 'three/src/audio/Audio';
 
 import { randomInt } from '@/utils/Number';
 import { Config } from '@/config';
+
+import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
 export default class AudioScene
@@ -46,7 +48,6 @@ export default class AudioScene
   private readonly scene = new Scene();
 
   private ambient!: Audio;
-  private raf!: number;
 
   public constructor () {
     this.camera.matrixAutoUpdate = false;
@@ -63,8 +64,7 @@ export default class AudioScene
     this.createAmbientSound();
     this.addEventListeners();
 
-    this.scene.updateMatrixWorld(true);
-    this.raf = requestAnimationFrame(this.onUpdate);
+    RAF.add(this.onUpdate);
   }
 
   private async loadSounds (sounds: ReadonlyArray<string>): Promise<Array<AudioBuffer>> {
@@ -183,6 +183,7 @@ export default class AudioScene
   }
 
   public playAmbient (): void {
+    this.scene.updateMatrixWorld(true);
     this.ambient.play();
 
     /* anime({
@@ -200,7 +201,6 @@ export default class AudioScene
   private update (): void {
     this.updateCameraState();
     this.renderer.render(this.scene, this.camera);
-    this.raf = requestAnimationFrame(this.onUpdate);
   }
 
   private updateCameraState (): void {
@@ -217,16 +217,10 @@ export default class AudioScene
   }
 
   public set pause (paused: boolean) {
-    paused
-      ? cancelAnimationFrame(this.raf)
-      : this.raf = requestAnimationFrame(this.onUpdate);
-
     this.ambient && this.ambient[paused ? 'pause' : 'play']();
   }
 
   public dispose (): void {
-    cancelAnimationFrame(this.raf);
-
     while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);
     }
@@ -235,6 +229,7 @@ export default class AudioScene
     GameEvents.remove('SFX::Thunder', true);
     GameEvents.remove('SFX::Weapon', true);
 
+    RAF.remove(this.onUpdate);
     this.renderer.dispose();
   }
 }

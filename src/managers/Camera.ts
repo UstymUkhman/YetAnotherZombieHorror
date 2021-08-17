@@ -8,6 +8,8 @@ import { Vector } from '@/utils/Vector';
 
 import Viewport from '@/utils/Viewport';
 import { Config } from '@/config';
+
+import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
 type CameraState = {
@@ -21,8 +23,6 @@ type CameraState = {
 export class CameraManager
 {
   private fps = false;
-  private raf!: number;
-
   private runDelta!: number;
   private shakeDuration = 0.0;
   private rightShoulder = true;
@@ -127,7 +127,7 @@ export class CameraManager
   public aimAnimation (aiming: boolean, rifle: boolean, duration = 400): void {
     const { x, y, z } = this.getPosition(false, aiming, rifle);
 
-    aiming && cancelAnimationFrame(this.raf);
+    aiming && RAF.remove(this.onRunning);
     anime.running.length = 0;
 
     aiming && anime({
@@ -168,8 +168,8 @@ export class CameraManager
     this.runDelta = 0;
 
     anime({
-      complete: () => running && requestAnimationFrame(this.onRunning),
-      begin: () => !running && cancelAnimationFrame(this.raf),
+      begin: () => !running && RAF.remove(this.onRunning),
+      complete: () => running && RAF.add(this.onRunning),
 
       targets: this.camera.position,
       delay: +running * 100,
@@ -188,8 +188,6 @@ export class CameraManager
 
     this.camera.position.y += sin * offset / 100;
     this.camera.rotation.y -= cos * offset / 500;
-
-    this.raf = requestAnimationFrame(this.onRunning);
   }
 
   public deathAnimation (): void { return; }
@@ -203,7 +201,7 @@ export class CameraManager
   }
 
   public dispose (): void {
-    cancelAnimationFrame(this.raf);
+    RAF.remove(this.onRunning);
   }
 
   public static get config (): CameraState {

@@ -208,6 +208,7 @@ export default class Keyboard
 
   public dispose (): void {
     this.removeEventListeners();
+    this.paused = true;
   }
 
   private get disabled (): boolean {
@@ -216,5 +217,9 @@ export default class Keyboard
 
   private get movement (): string {
     return (this.moves as unknown as Array<number>).join('');
+  }
+
+  public set pause (paused: boolean) {
+    this.paused = paused;
   }
 }

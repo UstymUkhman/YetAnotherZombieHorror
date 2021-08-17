@@ -1,11 +1,13 @@
 <script lang="ts">
-  import type { Coords } from '@/environment/LevelScene';
+  import type { LevelCoords } from '@/environment/types';
   import { PI, easeOutSine } from '@/utils/Number';
+
   export let context: CanvasRenderingContext2D;
   import { onDestroy } from 'svelte';
+  import RAF from '@/managers/RAF';
 
+  export let coords: LevelCoords;
   export let visible: boolean;
-  export let coords: Coords;
 
   const RADIUS = 5.0;
   const FRAME = 1.0 / 60.0;
@@ -13,16 +15,15 @@
 
   const RIFLE_RGB = '255, 255, 255';
   const CIRC = RADIUS * Math.PI;
-  const CIRC2 = CIRC * 2.0;
 
+  const CIRC2 = CIRC * 2.0;
   let circ, start = 0.0;
-  let frame = 0.0;
 
   function spawnRifle (): void {
     clearRifle();
+    RAF.add(spawnRifle);
     const [x, y] = coords;
 
-    frame = requestAnimationFrame(spawnRifle);
     context.fillStyle = `rgb(${RIFLE_RGB})`;
 
     context.beginPath();
@@ -47,7 +48,7 @@
   }
 
   function pickRifle (): void {
-    cancelAnimationFrame(frame);
+    RAF.remove(spawnRifle);
     clearRifle();
   }
 

@@ -1,6 +1,7 @@
-import type { Bounds } from '@/environment/LevelScene';
+import type { LevelBounds } from '@/environment/types';
 
-export const cloneBounds = (bounds: Bounds): Bounds => JSON.parse(JSON.stringify(bounds));
+export const cloneBounds = (bounds: LevelBounds): LevelBounds =>
+  JSON.parse(JSON.stringify(bounds));
 
 export const min = (a: Array<number>): number => {
   let l = a.length, m = Infinity;

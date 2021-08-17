@@ -31,7 +31,7 @@ export default class Music
     this.track.pause();
   }
 
-  public destroy (): void {
+  public dispose (): void {
     this.track.currentTime = 0;
     this.pause();
   }

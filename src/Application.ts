@@ -9,7 +9,9 @@ import Settings from '@/config/settings';
 
 import Pointer from '@/managers/Pointer';
 import Viewport from '@/utils/Viewport';
+
 import Music from '@/managers/Music';
+import RAF from '@/managers/RAF';
 
 export default class Application
 {
@@ -54,7 +56,9 @@ export default class Application
 
   public destroy (): void {
     this.pause = true;
-    this.music.destroy();
+    RAF.dispose();
+
+    this.music.dispose();
     this.raindrops?.dispose();
     Viewport.removeResizeCallback(this.onResize);
   }
@@ -66,11 +70,9 @@ export default class Application
       ? this.pointer.exitPointerLock()
       : this.pointer.requestPointerLock();
 
-    if (this.raindrops) {
-      this.raindrops.pause = paused;
-    }
-
     this.audioScene.pause = paused;
     this.offscreen.pause = paused;
+
+    RAF.pause = paused;
   }
 }

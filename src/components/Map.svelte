@@ -15,8 +15,9 @@
 
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
-  import type { Coords, Bounds } from '@/environment/LevelScene';
+  import type { LevelCoords, LevelBounds } from '@/environment/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
+
   import type { Vector3 } from 'three/src/math/Vector3';
   import MapRifle from '@components/MapRifle.svelte';
 
@@ -29,7 +30,7 @@
 
   const minCoords = LevelScene.minCoords.map(
     coord => Math.abs(coord) + PADDING
-  ) as unknown as Coords;
+  ) as unknown as LevelCoords;
 
   const dispatch = createEventDispatcher();
 
@@ -40,12 +41,12 @@
   export let playerRotation: number;
 
   const bounds = LevelScene.bounds;
+  let rifleCoords: LevelCoords;
   let canvasTransform: string;
   let map: HTMLCanvasElement;
 
   let visibleRifle: boolean;
   let renderRifle: boolean;
-  let rifleCoords: Coords;
 
   export let radius: number;
   export let scale: number;
@@ -55,17 +56,17 @@
   const PADDING = 1;
 
   function spawnRifle (event: GameEvent): void {
-    rifleCoords = getScaledCoords(event.data as Coords, minCoords, scale);
+    rifleCoords = getScaledCoords(event.data as LevelCoords, minCoords, scale);
 
     visibleRifle = true;
     renderRifle = true;
   }
 
-  function getNormalizedBounds (): Bounds {
+  function getNormalizedBounds (): LevelBounds {
     const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
 
-    map.height = max(cBounds.map((coords: Coords) => coords[1])) + PADDING * 2;
-    map.width = max(cBounds.map((coords: Coords) => coords[0])) + PADDING * 2;
+    map.height = max(cBounds.map((coords: LevelCoords) => coords[1])) + PADDING * 2;
+    map.width = max(cBounds.map((coords: LevelCoords) => coords[0])) + PADDING * 2;
 
     return cBounds;
   }

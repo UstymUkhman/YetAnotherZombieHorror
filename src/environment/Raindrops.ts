@@ -1,19 +1,19 @@
 import Viewport from '@/utils/Viewport';
 import Raindrop from 'raindrop-fx';
+import RAF from '@/managers/RAF';
 
 export default class Raindrops
 {
+  private raindrops: Raindrop;
+
   private readonly onUpdate = this.update.bind(this);
   private readonly onResize = this.resize.bind(this);
-
-  private raindrops: Raindrop;
-  private raf: number;
 
   public constructor (
     private readonly background: HTMLCanvasElement,
     private readonly canvas: HTMLCanvasElement
   ) {
-    this.raf = requestAnimationFrame(this.onUpdate);
+    RAF.add(this.onUpdate);
     Viewport.addResizeCallback(this.onResize);
 
     this.raindrops = new Raindrop({
@@ -46,7 +46,6 @@ export default class Raindrops
   }
 
   private update (): void {
-    this.raf = requestAnimationFrame(this.onUpdate);
     this.raindrops.setBackground(this.background);
   }
 
@@ -56,14 +55,9 @@ export default class Raindrops
     this.canvas.width = width;
   }
 
-  public set pause (paused: boolean) {
-    paused
-      ? cancelAnimationFrame(this.raf)
-      : this.raf = requestAnimationFrame(this.onUpdate);
-  }
-
   public dispose (): void {
-    cancelAnimationFrame(this.raf);
+    Viewport.removeResizeCallback(this.onResize);
+    RAF.remove(this.onUpdate);
     this.raindrops.stop();
   }
 }

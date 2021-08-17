@@ -18,19 +18,13 @@ const eventPropsHandler = (props: Array<string>): EventHandler =>
 export const prevent = (event: Event): void =>
   event.preventDefault();
 
-/* export const stop = (event: Event): void =>
-  event.stopPropagation(); */
-
 // Mouse Events:
 
 export type EventCallback = (data: Event) => void;
 type EventHandler = (event: Event, callback: EventCallback) => void;
 
 export const mouseEvent = eventPropsHandler([
-  'button' // , 'pointerType', 'pointerId',
-  // 'ctrlKey', 'metaKey', 'shiftKey',
-  // 'clientX', 'clientY',
-  // 'pageX', 'pageY'
+  'button', 'movementX', 'movementY'
 ]);
 
 // Wheel Events:
@@ -46,18 +40,25 @@ export function wheelEvent (event: Event, callback: EventCallback): void {
 
 // Keyboard Events:
 
-const onKeyboardEvent = eventPropsHandler([
-  'code' //, 'ctrlKey', 'metaKey', 'shiftKey', 'keyCode'
-]);
+const onKeyboardEvent = eventPropsHandler(['code']);
 
 type KeyboardCode = Readonly<KeyboardEvent['code']>;
 type ActiveKeys = Record<KeyboardCode, boolean>;
 
 const keys: ActiveKeys = Object.freeze({
-  // 'ArrowLeft' : true,
-  // 'ArrowUp'   : true,
-  // 'ArrowRight': true,
-  // 'ArrowDown' : true
+  'KeyW'      : true,
+  'KeyD'      : true,
+  'KeyS'      : true,
+  'KeyA'      : true,
+
+  'KeyQ'      : true,
+  'KeyE'      : true,
+
+  'KeyC'      : true,
+  'KeyV'      : true,
+
+  'KeyR'      : true,
+  'ShiftLeft' : true
 });
 
 export function keyboardEvent (event: Event, callback: EventCallback): void {
