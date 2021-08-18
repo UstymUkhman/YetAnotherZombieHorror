@@ -1,5 +1,6 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
+import type { PlayerLocation } from '@/characters/types';
 import type { LevelCoords } from '@/environment/types';
 
 import LevelScene from '@/environment/LevelScene';
@@ -79,8 +80,11 @@ export default class MainLoop
   }
 
   private update (): void {
+    const player = this.playerLocation;
+    const playerPosition = player.position;
+
     const delta = Math.min(this.clock.getDelta(), 0.1);
-    const playerPosition = this.player.location.position;
+    GameEvents.dispatch('Player::Location', player, true);
 
     const position = this.level.outOfBounds(playerPosition);
     position !== null && this.player.teleport(position);
@@ -114,9 +118,9 @@ export default class MainLoop
     RAF.dispose();
   }
 
-  // public get playerLocation (): Location {
-  //   return this.player.location;
-  // }
+  public get playerLocation (): PlayerLocation {
+    return this.player.location;
+  }
 
   public set pause (paused: boolean) {
     this.level.pause = paused;

@@ -113,7 +113,7 @@ export default class Weapon
 
     else {
       const hitBox = this.targets[target];
-      GameEvents.dispatch('Player::Shoot');
+      GameEvents.dispatch('Player::Shoot', true);
 
       this.playSound('shoot', true);
       this.loadedAmmo--;

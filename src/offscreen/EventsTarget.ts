@@ -1,5 +1,6 @@
 import type { EventListener, EventOptions } from '@/offscreen/types';
 import { EventDispatcher } from 'three/src/core/EventDispatcher';
+import type { Event } from 'three/src/core/EventDispatcher';
 
 class EventsTarget extends EventDispatcher
 {

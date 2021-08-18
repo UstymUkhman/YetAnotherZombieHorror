@@ -11,12 +11,14 @@
     <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
     <canvas width={`${width}px`} height={`${height}px`} bind:this={raindrops}></canvas>
 
-    <!-- <Interface /> -->
+    {#if app}
+      <Interface />
+    {/if}
   </div>
 </main>
 
 <script lang="ts">
-  // import Interface from '@components/HUD/Interface.svelte';
+  import Interface from '@components/HUD/Interface.svelte';
 
   import { GameEvents } from '@/events/GameEvents';
   import Application from '@/managers/Application';

@@ -72,7 +72,7 @@ export default class Rifle extends Weapon
     const playerDistance = this.clone.position.distanceTo(player);
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
-      GameEvents.dispatch('Rifle::Pick', this.clone);
+      GameEvents.dispatch('Rifle::Pick', this.clone, true);
       this.spawned = false;
     }
   }
@@ -86,7 +86,7 @@ export default class Rifle extends Weapon
     this.clone.rotation.set(0, 0, 0);
 
     GameEvents.dispatch('Level::AddModel', this.clone);
-    GameEvents.dispatch('Rifle::Spawn', coords);
+    GameEvents.dispatch('Rifle::Spawn', coords, true);
 
     this.spawned = true;
   }

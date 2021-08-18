@@ -135,8 +135,8 @@ export default class Player extends Character
     if (now - this.idleTime < 350) return;
     const idle = this.getWeaponAnimation('Idle');
 
-    GameEvents.dispatch('Player::Aim', false);
-    GameEvents.dispatch('Player::Run', false);
+    GameEvents.dispatch('Player::Aim', false, true);
+    GameEvents.dispatch('Player::Run', false, true);
     Camera.runAnimation(false);
 
     this.running = this.moving = false;
@@ -160,8 +160,8 @@ export default class Player extends Character
     if (this.lastAnimation === animation) return;
     this.updateAnimation(direction, animation);
 
-    GameEvents.dispatch('Player::Run', false);
-    GameEvents.dispatch('Player::Aim', true);
+    GameEvents.dispatch('Player::Run', false, true);
+    GameEvents.dispatch('Player::Aim', true, true);
     Camera.runAnimation(false);
 
     this.running = false;
@@ -184,7 +184,7 @@ export default class Player extends Character
     }
 
     if (directions[Direction.UP]) {
-      GameEvents.dispatch('Player::Run', true);
+      GameEvents.dispatch('Player::Run', true, true);
       this.updateAnimation('Run', run);
       Camera.runAnimation(true);
 
@@ -196,8 +196,8 @@ export default class Player extends Character
   public startAiming (): void {
     if (this.blockingAnimation()) return;
 
-    GameEvents.dispatch('Player::Run', false);
     this.weapon.aim = this.aiming = true;
+    GameEvents.dispatch('Player::Run', false, true);
 
     Camera.runAnimation(false);
     Camera.aimAnimation(true, this.equipRifle);
@@ -215,7 +215,7 @@ export default class Player extends Character
     }
 
     Camera.isFPS && setTimeout(() =>
-      GameEvents.dispatch('Player::Aim', true)
+      GameEvents.dispatch('Player::Aim', true, true)
     , 300 + +this.equipRifle * 300);
 
     !this.equipRifle && setTimeout(() => {
@@ -227,9 +227,10 @@ export default class Player extends Character
   public stopAiming (): void {
     const duration = Math.min(Date.now() - this.aimTime, 400);
     Camera.aimAnimation(false, this.equipRifle, duration);
+
+    GameEvents.dispatch('Player::Aim', false, true);
     Camera.updateNearPlane(false, this.equipRifle);
 
-    GameEvents.dispatch('Player::Aim', false);
     this.weapon.aim = this.aiming = false;
     this.currentAnimation.paused = false;
 
@@ -261,8 +262,8 @@ export default class Player extends Character
     if (this.blockingAnimation()) return;
     if (this.weapon.full || !this.weapon.inStock) return;
 
+    GameEvents.dispatch('Player::Run', false, true);
     this.updateAnimation('Idle', 'rifleReload');
-    GameEvents.dispatch('Player::Run', false);
 
     Camera.setNearPlane(0.15, 400);
     this.weapon.startReloading();
@@ -342,7 +343,7 @@ export default class Player extends Character
       !Camera.isFPS && this.resetRotation();
 
       setTimeout(() =>
-        GameEvents.dispatch('Player::Aim', aiming)
+        GameEvents.dispatch('Player::Aim', aiming, true)
       , +aiming * 300);
     }
   }

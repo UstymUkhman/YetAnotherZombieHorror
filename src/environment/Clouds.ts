@@ -39,7 +39,6 @@ export default class Clouds
 
   public constructor (private readonly count: number) {
     this.createLighting();
-    this.startLighting();
     this.createClouds();
   }
 

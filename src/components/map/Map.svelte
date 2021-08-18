@@ -16,16 +16,16 @@
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
   import type { LevelCoords, LevelBounds } from '@/environment/types';
-  import { GameEvents, GameEvent } from '@/events/GameEvents';
 
+  import MapRifle from '@components/map/MapRifle.svelte';
   import type { Vector3 } from 'three/src/math/Vector3';
-  import MapRifle from '@components/MapRifle.svelte';
 
+  import Player from '@components/map/Player.svelte';
   import LevelScene from '@/environment/LevelScene';
   import { cloneBounds, max } from '@/utils/Array';
+  import { GameEvents } from '@/events/GameEvents';
 
   import { createEventDispatcher } from 'svelte';
-  import Player from '@components/Player.svelte';
   import { onMount, onDestroy } from 'svelte';
 
   const minCoords = LevelScene.minCoords.map(
@@ -55,8 +55,8 @@
   let offset: number;
   const PADDING = 1;
 
-  function spawnRifle (event: GameEvent): void {
-    rifleCoords = getScaledCoords(event.data as LevelCoords, minCoords, scale);
+  function spawnRifle (event: unknown): void {
+    rifleCoords = getScaledCoords(event as LevelCoords, minCoords, scale);
 
     visibleRifle = true;
     renderRifle = true;
@@ -117,14 +117,14 @@
     });
   }
 
-  GameEvents.add('Rifle::Spawn', spawnRifle);
-  GameEvents.add('Rifle::Pick', pickRifle);
+  GameEvents.add('Rifle::Spawn', spawnRifle, true);
+  GameEvents.add('Rifle::Pick', pickRifle, true);
 
   onMount(drawBounds);
 
   onDestroy(() => {
-    GameEvents.remove('Rifle::Spawn');
-    GameEvents.remove('Rifle::Pick');
+    GameEvents.remove('Rifle::Spawn', true);
+    GameEvents.remove('Rifle::Pick', true);
   });
 
   $: (position => {

@@ -16,13 +16,13 @@
     shooting = false;
   }
 
-  onMount(() => {
-    GameEvents.add('Player::Shoot', onShoot);
-  });
+  onMount(() =>
+    GameEvents.add('Player::Shoot', onShoot, true)
+  );
 
-  onDestroy(() => {
-    GameEvents.remove('Player::Shoot');
-  });
+  onDestroy(() =>
+    GameEvents.remove('Player::Shoot', true)
+  );
 </script>
 
 <style lang="scss">

@@ -50,7 +50,7 @@
     "ammo.js": "^0.0.10",
     "animejs": "^3.2.1",
     "raindrop-fx": "^1.0.8",
-    "three": "^0.131.3",
+    "three": "^0.130.1",
     "three-mesh-bvh": "^0.4.2"
   },
   "devDependencies": {

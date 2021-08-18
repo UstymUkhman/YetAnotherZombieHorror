@@ -123,7 +123,7 @@ export default class AudioScene
     this.ambient.setBuffer(ambient);
     this.ambient.autoplay = false;
 
-    this.ambient.setVolume(0.25);
+    this.ambient.setVolume(0.0);
     this.ambient.setLoop(true);
   }
 
@@ -135,6 +135,7 @@ export default class AudioScene
 
   private playThuder (position: unknown): void {
     this.thunder.position.copy(position as Vector3);
+    this.thunder.updateMatrixWorld();
 
     const distance = this.thunder.position.distanceToSquared(this.listener.position);
     const audioIndex = randomInt(0, this.thunder.children.length - 1);
@@ -194,7 +195,7 @@ export default class AudioScene
     this.scene.updateMatrixWorld(true);
     this.ambient.play();
 
-    /* anime({
+    setTimeout(() => anime({
       targets: { volume: this.ambient.getVolume() },
       update: ({ animations }) => this.ambient.setVolume(
         +animations[0].currentValue
@@ -203,7 +204,7 @@ export default class AudioScene
       easing: 'linear',
       duration: 1000,
       volume: 0.25
-    }); */
+    }), 100);
   }
 
   private update (): void {
@@ -226,6 +227,7 @@ export default class AudioScene
 
   public set pause (paused: boolean) {
     this.ambient && this.ambient[paused ? 'pause' : 'play']();
+    this.listener.setMasterVolume(+!paused);
   }
 
   public dispose (): void {
