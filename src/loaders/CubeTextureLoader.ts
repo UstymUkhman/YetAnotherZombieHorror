@@ -15,7 +15,6 @@ export default class CubeTextureLoader extends ThreeCubeTextureLoader
 
   public override load (urls: Array<string>, onLoad?: LoadCallback, onProgress?: ProgressCallback, onError?: ErrorCallback): CubeTexture {
     const loader = new ImageBitmapLoader(this.manager).setPath(this.path);
-    loader.setOptions({ imageOrientation: 'flipY' });
 
     const texture = new CubeTexture();
     let loaded = 0;

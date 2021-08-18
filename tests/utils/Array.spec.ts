@@ -1,6 +1,6 @@
 import type { LevelBounds } from '@/environment/types';
 import { cloneBounds, min, max } from '@/utils/Array';
-import Level from '@/config/level.json';
+import Level from '@/configs/level.json';
 
 describe('Array', () => {
   test('cloneBounds', () => {

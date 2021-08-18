@@ -5,7 +5,7 @@ import { Vector3 } from 'three/src/math/Vector3';
 import AmmoPhysics from '@/physics/AmmoPhysics';
 
 import { Mesh } from 'three/src/objects/Mesh';
-import Config from '@/config';
+import Configs from '@/configs';
 
 describe('AmmoPhysics', () => {
   const Physics = new AmmoPhysics();
@@ -25,12 +25,12 @@ describe('AmmoPhysics', () => {
   });
 
   test('createBounds', () => {
-    const { position, height, sidewalkHeight } = Config.Level;
+    const { position, height, sidewalkHeight } = Configs.Level;
 
     const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
       borders: LevelScene.bounds, y: position.y, height
     }, {
-      borders: Config.Level.sidewalk as LevelBounds,
+      borders: Configs.Level.sidewalk as LevelBounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     }));

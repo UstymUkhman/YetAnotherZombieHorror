@@ -23,15 +23,13 @@ import { Scene } from 'three/src/scenes/Scene';
 
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
-
 import { min, max } from '@/utils/Array';
-import Settings from '@/config/settings';
 
 import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 
 import Physics from '@/physics';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class LevelScene
 {
@@ -64,35 +62,35 @@ export default class LevelScene
   }
 
   private createColliders (): void {
-    const { position, height, sidewalkHeight } = Config.Level;
+    const { position, height, sidewalkHeight } = Configs.Level;
     Physics.createGround(LevelScene.minCoords, LevelScene.maxCoords);
 
     Physics.createBounds({
       borders: LevelScene.bounds, y: position.y, height
     }, {
-      borders: Config.Level.sidewalk as LevelBounds,
+      borders: Configs.Level.sidewalk as LevelBounds,
       height: sidewalkHeight,
       y: sidewalkHeight / 2
     });
   }
 
   private async createEnvironment (): Promise<void> {
-    if (Settings.raining) {
+    if (Configs.Settings.raining) {
       this.rain = new Rain(this.renderer, this.scene);
     }
 
-    Settings.fog && import('@/environment/VolumetricFog').then(
+    Configs.Settings.fog && import('@/environment/VolumetricFog').then(
       ({ VolumetricFog }) => {
         this.fog = new VolumetricFog();
         this.scene.fog = this.fog;
       }
     );
 
-    const skyboxMap = await this.createSkybox(Config.Level.skybox);
-    const level = await this.loadLevel(Config.Level.model);
+    const skyboxMap = await this.createSkybox(Configs.Level.skybox);
+    const level = await this.loadLevel(Configs.Level.model);
 
-    level.position.copy(Config.Level.position as Vector3);
-    level.scale.copy(Config.Level.scale as Vector3);
+    level.position.copy(Configs.Level.position as Vector3);
+    level.scale.copy(Configs.Level.scale as Vector3);
 
     this.scene.add(this.clouds.flash);
     this.scene.add(this.clouds.sky);
@@ -167,9 +165,9 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const exposure = +Config.worker * 0.5 + 0.5;
+    const exposure = +Configs.worker * 0.5 + 0.5;
 
-    this.renderer.physicallyCorrectLights = Config.worker;
+    this.renderer.physicallyCorrectLights = Configs.worker;
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 
@@ -244,7 +242,7 @@ export default class LevelScene
   }
 
   public static get portals (): LevelBounds {
-    return Config.Level.portals as LevelBounds;
+    return Configs.Level.portals as LevelBounds;
   }
 
   public static get center (): Vector3 {
@@ -256,7 +254,7 @@ export default class LevelScene
   }
 
   public static get bounds (): LevelBounds {
-    return Config.Level.bounds as LevelBounds;
+    return Configs.Level.bounds as LevelBounds;
   }
 
   public static get size (): Vector2 {

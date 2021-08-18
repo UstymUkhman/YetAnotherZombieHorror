@@ -13,7 +13,7 @@ import { LoopOnce } from 'three/src/constants';
 import { Mesh } from 'three/src/objects/Mesh';
 
 import { HitBox } from '@/utils/Material';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class Enemy extends Character
 {
@@ -27,7 +27,7 @@ export default class Enemy extends Character
   private id: number;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, id = 0) {
-    super(Config.Enemy);
+    super(Configs.Enemy);
     this.id = id;
 
     if (model && envMap) {

@@ -11,9 +11,8 @@ import parsVert from '@/shaders/fog/pars.vert';
 import fogFrag from '@/shaders/fog/main.frag';
 import fogVert from '@/shaders/fog/main.vert';
 
-import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export class VolumetricFog extends FogExp2
 {
@@ -26,10 +25,10 @@ export class VolumetricFog extends FogExp2
   public constructor () {
     super(Color.GRAY, 0.02);
 
-    Settings.bakedFog && Assets.Loader.loadTexture(Config.Level.fog)
+    Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)
       .then(texture => this.noise = texture);
 
-    ShaderChunk.fog_pars_fragment = Settings.bakedFog
+    ShaderChunk.fog_pars_fragment = Configs.Settings.bakedFog
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
 
     ShaderChunk.fog_pars_vertex = parsVert;

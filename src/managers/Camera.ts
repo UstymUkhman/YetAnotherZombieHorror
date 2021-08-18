@@ -8,7 +8,7 @@ import { Vector } from '@/utils/Vector';
 
 import Viewport from '@/utils/Viewport';
 import RAF from '@/managers/RAF';
-import Config from '@/config';
+import Configs from '@/configs';
 import anime from 'animejs';
 
 type CameraState = {
@@ -40,7 +40,7 @@ export class CameraManager
 
   public constructor () {
     this.camera = new PerspectiveCamera(45, Viewport.ratio, +this.fps * 0.215 + 0.1);
-    this.camera.far = Config.Level.depth;
+    this.camera.far = Configs.Level.depth;
 
     this.setCamera();
     this.updateState();
@@ -66,7 +66,7 @@ export class CameraManager
 
   private getPosition (running = false, aiming = false, rifle = false): Vector3 {
     if (this.fps && aiming && rifle) return this.fpRifleAim;
-    const { idle, run, aim } = Config.Camera[this.fps ? 'fps' : 'tps'];
+    const { idle, run, aim } = Configs.Camera[this.fps ? 'fps' : 'tps'];
 
     this.position.copy((running ? run : aiming ? aim : idle) as Vector3);
     this.position.x *= +(!this.fps && !this.rightShoulder) * -2 + 1;

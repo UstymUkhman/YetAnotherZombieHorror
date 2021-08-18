@@ -7,8 +7,8 @@ import LevelScene from '@/environment/LevelScene';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
-import LevelData from '@/config/level.json';
-import Config from '@/config';
+import LevelData from '@/configs/level.json';
+import Configs from '@/configs';
 
 describe('LevelScene', () => {
   const canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
@@ -37,9 +37,9 @@ describe('LevelScene', () => {
 
   test('loadLevel', () => {
     const levelPrototype = Object.getPrototypeOf(level);
-    const loadLevel = jest.fn(levelPrototype.loadLevel.bind(level, Config.Level.model));
+    const loadLevel = jest.fn(levelPrototype.loadLevel.bind(level, Configs.Level.model));
 
-    const levelModel = loadLevel(Config.Level.model);
+    const levelModel = loadLevel(Configs.Level.model);
     expect(levelModel).toBeInstanceOf(Object);
   });
 

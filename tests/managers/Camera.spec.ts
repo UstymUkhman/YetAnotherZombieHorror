@@ -3,7 +3,7 @@ import { CameraManager, CameraObject } from '@/managers/Camera';
 
 import { Object3D } from 'three/src/core/Object3D';
 import Camera from '@/managers/Camera';
-import Config from '@/config';
+import Configs from '@/configs';
 
 describe('Camera', () => {
   test('setCamera', () => {
@@ -26,7 +26,7 @@ describe('Camera', () => {
     const getPosition = jest.fn(сameraPrototype.getPosition.bind(Camera));
 
     getPosition();
-    expect(getPosition).toHaveReturnedWith(Config.Camera.tps.idle);
+    expect(getPosition).toHaveReturnedWith(Configs.Camera.tps.idle);
   });
 
   test('changeView', () => {
@@ -110,7 +110,7 @@ describe('Camera', () => {
   });
 
   test('shakeAnimation', () => {
-    const { x, y, z } = Config.Camera.tps.idle;
+    const { x, y, z } = Configs.Camera.tps.idle;
     const shakeAnimation = jest.fn(Camera.shakeAnimation.bind(Camera));
 
     shakeAnimation(0.0);

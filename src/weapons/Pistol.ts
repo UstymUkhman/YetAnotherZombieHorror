@@ -3,16 +3,16 @@ import type { Vector3 } from 'three/src/math/Vector3';
 import type { Euler } from 'three/src/math/Euler';
 
 import Weapon from '@/weapons/Weapon';
-import Config from '@/config';
+import Configs from '@/configs';
 import anime from 'animejs';
 
 export default class Pistol extends Weapon
 {
-  private readonly position = Config.Pistol.position as Vector3;
-  private readonly rotation = Config.Pistol.rotation as Euler;
+  private readonly position = Configs.Pistol.position as Vector3;
+  private readonly rotation = Configs.Pistol.rotation as Euler;
 
   public constructor (envMap: Texture) {
-    super(Config.Pistol, envMap);
+    super(Configs.Pistol, envMap);
   }
 
   public override setAim (): void {

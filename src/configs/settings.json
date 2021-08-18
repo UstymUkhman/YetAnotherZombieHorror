@@ -1,0 +1,10 @@
+{
+  "dynamicClouds": false,
+  "softParticles": true,
+  "ammoPhysics": true,
+
+  "raindrops": true,
+  "bakedFog": true,
+  "raining": true,
+  "fog": true
+}

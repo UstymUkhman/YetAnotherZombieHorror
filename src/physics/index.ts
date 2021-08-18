@@ -4,7 +4,7 @@ import type { Mesh } from 'three/src/objects/Mesh';
 import PhysicsWorld from '@/physics/PhysicsWorld';
 
 import type { Coords } from '@/physics/types';
-import Settings from '@/config/settings';
+import Configs from '@/configs';
 
 class Physics extends PhysicsWorld
 {
@@ -12,7 +12,7 @@ class Physics extends PhysicsWorld
   private calls: Map<string, Array<unknown>> = new Map();
 
   private physics: Promise<PhysicsWorld> | PhysicsWorld = import(
-    Settings.ammoPhysics
+    Configs.Settings.ammoPhysics
       ? '@/physics/AmmoPhysics'
       : '@/physics/BVHPhysics'
   ).then(this.initializePhysics.bind(this));

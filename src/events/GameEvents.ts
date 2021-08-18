@@ -3,7 +3,7 @@ import WorkerEvents from '@/events/WorkerEvents';
 
 import type WebWorker from '@/worker/WebWorker';
 import type { Callback } from '@/worker/types';
-import Config from '@/config';
+import Configs from '@/configs';
 
 class Events extends CustomEvents
 {
@@ -14,19 +14,19 @@ class Events extends CustomEvents
   }
 
   public override add (name: string, callback: EventCallback, worker = false): void {
-    !Config.worker && worker
+    !Configs.worker && worker
       ? this.workerEvents?.add(name, callback as Callback)
       : super.add(name, callback as EventCallback);
   }
 
   public override dispatch (name: string, data: unknown = null, worker = false): void {
-    Config.worker && worker
+    Configs.worker && worker
       ? WorkerEvents.dispatch(name, data)
       : super.dispatch(name, data);
   }
 
   public override remove (name: string, worker = false): void {
-    !Config.worker && worker
+    !Configs.worker && worker
       ? this.workerEvents?.remove(name)
       : super.remove(name);
   }

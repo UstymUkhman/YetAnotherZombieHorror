@@ -8,20 +8,20 @@ import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
 import Weapon from '@/weapons/Weapon';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class Rifle extends Weapon
 {
-  private readonly position = Config.Rifle.position as Vector3;
-  private readonly rotation = Config.Rifle.rotation as Euler;
-  private readonly maxStock = Config.Rifle.maxStock;
+  private readonly position = Configs.Rifle.position as Vector3;
+  private readonly rotation = Configs.Rifle.rotation as Euler;
+  private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone?: Assets.GLTF;
   private reloading = false;
   private spawned = false;
 
   public constructor (envMap: Texture) {
-    super(Config.Rifle, envMap);
+    super(Configs.Rifle, envMap);
   }
 
   public override setAim (): void {
@@ -41,7 +41,7 @@ export default class Rifle extends Weapon
     this.reloading = true;
   }
 
-  public override addAmmo (ammo = Config.Rifle.magazine): void {
+  public override addAmmo (ammo = Configs.Rifle.magazine): void {
     if (ammo) this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
 
     else {
@@ -78,7 +78,7 @@ export default class Rifle extends Weapon
   }
 
   public spawn (coords: LevelCoords): void {
-    const worldScale = Config.Rifle.worldScale as Vector3;
+    const worldScale = Configs.Rifle.worldScale as Vector3;
     this.clone = this.clone || this.getClone();
 
     this.clone.position.set(coords[0], 1.75, coords[1]);

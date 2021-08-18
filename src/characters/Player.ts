@@ -16,7 +16,7 @@ import type Rifle from '@/weapons/Rifle';
 
 import { Vector } from '@/utils/Vector';
 import Camera from '@/managers/Camera';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class Player extends Character
 {
@@ -44,7 +44,7 @@ export default class Player extends Character
   private aimTime = 0;
 
   public constructor () {
-    super(Config.Player);
+    super(Configs.Player);
   }
 
   public async loadCharacter (envMap: Texture): Promise<void> {
@@ -61,7 +61,7 @@ export default class Player extends Character
     this.animations.rifleAim.setLoop(LoopOnce, 1);
     this.animations.death.setLoop(LoopOnce, 1);
 
-    !Config.freeCamera && Camera.setTo(character.scene);
+    !Configs.freeCamera && Camera.setTo(character.scene);
     GameEvents.dispatch('Level::AddModel', this.object);
     this.currentAnimation.play();
   }

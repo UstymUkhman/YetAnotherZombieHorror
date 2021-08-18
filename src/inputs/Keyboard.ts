@@ -3,7 +3,7 @@ import EventsTarget from '@/offscreen/EventsTarget';
 
 import { Directions, Direction } from '@/inputs';
 import type Player from '@/characters/Player';
-import Config from '@/config';
+import Configs from '@/configs';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }
 const IDLING = '0000';
@@ -35,7 +35,7 @@ export default class Keyboard
   }
 
   private addEventListeners (): void {
-    const target = Config.worker ? EventsTarget : document;
+    const target = Configs.worker ? EventsTarget : document;
 
     for (const [event, listener] of this.events) {
       target.addEventListener(event, listener, false);
@@ -199,7 +199,7 @@ export default class Keyboard
   }
 
   private removeEventListeners (): void {
-    const target = Config.worker ? EventsTarget : document;
+    const target = Configs.worker ? EventsTarget : document;
 
     for (const [event, listener] of this.events) {
       target.removeEventListener(event, listener, false);

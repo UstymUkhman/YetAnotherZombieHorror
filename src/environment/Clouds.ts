@@ -18,10 +18,9 @@ import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
-import Settings from '@/config/settings';
 import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class Clouds
 {
@@ -115,11 +114,11 @@ export default class Clouds
     this.clouds.instanceMatrix.needsUpdate = true;
 
     (this.clouds.material as MeshLambertMaterial).map =
-      await Assets.Loader.loadTexture(Config.Level.cloud);
+      await Assets.Loader.loadTexture(Configs.Level.cloud);
   }
 
   public update (): void {
-    if (!Settings.dynamicClouds) return;
+    if (!Configs.Settings.dynamicClouds) return;
 
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;

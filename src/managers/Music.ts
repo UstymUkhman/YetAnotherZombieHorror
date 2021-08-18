@@ -1,4 +1,4 @@
-import Config from '@/config';
+import Configs from '@/configs';
 
 export default class Music
 {
@@ -10,7 +10,7 @@ export default class Music
   private vol = 0.1;
 
   public constructor () {
-    const track = Config.Level.music;
+    const track = Configs.Level.music;
 
     this.track = new Audio(`${this.path}/${track}`);
     this.track.autoplay = !this.paused;

@@ -1,21 +1,22 @@
 import type { CharacterMove } from '@/characters/types';
+import SettingsData from '@/configs/settings.json';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
-import CameraData from '@/config/camera.json';
-import LevelData from '@/config/level.json';
+import CameraData from '@/configs/camera.json';
+import LevelData from '@/configs/level.json';
 
-import PlayerData from '@/config/player.json';
-import EnemyData from '@/config/enemy.json';
+import PlayerData from '@/configs/player.json';
+import EnemyData from '@/configs/enemy.json';
 
-import PistolData from '@/config/pistol.json';
-import RifleData from '@/config/rifle.json';
+import PistolData from '@/configs/pistol.json';
+import RifleData from '@/configs/rifle.json';
 
 import { Euler } from 'three/src/math/Euler';
 import deepFreeze from '@/utils/deepFreeze';
 
-namespace Config
+namespace Configs
 {
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
@@ -35,7 +36,9 @@ namespace Config
 
   type CharacterAnimations = Record<string, Readonly<Array<number>>>;
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
+
   type CharacterMoves = { [key: string]: CharacterMove };
+  export const Settings = deepFreeze(SettingsData);
 
   export const offscreen = (
     typeof HTMLCanvasElement !== 'undefined' &&
@@ -53,7 +56,6 @@ namespace Config
   /* eslint-enable no-undef */
 
   export const freeCamera = false;
-  export const workerRain = true;
   export const colliders = false;
   export const hitBoxes = false;
 
@@ -154,4 +156,4 @@ namespace Config
   });
 }
 
-export default Config;
+export default Configs;

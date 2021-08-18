@@ -15,11 +15,11 @@
 
 <script lang="ts">
   import { GameEvents } from '@/events/GameEvents';
+  import Application from '@/managers/Application';
+
   import Loader from '@components/Loader.svelte';
   import Pause from '@components/Pause.svelte';
   import { onMount, onDestroy } from 'svelte';
-
-  import Application from '@/Application';
   import Viewport from '@/utils/Viewport';
 
   let app: Application;

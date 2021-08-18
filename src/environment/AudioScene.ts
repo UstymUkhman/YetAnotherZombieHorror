@@ -18,7 +18,7 @@ import { Audio } from 'three/src/audio/Audio';
 import { randomInt } from '@/utils/Number';
 import RAF from '@/managers/RAF';
 
-import Config from '@/config';
+import Configs from '@/configs';
 import anime from 'animejs';
 
 export default class AudioScene
@@ -55,11 +55,11 @@ export default class AudioScene
     this.scene.autoUpdate = false;
     this.scene.add(this.player);
 
-    this.createCharacterSounds(Config.Player.sounds, true);
-    this.createCharacterSounds(Config.Enemy.sounds, false);
+    this.createCharacterSounds(Configs.Player.sounds, true);
+    this.createCharacterSounds(Configs.Enemy.sounds, false);
 
-    this.createWeaponSounds(Config.Pistol.sounds);
-    this.createWeaponSounds(Config.Rifle.sounds);
+    this.createWeaponSounds(Configs.Pistol.sounds);
+    this.createWeaponSounds(Configs.Rifle.sounds);
 
     this.createThunderSounds();
     this.createAmbientSound();
@@ -106,7 +106,7 @@ export default class AudioScene
   }
 
   private async createThunderSounds (): Promise<void> {
-    const sounds = await this.loadSounds(Config.Level.lighting);
+    const sounds = await this.loadSounds(Configs.Level.lighting);
 
     sounds.forEach(sound => {
       const audio = new PositionalAudio(this.listener);
@@ -117,7 +117,7 @@ export default class AudioScene
   }
 
   private async createAmbientSound (): Promise<void> {
-    const ambient = await Assets.Loader.loadAudio(Config.Level.ambient);
+    const ambient = await Assets.Loader.loadAudio(Configs.Level.ambient);
     this.ambient = new Audio(this.listener);
 
     this.ambient.setBuffer(ambient);
@@ -142,7 +142,7 @@ export default class AudioScene
     const thunder = this.thunder.children[audioIndex] as PositionalAudio;
     const duration = (thunder.buffer?.duration ?? 0) * 1e3;
 
-    thunder.setRefDistance(distance / Config.Level.depth);
+    thunder.setRefDistance(distance / Configs.Level.depth);
     thunder.setVolume(1.0);
     thunder.play();
 

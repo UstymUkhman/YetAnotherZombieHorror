@@ -103,7 +103,7 @@ export namespace Assets
     public override onProgress = (url: string, loaded: number, total: number): void => {
       const progress = loaded * 100 / total;
 
-      GameEvents.dispatch('Loading::Progress', {
+      GameEvents.dispatch('Asset::LoadingProgress', {
         uuid: this.uuid,
         progress
       }, true);
@@ -114,11 +114,11 @@ export namespace Assets
     }
 
     public override onStart = (): void => {
-      // GameEvents.dispatch('Loading::Start', this.uuid, true);
+      GameEvents.dispatch('Asset::LoadingStart', this.uuid, true);
     }
 
     public override onLoad = (): void => {
-      // GameEvents.dispatch('Loading::Complete', this.uuid, true);
+      GameEvents.dispatch('Asset::LoadingComplete', this.uuid, true);
     }
   }
 

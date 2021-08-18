@@ -21,10 +21,9 @@ import type WebWorker from '@/worker/WebWorker';
 import vertRain from '@/shaders/rain/main.vert';
 import fragRain from '@/shaders/rain/main.frag';
 
-import Settings from '@/config/settings';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
-import Config from '@/config';
+import Configs from '@/configs';
 
 const DROP_RATIO = Math.tan(PI.d3) * 3;
 
@@ -42,16 +41,13 @@ export default class Rain
   private delta = 0.0;
 
   public constructor (private readonly renderer: WebGLRenderer, private readonly scene: Scene) {
+    !Configs.worker && this.createWorkerLoop();
     this.createRenderTargets();
     this.createParticles();
-
-    if (!Config.worker || Config.workerRain) {
-      this.createWorkerLoop();
-    }
   }
 
   private createRenderTargets (): void {
-    if (!Settings.softParticles) return;
+    if (!Configs.Settings.softParticles) return;
     const { width, height } = this.renderer.domElement;
 
     const depthTexture = new DepthTexture(
@@ -86,8 +82,8 @@ export default class Rain
     this.material = new ShaderMaterial({
       uniforms: {
         screenSize: { value: new Vector2(width, height) },
+        soft: { value: Configs.Settings.softParticles },
         color: { value: Color.getClass(Color.GRAY) },
-        soft: { value: Settings.softParticles },
 
         ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },
@@ -114,7 +110,7 @@ export default class Rain
       uniforms.depth.value = this.renderTargets[0].depthTexture;
     }
 
-    Promise.all(Config.Level.rain.map(
+    Promise.all(Configs.Level.rain.map(
       Assets.Loader.loadTexture.bind(Assets.Loader)
     )).then(textures => uniforms.diffuse.value = textures);
 
@@ -143,10 +139,7 @@ export default class Rain
 
   public update (delta: number): void {
     this.delta = delta;
-
-    if (Config.worker && !Config.workerRain) {
-      this.updateParticles();
-    }
+    Configs.worker && this.updateParticles();
 
     if (this.renderTargets) {
       const lastRenderTarget = this.renderTargets[0];
