@@ -5,17 +5,17 @@ import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import { radToDeg } from 'three/src/math/MathUtils';
 
-import { Direction, Directions } from '@/inputs';
 import { GameEvents } from '@/events/GameEvents';
-
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 
+import type { Directions } from '@/inputs';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
 import { Vector } from '@/utils/Vector';
 import Camera from '@/managers/Camera';
+import { Direction } from '@/inputs';
 import Configs from '@/configs';
 
 export default class Player extends Character

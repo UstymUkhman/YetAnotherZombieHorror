@@ -7,7 +7,6 @@ import { UserConfigExport, defineConfig } from 'vite';
 
 export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
   assetsInclude: ['fbx', 'glb', 'gltf', 'wat'],
-  build: { polyfillDynamicImport: true },
   plugins: [svelte(), glsl()],
   base: './',
 

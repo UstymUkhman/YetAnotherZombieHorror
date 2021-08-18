@@ -1,8 +1,9 @@
 import type { Event } from 'three/src/core/EventDispatcher';
 import EventsTarget from '@/offscreen/EventsTarget';
 
-import { Directions, Direction } from '@/inputs';
 import type Player from '@/characters/Player';
+import type { Directions } from '@/inputs';
+import { Direction } from '@/inputs';
 import Configs from '@/configs';
 
 const enum BUTTON { LEFT, WHEEL, RIGHT }

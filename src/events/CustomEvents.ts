@@ -1,4 +1,5 @@
-import { GameEvent, EventCallback } from '@/events/GameEvents';
+import type { EventCallback } from '@/events/GameEvents';
+import { GameEvent } from '@/events/GameEvents';
 
 export class CustomEvents
 {
