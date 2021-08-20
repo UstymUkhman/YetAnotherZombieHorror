@@ -1,16 +1,17 @@
 import { ACESFilmicToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import type { LevelCoords, LevelBounds } from '@/environment/types';
 
+import type { LevelCoords, LevelBounds } from '@/environment/types';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import type { VolumetricFog } from '@/environment/VolumetricFog';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
-import type { Texture } from 'three/src/textures/Texture';
 
+import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import VolumetricFog from '@/environment/VolumetricFog';
+
 import type { Mesh } from 'three/src/objects/Mesh';
 import { CameraObject } from '@/managers/Camera';
 
@@ -79,12 +80,10 @@ export default class LevelScene
       this.rain = new Rain(this.renderer, this.scene);
     }
 
-    Configs.Settings.fog && import('@/environment/VolumetricFog').then(
-      ({ VolumetricFog }) => {
-        this.fog = new VolumetricFog();
-        this.scene.fog = this.fog;
-      }
-    );
+    if (Configs.Settings.fog) {
+      this.fog = new VolumetricFog();
+      this.scene.fog = this.fog;
+    }
 
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);

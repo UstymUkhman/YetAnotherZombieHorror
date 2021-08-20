@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "start:web": "vite",
-    "build:web": "vite build",
+    "build:web": "node ./parseGLSL.mjs --build && vite build && node ./parseGLSL.mjs",
     "serve:web": "vite preview",
     "build:app": "yarn build:web && tsc --project app",
     "build:dev": "cross-env ENVIRONMENT=development electron build/app/main.js",

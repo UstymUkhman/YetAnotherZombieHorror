@@ -14,7 +14,7 @@ import fogVert from '@/shaders/fog/main.vert';
 import { Color } from '@/utils/Color';
 import Configs from '@/configs';
 
-export class VolumetricFog extends FogExp2
+export default class VolumetricFog extends FogExp2
 {
   private readonly shaders: Array<Shader> = [];
   private noise?: CanvasTexture;
