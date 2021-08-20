@@ -11,8 +11,8 @@ import { EOL } from 'os';
 import glsl from 'vite-plugin-glsl';
 import { join, resolve, dirname } from 'path';
 
-const SHADER_DIR = join(resolve(), './src/shaders');
-const OUTPUT_DIR = join(resolve(), './public/assets/shaders');
+const SHADER_DIR = join(resolve(), 'src/shaders');
+const OUTPUT_DIR = join(resolve(), 'public/assets/shaders');
 
 function compileShader (path) {
   let shader = readFileSync(path).toString();

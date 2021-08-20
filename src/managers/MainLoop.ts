@@ -1,6 +1,6 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-import { getRandomCoord } from '@/worker/getRandomCoord';
+// import { getRandomCoord } from '@/worker/getRandomCoord';
 
 // import type { LevelCoords } from '@/environment/types';
 import type { Vector3 } from 'three/src/math/Vector3';
@@ -18,7 +18,7 @@ import Rifle from '@/weapons/Rifle';
 
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
-import Configs from '@/configs';
+// import Configs from '@/configs';
 import Input from '@/inputs';
 
 export default class MainLoop
@@ -72,23 +72,23 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
-  private spawnRifle (): void {
-    if (this.rifle.onStage) return;
+  // private spawnRifle (): void {
+  //   if (this.rifle.onStage) return;
 
-    Configs.worker &&
-      /* ? */ this.rifle.spawn(getRandomCoord({
-        player: this.player.location.position,
-        minCoords: LevelScene.minCoords,
-        maxCoords: LevelScene.maxCoords,
-        portals: LevelScene.portals,
-        bounds: LevelScene.bounds
-      }));
+  //   Configs.worker &&
+  //     /* ? */ this.rifle.spawn(getRandomCoord({
+  //       player: this.player.location.position,
+  //       minCoords: LevelScene.minCoords,
+  //       maxCoords: LevelScene.maxCoords,
+  //       portals: LevelScene.portals,
+  //       bounds: LevelScene.bounds
+  //     }));
 
-      // Need to uncomment this in order to support Firefox:
-      // : this.worker.post('Level::GetRandomCoord', {
-      //   player: this.player.location.position
-      // });
-  }
+  //     // Need to uncomment this in order to support Firefox:
+  //     // : this.worker.post('Level::GetRandomCoord', {
+  //     //   player: this.player.location.position
+  //     // });
+  // }
 
   private pickRifle (event: GameEvent): void {
     this.player.pickRifle(this.rifle);

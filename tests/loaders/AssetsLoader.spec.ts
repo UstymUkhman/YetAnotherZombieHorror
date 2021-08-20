@@ -75,6 +75,14 @@ describe('AssetsLoader', () => {
     done();
   });
 
+  test('loadShader', done => {
+    Assets.Loader.loadShader('fBm.glsl').then(shader => {
+      expect(shader).toBeInstanceOf(String);
+    });
+
+    done();
+  });
+
   test('loadAudio', done => {
     Assets.Loader.loadAudio('scream.mp3').then(audio => {
       expect(audio).toBeInstanceOf(AudioBuffer);

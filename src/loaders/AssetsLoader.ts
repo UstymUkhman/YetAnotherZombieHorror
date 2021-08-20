@@ -14,6 +14,8 @@ import TextureLoader from '@/loaders/TextureLoader';
 import { GameEvents } from '@/events/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
+import Configs from '@/configs';
+
 export namespace Assets
 {
   type Assets = CanvasTexture | CubeTexture | GLTFModel | AudioBuffer;
@@ -29,15 +31,15 @@ export namespace Assets
 
   class LoadingManager extends ThreeLoadingManager
   {
+    private readonly shaderBasePath  = `${Configs.APP && '.' || '/assets'}/shaders/`;
+    private readonly textureBasePath = `${Configs.APP && '.' || '/assets'}/images/`;
+    private readonly modelBasePath   = `${Configs.APP && '.' || '/assets'}/models/`;
+    private readonly audioBasePath   = `${Configs.APP && '.' || ''}/assets/sounds/`;
+
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);
     private readonly gltf = new GLTFLoader(this);
     private readonly audio = new AudioLoader();
-
-    private readonly textureBasePath = '/assets/images/';
-    private readonly shaderBasePath = '/assets/shaders/';
-    private readonly modelBasePath = '/assets/models/';
-    private readonly audioBasePath = '/assets/sounds/';
 
     private readonly uuid = generateUUID();
 

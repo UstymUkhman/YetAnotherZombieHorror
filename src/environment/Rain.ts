@@ -187,8 +187,10 @@ export default class Rain
   }
 
   public resize (width: number, height: number): void {
-    this.material.uniforms.ratio.value = height / DROP_RATIO;
-    this.material.uniforms.screenSize.value.set(width, height);
+    if (this.material) {
+      this.material.uniforms.ratio.value = height / DROP_RATIO;
+      this.material.uniforms.screenSize.value.set(width, height);
+    }
 
     this.renderTargets?.forEach(renderTarget => {
       renderTarget.depthTexture.needsUpdate = true;
@@ -207,10 +209,10 @@ export default class Rain
     });
 
     this.scene.remove(this.drops);
+    this.material?.dispose();
     this.geometry.dispose();
 
-    this.material.dispose();
-    this.drops.clear();
+    this.drops?.clear();
     this.delta = 0.0;
   }
 }

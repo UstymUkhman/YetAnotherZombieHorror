@@ -11,7 +11,10 @@ pids
 .lock-wscript
 
 dist/
-build/
+build/*
 coverage/
+!build/*.mjs
 node_modules/
-# public/assets/shaders/
+
+public/assets/shaders/*
+!public/assets/shaders/.gitkeep

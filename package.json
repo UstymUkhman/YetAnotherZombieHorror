@@ -30,6 +30,7 @@
     "zombie-survival-shooter"
   ],
   "scripts": {
+    "setup": "node ./build/index.mjs",
     "start:web": "vite",
     "build:web": "vite build",
     "serve:web": "vite preview",

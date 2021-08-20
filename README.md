@@ -19,6 +19,8 @@
 
 ## Develop ##
 
+`yarn setup`
+
 `yarn start:web`
 
 `yarn start:app`
