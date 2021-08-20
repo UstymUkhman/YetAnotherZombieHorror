@@ -35,6 +35,7 @@ export namespace Assets
     private readonly audio = new AudioLoader();
 
     private readonly textureBasePath = '/assets/images/';
+    private readonly shaderBasePath = '/assets/shaders/';
     private readonly modelBasePath = '/assets/models/';
     private readonly audioBasePath = '/assets/sounds/';
 
@@ -98,6 +99,10 @@ export namespace Assets
         this.gltf.setPath(this.modelBasePath);
         this.gltf.load(file, promise.onLoad, promise.onProgress, promise.onError);
       });
+    }
+
+    public async loadShader (file: string): Promise<string> {
+      return await (await fetch(`${this.shaderBasePath + file}`)).text();
     }
 
     public override onProgress = (url: string, loaded: number, total: number): void => {

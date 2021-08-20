@@ -5,12 +5,6 @@ import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 import { FogExp2 } from 'three/src/scenes/FogExp2';
 import { Assets } from '@/loaders/AssetsLoader';
 
-import parsFrag from '@/shaders/fog/pars.frag';
-import parsVert from '@/shaders/fog/pars.vert';
-
-import fogFrag from '@/shaders/fog/main.frag';
-import fogVert from '@/shaders/fog/main.vert';
-
 import { Color } from '@/utils/Color';
 import Configs from '@/configs';
 
@@ -24,9 +18,17 @@ export default class VolumetricFog extends FogExp2
 
   public constructor () {
     super(Color.GRAY, 0.02);
+    this.loadShaders();
 
     Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)
       .then(texture => this.noise = texture);
+  }
+
+  private async loadShaders (): Promise<void> {
+    const parsFrag = await Assets.Loader.loadShader('fog/pars.frag');
+    const parsVert = await Assets.Loader.loadShader('fog/pars.vert');
+    const fogFrag = await Assets.Loader.loadShader('fog/main.frag');
+    const fogVert = await Assets.Loader.loadShader('fog/main.vert');
 
     ShaderChunk.fog_pars_fragment = Configs.Settings.bakedFog
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;

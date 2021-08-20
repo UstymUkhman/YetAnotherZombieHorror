@@ -32,6 +32,11 @@
   import { PI } from '@/utils/Number';
   import RAF from '@/managers/RAF';
 
+  type LocationEvent = {
+    enemies: Array<unknown>,
+    player: PlayerLocation
+  };
+
   const scaleRatio = Math.tan(PI.d3) + Number.EPSILON;
   const scaleFactor = Math.round(scaleRatio * 100);
   const radiusFactor = scaleFactor / 10.0;
@@ -70,8 +75,8 @@
     }
   }
 
-  GameEvents.add('Player::Location', event =>
-    location = event as unknown as PlayerLocation
+  GameEvents.add('Characters::Location', event =>
+    location = (event as unknown as LocationEvent).player
   , true);
 
   GameEvents.add('Player::Run', event => {
@@ -93,7 +98,7 @@
   });
 
   onDestroy(() => {
-    GameEvents.remove('Player::Location', true);
+    GameEvents.remove('Characters::Location', true);
     Viewport.removeResizeCallback(updateScale);
 
     GameEvents.remove('Player::Run', true);

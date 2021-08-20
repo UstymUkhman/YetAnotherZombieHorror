@@ -1,3 +1,4 @@
+/*
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { BoundsOptions } from '@/physics/types';
 import type { Mesh } from 'three/src/objects/Mesh';
@@ -78,3 +79,10 @@ class Physics extends PhysicsWorld
 }
 
 export default new Physics();
+*/
+
+// import AmmoPhysics from '@/physics/AmmoPhysics';
+// export default new AmmoPhysics();
+
+import BVHPhysics from '@/physics/BVHPhysics';
+export default new BVHPhysics();

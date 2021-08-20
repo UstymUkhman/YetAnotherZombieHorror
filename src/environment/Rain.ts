@@ -18,9 +18,6 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
 import type WebWorker from '@/worker/WebWorker';
 
-import vertRain from '@/shaders/rain/main.vert';
-import fragRain from '@/shaders/rain/main.frag';
-
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
 import Configs from '@/configs';
@@ -41,7 +38,8 @@ export default class Rain
   private delta = 0.0;
 
   public constructor (private readonly renderer: WebGLRenderer, private readonly scene: Scene) {
-    !Configs.worker && this.createWorkerLoop();
+    // Need to uncomment this in order to support Firefox:
+    // !Configs.worker && this.createWorkerLoop();
     this.createRenderTargets();
     this.createParticles();
   }
@@ -77,6 +75,9 @@ export default class Rain
   }
 
   private async createParticles (): Promise<void> {
+    const vertRain = await Assets.Loader.loadShader('rain/main.vert');
+    const fragRain = await Assets.Loader.loadShader('rain/main.frag');
+
     const { width, height } = this.renderer.domElement;
 
     this.material = new ShaderMaterial({
@@ -119,23 +120,23 @@ export default class Rain
     this.scene.add(this.drops);
   }
 
-  private createWorkerLoop (): void {
-    import('@/worker/WebWorker').then(WebWorker => {
-      this.worker = new WebWorker.default();
+  // private createWorkerLoop (): void {
+  //   import('@/worker/WebWorker').then(WebWorker => {
+  //     this.worker = new WebWorker.default();
 
-      this.worker.add('Rain::UpdateParticles', data =>
-        this.updateParticleGeometry(data as RainParticles), {
-          minCoords: this.minCoords,
-          maxCoords: this.maxCoords
-        }
-      );
+  //     this.worker.add('Rain::UpdateParticles', data =>
+  //       this.updateParticleGeometry(data as RainParticles), {
+  //         minCoords: this.minCoords,
+  //         maxCoords: this.maxCoords
+  //       }
+  //     );
 
-      this.worker.post('Rain::UpdateParticles', {
-        camera: CameraObject.position,
-        delta: this.delta
-      });
-    });
-  }
+  //     this.worker.post('Rain::UpdateParticles', {
+  //       camera: CameraObject.position,
+  //       delta: this.delta
+  //     });
+  //   });
+  // }
 
   public update (delta: number): void {
     this.delta = delta;

@@ -111,10 +111,9 @@ export default class BVHPhysics extends PhysicsWorld
     this.box.min.addScalar(-radius);
     this.box.max.addScalar(radius);
 
-    environmentGeometry.boundsTree.shapecast(
-      this.environmentCollider,
-      (box: Box3) => box.intersectsBox(this.box),
-      (tri: SeparatingAxisTriangle) => {
+    environmentGeometry.boundsTree.shapecast(this.environmentCollider, {
+      intersectsBounds: (box: Box3) => box.intersectsBox(this.box),
+      intersectsTriangle: (tri: SeparatingAxisTriangle) => {
         const capsule = this.capsule;
         const point = this.linearVelocity;
 
@@ -130,7 +129,7 @@ export default class BVHPhysics extends PhysicsWorld
           this.segment.end.addScaledVector(direction, depth);
         }
       }
-    );
+    });
 
     const position = this.linearVelocity;
     position.copy(this.segment.start).applyMatrix4(environmentMatrix);

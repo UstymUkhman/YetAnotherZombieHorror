@@ -1,11 +1,13 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-import type { PlayerLocation } from '@/characters/types';
-import type { LevelCoords } from '@/environment/types';
+import { getRandomCoord } from '@/worker/getRandomCoord';
+
+// import type { LevelCoords } from '@/environment/types';
+import type { Vector3 } from 'three/src/math/Vector3';
 
 import LevelScene from '@/environment/LevelScene';
 import { Clock } from 'three/src/core/Clock';
-import WebWorker from '@/worker/WebWorker';
+// import WebWorker from '@/worker/WebWorker';
 
 import Enemies from '@/managers/Enemies';
 import Player from '@/characters/Player';
@@ -16,6 +18,7 @@ import Rifle from '@/weapons/Rifle';
 
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
+import Configs from '@/configs';
 import Input from '@/inputs';
 
 export default class MainLoop
@@ -27,7 +30,7 @@ export default class MainLoop
   private readonly level: LevelScene;
   private readonly clock = new Clock();
   private readonly player = new Player();
-  private readonly worker = new WebWorker();
+  // private readonly worker = new WebWorker();
 
   private readonly loop = this.update.bind(this);
   private readonly input = new Input(this.player);
@@ -42,14 +45,15 @@ export default class MainLoop
     GameEvents.add('Rifle::Pick', this.pickRifle.bind(this));
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
-    this.worker.add('Level::GetRandomCoord', data =>
-      this.rifle.spawn(data as LevelCoords), {
-        minCoords: LevelScene.minCoords,
-        maxCoords: LevelScene.maxCoords,
-        portals: LevelScene.portals,
-        bounds: LevelScene.bounds
-      }
-    );
+    // Need to uncomment this in order to support Firefox:
+    // this.worker.add('Level::GetRandomCoord', data =>
+    //   this.rifle.spawn(data as LevelCoords), {
+    //     minCoords: LevelScene.minCoords,
+    //     maxCoords: LevelScene.maxCoords,
+    //     portals: LevelScene.portals,
+    //     bounds: LevelScene.bounds
+    //   }
+    // );
   }
 
   private async onLoad (event: GameEvent): Promise<void> {
@@ -68,11 +72,23 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
-  /* private spawnRifle (): void {
+  private spawnRifle (): void {
     if (this.rifle.onStage) return;
-    const player = this.playerLocation.position;
-    this.worker.post('Level::GetRandomCoord', { player });
-  } */
+
+    Configs.worker &&
+      /* ? */ this.rifle.spawn(getRandomCoord({
+        player: this.player.location.position,
+        minCoords: LevelScene.minCoords,
+        maxCoords: LevelScene.maxCoords,
+        portals: LevelScene.portals,
+        bounds: LevelScene.bounds
+      }));
+
+      // Need to uncomment this in order to support Firefox:
+      // : this.worker.post('Level::GetRandomCoord', {
+      //   player: this.player.location.position
+      // });
+  }
 
   private pickRifle (event: GameEvent): void {
     this.player.pickRifle(this.rifle);
@@ -80,17 +96,10 @@ export default class MainLoop
   }
 
   private update (): void {
-    const player = this.playerLocation;
-    const playerPosition = player.position;
-
     const delta = Math.min(this.clock.getDelta(), 0.1);
-    GameEvents.dispatch('Player::Location', player, true);
-
-    const position = this.level.outOfBounds(playerPosition);
-    position !== null && this.player.teleport(position);
+    const playerPosition = this.updateCharactersLocation(delta);
 
     this.rifle.update(playerPosition);
-    this.player.update(delta);
 
     Camera.updateState();
     this.level.render(delta);
@@ -100,13 +109,31 @@ export default class MainLoop
     }
   }
 
+  private updateCharactersLocation (delta: number): Vector3 {
+    // this.enemies.update(delta);
+    this.player.update(delta);
+
+    const playerLocation = this.player.location;
+    const playerPosition = playerLocation.position;
+    const position = this.level.outOfBounds(playerPosition);
+
+    position && this.player.teleport(position);
+
+    GameEvents.dispatch('Characters::Location', {
+      player: playerLocation
+    }, true);
+
+    return position ?? playerPosition;
+  }
+
   public resize (width: number, height: number): void {
     this.level.resize(width, height);
     Camera.resize();
   }
 
   private removeEventListeners (): void {
-    this.worker.remove('Level::GetRandomCoord');
+    // Need to uncomment this in order to support Firefox:
+    // this.worker.remove('Level::GetRandomCoord');
     GameEvents.remove('Level::EnvMap');
     GameEvents.remove('Rifle::Pick');
   }
@@ -116,10 +143,6 @@ export default class MainLoop
     this.level.dispose();
     Physics.dispose();
     RAF.dispose();
-  }
-
-  public get playerLocation (): PlayerLocation {
-    return this.player.location;
   }
 
   public set pause (paused: boolean) {
