@@ -12,18 +12,34 @@ describe('Rain', () => {
     expect(rain).toBeInstanceOf(Rain);
   });
 
+  /* test('createWorkerLoop', () => {
+    const rainPrototype = Object.getPrototypeOf(rain);
+    const createWorkerLoop = jest.fn(rainPrototype.createWorkerLoop.bind(rain, [null, null]));
+
+    createWorkerLoop();
+    expect(createWorkerLoop).toHaveReturnedWith(undefined);
+  }); */
+
+  /* test('update', () => {
+    const update = jest.fn(rain.update.bind(rain));
+    update(0);
+    expect(update).toHaveReturnedWith(undefined);
+  }); */
+
+  test('updateParticles', () => {
+    const rainPrototype = Object.getPrototypeOf(rain);
+    const updateParticles = jest.fn(rainPrototype.updateParticles.bind(rain, [null, null]));
+
+    updateParticles();
+    expect(updateParticles).toHaveReturnedWith(undefined);
+  });
+
   test('updateParticleGeometry', () => {
     const rainPrototype = Object.getPrototypeOf(rain);
     const updateParticleGeometry = jest.fn(rainPrototype.updateParticleGeometry.bind(rain, [null, null]));
 
     updateParticleGeometry();
     expect(updateParticleGeometry).toHaveReturnedWith(undefined);
-  });
-
-  test('update', () => {
-    const update = jest.fn(rain.update.bind(rain));
-    update(0);
-    expect(update).toHaveReturnedWith(undefined);
   });
 
   test('resize', () => {
@@ -36,15 +52,5 @@ describe('Rain', () => {
     const dispose = jest.fn(rain.dispose.bind(rain));
     dispose();
     expect(dispose).toHaveReturnedWith(undefined);
-  });
-
-  test('pause', () => {
-    const pause = jest.fn(() => rain.pause = true);
-    pause();
-    expect(pause).toHaveReturnedWith(true);
-  });
-
-  test('cameraDrops', () => {
-    expect(rain.cameraDrops?.tagName).toBe('CANVAS');
   });
 });

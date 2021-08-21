@@ -1,10 +1,10 @@
+import type { LevelBounds } from '@/environment/types';
 import { cloneBounds, min, max } from '@/utils/Array';
-import Level from '@/config/level.json';
-import type { Bounds } from '@/types.d';
+import Level from '@/configs/level.json';
 
 describe('Array', () => {
   test('cloneBounds', () => {
-    const bounds = Level.bounds as unknown as Bounds;
+    const bounds = Level.bounds as unknown as LevelBounds;
     expect(cloneBounds(bounds)).toStrictEqual(Level.bounds);
   });
 

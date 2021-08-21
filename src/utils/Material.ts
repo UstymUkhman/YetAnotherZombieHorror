@@ -1,15 +1,15 @@
 import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { Color } from '@/utils/Color';
-import { Config } from '@/config';
+import Configs from '@/configs';
 
 export const DynamicCollider = new MeshBasicMaterial({
-  visible: Config.colliders,
+  visible: Configs.colliders,
   color: Color.RED,
   wireframe: true
 });
 
 export const StaticCollider = new MeshBasicMaterial({
-  visible: Config.colliders,
+  visible: Configs.colliders,
   color: Color.GRAY,
   transparent: true,
   depthWrite: false,
@@ -25,7 +25,7 @@ export const Transparent = new MeshBasicMaterial({
 });
 
 export const HitBox = new MeshBasicMaterial({
-  visible: Config.hitBoxes,
+  visible: Configs.hitBoxes,
   transparent: true,
   depthWrite: false,
   color: Color.RED,

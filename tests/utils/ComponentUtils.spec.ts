@@ -1,21 +1,21 @@
-import type { Coords } from '@/types.d';
-import GameLevel from '@/environment/GameLevel';
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/utils';
+import type { LevelCoords } from '@/environment/types';
+import LevelScene from '@/environment/LevelScene';
 
 describe('ComponentUtils', () => {
   test('getScaledCoords', () => {
-    expect(getScaledCoords([0, 0], GameLevel.minCoords, 1)).toStrictEqual(GameLevel.minCoords);
+    expect(getScaledCoords([0, 0], LevelScene.minCoords, 1)).toStrictEqual(LevelScene.minCoords);
 
     expect(getScaledCoords([50.0, 50.0], [0, 0], 5)).toStrictEqual([250.0, 250.0]);
 
-    expect(getScaledCoords([1, 1], GameLevel.minCoords, 2)).toStrictEqual([
-      GameLevel.minCoords[0] * 2 + 2, GameLevel.minCoords[1] * 2 + 2
+    expect(getScaledCoords([1, 1], LevelScene.minCoords, 2)).toStrictEqual([
+      LevelScene.minCoords[0] * 2 + 2, LevelScene.minCoords[1] * 2 + 2
     ]);
   });
 
   test('pointInCircle', () => {
-    const pCoords = [Math.random(), Math.random()] as Coords;
-    const cCoords = [Math.random(), Math.random()] as Coords;
+    const pCoords = [Math.random(), Math.random()] as LevelCoords;
+    const cCoords = [Math.random(), Math.random()] as LevelCoords;
 
     expect(pointInCircle([1.25, 1.25], [0.5, 0.5], 1)).toStrictEqual(false);
     expect(pointInCircle([0, 0], [0.5, 0.5], 0.75)).toStrictEqual(true);

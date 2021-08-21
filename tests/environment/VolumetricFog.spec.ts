@@ -1,5 +1,5 @@
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
-import { VolumetricFog } from '@/environment/VolumetricFog';
+import VolumetricFog from '@/environment/VolumetricFog';
 import { FogExp2 } from 'three/src/scenes/FogExp2';
 
 describe('VolumetricFog', () => {

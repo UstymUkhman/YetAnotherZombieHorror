@@ -1,7 +1,7 @@
 import Music from '@/managers/Music';
 
 describe('Music', () => {
-  const music = new Music('music.mp3');
+  const music = new Music();
 
   test('Create', () => {
     expect(music).toBeInstanceOf(Music);
@@ -19,10 +19,10 @@ describe('Music', () => {
     expect(pause).toHaveReturnedWith(undefined);
   });
 
-  test('destroy', () => {
-    const destroy = jest.fn(music.destroy.bind(music));
-    destroy();
-    expect(destroy).toHaveReturnedWith(undefined);
+  test('dispose', () => {
+    const dispose = jest.fn(music.dispose.bind(music));
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
   });
 
   test('volume', () => {

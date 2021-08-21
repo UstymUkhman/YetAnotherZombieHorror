@@ -1,5 +1,5 @@
 <div transition:fade>
-  <Button text="Start" on:click={() => dispatch('start')} />
+  <Button text="Continue" on:click={() => dispatch('continue')} />
 </div>
 
 <script lang="ts">
@@ -22,6 +22,7 @@ div {
   height: 100%;
   width: 100%;
 
+  z-index: 1;
   padding: 0;
   margin: 0;
 
@@ -29,13 +30,14 @@ div {
   top: 0;
 
   :global(button) {
+    transform: translateX(-50%);
     position: absolute;
+
     display: block;
     margin: auto;
 
     bottom: 0;
-    right: 0;
-    left: 0;
+    left: 50%;
     top: 0;
   }
 }

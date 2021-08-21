@@ -3,27 +3,24 @@ import { MeshLambertMaterial } from 'three/src/materials/MeshLambertMaterial';
 
 import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
-import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
-
 import { PointLight } from 'three/src/lights/PointLight';
-import { CameraListener } from '@/managers/GameCamera';
+
 import { Object3D } from 'three/src/core/Object3D';
+import LevelScene from '@/environment/LevelScene';
+import { GameEvents } from '@/events/GameEvents';
 
 import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
-import { Assets } from '@/managers/AssetsLoader';
+import { Assets } from '@/loaders/AssetsLoader';
 
-import GameLevel from '@/environment/GameLevel';
 import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
-import Settings from '@/config/settings';
 import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
-import { Config } from '@/config';
-import anime from 'animejs';
+import Configs from '@/configs';
 
 export default class Clouds
 {
@@ -31,14 +28,13 @@ export default class Clouds
   private readonly onHideLighting = this.hideLighting.bind(this);
 
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
-  private readonly loader = new Assets.Loader();
   private readonly matrix = new Matrix4();
   private readonly radius = Clouds.height;
 
   private clouds!: InstancedMesh;
   private lighting!: PointLight;
 
-  private interval?: number;
+  private timeout?: number;
   private paused = true;
 
   public constructor (private readonly count: number) {
@@ -47,32 +43,15 @@ export default class Clouds
   }
 
   private async createLighting (): Promise<void> {
-    this.lighting = new PointLight(Color.BLUE, 10, this.radius, 2.5);
-    this.loadLightingSounds().then(this.addSounds.bind(this));
+    this.lighting = new PointLight(Color.BLUE, 10.0, this.radius, 2.0);
     this.lighting.position.set(0.0, this.radius, 0.0);
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;
   }
 
-  private async loadLightingSounds (): Promise<Array<AudioBuffer>> {
-    return await Promise.all(Config.Level.lighting.map(
-        this.loader.loadAudio.bind(this.loader)
-      )
-    );
-  }
-
-  private addSounds (sounds: Array<AudioBuffer>): void {
-    sounds.forEach(sound => {
-      const audio = new PositionalAudio(CameraListener);
-
-      audio.setBuffer(sound);
-      this.lighting.add(audio);
-    });
-  }
-
   private startLighting (): void {
-    this.interval = setTimeout(this.onShowLighting, 1e3 * (
+    this.timeout = setTimeout(this.onShowLighting, 1e3 * (
       Math.random() * 15 + 15
     )) as unknown as number;
   }
@@ -88,32 +67,7 @@ export default class Clouds
       this.lighting.position.y / 4.0
     );
 
-    this.startThunder(this.lighting.position);
-  }
-
-  private startThunder (position: Vector3): void {
-    const distance = position.distanceToSquared(CameraListener.position);
-    const audioIndex = randomInt(0, this.lighting.children.length - 1);
-
-    const thunder = this.lighting.children[audioIndex] as PositionalAudio;
-    const duration = (thunder.buffer?.duration ?? 0) * 1e3;
-
-    thunder.setRefDistance(distance / Config.Level.depth);
-    thunder.setVolume(1.0);
-    thunder.play();
-
-    setTimeout(() => anime({
-      targets: { volume: thunder?.getVolume() },
-      complete: () => thunder?.stop(),
-
-      update: ({ animations }) => thunder?.setVolume(
-        +animations[0].currentValue
-      ),
-
-      easing: 'linear',
-      duration: 500,
-      volume: 0.0
-    }), duration - 500);
+    GameEvents.dispatch('SFX::Thunder', this.lighting.position, true);
   }
 
   private hideLighting (): void {
@@ -155,15 +109,15 @@ export default class Clouds
       this.clouds.setMatrixAt(i, cloud.matrix);
     }
 
-    this.clouds.position.copy(GameLevel.center);
+    this.clouds.position.copy(LevelScene.center);
     this.clouds.instanceMatrix.needsUpdate = true;
 
     (this.clouds.material as MeshLambertMaterial).map =
-      await this.loader.loadTexture(Config.Level.cloud);
+      await Assets.Loader.loadTexture(Configs.Level.cloud);
   }
 
   public update (): void {
-    if (!Settings.dynamicClouds) return;
+    if (!Configs.Settings.dynamicClouds) return;
 
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
@@ -188,13 +142,13 @@ export default class Clouds
   }
 
   public static get height (): number {
-    return Math.max(GameLevel.size.x, GameLevel.size.y);
+    return Math.max(LevelScene.size.x, LevelScene.size.y);
   }
 
   public set pause (pause: boolean) {
     !(this.paused = pause)
       ? this.startLighting()
-      : clearInterval(this.interval);
+      : clearTimeout(this.timeout);
   }
 
   public get sky (): InstancedMesh {

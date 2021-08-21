@@ -1,0 +1,89 @@
+import type { LevelBounds } from '@/environment/types';
+import LevelScene from '@/environment/LevelScene';
+import { Vector3 } from 'three/src/math/Vector3';
+
+import BVHPhysics from '@/physics/BVHPhysics';
+import { Mesh } from 'three/src/objects/Mesh';
+import { Line3 } from 'three/src/math/Line3';
+
+import { Vector } from '@/utils/Vector';
+import Configs from '@/configs';
+
+describe('BVHPhysics', () => {
+  const Physics = new BVHPhysics();
+  const player = new Mesh().add(new Mesh());
+
+  player.userData = {
+    segment: new Line3(new Vector3(), Vector.random()),
+    height: Math.random(), radius: Math.random()
+  };
+
+  test('Create', () => {
+    expect(Physics).toBeDefined();
+    expect(Physics).toBeInstanceOf(Object);
+  });
+
+  test('createGround', () => {
+    const createGround = jest.fn(Physics.createGround.bind(
+      Physics, LevelScene.minCoords, LevelScene.maxCoords
+    ));
+
+    createGround();
+    expect(createGround).toHaveReturnedWith(undefined);
+  });
+
+  test('createBounds', () => {
+    const { position, height, sidewalkHeight } = Configs.Level;
+
+    const createBounds = jest.fn(Physics.createBounds.bind(Physics, {
+      borders: LevelScene.bounds, y: position.y, height
+    }, {
+      borders: Configs.Level.sidewalk as LevelBounds,
+      height: sidewalkHeight,
+      y: sidewalkHeight / 2
+    }));
+
+    createBounds();
+    expect(createBounds).toHaveReturnedWith(undefined);
+  });
+
+  test('setPlayer', () => {
+    const setPlayer = jest.fn(Physics.setPlayer.bind(
+      Physics, player
+    ));
+
+    setPlayer();
+    expect(setPlayer).toHaveReturnedWith(undefined);
+  });
+
+  test('move', () => {
+    const move = jest.fn(Physics.move.bind(Physics, new Vector3()));
+
+    move();
+    expect(move).toHaveReturnedWith(undefined);
+  });
+
+  test('stop', () => {
+    const stop = jest.fn(Physics.stop.bind(Physics));
+    stop();
+    expect(stop).toHaveReturnedWith(undefined);
+  });
+
+  test('update', () => {
+    const update = jest.fn(Physics.update.bind(Physics, 0));
+    update();
+    expect(update).toHaveReturnedWith(undefined);
+  });
+
+  test('dispose', () => {
+    const dispose = jest.fn(Physics.dispose.bind(Physics));
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
+  });
+
+  test('pause', () => {
+    const pause = jest.fn(() => Physics.pause = true);
+    pause();
+    expect(pause).toHaveReturnedWith(true);
+  });
+});

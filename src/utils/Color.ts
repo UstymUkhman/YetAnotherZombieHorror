@@ -1,14 +1,16 @@
-import { Color as TColor } from 'three/src/math/Color';
+import { Color as ThreeColor } from 'three/src/math/Color';
 
 export namespace Color
 {
   export type RGB = { r: number, g: number, b: number };
 
+  export const SILVER = 0xC0C0C0;
   export const BLACK = 0x000000;
   export const WHITE = 0xFFFFFF;
-  export const MOON = 0xA8D9A7;
 
+  export const MOON = 0xA8D9A7;
   export const BLUE = 0x2D78FF;
+
   export const GRAY = 0x4B4B4B;
   export const RED = 0x8A0707;
 
@@ -23,8 +25,8 @@ export namespace Color
     ).toString(16).slice(3)}`.toUpperCase();
   };
 
-  export const getClass = (color: number | string): TColor => {
-    return new TColor(color);
+  export const getClass = (color: number | string): ThreeColor => {
+    return new ThreeColor(color);
   };
 
   export const rgbToHEX = (rgb: RGB): string => {

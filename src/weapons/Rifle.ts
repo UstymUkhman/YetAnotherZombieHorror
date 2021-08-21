@@ -1,24 +1,27 @@
-import type { Assets } from '@/managers/AssetsLoader';
-import type { Vector3 } from 'three/src/math/Vector3';
-import { GameEvents } from '@/managers/GameEvents';
-import type { Euler } from 'three/src/math/Euler';
+import type { Texture } from 'three/src/textures/Texture';
+import type { LevelCoords } from '@/environment/types';
 
-import type { Coords } from '@/types.d';
+import type { Vector3 } from 'three/src/math/Vector3';
+import type { Assets } from '@/loaders/AssetsLoader';
+
+import type { Euler } from 'three/src/math/Euler';
+import { GameEvents } from '@/events/GameEvents';
+
 import Weapon from '@/weapons/Weapon';
-import { Config } from '@/config';
+import Configs from '@/configs';
 
 export default class Rifle extends Weapon
 {
-  private readonly position = Config.Rifle.position as Vector3;
-  private readonly rotation = Config.Rifle.rotation as Euler;
-  private readonly maxStock = Config.Rifle.maxStock;
+  private readonly position = Configs.Rifle.position as Vector3;
+  private readonly rotation = Configs.Rifle.rotation as Euler;
+  private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone?: Assets.GLTF;
   private reloading = false;
   private spawned = false;
 
-  public constructor () {
-    super(Config.Rifle);
+  public constructor (envMap: Texture) {
+    super(Configs.Rifle, envMap);
   }
 
   public override setAim (): void {
@@ -38,7 +41,7 @@ export default class Rifle extends Weapon
     this.reloading = true;
   }
 
-  public override addAmmo (ammo = Config.Rifle.magazine): void {
+  public override addAmmo (ammo = Configs.Rifle.magazine): void {
     if (ammo) this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
 
     else {
@@ -48,7 +51,7 @@ export default class Rifle extends Weapon
       setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;
 
-      GameEvents.dispatch('weapon:reload', {
+      GameEvents.dispatch('Weapon::Reload', {
         loaded: this.loadedAmmo,
         inStock: this.inStock,
         ammo: this.totalAmmo
@@ -69,22 +72,21 @@ export default class Rifle extends Weapon
     const playerDistance = this.clone.position.distanceTo(player);
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
-      GameEvents.dispatch('weapon:pick', this.clone);
-      GameEvents.dispatch('rifle:pick');
+      GameEvents.dispatch('Rifle::Pick', this.clone, true);
       this.spawned = false;
     }
   }
 
-  public spawn (coords: Coords): void {
-    const worldScale = Config.Rifle.worldScale as Vector3;
+  public spawn (coords: LevelCoords): void {
+    const worldScale = Configs.Rifle.worldScale as Vector3;
     this.clone = this.clone || this.getClone();
 
     this.clone.position.set(coords[0], 1.75, coords[1]);
     this.clone.scale.copy(worldScale);
     this.clone.rotation.set(0, 0, 0);
 
-    GameEvents.dispatch('add:object', this.clone);
-    GameEvents.dispatch('rifle:spawn', coords);
+    GameEvents.dispatch('Level::AddModel', this.clone);
+    GameEvents.dispatch('Rifle::Spawn', coords, true);
 
     this.spawned = true;
   }
