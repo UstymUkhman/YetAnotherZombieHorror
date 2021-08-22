@@ -18,8 +18,8 @@ function compileShader (path) {
   let shader = readFileSync(path).toString();
   shader = glsl.default().transform(shader, path);
 
-  shader = shader.replace(/\\r\\n/g, EOL);
   shader = shader.replace(/\\n/g, EOL);
+  shader = shader.replace(/\\r/g, '');
   shader = shader.slice(16, -2);
 
   const outputPath = path.replace(SHADER_DIR, OUTPUT_DIR);
@@ -30,11 +30,11 @@ function compileShader (path) {
 }
 
 function readShaderDirectory (directory) {
-  readdir(directory, (err, files) => {
+  readdir(directory, (_, files) => {
     files.forEach(file => {
       const path = join(directory, file);
 
-      stat(path, (error, stat) => {
+      stat(path, (_, stat) => {
         if (stat.isFile()) {
           compileShader(path);
         }

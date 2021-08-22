@@ -114,7 +114,7 @@ export default class Character
     this.mixer?.setTime(time);
   }
 
-  private updateCharacterLocation (): void {
+  private updateLocation (): void {
     const model = this.getModel();
     const { speed, direction } = this.step;
 
@@ -136,7 +136,7 @@ export default class Character
 
   protected update (delta: number): void {
     this.mixer?.update(delta);
-    this.updateCharacterLocation();
+    this.updateLocation();
 
     if (this.moving) {
       Physics.move(this.direction);

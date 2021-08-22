@@ -16,7 +16,7 @@ import LevelScene from '@/environment/LevelScene';
 import { CameraObject } from '@/managers/Camera';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
-import type WebWorker from '@/worker/WebWorker';
+// import type WebWorker from '@/worker/WebWorker';
 
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
@@ -33,7 +33,7 @@ export default class Rain
   private renderTargets?: Array<WebGLRenderTarget>;
 
   private material!: ShaderMaterial;
-  private worker?: WebWorker;
+  // private worker?: WebWorker;
   private drops!: Points;
   private delta = 0.0;
 
@@ -180,10 +180,10 @@ export default class Rain
     this.geometry.attributes.position.needsUpdate = true;
     this.geometry.attributes.alpha.needsUpdate = true;
 
-    this.worker?.post('Rain::UpdateParticles', {
-      camera: CameraObject.position,
-      delta: this.delta
-    });
+    // this.worker?.post('Rain::UpdateParticles', {
+    //   camera: CameraObject.position,
+    //   delta: this.delta
+    // });
   }
 
   public resize (width: number, height: number): void {
@@ -200,7 +200,7 @@ export default class Rain
   }
 
   public dispose (): void {
-    this.worker?.remove('Rain::UpdateParticles');
+    // this.worker?.remove('Rain::UpdateParticles');
 
     this.renderTargets?.forEach(renderTarget => {
       renderTarget.depthTexture.dispose();

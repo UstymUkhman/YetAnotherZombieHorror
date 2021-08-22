@@ -164,9 +164,10 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const exposure = +Configs.worker * 0.5 + 0.5;
+    const { physicalLights } = Configs.Settings;
+    const exposure = +physicalLights * 0.5 + 0.5;
 
-    this.renderer.physicallyCorrectLights = Configs.worker;
+    this.renderer.physicallyCorrectLights = physicalLights;
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 

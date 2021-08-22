@@ -11,7 +11,7 @@ function execute (script, callback) {
 execute(join(resolve(), 'build/physics.mjs'), error => {
   if (error) {
     console.error('Physics engine configuration failed.');
-    throw err;
+    throw error;
   }
 
   console.info('Physics Engine configured successfully.');
@@ -20,7 +20,7 @@ execute(join(resolve(), 'build/physics.mjs'), error => {
 execute(join(resolve(), 'build/shaders.mjs'), error => {
   if (error) {
     console.error('Shaders compilation failed.');
-    throw err;
+    throw error;
   }
 
   console.info('Shaders compiled successfully.');

@@ -5,7 +5,7 @@ export default class Music
   private track: HTMLAudioElement;
   private paused = true;
   private mute = false;
-  private vol = 0.1;
+  private vol = 0.05;
 
   public constructor () {
     const track = Configs.Level.music;

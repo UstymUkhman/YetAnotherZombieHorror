@@ -3,6 +3,7 @@ import type { AnimationAction } from 'three/src/animation/AnimationAction';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import { Quaternion } from 'three/src/math/Quaternion';
 import { radToDeg } from 'three/src/math/MathUtils';
 
 import { GameEvents } from '@/events/GameEvents';
@@ -16,10 +17,13 @@ import type Rifle from '@/weapons/Rifle';
 import { Vector } from '@/utils/Vector';
 import Camera from '@/managers/Camera';
 import { Direction } from '@/inputs';
+
 import Configs from '@/configs';
+import anime from 'animejs';
 
 export default class Player extends Character
 {
+  private readonly modelRotation = new Quaternion();
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
@@ -118,10 +122,11 @@ export default class Player extends Character
     const tilt = this.rotation.y;
     const model = this.getModel();
 
+    model.rotateOnWorldAxis(Vector.UP, x);
+    if (this.running) return;
+
     const minTilt = fps * -0.2 - 0.2;
     maxTilt = Math.min(maxTilt + fps * maxTilt, 0.25);
-
-    model.rotateOnWorldAxis(Vector.UP, x);
 
     if ((lookDown && tilt >= minTilt) || (!lookDown && tilt <= maxTilt)) {
       model.rotateOnAxis(Vector.RIGHT, y);
@@ -186,7 +191,9 @@ export default class Player extends Character
     if (directions[Direction.UP]) {
       GameEvents.dispatch('Player::Run', true, true);
       this.updateAnimation('Run', run);
+
       Camera.runAnimation(true);
+      this.resetRotation(true);
 
       this.running = true;
       this.moving = true;
@@ -360,8 +367,24 @@ export default class Player extends Character
     }
   }
 
-  private resetRotation (): void {
-    if (this.rotation.y < -0.2) {
+  private resetRotation (run = false): void {
+    if (run) {
+      const model = this.getModel();
+      const targetRotation = new Quaternion()
+        .setFromAxisAngle(Vector.RIGHT, this.rotation.y);
+
+      this.modelRotation.copy(model.quaternion);
+      this.modelRotation.multiply(targetRotation);
+
+      anime({
+        targets: model.quaternion,
+        easing: 'easeInOutQuad',
+        ...this.modelRotation,
+        duration: 500
+      });
+    }
+
+    else if (this.rotation.y < -0.2) {
       const y = this.rotation.y + 0.2;
       this.getModel().rotateOnAxis(Vector.RIGHT, y);
     }
