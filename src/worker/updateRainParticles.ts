@@ -36,7 +36,10 @@ const addParticles = (params: RainParams): void => {
   for (let i = 0; i < particles; i++) {
     const offset = Math.random();
     const life = 5.25 - offset * 1.5;
+    const angle = Math.random() * 0.1;
+
     const velocity = Math.random() * 25 + 50;
+    const tilt = -1 + +(Math.random() < 0.5) * 2;
 
     rainDrops.push({
       velocity: new Vector3(0.0, -velocity, 0.0),
@@ -47,6 +50,7 @@ const addParticles = (params: RainParams): void => {
         random(minCoords[1], maxCoords[1])
       ),
 
+      rotation: tilt * angle,
       maxLife: life,
       alpha: 0,
       life
@@ -90,14 +94,16 @@ const updateParticles = (delta: number): void => {
 const updateGeometry = (): RainParticles => {
   const position = [];
   const opacity = [];
+  const angle = [];
 
   for (let p = 0, l = rainDrops.length; p < l; p++) {
     const { x, y, z } = rainDrops[p].position;
-    const { alpha } = rainDrops[p];
+    const { rotation, alpha } = rainDrops[p];
 
     position.push(x, y, z);
+    angle.push(rotation);
     opacity.push(alpha);
   }
 
-  return [position, opacity];
+  return [position, angle, opacity];
 };

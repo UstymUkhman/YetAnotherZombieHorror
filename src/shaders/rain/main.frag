@@ -25,12 +25,15 @@ uniform float far;
 
 out vec4 fragColor;
 
+in vec2  vAngle;
 in float vAlpha;
 in float vPos;
 in vec2  vUv;
 
 void main (void) {
-  vec2 coords = vec2(1.0) - gl_PointCoord;
+  mat2 rotation = mat2(vAngle.x, vAngle.y, -vAngle.y, vAngle.x);
+  vec2 coords = (gl_PointCoord - 0.5) * rotation + 0.5;
+
   int i = int(rand(vUv) * mod(dropSize, floor(dropSize)));
 
   float alpha = !soft ? 1.0 : softAlpha(

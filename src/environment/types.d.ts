@@ -1,6 +1,6 @@
 import type { Vector3 } from 'three/src/math/Vector3';
 
-type RainParticles = [Array<number>, Array<number>];
+type RainParticles = [Array<number>, Array<number>, Array<number>];
 type LevelBounds   = Readonly<Array<LevelCoords>>;
 type LevelCoords   = Readonly<[number, number]>;
 
@@ -24,6 +24,7 @@ type RainParticle = {
   position: Vector3,
   velocity: Vector3,
 
+  rotation: number,
   maxLife: number,
   alpha: number,
   life: number

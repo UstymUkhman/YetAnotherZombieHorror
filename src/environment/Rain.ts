@@ -75,10 +75,15 @@ export default class Rain
   }
 
   private async createParticles (): Promise<void> {
+    const { width, height } = this.renderer.domElement;
+
+    // Development imports:
+    /* const vertRain = await (await import('../shaders/rain/main.vert')).default;
+    const fragRain = await (await import('../shaders/rain/main.frag')).default; */
+
+    // Production imports:
     const vertRain = await Assets.Loader.loadShader('rain/main.vert');
     const fragRain = await Assets.Loader.loadShader('rain/main.frag');
-
-    const { width, height } = this.renderer.domElement;
 
     this.material = new ShaderMaterial({
       uniforms: {
@@ -175,9 +180,11 @@ export default class Rain
 
   private updateParticleGeometry (data: RainParticles): void {
     this.geometry.setAttribute('position', new Float32BufferAttribute(data[0], 3));
-    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[1], 1));
+    this.geometry.setAttribute('angle', new Float32BufferAttribute(data[1], 1));
+    this.geometry.setAttribute('alpha', new Float32BufferAttribute(data[2], 1));
 
     this.geometry.attributes.position.needsUpdate = true;
+    this.geometry.attributes.angle.needsUpdate = true;
     this.geometry.attributes.alpha.needsUpdate = true;
 
     // this.worker?.post('Rain::UpdateParticles', {

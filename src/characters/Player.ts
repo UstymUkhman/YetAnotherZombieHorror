@@ -116,7 +116,7 @@ export default class Player extends Character
     return this.aiming || this.hitting || this.reloading;
   }
 
-  public rotate (x: number, y: number, maxTilt: number): void {
+  public rotate (x: number, y: number, maxTilt = 0.25): void {
     const lookDown = y > 0;
     const fps = +Camera.isFPS;
     const tilt = this.rotation.y;
@@ -252,10 +252,8 @@ export default class Player extends Character
     if (this.moving || this.hitting || this.reloading) return;
     if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
 
-    if (this.weapon.shoot(this.position)) {
-      const { x, y } = this.weapon.recoil;
-      this.rotate(x, y, 0.25);
-    }
+    const recoil = this.weapon.shoot(this.position);
+    recoil && this.rotate(recoil.x, recoil.y);
 
     this.shootTime = now;
     !this.equipRifle && this.stopShooting();

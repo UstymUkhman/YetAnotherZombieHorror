@@ -17,6 +17,7 @@ import { Assets } from '@/loaders/AssetsLoader';
 
 import { random } from '@/utils/Number';
 import { Color } from '@/utils/Color';
+import anime from 'animejs';
 
 export default class Weapon
 {
@@ -105,16 +106,16 @@ export default class Weapon
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public cancelAim (duration?: number): void { return; }
 
-  public shoot (player: Vector3): boolean {
-    const shoot = !this.empty;
+  public shoot (player: Vector3): Recoil | null {
     const target = this.target;
 
-    if (!shoot) this.playSound('empty', false);
+    if (this.empty) this.playSound('empty', false);
 
     else {
       const hitBox = this.targets[target];
       GameEvents.dispatch('Player::Shoot', true);
 
+      const recoil = this.animateRecoil();
       this.playSound('shoot', true);
       this.loadedAmmo--;
 
@@ -122,9 +123,37 @@ export default class Weapon
         GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
         Math.round(hitBox.position.distanceTo(player) / this.config.speed)
       );
+
+      return recoil;
     }
 
-    return shoot;
+    return null;
+  }
+
+  private animateRecoil (): Recoil {
+    const recoil = this.recoil;
+    if (!this.weapon) return recoil;
+
+    const { x, y } = this.weapon.position;
+
+    anime({
+      targets: this.weapon.rotation,
+      easing: 'easeInOutSine',
+      direction: 'alternate',
+      z: recoil.y / 2.0,
+      duration: 50.0
+    });
+
+    anime({
+      targets: this.weapon.position,
+      easing: 'easeInOutSine',
+      direction: 'alternate',
+      y: y - recoil.y * 7.5,
+      x: x - recoil.y * 15,
+      duration: 50.0
+    });
+
+    return recoil;
   }
 
   public startReloading (): void { return; }
@@ -149,9 +178,9 @@ export default class Weapon
     return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
   }
 
-  public get recoil (): Recoil {
+  private get recoil (): Recoil {
     const { x, y } = this.config.recoil;
-    const energy = ~~this.aiming + 1;
+    const energy = +this.aiming + 1;
 
     return {
       x: random(-x, x) / energy,

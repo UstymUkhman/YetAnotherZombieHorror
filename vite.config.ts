@@ -1,12 +1,13 @@
 import path from 'path';
+import glsl from 'vite-plugin-glsl';
 import { version } from './package.json';
 
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { UserConfigExport, defineConfig } from 'vite';
 
 export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
+  plugins: [svelte(), mode !== 'production' && glsl()],
   assetsInclude: ['fbx', 'glb', 'gltf', 'wat'],
-  plugins: [svelte()],
   base: './',
 
   define: {
