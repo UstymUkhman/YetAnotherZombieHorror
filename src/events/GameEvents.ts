@@ -14,7 +14,7 @@ class Events extends CustomEvents
   }
 
   public override add (name: string, callback: EventCallback, worker = false): void {
-    !Configs.worker && worker
+    Configs.offscreen && worker
       ? this.workerEvents?.add(name, callback as Callback)
       : super.add(name, callback as EventCallback);
   }
@@ -26,7 +26,7 @@ class Events extends CustomEvents
   }
 
   public override remove (name: string, worker = false): void {
-    !Configs.worker && worker
+    Configs.offscreen && worker
       ? this.workerEvents?.remove(name)
       : super.remove(name);
   }

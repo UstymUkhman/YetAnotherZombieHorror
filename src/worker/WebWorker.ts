@@ -33,7 +33,7 @@ export default class WebWorker
     const { name, response } = event.data;
     const callback = this.events?.get(name)?.callback;
 
-    callback && callback(response);
+    callback && callback({ data: response });
   }
 
   private onError (error: ErrorEvent): void {

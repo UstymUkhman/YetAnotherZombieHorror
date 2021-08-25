@@ -5,11 +5,11 @@ import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AudioListener } from 'three/src/audio/AudioListener';
+import { GameEvents, GameEvent } from '@/events/GameEvents';
 
 import type { Vector3 } from 'three/src/math/Vector3';
 import { Object3D } from 'three/src/core/Object3D';
 import { CameraManager } from '@/managers/Camera';
-import { GameEvents } from '@/events/GameEvents';
 
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
@@ -133,8 +133,8 @@ export default class AudioScene
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
   }
 
-  private playThuder (position: unknown): void {
-    this.thunder.position.copy(position as Vector3);
+  private playThuder (event: GameEvent): void {
+    this.thunder.position.copy(event.data as Vector3);
     this.thunder.updateMatrixWorld();
 
     const distance = this.thunder.position.distanceToSquared(this.listener.position);
@@ -161,8 +161,8 @@ export default class AudioScene
     }), duration - 500);
   }
 
-  private playCharacter (config: unknown): void {
-    const { matrix, player, sfx } = config as CharacterSoundConfig;
+  private playCharacter (event: GameEvent): void {
+    const { matrix, player, sfx } = event.data as CharacterSoundConfig;
     const sound = this.characterSounds.get(sfx) as PositionalAudio;
     const character = player ? this.player : new Object3D();
 
@@ -179,8 +179,8 @@ export default class AudioScene
     sound.onEnded = () => this.scene.remove(enemy);
   }
 
-  private playWeapon (config: unknown): void {
-    const { matrix, sfx, play } = config as WeaponSoundConfig;
+  private playWeapon (event: GameEvent): void {
+    const { matrix, sfx, play } = event.data as WeaponSoundConfig;
     const sound = this.weaponSounds.get(sfx) as PositionalAudio;
 
     this.weapon.matrixWorld.copy(matrix);

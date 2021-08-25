@@ -76,11 +76,11 @@
   }
 
   GameEvents.add('Characters::Location', event =>
-    location = (event as unknown as LocationEvent).player
+    location = (event.data as LocationEvent).player
   , true);
 
   GameEvents.add('Player::Run', event => {
-    const running = event as unknown as boolean;
+    const running = event.data as boolean;
     if (running) aiming = true;
     zoom.set(+running * 0.5);
 
@@ -89,7 +89,7 @@
   }, true);
 
   GameEvents.add('Player::Aim', event =>
-    aiming = event as unknown as boolean
+    aiming = event.data as boolean
   , true);
 
   onMount(() => {

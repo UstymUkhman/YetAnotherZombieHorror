@@ -16,6 +16,7 @@
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
   import type { LevelCoords, LevelBounds } from '@/environment/types';
+  import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import MapRifle from '@components/map/MapRifle.svelte';
   import type { Vector3 } from 'three/src/math/Vector3';
@@ -23,7 +24,6 @@
   import Player from '@components/map/Player.svelte';
   import LevelScene from '@/environment/LevelScene';
   import { cloneBounds, max } from '@/utils/Array';
-  import { GameEvents } from '@/events/GameEvents';
 
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
@@ -55,8 +55,9 @@
   let offset: number;
   const PADDING = 1;
 
-  function spawnRifle (event: unknown): void {
-    rifleCoords = getScaledCoords(event as LevelCoords, minCoords, scale);
+  function spawnRifle (event: GameEvent): void {
+    const coords = event.data as LevelCoords;
+    rifleCoords = getScaledCoords(coords, minCoords, scale);
 
     visibleRifle = true;
     renderRifle = true;

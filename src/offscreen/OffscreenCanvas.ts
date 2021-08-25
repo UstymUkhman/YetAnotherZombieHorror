@@ -1,7 +1,8 @@
+import type { ApplicationManager } from '@/managers/Application';
+import OffscreenEvents from '@/offscreen/OffscreenEvents';
 import type WebWorker from '@/worker/WebWorker';
-import OffscreenEvents from './OffscreenEvents';
 
-export default class OffscreenCanvas
+export default class OffscreenCanvas implements ApplicationManager
 {
   public constructor (scene: HTMLCanvasElement, private readonly worker: WebWorker, pixelRatio: number) {
     new OffscreenEvents(this.worker);

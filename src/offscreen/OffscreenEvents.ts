@@ -1,4 +1,4 @@
-import { prevent, mouseEvent, keyboardEvent } from './EventHandlers';
+import { prevent, mouseEvent, keyboardEvent } from '@/offscreen/EventHandlers';
 import type { Event } from 'three/src/core/EventDispatcher';
 import type WebWorker from '@/worker/WebWorker';
 

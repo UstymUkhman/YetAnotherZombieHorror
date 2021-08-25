@@ -1,4 +1,5 @@
 import OffscreenCanvas from '@/offscreen/OffscreenCanvas';
+import OnscreenCanvas from '@/managers/OnscreenCanvas';
 import type Raindrops from '@/environment/Raindrops';
 
 import AudioScene from '@/environment/AudioScene';
@@ -12,6 +13,12 @@ import Music from '@/managers/Music';
 import RAF from '@/managers/RAF';
 import Configs from '@/configs';
 
+export interface ApplicationManager
+{
+  resize (width: number, height: number): void,
+  set pause (paused: boolean)
+}
+
 export default class Application
 {
   private raindrops?: Raindrops;
@@ -21,18 +28,19 @@ export default class Application
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
-  private readonly offscreen: OffscreenCanvas;
+  private readonly manager: ApplicationManager;
   private readonly onResize = this.resize.bind(this);
 
   public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
+    const pixelRatio = window.devicePixelRatio || 1.0;
+
     GameEvents.createWorkerEvents(this.worker);
     Viewport.addResizeCallback(this.onResize);
-
     this.audioScene = new AudioScene();
 
-    this.offscreen = new OffscreenCanvas(
-      scene, this.worker, window.devicePixelRatio || 1.0
-    );
+    this.manager = Configs.offscreen
+      ? new OffscreenCanvas(scene, this.worker, pixelRatio)
+      : new OnscreenCanvas(scene, pixelRatio);
 
     if (Configs.Settings.raindrops) {
       this.createRaindrops(scene, raindrops);
@@ -45,7 +53,7 @@ export default class Application
   }
 
   private resize (width: number, height: number): void {
-    this.offscreen.resize(width, height);
+    this.manager.resize(width, height);
   }
 
   public start (): void {
@@ -70,7 +78,7 @@ export default class Application
       : this.pointer.requestPointerLock();
 
     this.audioScene.pause = paused;
-    this.offscreen.pause = paused;
+    this.manager.pause = paused;
 
     RAF.pause = paused;
   }
