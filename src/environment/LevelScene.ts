@@ -7,7 +7,6 @@ import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
-
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import VolumetricFog from '@/environment/VolumetricFog';
@@ -19,6 +18,7 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { CSM } from 'three/examples/jsm/csm/CSM';
 
+import type WebWorker from '@/worker/WebWorker';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 
@@ -45,7 +45,7 @@ export default class LevelScene
   private rain?: Rain;
   private csm?: CSM;
 
-  public constructor (canvas: HTMLCanvasElement, pixelRatio: number) {
+  public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
     this.renderer = new WebGLRenderer({
       preserveDrawingBuffer: true,
       antialias: true,
@@ -54,7 +54,7 @@ export default class LevelScene
     });
 
     this.createColliders();
-    this.createEnvironment();
+    this.createEnvironment(worker);
     this.createRenderer(pixelRatio);
 
     this.pmrem = new PMREMGenerator(this.renderer);
@@ -75,9 +75,9 @@ export default class LevelScene
     });
   }
 
-  private async createEnvironment (): Promise<void> {
+  private async createEnvironment (worker?: WebWorker): Promise<void> {
     if (Configs.Settings.raining) {
-      this.rain = new Rain(this.renderer, this.scene);
+      this.rain = new Rain(this.renderer, this.scene, worker);
     }
 
     if (Configs.Settings.fog) {

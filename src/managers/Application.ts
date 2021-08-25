@@ -1,7 +1,4 @@
-import OffscreenCanvas from '@/offscreen/OffscreenCanvas';
-import OnscreenCanvas from '@/managers/OnscreenCanvas';
 import type Raindrops from '@/environment/Raindrops';
-
 import AudioScene from '@/environment/AudioScene';
 import { GameEvents } from '@/events/GameEvents';
 
@@ -22,13 +19,14 @@ export interface ApplicationManager
 export default class Application
 {
   private raindrops?: Raindrops;
+  private manager!: ApplicationManager;
+
   private readonly music = new Music();
   private readonly audioScene: AudioScene;
 
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
-  private readonly manager: ApplicationManager;
   private readonly onResize = this.resize.bind(this);
 
   public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
@@ -38,9 +36,9 @@ export default class Application
     Viewport.addResizeCallback(this.onResize);
     this.audioScene = new AudioScene();
 
-    this.manager = Configs.offscreen
-      ? new OffscreenCanvas(scene, this.worker, pixelRatio)
-      : new OnscreenCanvas(scene, pixelRatio);
+    import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/OnscreenCanvas').then(Manager =>
+      this.manager = new Manager.default(scene, this.worker, pixelRatio)
+    );
 
     if (Configs.Settings.raindrops) {
       this.createRaindrops(scene, raindrops);

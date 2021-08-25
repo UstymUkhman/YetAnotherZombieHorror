@@ -1,13 +1,13 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-// import { getRandomCoord } from '@/worker/getRandomCoord';
+import { getRandomCoord } from '@/worker/getRandomCoord';
 
-// import type { LevelCoords } from '@/environment/types';
+import type { LevelCoords } from '@/environment/types';
 import type { Vector3 } from 'three/src/math/Vector3';
 
 import LevelScene from '@/environment/LevelScene';
+import type WebWorker from '@/worker/WebWorker';
 import { Clock } from 'three/src/core/Clock';
-// import WebWorker from '@/worker/WebWorker';
 
 import Enemies from '@/managers/Enemies';
 import Player from '@/characters/Player';
@@ -18,7 +18,6 @@ import Rifle from '@/weapons/Rifle';
 
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
-// import Configs from '@/configs';
 import Input from '@/inputs';
 
 export default class MainLoop
@@ -30,14 +29,13 @@ export default class MainLoop
   private readonly level: LevelScene;
   private readonly clock = new Clock();
   private readonly player = new Player();
-  // private readonly worker = new WebWorker();
 
   private readonly loop = this.update.bind(this);
   private readonly input = new Input(this.player);
   private readonly onSceneLoad = this.onLoad.bind(this);
 
-  public constructor (scene: HTMLCanvasElement, pixelRatio: number) {
-    this.level = new LevelScene(scene, pixelRatio);
+  public constructor (scene: HTMLCanvasElement, pixelRatio: number, private readonly worker?: WebWorker) {
+    this.level = new LevelScene(scene, pixelRatio, worker);
     this.addEventListeners();
   }
 
@@ -45,15 +43,14 @@ export default class MainLoop
     GameEvents.add('Rifle::Pick', this.pickRifle.bind(this));
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
-    // Need to uncomment this in order to support Firefox:
-    // this.worker.add('Level::GetRandomCoord', data =>
-    //   this.rifle.spawn(data as LevelCoords), {
-    //     minCoords: LevelScene.minCoords,
-    //     maxCoords: LevelScene.maxCoords,
-    //     portals: LevelScene.portals,
-    //     bounds: LevelScene.bounds
-    //   }
-    // );
+    this.worker?.add('Level::GetRandomCoord', event =>
+      this.rifle.spawn(event.data as LevelCoords), {
+        minCoords: LevelScene.minCoords,
+        maxCoords: LevelScene.maxCoords,
+        portals: LevelScene.portals,
+        bounds: LevelScene.bounds
+      }
+    );
   }
 
   private async onLoad (event: GameEvent): Promise<void> {
@@ -72,23 +69,23 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
-  // private spawnRifle (): void {
-  //   if (this.rifle.onStage) return;
+  private spawnRifle (): void {
+    if (this.rifle.onStage) return;
 
-  //   Configs.worker &&
-  //     /* ? */ this.rifle.spawn(getRandomCoord({
-  //       player: this.player.location.position,
-  //       minCoords: LevelScene.minCoords,
-  //       maxCoords: LevelScene.maxCoords,
-  //       portals: LevelScene.portals,
-  //       bounds: LevelScene.bounds
-  //     }));
+    this.worker
+      ? this.worker.post('Level::GetRandomCoord', {
+        player: this.player.location.position
+      })
 
-  //     // Need to uncomment this in order to support Firefox:
-  //     // : this.worker.post('Level::GetRandomCoord', {
-  //     //   player: this.player.location.position
-  //     // });
-  // }
+      : this.rifle.spawn(getRandomCoord({
+        player: this.player.location.position,
+        minCoords: LevelScene.minCoords,
+        maxCoords: LevelScene.maxCoords,
+        portals: LevelScene.portals,
+        bounds: LevelScene.bounds
+      })
+    );
+  }
 
   private pickRifle (event: GameEvent): void {
     this.player.pickRifle(this.rifle);
@@ -132,8 +129,7 @@ export default class MainLoop
   }
 
   private removeEventListeners (): void {
-    // Need to uncomment this in order to support Firefox:
-    // this.worker.remove('Level::GetRandomCoord');
+    this.worker?.remove('Level::GetRandomCoord');
     GameEvents.remove('Level::EnvMap');
     GameEvents.remove('Rifle::Pick');
   }

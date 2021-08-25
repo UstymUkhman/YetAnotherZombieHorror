@@ -1,12 +1,13 @@
 import type { ApplicationManager } from '@/managers/Application';
+import type WebWorker from '@/worker/WebWorker';
 import MainLoop from '@/managers/MainLoop';
 
 export default class OnscreenCanvas implements ApplicationManager
 {
   private loop: MainLoop;
 
-  public constructor (scene: HTMLCanvasElement, pixelRatio: number) {
-    this.loop = new MainLoop(scene, pixelRatio);
+  public constructor (scene: HTMLCanvasElement, worker: WebWorker, pixelRatio: number) {
+    this.loop = new MainLoop(scene, pixelRatio, worker);
   }
 
   public resize (width: number, height: number): void {

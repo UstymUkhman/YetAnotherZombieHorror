@@ -50,6 +50,7 @@ export default class AudioScene
 
   public constructor () {
     this.camera.matrixAutoUpdate = false;
+    this.scene.matrixAutoUpdate = false;
     this.camera.add(this.listener);
 
     this.scene.autoUpdate = false;
@@ -135,6 +136,7 @@ export default class AudioScene
 
   private playThuder (event: GameEvent): void {
     this.thunder.position.copy(event.data as Vector3);
+    this.thunder.updateMatrix();
     this.thunder.updateMatrixWorld();
 
     const distance = this.thunder.position.distanceToSquared(this.listener.position);
@@ -169,6 +171,7 @@ export default class AudioScene
     !player && this.playEnemy(character, sound);
     character.matrixWorld.copy(matrix);
 
+    character.updateMatrix();
     character.updateMatrixWorld();
     !sound.isPlaying && sound.play();
   }
@@ -184,6 +187,7 @@ export default class AudioScene
     const sound = this.weaponSounds.get(sfx) as PositionalAudio;
 
     this.weapon.matrixWorld.copy(matrix);
+    this.weapon.updateMatrix();
     this.weapon.updateMatrixWorld();
 
     play
@@ -216,6 +220,7 @@ export default class AudioScene
     const { fov, aspect, near, far, matrix } = CameraManager.config;
 
     this.camera.matrixWorld.copy(matrix);
+    this.camera.updateMatrix();
     this.camera.updateMatrixWorld();
 
     this.camera.aspect = aspect;

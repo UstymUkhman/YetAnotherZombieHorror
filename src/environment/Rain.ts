@@ -16,7 +16,7 @@ import LevelScene from '@/environment/LevelScene';
 import { CameraObject } from '@/managers/Camera';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
-// import type WebWorker from '@/worker/WebWorker';
+import type WebWorker from '@/worker/WebWorker';
 
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
@@ -33,14 +33,16 @@ export default class Rain
   private renderTargets?: Array<WebGLRenderTarget>;
 
   private material!: ShaderMaterial;
-  // private worker?: WebWorker;
   private drops!: Points;
   private delta = 0.0;
 
-  public constructor (private readonly renderer: WebGLRenderer, private readonly scene: Scene) {
-    // Need to uncomment this in order to support Firefox:
-    // !Configs.worker && this.createWorkerLoop();
+  public constructor (
+    private readonly renderer: WebGLRenderer,
+    private readonly scene: Scene,
+    private readonly worker?: WebWorker
+  ) {
     this.createRenderTargets();
+    this.createWorkerLoop();
     this.createParticles();
   }
 
@@ -125,27 +127,23 @@ export default class Rain
     this.scene.add(this.drops);
   }
 
-  // private createWorkerLoop (): void {
-  //   import('@/worker/WebWorker').then(WebWorker => {
-  //     this.worker = new WebWorker.default();
+  private createWorkerLoop (): void {
+    this.worker?.add('Rain::UpdateParticles', event =>
+      this.updateParticleGeometry(event.data as RainParticles), {
+        minCoords: this.minCoords,
+        maxCoords: this.maxCoords
+      }
+    );
 
-  //     this.worker.add('Rain::UpdateParticles', data =>
-  //       this.updateParticleGeometry(data as RainParticles), {
-  //         minCoords: this.minCoords,
-  //         maxCoords: this.maxCoords
-  //       }
-  //     );
-
-  //     this.worker.post('Rain::UpdateParticles', {
-  //       camera: CameraObject.position,
-  //       delta: this.delta
-  //     });
-  //   });
-  // }
+    this.worker?.post('Rain::UpdateParticles', {
+      camera: CameraObject.position,
+      delta: this.delta
+    });
+  }
 
   public update (delta: number): void {
     this.delta = delta;
-    Configs.worker && this.updateParticles();
+    !this.worker && this.updateParticles();
 
     if (this.renderTargets) {
       const lastRenderTarget = this.renderTargets[0];
@@ -187,10 +185,10 @@ export default class Rain
     this.geometry.attributes.angle.needsUpdate = true;
     this.geometry.attributes.alpha.needsUpdate = true;
 
-    // this.worker?.post('Rain::UpdateParticles', {
-    //   camera: CameraObject.position,
-    //   delta: this.delta
-    // });
+    this.worker?.post('Rain::UpdateParticles', {
+      camera: CameraObject.position,
+      delta: this.delta
+    });
   }
 
   public resize (width: number, height: number): void {
@@ -207,7 +205,7 @@ export default class Rain
   }
 
   public dispose (): void {
-    // this.worker?.remove('Rain::UpdateParticles');
+    this.worker?.remove('Rain::UpdateParticles');
 
     this.renderTargets?.forEach(renderTarget => {
       renderTarget.depthTexture.dispose();
