@@ -66,7 +66,7 @@ export default class Player extends Character
     this.animations.death.setLoop(LoopOnce, 1);
 
     !Configs.freeCamera && Camera.setTo(character.scene);
-    GameEvents.dispatch('Level::AddModel', this.object);
+    GameEvents.dispatch('Level::AddObject', this.object);
     this.currentAnimation.play();
   }
 

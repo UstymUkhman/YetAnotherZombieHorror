@@ -58,8 +58,8 @@ export default class LevelScene
     this.createRenderer(pixelRatio);
 
     this.pmrem = new PMREMGenerator(this.renderer);
-    GameEvents.add('Level::AddModel', this.addModel.bind(this));
-    GameEvents.add('Level::RemoveModel', this.removeModel.bind(this));
+    GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
+    GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
   }
 
   private createColliders (): void {
@@ -100,7 +100,7 @@ export default class LevelScene
       const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
-        childMesh.renderOrder = 1;
+        childMesh.renderOrder = 2;
         material.envMap = skyboxMap;
 
         childMesh.receiveShadow = true;
@@ -179,12 +179,12 @@ export default class LevelScene
     this.renderer.shadowMap.enabled = true;
   }
 
-  public removeModel (event: GameEvent): void {
+  public removeGameObject (event: GameEvent): void {
     const model = event.data as Object3D;
     this.scene.remove(model);
   }
 
-  private addModel (event: GameEvent): void {
+  private addGameObject (event: GameEvent): void {
     const model = event.data as Object3D;
     this.scene.add(model);
   }
@@ -213,8 +213,8 @@ export default class LevelScene
   }
 
   public dispose (): void {
-    GameEvents.remove('Level::AddModel');
-    GameEvents.remove('Level::RemoveModel');
+    GameEvents.remove('Level::AddObject');
+    GameEvents.remove('Level::RemoveObject');
 
     while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);

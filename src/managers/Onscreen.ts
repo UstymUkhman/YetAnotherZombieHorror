@@ -2,7 +2,7 @@ import type { ApplicationManager } from '@/managers/Application';
 import type WebWorker from '@/worker/WebWorker';
 import MainLoop from '@/managers/MainLoop';
 
-export default class OnscreenCanvas implements ApplicationManager
+export default class Onscreen implements ApplicationManager
 {
   private loop: MainLoop;
 

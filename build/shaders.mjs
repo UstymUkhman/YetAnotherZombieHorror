@@ -18,6 +18,7 @@ function compileShader (path) {
   let shader = readFileSync(path).toString();
   shader = glsl.default().transform(shader, path);
 
+  shader = shader.replace(/\\t/g, '  ');
   shader = shader.replace(/\\n/g, EOL);
   shader = shader.replace(/\\r/g, '');
   shader = shader.slice(16, -2);

@@ -56,7 +56,7 @@ export default class BVHPhysics extends PhysicsWorld
 		const mergedGeometry: BVHGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
-    GameEvents.dispatch('Level::AddModel', this.environment);
+    GameEvents.dispatch('Level::AddObject', this.environment);
     this.environmentCollider = new Mesh(mergedGeometry);
   }
 

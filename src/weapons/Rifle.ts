@@ -85,7 +85,7 @@ export default class Rifle extends Weapon
     this.clone.scale.copy(worldScale);
     this.clone.rotation.set(0, 0, 0);
 
-    GameEvents.dispatch('Level::AddModel', this.clone);
+    GameEvents.dispatch('Level::AddObject', this.clone);
     GameEvents.dispatch('Rifle::Spawn', coords, true);
 
     this.spawned = true;

@@ -84,7 +84,7 @@ export default abstract class PhysicsWorld
     collider.position.copy(this.positionVector);
     collider.rotation.copy(this.rotationVector);
 
-    GameEvents.dispatch('Level::AddModel', collider);
+    GameEvents.dispatch('Level::AddObject', collider);
     this.addStaticCollider(collider);
   }
 

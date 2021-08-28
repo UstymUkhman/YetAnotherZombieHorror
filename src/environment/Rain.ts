@@ -123,7 +123,7 @@ export default class Rain
     )).then(textures => uniforms.diffuse.value = textures);
 
     this.drops.frustumCulled = false;
-    this.drops.renderOrder = 2.0;
+    this.drops.renderOrder = 3.0;
     this.scene.add(this.drops);
   }
 

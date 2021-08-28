@@ -36,7 +36,7 @@ export default class Application
     Viewport.addResizeCallback(this.onResize);
     this.audioScene = new AudioScene();
 
-    import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/OnscreenCanvas').then(Manager =>
+    import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/Onscreen').then(Manager =>
       this.manager = new Manager.default(scene, this.worker, pixelRatio)
     );
 
