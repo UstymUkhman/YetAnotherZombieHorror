@@ -62,6 +62,7 @@ namespace Configs
   export const Level = deepFreeze({
     position: new Vector3(...LevelData.position),
     sidewalkHeight: LevelData.sidewalkHeight,
+    portalsOffset: LevelData.portalsOffset,
     scale: new Vector3(...LevelData.scale),
 
     lighting: LevelData.lighting,

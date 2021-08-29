@@ -81,6 +81,7 @@ describe('Configs', () => {
     expect(Configs.Level.position).toStrictEqual(levelPosition);
 
     expect(Configs.Level.bounds.length).toStrictEqual(Configs.Level.sidewalk.length);
+    expect(Configs.Level.portalsOffset).toStrictEqual(Configs.Level.portalsOffset);
     expect(Configs.Level.sidewalkHeight).toBeLessThan(Configs.Level.height);
 
     expect(Configs.Level.music).toStrictEqual('Day Of The Dead.mp3');

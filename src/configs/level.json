@@ -11,6 +11,11 @@
   "fog": "noise.jpg",
   "skybox": "level",
 
+  "portalsOffset": [
+    -0.025,  0.225,
+    -0.275, -0.025
+  ],
+
   "height": 10,
   "depth": 250,
 

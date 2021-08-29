@@ -75,20 +75,20 @@ describe('LevelScene', () => {
     expect(createRenderer).toHaveReturnedWith(undefined);
   });
 
-  test('removeModel', () => {
+  test('removeGameObject', () => {
     const levelPrototype = Object.getPrototypeOf(level);
-    const removeModel = jest.fn(levelPrototype.removeModel.bind(level));
+    const removeGameObject = jest.fn(levelPrototype.removeGameObject.bind(level));
 
-    removeModel({ data: new Object3D() } as GameEvent);
-    expect(removeModel).toHaveReturnedWith(undefined);
+    removeGameObject({ data: new Object3D() } as GameEvent);
+    expect(removeGameObject).toHaveReturnedWith(undefined);
   });
 
-  test('addModel', () => {
+  test('addGameObject', () => {
     const levelPrototype = Object.getPrototypeOf(level);
-    const addModel = jest.fn(levelPrototype.addModel.bind(level));
+    const addGameObject = jest.fn(levelPrototype.addGameObject.bind(level));
 
-    addModel({ data: new Object3D() } as GameEvent);
-    expect(addModel).toHaveReturnedWith(undefined);
+    addGameObject({ data: new Object3D() } as GameEvent);
+    expect(addGameObject).toHaveReturnedWith(undefined);
   });
 
   /* test('render', () => {

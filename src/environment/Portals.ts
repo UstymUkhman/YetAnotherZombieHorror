@@ -12,6 +12,7 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { GLSL3 } from 'three/src/constants';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
+import Configs from '@/configs';
 
 export default class Portals
 {
@@ -20,6 +21,8 @@ export default class Portals
 
   private readonly player = new Vector3();
   private readonly offset = new Vector2();
+
+  private material!: ShaderMaterial;
 
   private readonly triggers = this.coords
     .filter((_, c) => !(c % 2))
@@ -33,6 +36,32 @@ export default class Portals
   }
 
   private async createPortals (): Promise<void> {
+    this.material = await this.createMaterial();
+
+    for (let p = 0, t = 0; t < this.triggers.length; p += 2, t++) {
+      const z1 = this.coords[p][1];
+      const z2 = this.coords[p + 1][1];
+
+      const center = Math.abs(z1 - z2) / 2;
+      const orientation = +(t < 2) * 2 -1;
+      const radius = center + 0.52;
+
+      const portal = new Mesh(new CircleGeometry(
+        radius, 32, 0.0, Math.PI
+      ), this.material);
+
+      portal.renderOrder = 2.0;
+      portal.position.x = this.triggers[t];
+      portal.rotation.y = PI.d2 * orientation;
+
+      portal.position.z = z1 + center * -orientation;
+      portal.position.z += Configs.Level.portalsOffset[t];
+
+      GameEvents.dispatch('Level::AddObject', portal);
+    }
+  }
+
+  private async createMaterial (): Promise<ShaderMaterial> {
     // Development imports:
     /* const vertPortal = await (await import('../shaders/portal/main.vert')).default;
     const fragPortal = await (await import('../shaders/portal/main.frag')).default; */
@@ -41,52 +70,45 @@ export default class Portals
     const vertPortal = await Assets.Loader.loadShader('portal/main.vert');
     const fragPortal = await Assets.Loader.loadShader('portal/main.frag');
 
-    for (let p = 0, t = 0; t < this.triggers.length; p += 2, t++) {
-      const z1 = this.coords[p][1];
-      const z2 = this.coords[p + 1][1];
+    const color = Color.getClass(Color.MOON);
 
-      const orientation = +(t < 2) * 2 -1;
-      const rotation = PI.d2 * orientation;
-      const radius = Math.abs(z1 - z2) / 2 * 1.28;
+    return new ShaderMaterial({
+      uniforms: {
+        spikesColor: { value: color },
+        deltaTime: { value: 0.0 }
+      },
 
-      const portal = new Mesh(
-        new CircleGeometry(radius, 32, 0.0, Math.PI),
-        new ShaderMaterial({
-          uniforms: {
-            spikesColor: { value: Color.getClass(Color.MOON) },
-            deltaTime: { value: 0.0 }
-          },
+      fragmentShader: fragPortal,
+      vertexShader: vertPortal,
 
-          fragmentShader: fragPortal,
-          vertexShader: vertPortal,
-
-          glslVersion: GLSL3,
-          transparent: true,
-          depthWrite: false
-        })
-      );
-
-      portal.renderOrder = 1.0;
-      portal.rotation.y = rotation;
-      portal.position.x = this.triggers[t];
-      portal.position.z = z1 + (radius - 1.5) * -orientation;
-
-      GameEvents.dispatch('Level::AddObject', portal);
-
-      // const material = this.portal.material as ShaderMaterial;
-      // material.uniforms.deltaTime.value = delta / 5000;
-    }
+      glslVersion: GLSL3,
+      transparent: true,
+      depthWrite: false
+    });
   }
 
   private updatePosition (x: number, z = x): void {
     const bound = this.coords[x][0];
-    const step = Math.sign(bound) * -0.2;
+    const step = Math.sign(bound) * -0.3;
 
     this.position.set(
       this.coords[x][0] - this.offset.x + step,
       this.player.y,
       this.coords[z][1] + this.offset.y
     );
+  }
+
+  public portalPassed (player: Vector3): boolean {
+    this.player.copy(player);
+    return this.topPortalArea() || this.bottomPortalArea();
+  }
+
+  public get playerPosition (): Vector3 {
+    return this.position;
+  }
+
+  public update (delta: number): void {
+    this.material.uniforms.deltaTime.value += delta / 10;
   }
 
   private bottomPortalArea (): boolean {
@@ -139,14 +161,5 @@ export default class Portals
     }
 
     return false;
-  }
-
-  public portalPassed (player: Vector3): boolean {
-    this.player.copy(player);
-    return this.topPortalArea() || this.bottomPortalArea();
-  }
-
-  public get playerPosition (): Vector3 {
-    return this.position;
   }
 }

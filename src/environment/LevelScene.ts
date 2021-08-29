@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
+import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 
 import type { LevelCoords, LevelBounds } from '@/environment/types';
@@ -13,7 +13,6 @@ import VolumetricFog from '@/environment/VolumetricFog';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import { CameraObject } from '@/managers/Camera';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { CSM } from 'three/examples/jsm/csm/CSM';
@@ -25,7 +24,6 @@ import { Scene } from 'three/src/scenes/Scene';
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
 import { min, max } from '@/utils/Array';
-
 import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 
@@ -100,9 +98,10 @@ export default class LevelScene
       const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
-        childMesh.renderOrder = 2;
+        material.side = FrontSide;
         material.envMap = skyboxMap;
 
+        childMesh.renderOrder = 1.0;
         childMesh.receiveShadow = true;
         this.csm?.setupMaterial(childMesh.material);
 
@@ -192,6 +191,7 @@ export default class LevelScene
   public render (delta: number): void {
     this.renderer.render(this.scene, CameraObject);
 
+    this.portals.update(delta);
     this.rain?.update(delta);
     this.fog?.update(delta);
 
