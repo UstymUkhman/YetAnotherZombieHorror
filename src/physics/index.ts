@@ -14,7 +14,10 @@ const { ammoPhysics } = Configs.Settings;
 const physics = Physics.constructor.name;
 const isAmmo = physics.includes('Ammo');
 
-if ((ammoPhysics && !isAmmo) || (isAmmo && !ammoPhysics)) {
+const ammo = ammoPhysics && !isAmmo;
+const bvh = isAmmo && !ammoPhysics;
+
+if (!PRODUCTION && (ammo || bvh)) {
   console.warn(
     'Physics settings don\'t match the actual engine in use.', '\n',
     'Please run "yarn setup" if you\'ve changed physics settings in JSON file', '\n',
