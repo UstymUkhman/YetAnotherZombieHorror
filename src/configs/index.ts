@@ -18,6 +18,8 @@ import deepFreeze from '@/utils/deepFreeze';
 
 namespace Configs
 {
+  type OffscreenCanvas = HTMLCanvasElement & { transferControlToOffscreen?: () => void };
+
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
       speed: animations[animation][0],
@@ -41,8 +43,9 @@ namespace Configs
   export const Settings = deepFreeze(SettingsData);
 
   export const offscreen = (
-    typeof HTMLCanvasElement !== 'undefined' &&
-    !!HTMLCanvasElement.prototype.transferControlToOffscreen
+    typeof HTMLCanvasElement !== 'undefined' && !!(
+      HTMLCanvasElement.prototype as OffscreenCanvas
+    ).transferControlToOffscreen
   );
 
   export const worker = (

@@ -9,12 +9,15 @@ import CubeTextureLoader from '@/loaders/CubeTextureLoader';
 
 import { generateUUID } from 'three/src/math/MathUtils';
 import type { Group } from 'three/src/objects/Group';
-
 import TextureLoader from '@/loaders/TextureLoader';
 import { GameEvents } from '@/events/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
 import Configs from '@/configs';
+
+const BASE_PATH = (
+  PRODUCTION || Configs.APP
+) && '.';
 
 export namespace Assets
 {
@@ -31,10 +34,10 @@ export namespace Assets
 
   class LoadingManager extends ThreeLoadingManager
   {
-    private readonly shaderBasePath  = `${Configs.APP && '.' || '/assets'}/shaders/`;
-    private readonly textureBasePath = `${Configs.APP && '.' || '/assets'}/images/`;
-    private readonly modelBasePath   = `${Configs.APP && '.' || '/assets'}/models/`;
-    private readonly audioBasePath   = `${Configs.APP && '.' || ''}/assets/sounds/`;
+    private readonly shaderBasePath  = `${BASE_PATH || '/assets'}/shaders/`;
+    private readonly textureBasePath = `${BASE_PATH || '/assets'}/images/`;
+    private readonly modelBasePath   = `${BASE_PATH || '/assets'}/models/`;
+    private readonly audioBasePath   = `${BASE_PATH || ''}/assets/sounds/`;
 
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);

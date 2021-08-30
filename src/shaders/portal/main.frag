@@ -9,6 +9,7 @@
 #define INTERACTIONS 5
 #define PI2 PI * 2.0
 
+uniform vec3  backgroundColor;
 uniform vec3  spikesColor;
 uniform float deltaTime;
 
@@ -46,5 +47,6 @@ void main (void)
   float alphaFactor = smoothstep(0.0, 1.0, source) * 2.0;
 
   vec3 color = vec3(pow(abs(ammount), 8.0)) * spikesColor;
+  color = clamp(color + backgroundColor, 0.0, 1.0);
   fragColor = vec4(color, mix(0.0, 1.0, alphaFactor));
 }

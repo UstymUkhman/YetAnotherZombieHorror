@@ -15,7 +15,7 @@ describe('WebWorker', () => {
 
   test('transfer', () => {
     const canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-    const transfer = jest.fn(webWorker.transfer.bind(webWorker, canvas as unknown as OffscreenCanvas));
+    const transfer = jest.fn(webWorker.transfer.bind(webWorker, canvas as unknown as Transferable));
 
     transfer();
     expect(transfer).toHaveReturnedWith(undefined);

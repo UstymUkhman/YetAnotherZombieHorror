@@ -70,11 +70,13 @@ export default class Portals
     const vertPortal = await Assets.Loader.loadShader('portal/main.vert');
     const fragPortal = await Assets.Loader.loadShader('portal/main.frag');
 
-    const color = Color.getClass(Color.MOON);
+    const backgroundColor = Color.getClass(Color.PORTAL);
+    const spikesColor = Color.getClass(Color.MOON);
 
     return new ShaderMaterial({
       uniforms: {
-        spikesColor: { value: color },
+        backgroundColor: { value: backgroundColor },
+        spikesColor: { value: spikesColor },
         deltaTime: { value: 0.0 }
       },
 

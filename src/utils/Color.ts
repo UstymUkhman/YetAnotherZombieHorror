@@ -5,6 +5,8 @@ export namespace Color
   export type RGB = { r: number, g: number, b: number };
 
   export const SILVER = 0xC0C0C0;
+  export const PORTAL = 0x222222;
+
   export const BLACK = 0x000000;
   export const WHITE = 0xFFFFFF;
 
