@@ -16,11 +16,11 @@ describe('Configs', () => {
   test('Constants', () => {
     expect(typeof Configs.offscreen).toStrictEqual('boolean');
     expect(typeof Configs.colliders).toStrictEqual('boolean');
+    expect(typeof Configs.BASE_PATH).toStrictEqual('string');
     expect(typeof Configs.hitBoxes).toStrictEqual('boolean');
     expect(typeof Configs.VERSION).toStrictEqual('string');
     expect(typeof Configs.worker).toStrictEqual('boolean');
 
-    expect(Configs.freeCamera).toStrictEqual(false);
     expect(Configs.offscreen).toStrictEqual(false);
     expect(Configs.worker).toStrictEqual(false);
     expect(Configs.DEBUG).toStrictEqual(true);

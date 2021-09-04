@@ -55,6 +55,7 @@ export default class Player extends Character
     const character = await this.load(envMap);
 
     this.hand = character.scene.getObjectByName('swatRightHand');
+    GameEvents.dispatch('Level::AddObject', this.object);
     this.currentAnimation = this.animations.pistolIdle;
 
     this.animations.rifleReload.clampWhenFinished = true;
@@ -65,8 +66,7 @@ export default class Player extends Character
     this.animations.rifleAim.setLoop(LoopOnce, 1);
     this.animations.death.setLoop(LoopOnce, 1);
 
-    !Configs.freeCamera && Camera.setTo(character.scene);
-    GameEvents.dispatch('Level::AddObject', this.object);
+    Camera.setTo(character.scene);
     this.currentAnimation.play();
   }
 
@@ -221,8 +221,8 @@ export default class Player extends Character
       this.moving = false;
     }
 
-    Camera.isFPS && setTimeout(() =>
-      GameEvents.dispatch('Player::Aim', true, true)
+    setTimeout(() =>
+      GameEvents.dispatch('Player::Aim', Camera.isFPS, true)
     , 300 + +this.equipRifle * 300);
 
     !this.equipRifle && setTimeout(() => {

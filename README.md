@@ -99,4 +99,3 @@
 
     - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8)
     - [SardineFish](https://github.com/SardineFish) - [Screen Raindrops](https://github.com/SardineFish/raindrop-fx)
-    - [Red Stapler](https://redstapler.co/) - [Clouds](https://redstapler.co/three-js-realistic-rain-tutorial/)

@@ -9,15 +9,12 @@ import CubeTextureLoader from '@/loaders/CubeTextureLoader';
 
 import { generateUUID } from 'three/src/math/MathUtils';
 import type { Group } from 'three/src/objects/Group';
+
 import TextureLoader from '@/loaders/TextureLoader';
 import { GameEvents } from '@/events/GameEvents';
 import { RGBFormat } from 'three/src/constants';
 
 import Configs from '@/configs';
-
-const BASE_PATH = (
-  PRODUCTION || Configs.APP
-) && '.';
 
 export namespace Assets
 {
@@ -34,10 +31,10 @@ export namespace Assets
 
   class LoadingManager extends ThreeLoadingManager
   {
-    private readonly shaderBasePath  = `${BASE_PATH || '/assets'}/shaders/`;
-    private readonly textureBasePath = `${BASE_PATH || '/assets'}/images/`;
-    private readonly modelBasePath   = `${BASE_PATH || '/assets'}/models/`;
-    private readonly audioBasePath   = `${BASE_PATH || ''}/assets/sounds/`;
+    private readonly shaderBasePath  = `${Configs.BASE_PATH || '/assets'}/shaders/`;
+    private readonly textureBasePath = `${Configs.BASE_PATH || '/assets'}/images/`;
+    private readonly modelBasePath   = `${Configs.BASE_PATH || '/assets'}/models/`;
+    private readonly audioBasePath   = `${Configs.BASE_PATH    }/assets/sounds/`;
 
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);
@@ -111,11 +108,9 @@ export namespace Assets
     }
 
     public override onProgress = (url: string, loaded: number, total: number): void => {
-      const progress = loaded * 100 / total;
-
       GameEvents.dispatch('Asset::LoadingProgress', {
-        uuid: this.uuid,
-        progress
+        progress: loaded * 100 / total,
+        uuid: this.uuid
       }, true);
     }
 

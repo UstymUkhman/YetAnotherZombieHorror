@@ -6,9 +6,9 @@
  */
 
 import Configs from '@/configs';
-import AmmoPhysics from '@/physics/AmmoPhysics';
+import BVHPhysics from '@/physics/BVHPhysics';
 
-const Physics = new AmmoPhysics();
+const Physics = new BVHPhysics();
 
 const { ammoPhysics } = Configs.Settings;
 const physics = Physics.constructor.name;

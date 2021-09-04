@@ -93,7 +93,7 @@ export default class Keyboard
         this.shift && this.moves[Direction.UP]
           ? this.player.run(this.moves, true)
           : this.player.move(this.moves);
-      }, Math.max(150 - (Date.now() - this.aimTime), 0)) as unknown as number;
+      }, Math.max(450 - (Date.now() - this.aimTime), 0)) as unknown as number;
     }
   }
 

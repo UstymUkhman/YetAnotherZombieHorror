@@ -140,7 +140,7 @@ export default class Weapon
       targets: this.weapon.rotation,
       easing: 'easeInOutSine',
       direction: 'alternate',
-      z: recoil.y / 2.0,
+      z: recoil.y / 5.0,
       duration: 50.0
     });
 

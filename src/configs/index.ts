@@ -37,6 +37,7 @@ namespace Configs
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
 
   type CharacterAnimations = Record<string, Readonly<Array<number>>>;
+  export const BASE_PATH = (PRODUCTION || Configs.APP) && '.' || '';
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
 
   type CharacterMoves = { [key: string]: CharacterMove };
@@ -58,7 +59,6 @@ namespace Configs
   export const VERSION = BUILD;
   /* eslint-enable no-undef */
 
-  export const freeCamera = false;
   export const colliders = false;
   export const hitBoxes = false;
 

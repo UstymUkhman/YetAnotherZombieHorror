@@ -180,7 +180,7 @@ export default class Character
     this.object.position.copy(position);
     this.getModel().rotateOnWorldAxis(Vector.UP, Math.PI);
 
-    Physics.teleportCollider(this.object.uuid);
+    Physics.teleportCollider?.(this.object.uuid);
     Physics.pause = false;
   }
 

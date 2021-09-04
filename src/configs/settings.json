@@ -2,7 +2,7 @@
   "physicalLights": true,
   "dynamicClouds": true,
   "softParticles": true,
-  "ammoPhysics": true,
+  "ammoPhysics": false,
 
   "raindrops": true,
   "bakedFog": true,
