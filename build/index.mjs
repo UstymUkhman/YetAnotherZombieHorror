@@ -10,18 +10,18 @@ function execute (script, callback) {
 
 execute(join(resolve(), 'build/physics.mjs'), error => {
   if (error) {
-    console.error('Physics engine configuration failed.');
+    console.error('\nPhysics engine configuration failed.');
     throw error;
   }
 
-  console.info('Physics Engine configured successfully.');
+  console.info('\nPhysics Engine configured successfully.');
 });
 
 execute(join(resolve(), 'build/shaders.mjs'), error => {
   if (error) {
-    console.error('Shaders compilation failed.');
+    console.error('Shaders compilation failed.\n');
     throw error;
   }
 
-  console.info('Shaders compiled successfully.');
+  console.info('Shaders compiled successfully.\n');
 });

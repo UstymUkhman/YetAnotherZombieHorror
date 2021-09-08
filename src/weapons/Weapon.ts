@@ -1,5 +1,5 @@
+import type { WeaponConfig, BulletConfig, WeaponSound, Recoil } from '@/weapons/types';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import type { WeaponConfig, WeaponSound, Recoil } from '@/weapons/types';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
@@ -17,21 +17,27 @@ import { Assets } from '@/loaders/AssetsLoader';
 
 import { random } from '@/utils/Number';
 import { Color } from '@/utils/Color';
+import Bullet from '@/weapons/Bullet';
+
+import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
 export default class Weapon
 {
+  private readonly onUpdate = this.updateBullets.bind(this);
   private readonly raycaster = new Raycaster();
   private readonly origin = new Vector2();
 
   public targets: Array<Object3D> = [];
   protected readonly magazine: number;
+  private bullets: Array<Mesh> = [];
 
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
 
   private weapon?: Assets.GLTF;
   private asset?: Assets.GLTF;
+  private bullet!: Bullet;
 
   protected loadedAmmo: number;
   protected totalAmmo: number;
@@ -76,14 +82,18 @@ export default class Weapon
     this.weapon.rotation.copy(this.config.rotation as Euler);
     this.weapon.scale.copy(this.config.scale as Vector3);
 
+    this.bullet = new Bullet(
+      this.weapon, this.config.bullet as BulletConfig
+    );
+
     this.asset = this.model.clone();
   }
 
-  private getEvent (index: number): string {
+  /* private getEvent (index: number): string {
     const hitBox = index % 6;
     return !hitBox ? 'Hit:head' :
       hitBox === 1 ? 'Hit:body' : 'Hit:leg';
-  }
+  } */
 
   protected playSound (sfx: WeaponSound, stop: boolean): void {
     stop && this.stopSound(sfx);
@@ -106,23 +116,30 @@ export default class Weapon
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public cancelAim (duration?: number): void { return; }
 
-  public shoot (player: Vector3): Recoil | null {
-    const target = this.target;
-
+  public shoot (): Recoil | null {
     if (this.empty) this.playSound('empty', false);
 
     else {
+      const target = this.target;
       const hitBox = this.targets[target];
-      GameEvents.dispatch('Player::Shoot', true);
 
+      !this.bullets.length && RAF.add(this.onUpdate);
+      GameEvents.dispatch('Player::Shoot', true);
       const recoil = this.animateRecoil();
+
+      const bullet = this.bullet.shoot(
+        this.raycaster.ray.direction,
+        this.aiming
+      );
+
       this.playSound('shoot', true);
+      this.bullets.push(bullet);
       this.loadedAmmo--;
 
-      target > -1 && setTimeout(() =>
+      target > -1 && console.log(hitBox.position.distanceToSquared(bullet.position)); /* setTimeout(() =>
         GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
-        Math.round(hitBox.position.distanceTo(player) / this.config.speed)
-      );
+        Math.round(hitBox.position.distanceToSquared(bullet.position) / this.config.bullet.speed)
+      ); */
 
       return recoil;
     }
@@ -156,6 +173,22 @@ export default class Weapon
     return recoil;
   }
 
+  private updateBullets (): void {
+    for (let b = this.bullets.length; b--;) {
+      const bullet = this.bullets[b];
+
+      if (Date.now() < bullet.userData.lifeTime) {
+        this.bullet.update(bullet);
+      }
+
+      else {
+        this.bullets.splice(b, 1);
+        !this.bullets.length && RAF.remove(this.onUpdate);
+        GameEvents.dispatch('Level::RemoveObject', bullet);
+      }
+    }
+  }
+
   public startReloading (): void { return; }
 
   public stopReloading (): void { return; }
@@ -167,11 +200,10 @@ export default class Weapon
   }
 
   private get target (): number {
-    const x = this.config.spread.x / 10;
-    const y = this.config.spread.y / 10;
+    // const { x, y } = this.config.spread;
 
-    this.origin.x += random(-x, x);
-    this.origin.y += random(-y, y);
+    // this.origin.x = random(-x, x);
+    // this.origin.y = random(-y, y);
 
     this.raycaster.setFromCamera(this.origin, CameraObject);
     const hitBoxes = this.raycaster.intersectObjects(this.targets);

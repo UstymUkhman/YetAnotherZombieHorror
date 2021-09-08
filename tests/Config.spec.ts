@@ -193,9 +193,7 @@ describe('Configs', () => {
     expect(Configs.Pistol.magazine).toStrictEqual(Infinity);
     expect(Configs.Pistol.model).toStrictEqual('1911.glb');
     expect(Configs.Pistol.ammo).toStrictEqual(Infinity);
-
     expect(Configs.Pistol.damage).toBeGreaterThan(0);
-    expect(Configs.Pistol.speed).toBeGreaterThan(0);
   });
 
   test('Rifle', () => {
@@ -227,12 +225,9 @@ describe('Configs', () => {
     expect(Configs.Rifle.recoil).toBeInstanceOf(Vector2);
 
     expect(Configs.Rifle.model).toStrictEqual('AK47.glb');
-    expect(Configs.Rifle.magazine).toBeGreaterThan(0);
-
-    expect(Configs.Rifle.damage).toBeGreaterThan(0);
-    expect(Configs.Rifle.speed).toBeGreaterThan(0);
-
     expect(Configs.Rifle.spread).toBeInstanceOf(Vector2);
+    expect(Configs.Rifle.magazine).toBeGreaterThan(0);
+    expect(Configs.Rifle.damage).toBeGreaterThan(0);
   });
 
   test('Frozen', () => {

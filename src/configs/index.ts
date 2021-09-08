@@ -124,6 +124,13 @@ namespace Configs
   });
 
   export const Pistol = deepFreeze({
+    bullet: {
+      position: new Vector3(...PistolData.bullet.position),
+      lifeTime: PistolData.bullet.lifeTime,
+      speed: PistolData.bullet.speed,
+      scale: PistolData.bullet.scale
+    },
+
     position: new Vector3(...PistolData.position),
     rotation: new Euler(...PistolData.rotation),
 
@@ -136,11 +143,17 @@ namespace Configs
 
     sounds: PistolData.sounds,
     damage: PistolData.damage,
-    speed: PistolData.speed,
     model: PistolData.model
   });
 
   export const Rifle = deepFreeze({
+    bullet: {
+      position: new Vector3(...RifleData.bullet.position),
+      lifeTime: RifleData.bullet.lifeTime,
+      speed: RifleData.bullet.speed,
+      scale: RifleData.bullet.scale
+    },
+
     worldScale: new Vector3(...RifleData.worldScale),
     position: new Vector3(...RifleData.position),
     rotation: new Euler(...RifleData.rotation),
@@ -155,7 +168,6 @@ namespace Configs
 
     sounds: RifleData.sounds,
     damage: RifleData.damage,
-    speed: RifleData.speed,
     model: RifleData.model
   });
 }

@@ -252,7 +252,7 @@ export default class Player extends Character
     if (this.moving || this.hitting || this.reloading) return;
     if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
 
-    const recoil = this.weapon.shoot(this.position);
+    const recoil = this.weapon.shoot();
     recoil && this.rotate(recoil.x, recoil.y);
 
     this.shootTime = now;
