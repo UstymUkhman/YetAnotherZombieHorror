@@ -18,7 +18,7 @@ import deepFreeze from '@/utils/deepFreeze';
 
 namespace Configs
 {
-  type OffscreenCanvas = HTMLCanvasElement & { transferControlToOffscreen?: () => void };
+  export type OffscreenCanvas = HTMLCanvasElement & { transferControlToOffscreen: () => Transferable };
 
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
@@ -137,9 +137,15 @@ namespace Configs
     spread: new Vector2(...PistolData.spread),
     recoil: new Vector2(...PistolData.recoil),
     scale: new Vector3(...PistolData.scale),
-
     magazine: getAmmo(PistolData.magazine),
+
+    fire: {
+      position: new Vector2(...PistolData.fire.position),
+      scale: PistolData.fire.scale
+    },
+
     ammo: getAmmo(PistolData.ammo),
+    textures: PistolData.textures,
 
     sounds: PistolData.sounds,
     damage: PistolData.damage,
@@ -161,9 +167,15 @@ namespace Configs
     spread: new Vector2(...RifleData.spread),
     recoil: new Vector2(...RifleData.recoil),
     scale: new Vector3(...RifleData.scale),
-
     magazine: getAmmo(RifleData.magazine),
+
+    fire: {
+      position: new Vector2(...RifleData.fire.position),
+      scale: RifleData.fire.scale
+    },
+
     ammo: getAmmo(RifleData.ammo),
+    textures: RifleData.textures,
     maxStock: RifleData.maxStock,
 
     sounds: RifleData.sounds,

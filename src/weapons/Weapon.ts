@@ -1,4 +1,4 @@
-import type { WeaponConfig, BulletConfig, WeaponSound, Recoil } from '@/weapons/types';
+import type { WeaponConfig, BulletConfig, FireConfig, WeaponSound, Recoil } from '@/weapons/types';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 
 import type { Texture } from 'three/src/textures/Texture';
@@ -19,6 +19,7 @@ import { random } from '@/utils/Number';
 import { Color } from '@/utils/Color';
 import Bullet from '@/weapons/Bullet';
 
+import Fire from '@/weapons/Fire';
 import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
@@ -35,13 +36,15 @@ export default class Weapon
   private readonly aimNear = 3.0;
   private readonly near = 4.5;
 
-  private weapon?: Assets.GLTF;
-  private asset?: Assets.GLTF;
-  private bullet!: Bullet;
-
   protected loadedAmmo: number;
   protected totalAmmo: number;
+
+  private weapon?: Assets.GLTF;
+  private asset?: Assets.GLTF;
+
+  private bullet!: Bullet;
   private aiming = false;
+  private fire!: Fire;
 
   public constructor (private readonly config: WeaponConfig, envMap: Texture) {
     this.raycaster.near = this.near;
@@ -84,6 +87,12 @@ export default class Weapon
 
     this.bullet = new Bullet(
       this.weapon, this.config.bullet as BulletConfig
+    );
+
+    this.fire = new Fire(
+      this.config.fire as FireConfig,
+      this.config.textures,
+      this.weapon
     );
 
     this.asset = this.model.clone();
@@ -134,6 +143,7 @@ export default class Weapon
 
       this.playSound('shoot', true);
       this.bullets.push(bullet);
+      this.fire.addParticles();
       this.loadedAmmo--;
 
       target > -1 && console.log(hitBox.position.distanceToSquared(bullet.position)); /* setTimeout(() =>
@@ -174,6 +184,8 @@ export default class Weapon
   }
 
   private updateBullets (): void {
+    this.fire.update();
+
     for (let b = this.bullets.length; b--;) {
       const bullet = this.bullets[b];
 
@@ -197,6 +209,10 @@ export default class Weapon
 
   protected getClone (): Assets.GLTF {
     return this.asset as Assets.GLTF;
+  }
+
+  public resize (height: number): void {
+    this.fire.resize(height);
   }
 
   private get target (): number {

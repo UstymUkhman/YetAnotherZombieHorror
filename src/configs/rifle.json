@@ -7,6 +7,7 @@
   "spread": [0.0025, 0.0025],
   "recoil": [0.025, -0.03],
   "model": "AK47.glb",
+  "textures": "AK47",
 
   "maxStock": 150,
   "magazine": 30,
@@ -18,6 +19,11 @@
     "lifeTime": 200.0,
     "speed": 670.0,
     "scale": 0.6
+  },
+
+  "fire": {
+    "position": [160.0, 30.0],
+    "scale": 2.5
   },
 
   "sounds": {

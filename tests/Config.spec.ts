@@ -175,6 +175,10 @@ describe('Configs', () => {
 
     expect(Object.keys(Configs.Pistol.sounds).length).toBeGreaterThan(0);
 
+    expect(Configs.Pistol.textures).toStrictEqual(
+      Configs.Pistol.model.slice(0, Configs.Pistol.model.indexOf('.'))
+    );
+
     expect(Configs.Pistol.position).toStrictEqual(pistolPosition);
     expect(Configs.Pistol.position).toBeInstanceOf(Vector3);
 
@@ -205,6 +209,10 @@ describe('Configs', () => {
     const rifleScale = new Vector3(...Rifle.scale);
 
     expect(Object.keys(Configs.Rifle.sounds).length).toBeGreaterThan(0);
+
+    expect(Configs.Rifle.textures).toStrictEqual(
+      Configs.Rifle.model.slice(0, Configs.Rifle.model.indexOf('.'))
+    );
 
     expect(typeof Configs.Rifle.maxStock).toStrictEqual('number');
     expect(typeof Configs.Rifle.ammo).toStrictEqual('number');

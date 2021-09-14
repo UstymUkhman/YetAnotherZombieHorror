@@ -122,6 +122,8 @@ export default class MainLoop
 
   public resize (width: number, height: number): void {
     this.level.resize(width, height);
+    this.pistol.resize(height);
+    this.rifle.resize(height);
     Camera.resize();
   }
 

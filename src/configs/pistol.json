@@ -6,6 +6,7 @@
   "spread": [0.001, 0.001],
   "recoil": [0.01, -0.02],
   "model": "1911.glb",
+  "textures": "1911",
 
   "magazine": -1,
   "damage": 10,
@@ -16,6 +17,11 @@
     "lifeTime": 500.0,
     "speed": 253.0,
     "scale": 0.4
+  },
+
+  "fire": {
+    "position": [1.5, 0.53],
+    "scale": 1.0
   },
 
   "sounds": {

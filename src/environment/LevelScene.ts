@@ -98,6 +98,9 @@ export default class LevelScene
       const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
+        material.opacity = 1.0;
+        material.alphaTest = 1.0;
+
         material.side = FrontSide;
         material.envMap = skyboxMap;
 

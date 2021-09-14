@@ -50,7 +50,7 @@ export default class Portals
         radius, 32, 0.0, Math.PI
       ), this.material);
 
-      portal.renderOrder = 2.0;
+      portal.renderOrder = 1.0;
       portal.position.x = this.triggers[t];
       portal.rotation.y = PI.d2 * orientation;
 
@@ -84,8 +84,7 @@ export default class Portals
       vertexShader: vertPortal,
 
       glslVersion: GLSL3,
-      transparent: true,
-      depthWrite: false
+      transparent: true
     });
   }
 
