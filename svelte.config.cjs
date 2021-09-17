@@ -13,7 +13,7 @@ module.exports = {
 
     scss: { importer: [url => {
       return url.indexOf('@') ? url : {
-        file: url.replace('@', path.resolve('./src/components/utils'))
+        file: url.replace('@', path.resolve('./src/components/scss'))
       };
     }]}
   })

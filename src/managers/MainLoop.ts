@@ -40,7 +40,7 @@ export default class MainLoop
   }
 
   private addEventListeners (): void {
-    GameEvents.add('Rifle::Pick', this.pickRifle.bind(this));
+    GameEvents.add('Player::PickRifle', this.pickRifle.bind(this));
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
     this.worker?.add('Level::GetRandomCoord', event =>
@@ -87,9 +87,8 @@ export default class MainLoop
     );
   } */
 
-  private pickRifle (event: GameEvent): void {
+  private pickRifle (): void {
     this.player.pickRifle(this.rifle);
-    this.level.removeGameObject(event);
   }
 
   private update (): void {
@@ -122,15 +121,15 @@ export default class MainLoop
 
   public resize (width: number, height: number): void {
     this.level.resize(width, height);
-    this.pistol.resize(height);
-    this.rifle.resize(height);
+    this.pistol?.resize(height);
+    this.rifle?.resize(height);
     Camera.resize();
   }
 
   private removeEventListeners (): void {
     this.worker?.remove('Level::GetRandomCoord');
+    GameEvents.remove('Player::PickRifle');
     GameEvents.remove('Level::EnvMap');
-    GameEvents.remove('Rifle::Pick');
   }
 
   public dispose (): void {

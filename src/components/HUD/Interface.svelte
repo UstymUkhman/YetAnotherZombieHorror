@@ -1,4 +1,6 @@
-<Aim hide={aiming} />
+{#if firstDrawCall}
+  <Aim hide={aiming} />
+{/if}
 
 {#if location}
   <Map
@@ -20,7 +22,9 @@
 <script lang="ts">
   import BorderRifle from '@components/map/BorderRifle.svelte';
   import type { PlayerLocation } from '@/characters/types';
+
   import { GameEvents } from '@/events/GameEvents';
+  import { createEventDispatcher } from 'svelte';
 
   import Aim from '@components/HUD/Aim.svelte';
   import Map from '@components/map/Map.svelte';
@@ -39,11 +43,14 @@
 
   const scaleRatio = Math.tan(PI.d3) + Number.EPSILON;
   const scaleFactor = Math.round(scaleRatio * 100);
+
+  const dispatch = createEventDispatcher();
   const radiusFactor = scaleFactor / 10.0;
 
   const zoom = new Elastic.Number(0);
   let location: PlayerLocation;
 
+  let firstDrawCall = false;
   let visibleRifle = false;
   let rifleAngle: number;
 
@@ -75,9 +82,16 @@
     }
   }
 
-  GameEvents.add('Characters::Location', event =>
-    location = (event.data as LocationEvent).player
-  , true);
+  function dispatchFirstDraw (): void {
+    if (!location) return;
+    dispatch('firstDraw');
+    firstDrawCall = true;
+  }
+
+  GameEvents.add('Characters::Location', event => {
+    !firstDrawCall && dispatchFirstDraw();
+    location = (event.data as LocationEvent).player;
+  }, true);
 
   GameEvents.add('Player::Run', event => {
     const running = event.data as boolean;

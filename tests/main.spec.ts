@@ -1,14 +1,15 @@
-import Game from '@/main';
+import Application from '@/main';
 
-jest.mock('@/Game.svelte', () => {
+jest.mock('@/App.svelte', () => {
   return jest.fn().mockImplementation(() => {
     return { target: document.body };
   });
 });
 
-describe('Game', () => {
+describe('Application', () => {
   test('Create', () => {
-    expect(Game).toBeDefined();
-    expect(Game?.target).toStrictEqual(document.body);
+    expect(Application).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((Application as any).target).toStrictEqual(document.body);
   });
 });

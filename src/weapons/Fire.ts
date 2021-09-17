@@ -11,18 +11,18 @@ import { Assets } from '@/loaders/AssetsLoader';
 import Spline from '@/utils/Spline';
 import { PI } from '@/utils/Number';
 
+const RATIO = Math.tan(PI.d6) * 2;
+
 export default class Fire
 {
   private readonly geometry = new BufferGeometry();
-  private ratio = 1080 / (Math.tan(PI.d6) * 2.0);
-
   private particles: Array<FireParticle> = [];
   private readonly spline = new Spline();
   private material!: ShaderMaterial;
 
-  public constructor (private readonly config: FireConfig, textures: string, private readonly weapon: Assets.GLTF) {
+  public constructor (private readonly config: FireConfig, weapon: Assets.GLTF, textures: string) {
     this.createParticleGeometry();
-    this.createParticles(textures);
+    this.createParticles(weapon, textures);
   }
 
   private createParticleGeometry (): void {
@@ -36,7 +36,7 @@ export default class Fire
     this.spline.addPoint(1.0, 0.0);
   }
 
-  private async createParticles (textures: string): Promise<void> {
+  private async createParticles (weapon: Assets.GLTF, textures: string): Promise<void> {
     const fire = await Assets.Loader.loadTexture(`${textures}/fire.png`);
 
     // Development imports:
@@ -56,7 +56,7 @@ export default class Fire
       transparent: true,
 
       uniforms: {
-        ratio: { value: this.ratio },
+        ratio: { value: null },
         fire: { value: fire }
       }
     });
@@ -67,7 +67,7 @@ export default class Fire
     particles.position.y = this.config.position.y;
 
     particles.renderOrder = 2.0;
-    this.weapon.add(particles);
+    weapon.add(particles);
   }
 
   public addParticles (): void {
@@ -141,8 +141,7 @@ export default class Fire
   }
 
   public resize (height: number): void {
-    this.ratio = height / (Math.tan(PI.d6) * 2.0);
-    this.material.uniforms.ratio.value = this.ratio;
+    this.material.uniforms.ratio.value = height / RATIO;
   }
 
   public dispose (): void {

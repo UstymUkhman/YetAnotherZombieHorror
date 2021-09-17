@@ -91,8 +91,7 @@ export default class Weapon
 
     this.fire = new Fire(
       this.config.fire as FireConfig,
-      this.config.textures,
-      this.weapon
+      this.weapon, this.config.textures
     );
 
     this.asset = this.model.clone();
@@ -212,7 +211,7 @@ export default class Weapon
   }
 
   public resize (height: number): void {
-    this.fire.resize(height);
+    this.fire?.resize(height);
   }
 
   private get target (): number {

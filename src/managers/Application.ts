@@ -55,8 +55,10 @@ export default class Application
   }
 
   public start (): void {
-    this.audioScene.playAmbient();
-    this.pause = false;
+    const { width, height } = Viewport.size;
+    this.audioScene.updateAmbient();
+    this.resize(width, height);
+    this.raindrops?.start();
   }
 
   public destroy (): void {
@@ -79,5 +81,9 @@ export default class Application
     this.manager.pause = paused;
 
     RAF.pause = paused;
+  }
+
+  public get ready (): boolean {
+    return !!this.manager;
   }
 }

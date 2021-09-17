@@ -45,7 +45,7 @@ export default class LevelScene
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: Configs.Settings.raindrops,
       antialias: true,
       alpha: false,
       canvas
@@ -181,7 +181,7 @@ export default class LevelScene
     this.renderer.shadowMap.enabled = true;
   }
 
-  public removeGameObject (event: GameEvent): void {
+  private removeGameObject (event: GameEvent): void {
     const model = event.data as Object3D;
     this.scene.remove(model);
   }

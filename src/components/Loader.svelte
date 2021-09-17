@@ -27,6 +27,7 @@
 </script>
 
 <style lang="scss">
+@use '@/mixins' as mixin;
 @use '@/variables' as var;
 
 div.screen {
@@ -50,6 +51,7 @@ div.screen {
   top: 0;
 
   h1.progress {
+    @include mixin.loading;
     position: absolute;
     line-height: 5vw;
 

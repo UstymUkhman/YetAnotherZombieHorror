@@ -18,8 +18,8 @@
 
     "at-rule-no-unknown": [true, {
       "ignoreAtRules": [
-        "at-root", "content", "each", "else", "for",
-        "function", "if", "mixin", "return", "use"
+        "at-root", "include", "use", "mixin", "function",
+        "content", "for", "each", "if", "else", "return"
       ]
     }],
 

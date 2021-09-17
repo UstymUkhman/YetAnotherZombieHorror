@@ -34,8 +34,12 @@ export default class Raindrops
       evaporate: 25,
       mist: false
     });
+  }
 
+  public start (): void {
     this.raindrops.start().then(() => {
+      this.canvas.style.opacity = '1';
+
       // Dirty hack to bypass the need of mandatory background blur:
       // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
 
@@ -50,7 +54,9 @@ export default class Raindrops
   }
 
   private resize (width: number, height: number): void {
+    if (!this.canvas.style.opacity) return;
     this.raindrops.resize(width, height);
+
     this.canvas.height = height;
     this.canvas.width = width;
   }

@@ -134,6 +134,21 @@ export default class AudioScene
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
   }
 
+  public updateAmbient (): void {
+    this.scene.updateMatrixWorld(true);
+
+    setTimeout(() => anime({
+      targets: { volume: this.ambient.getVolume() },
+      update: ({ animations }) => this.ambient.setVolume(
+        +animations[0].currentValue
+      ),
+
+      easing: 'linear',
+      duration: 1000,
+      volume: 0.25
+    }), 100);
+  }
+
   private playThuder (event: GameEvent): void {
     this.thunder.position.copy(event.data as Vector3);
     this.thunder.updateMatrix();
@@ -193,22 +208,6 @@ export default class AudioScene
     play
       ? !sound.isPlaying && sound.play()
       : sound.isPlaying && sound.stop();
-  }
-
-  public playAmbient (): void {
-    this.scene.updateMatrixWorld(true);
-    this.ambient.play();
-
-    setTimeout(() => anime({
-      targets: { volume: this.ambient.getVolume() },
-      update: ({ animations }) => this.ambient.setVolume(
-        +animations[0].currentValue
-      ),
-
-      easing: 'linear',
-      duration: 1000,
-      volume: 0.25
-    }), 100);
   }
 
   private update (): void {
