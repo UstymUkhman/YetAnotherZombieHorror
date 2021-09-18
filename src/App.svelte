@@ -1,15 +1,28 @@
 <main>
-  {#if paused}
-    <Pause on:continue={() => togglePause(false)} />
+  {#if paused && !loading}
+    <Pause on:continue={() => paused = false} />
   {/if}
 
-  {#if appReady && loading}
-    <Loader on:start={() => togglePause(false)} />
+  {#if appReady && showLoader}
+    <Loader
+      sceneLoading={loading}
+      on:complete={() => loading = false}
+
+      on:start={()=> {
+        loading = true;
+        paused = false;
+      }}
+    />
   {/if}
 
   <Game
-    on:ready={() => appReady = true}
     running={!paused}
+    on:ready={() => appReady = true}
+
+    on:firstDraw={() => {
+      showLoader = false;
+      loading = false;
+    }}
   />
 </main>
 
@@ -21,21 +34,17 @@
   import Game from '@components/Game.svelte';
   import { onDestroy } from 'svelte';
 
+  let showLoader = true;
   let appReady = false;
   let loading = true;
   let paused = true;
-
-  function togglePause (pause: boolean): void {
-    loading = false;
-    paused = pause;
-  }
 
   !import.meta.hot && onDestroy(() =>
     GameEvents.remove('Game::Pause')
   );
 
   GameEvents.add('Game::Pause', () =>
-    togglePause(true)
+    paused = true
   );
 </script>
 

@@ -42,10 +42,10 @@ export default class Player extends Character
   private pistol?: Pistol;
   private rifle?: Rifle;
 
-  private shootTime = 0;
-  private moveTime = 0;
-  private idleTime = 0;
-  private aimTime = 0;
+  private shootTime = 0.0;
+  private idleTime = 0.0;
+  private moveTime = 0.0;
+  private aimTime = 0.0;
 
   public constructor () {
     super(Configs.Player);
@@ -140,7 +140,7 @@ export default class Player extends Character
     if (now - this.idleTime < 350) return;
     const idle = this.getWeaponAnimation('Idle');
 
-    GameEvents.dispatch('Player::Aim', false, true);
+    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     GameEvents.dispatch('Player::Run', false, true);
     Camera.runAnimation(false);
 
@@ -166,12 +166,13 @@ export default class Player extends Character
     this.updateAnimation(direction, animation);
 
     GameEvents.dispatch('Player::Run', false, true);
-    GameEvents.dispatch('Player::Aim', true, true);
+    GameEvents.dispatch('Player::Aim', false, true);
+
+    this.moving = direction !== 'Idle';
     Camera.runAnimation(false);
 
     this.running = false;
     this.moveTime = now;
-    this.moving = true;
   }
 
   public run (directions: Directions, running: boolean): void {
@@ -210,7 +211,7 @@ export default class Player extends Character
     Camera.aimAnimation(true, this.equipRifle);
     Camera.updateNearPlane(true, this.equipRifle);
 
-    this.aimTime = this.equipRifle ? Date.now() : 0;
+    this.aimTime = this.equipRifle ? Date.now() : 0.0;
     const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
 
     this.weapon.setAim();
@@ -222,7 +223,7 @@ export default class Player extends Character
     }
 
     setTimeout(() =>
-      GameEvents.dispatch('Player::Aim', Camera.isFPS, true)
+      GameEvents.dispatch('Player::Aim', !Camera.isFPS, true)
     , 300 + +this.equipRifle * 300);
 
     !this.equipRifle && setTimeout(() => {
@@ -232,10 +233,10 @@ export default class Player extends Character
   }
 
   public stopAiming (): void {
+    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     const duration = Math.min(Date.now() - this.aimTime, 400);
-    Camera.aimAnimation(false, this.equipRifle, duration);
 
-    GameEvents.dispatch('Player::Aim', false, true);
+    Camera.aimAnimation(false, this.equipRifle, duration);
     Camera.updateNearPlane(false, this.equipRifle);
 
     this.weapon.aim = this.aiming = false;
@@ -245,13 +246,12 @@ export default class Player extends Character
     clearTimeout(this.aimTimeout);
   }
 
-  public startShooting (): void {
-    this.shooting = true;
-    const now = Date.now();
-
+  public startShooting (now = Date.now()): void {
+    if (this.equipRifle && !this.aiming) return;
     if (this.moving || this.hitting || this.reloading) return;
     if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
 
+    this.shooting = true;
     const recoil = this.weapon.shoot();
     recoil && this.rotate(recoil.x, recoil.y);
 
@@ -343,18 +343,19 @@ export default class Player extends Character
     if (!view) Camera.changeShoulder();
 
     else {
+      const aiming = this.equipRifle && !this.aiming || !Camera.isFPS && this.aiming;
       Camera.changeView(this.running, this.aiming, this.equipRifle);
-      const aiming = Camera.isFPS && this.aiming;
       !Camera.isFPS && this.resetRotation();
 
       setTimeout(() =>
-        GameEvents.dispatch('Player::Aim', aiming, true)
+        GameEvents.dispatch('Player::Aim', !aiming, true)
       , +aiming * 300);
     }
   }
 
   public changeWeapon (): void {
     if (this.hasRifle && !this.aiming && !this.reloading) {
+      GameEvents.dispatch('Player::Aim', this.equipRifle, true);
       const targets = this.weapon.targets;
 
       !this.equipRifle

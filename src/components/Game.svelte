@@ -3,7 +3,10 @@
   <canvas width={`${width}px`} height={`${height}px`} bind:this={raindrops}></canvas>
 
   {#if app}
-    <Interface on:firstDraw={app.start.bind(app)} />
+    <Interface on:firstDraw={() => {
+      dispatch('firstDraw');
+      app.start();
+    }} />
   {/if}
 </div>
 

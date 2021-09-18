@@ -40,7 +40,6 @@ export default class MainLoop
   }
 
   private addEventListeners (): void {
-    GameEvents.add('Player::PickRifle', this.pickRifle.bind(this));
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
     this.worker?.add('Level::GetRandomCoord', event =>
@@ -50,6 +49,10 @@ export default class MainLoop
         portals: LevelScene.portals,
         bounds: LevelScene.bounds
       }
+    );
+
+    GameEvents.add('Player::PickRifle', () =>
+      this.player.pickRifle(this.rifle)
     );
   }
 
@@ -86,10 +89,6 @@ export default class MainLoop
       })
     );
   } */
-
-  private pickRifle (): void {
-    this.player.pickRifle(this.rifle);
-  }
 
   private update (): void {
     const delta = Math.min(this.clock.getDelta(), 0.1);

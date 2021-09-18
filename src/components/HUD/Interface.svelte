@@ -1,5 +1,5 @@
 {#if firstDrawCall}
-  <Aim hide={aiming} />
+  <Aim hide={!aiming} />
 {/if}
 
 {#if location}
@@ -57,7 +57,7 @@
   let zoomScale: number;
   let mapRadius: number;
 
-  let aiming = false;
+  let aiming = true;
   let scale: number;
 
   function updateRifleAngle (event: CustomEvent): void {
@@ -95,7 +95,7 @@
 
   GameEvents.add('Player::Run', event => {
     const running = event.data as boolean;
-    if (running) aiming = true;
+    if (running) aiming = false;
     zoom.set(+running * 0.5);
 
     RAF.remove(updateZoom);

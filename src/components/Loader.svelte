@@ -1,10 +1,8 @@
 <div class="screen" transition:fade>
-  {#if loading}
+  {#if assetsLoading || sceneLoading}
     <h1 class="progress">Loading...</h1>
-  {/if}
-
-  {#if !loading}
-    <Button text="Play" on:click={() => dispatch('start')} />
+  {:else}
+    <Button text="Start" on:click={() => dispatch('start')} />
   {/if}
 </div>
 
@@ -15,12 +13,15 @@
   import Button from '@components/Button.svelte';
   import { GameEvents } from '@/events/GameEvents';
 
+  let assetsLoading = true;
+  export let sceneLoading: boolean;
+
   const dispatch = createEventDispatcher();
-  let loading = true;
 
   function onComplete (): void {
     GameEvents.remove('Loading::Complete', true);
-    loading = false;
+    assetsLoading = false;
+    dispatch('complete');
   }
 
   GameEvents.add('Loading::Complete', onComplete, true);
