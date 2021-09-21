@@ -4,13 +4,13 @@ import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
 
-import { FrontSide, DoubleSide } from 'three/src/constants';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import { DynamicCollider } from '@/utils/Material';
+import { Vector3 } from 'three/src/math/Vector3';
 
 import { GameEvents } from '@/events/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
+import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
 
@@ -76,8 +76,6 @@ export default class Character
   }
 
   protected setCharacterMaterial (character: Assets.GLTF, envMap: Texture, opacity = 1): void {
-    const side = opacity ? DoubleSide : FrontSide;
-
     character.traverse(child => {
       const childMesh = child as Mesh;
       const material = childMesh.material as MeshStandardMaterial;
@@ -86,11 +84,11 @@ export default class Character
         childMesh.castShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
-          map: material.map,
           transparent: true,
+          map: material.map,
+          side: FrontSide,
           opacity,
-          envMap,
-          side
+          envMap
         });
       }
     });

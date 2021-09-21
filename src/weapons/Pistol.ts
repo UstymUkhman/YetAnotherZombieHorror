@@ -1,5 +1,6 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
 
 import Weapon from '@/weapons/Weapon';
@@ -54,6 +55,27 @@ export default class Pistol extends Weapon
       z: this.position.z,
       easing: 'linear',
       duration
+    });
+  }
+
+  public override toggleVisibility (hideDelay: number, showDelay: number): void {
+    this.model.children[0].children.forEach(child => {
+      const childMesh = child as Mesh;
+
+      anime({
+        targets: childMesh.material,
+        delay: hideDelay,
+        easing: 'linear',
+        duration: 100,
+        opacity: 0.0
+      });
+
+      setTimeout(() => anime({
+        targets: childMesh.material,
+        easing: 'linear',
+        duration: 100,
+        opacity: 1.0
+      }), showDelay);
     });
   }
 }

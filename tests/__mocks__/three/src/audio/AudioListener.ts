@@ -1,5 +1,3 @@
-const AudioListener = jest.fn().mockImplementation(() => {
+export const AudioListener = jest.fn().mockImplementation(() => {
   return { };
 });
-
-export { AudioListener };

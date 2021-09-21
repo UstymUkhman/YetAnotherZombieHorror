@@ -200,6 +200,25 @@ describe('Configs', () => {
     expect(Configs.Pistol.damage).toBeGreaterThan(0);
   });
 
+  test('Pistol.bullet', () => {
+    const bulletPosition = new Vector3(...Pistol.bullet.position);
+
+    expect(Configs.Pistol.bullet.position).toStrictEqual(bulletPosition);
+    expect(Configs.Pistol.bullet.position).toBeInstanceOf(Vector3);
+    expect(Configs.Pistol.bullet.lifeTime).toBeGreaterThan(0);
+
+    expect(Configs.Pistol.bullet.speed).toBeGreaterThan(0);
+    expect(Configs.Pistol.bullet.scale).toBeGreaterThan(0);
+  });
+
+  test('Pistol.fire', () => {
+    const firePosition = new Vector2(...Pistol.fire.position);
+
+    expect(Configs.Pistol.fire.position).toStrictEqual(firePosition);
+    expect(Configs.Pistol.fire.position).toBeInstanceOf(Vector2);
+    expect(Configs.Pistol.fire.scale).toBeGreaterThan(0);
+  });
+
   test('Rifle', () => {
     const riflePosition = new Vector3(...Rifle.position);
     const rifleRotation = new Euler(...Rifle.rotation);
@@ -236,6 +255,25 @@ describe('Configs', () => {
     expect(Configs.Rifle.spread).toBeInstanceOf(Vector2);
     expect(Configs.Rifle.magazine).toBeGreaterThan(0);
     expect(Configs.Rifle.damage).toBeGreaterThan(0);
+  });
+
+  test('Rifle.bullet', () => {
+    const bulletPosition = new Vector3(...Rifle.bullet.position);
+
+    expect(Configs.Rifle.bullet.position).toStrictEqual(bulletPosition);
+    expect(Configs.Rifle.bullet.position).toBeInstanceOf(Vector3);
+    expect(Configs.Rifle.bullet.lifeTime).toBeGreaterThan(0);
+
+    expect(Configs.Rifle.bullet.speed).toBeGreaterThan(0);
+    expect(Configs.Rifle.bullet.scale).toBeGreaterThan(0);
+  });
+
+  test('Rifle.fire', () => {
+    const firePosition = new Vector2(...Rifle.fire.position);
+
+    expect(Configs.Rifle.fire.position).toStrictEqual(firePosition);
+    expect(Configs.Rifle.fire.position).toBeInstanceOf(Vector2);
+    expect(Configs.Rifle.fire.scale).toBeGreaterThan(0);
   });
 
   test('Frozen', () => {

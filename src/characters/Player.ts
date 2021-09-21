@@ -1,5 +1,6 @@
 import type { PlayerAnimations, CharacterAnimation, PlayerLocation, PlayerMovement } from '@/characters/types';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
+import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
@@ -204,7 +205,7 @@ export default class Player extends Character
   public startAiming (): void {
     if (this.blockingAnimation()) return;
 
-    this.weapon.aim = this.aiming = true;
+    this.weapon.aiming = this.aiming = true;
     GameEvents.dispatch('Player::Run', false, true);
 
     Camera.runAnimation(false);
@@ -239,7 +240,7 @@ export default class Player extends Character
     Camera.aimAnimation(false, this.equipRifle, duration);
     Camera.updateNearPlane(false, this.equipRifle);
 
-    this.weapon.aim = this.aiming = false;
+    this.weapon.aiming = this.aiming = false;
     this.currentAnimation.paused = false;
 
     this.weapon.cancelAim(duration);
@@ -345,12 +346,40 @@ export default class Player extends Character
     else {
       const aiming = this.equipRifle && !this.aiming || !Camera.isFPS && this.aiming;
       Camera.changeView(this.running, this.aiming, this.equipRifle);
+
       !Camera.isFPS && this.resetRotation();
+      this.toggleVisibility();
 
       setTimeout(() =>
         GameEvents.dispatch('Player::Aim', !aiming, true)
       , +aiming * 300);
     }
+  }
+
+  private toggleVisibility (): void {
+    const hideDelay = +Camera.isFPS * 250;
+    const showDelay = +Camera.isFPS * 150 + 250;
+
+    this.weapon.toggleVisibility(hideDelay, showDelay);
+
+    this.getModel().children[0].children[1].children.forEach(child => {
+      const childMesh = child as SkinnedMesh;
+
+      anime({
+        targets: childMesh.material,
+        delay: hideDelay,
+        easing: 'linear',
+        duration: 100,
+        opacity: 0.0
+      });
+
+      setTimeout(() => anime({
+        targets: childMesh.material,
+        easing: 'linear',
+        duration: 100,
+        opacity: 1.0
+      }), showDelay);
+    });
   }
 
   public changeWeapon (): void {

@@ -42,4 +42,10 @@ describe('Portals', () => {
   test('playerPosition', () => {
     expect(portals.playerPosition).toBeInstanceOf(Vector3);
   });
+
+  /* test('update', () => {
+    const update = jest.fn(portals.update.bind(portals));
+    update(0);
+    expect(update).toHaveReturnedWith(undefined);
+  }); */
 });

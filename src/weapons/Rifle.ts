@@ -4,11 +4,13 @@ import type { LevelCoords } from '@/environment/types';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 
+import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
 import Weapon from '@/weapons/Weapon';
 import Configs from '@/configs';
+import anime from 'animejs';
 
 export default class Rifle extends Weapon
 {
@@ -33,12 +35,23 @@ export default class Rifle extends Weapon
     this.reset();
   }
 
-  public override startReloading (): void {
-    this.model.position.set(this.position.x, this.position.y, 0);
-    this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
+  public override toggleVisibility (hideDelay: number, showDelay: number): void {
+    const childMesh = this.model.children[0] as Mesh;
 
-    this.playSound('reload', true);
-    this.reloading = true;
+    anime({
+      targets: childMesh.material,
+      delay: hideDelay,
+      easing: 'linear',
+      duration: 100,
+      opacity: 0.0
+    });
+
+    setTimeout(() => anime({
+      targets: childMesh.material,
+      easing: 'linear',
+      duration: 100,
+      opacity: 1.0
+    }), showDelay);
   }
 
   public override addAmmo (ammo = Configs.Rifle.magazine): void {
@@ -57,6 +70,14 @@ export default class Rifle extends Weapon
         ammo: this.totalAmmo
       });
     }
+  }
+
+  public override startReloading (): void {
+    this.model.position.set(this.position.x, this.position.y, 0);
+    this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
+
+    this.playSound('reload', true);
+    this.reloading = true;
   }
 
   public override stopReloading (): void {

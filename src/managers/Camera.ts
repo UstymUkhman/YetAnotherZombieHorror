@@ -91,7 +91,7 @@ export class CameraManager
     const fpRifle = this.camera.near === 0.5;
     const duration = +fpRifle * -300 + 400;
 
-    const near = aiming ? 0.1 : this.fps
+    const near = aiming ? 0.03 : this.fps
       ? rifle ? 0.5 : 0.32 : 0.1;
 
     if (this.fps && running && rifle) {

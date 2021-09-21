@@ -7,12 +7,12 @@ import { DoubleSide, GLSL3 } from 'three/src/constants';
 import { Quaternion } from 'three/src/math/Quaternion';
 import type { BulletConfig } from '@/weapons/types';
 
+import { CameraObject } from '@/managers/Camera';
 import { GameEvents } from '@/events/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
 import { Matrix4 } from 'three/src/math/Matrix4';
 
-import { CameraObject } from '@/managers/Camera';
 import { Assets } from '@/loaders/AssetsLoader';
+import type { Ray } from 'three/src/math/Ray';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Color } from '@/utils/Color';
 
@@ -27,7 +27,6 @@ export default class Bullet
   private readonly radius   = 0.1;
   private readonly segments = 8.0;
 
-  private readonly position = new Vector3();
   private readonly rotation = new Quaternion();
   private readonly speed = this.config.speed / 60.0;
 
@@ -35,7 +34,7 @@ export default class Bullet
     0.0, this.width / -2.0, 0.0
   );
 
-  public constructor (private readonly weapon: Assets.GLTF, private readonly config: BulletConfig) {
+  public constructor (private readonly config: BulletConfig) {
     this.createBullet();
   }
 
@@ -92,26 +91,22 @@ export default class Bullet
     return path;
   }
 
-  public shoot (direction: Vector3, aiming: boolean): Mesh {
+  public shoot (ray: Ray, aiming: boolean): Mesh {
+    const z = this.config.position.z;
     const { lifeTime } = this.config;
+
     const bullet = this.bullet.clone();
-
     const offset = +!aiming * 0.01 + 0.01;
-    const { x, y, z } = this.config.position;
 
-    bullet.userData.direction = direction.clone();
-    GameEvents.dispatch('Level::AddObject', bullet);
+    bullet.userData.direction = ray.direction.clone();
     bullet.userData.lifeTime = Date.now() + lifeTime;
+    GameEvents.dispatch('Level::AddObject', bullet);
 
     CameraObject.getWorldQuaternion(this.rotation);
-    this.weapon.getWorldPosition(this.position);
-
     bullet.userData.direction.y += offset;
-    bullet.quaternion.copy(this.rotation);
-    bullet.position.copy(this.position);
 
-    const offsetY = aiming ? y : x;
-    bullet.position.y += offsetY;
+    bullet.quaternion.copy(this.rotation);
+    bullet.position.copy(ray.origin);
 
     bullet.rotateX(-1.56);
     bullet.translateY(z);

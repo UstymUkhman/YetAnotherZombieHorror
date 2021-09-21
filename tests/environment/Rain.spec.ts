@@ -12,13 +12,13 @@ describe('Rain', () => {
     expect(rain).toBeInstanceOf(Rain);
   });
 
-  /* test('createWorkerLoop', () => {
+  test('createWorkerLoop', () => {
     const rainPrototype = Object.getPrototypeOf(rain);
     const createWorkerLoop = jest.fn(rainPrototype.createWorkerLoop.bind(rain, [null, null]));
 
     createWorkerLoop();
     expect(createWorkerLoop).toHaveReturnedWith(undefined);
-  }); */
+  });
 
   /* test('update', () => {
     const update = jest.fn(rain.update.bind(rain));
