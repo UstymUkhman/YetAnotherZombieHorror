@@ -1,7 +1,7 @@
-import type { Event } from 'three/src/core/EventDispatcher';
+import type { Event, EventListener as Listener } from 'three/src/core/EventDispatcher';
 
-export type EventListener = (event: Event) => boolean | void;
 export type EventOptions = boolean | AddEventListenerOptions;
+export type EventListener = Listener<Event, T, this>;
 
 export type OffscreenParams = {
   element: OffscreenCanvas,

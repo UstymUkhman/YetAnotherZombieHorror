@@ -37,10 +37,7 @@ self.onmessage = message => {
   const { event, params } = message.data;
   const response = parseMessage(event, params);
 
-  self.postMessage({
-    name: event,
-    response
-  });
+  self.postMessage({ name: event, response } /*, '*' */);
 };
 
 self.onerror = error => console.error(error);

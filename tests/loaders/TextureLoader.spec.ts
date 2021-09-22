@@ -10,8 +10,11 @@ describe('TextureLoader', () => {
     expect(TextureLoader).toBeDefined();
   });
 
-  /* test('load', () => {
+  test('load', () => {
     const loader = new TextureLoader(Assets.Loader);
-    expect(loader.load('')).toHaveReturnedWith(undefined);
-  }); */
+    const load = jest.fn(loader.load.bind(loader, ''));
+
+    load();
+    expect(load).toHaveReturnedWith({});
+  });
 });

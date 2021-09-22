@@ -10,8 +10,8 @@ describe('getRandomCoord', () => {
     for (let i = 0; i < 10; i++) {
       const coords = getRandomCoord({
         portals: LevelScene.portals,
-        player: new Vector3(),
         bounds: LevelScene.bounds,
+        player: new Vector3(),
         minCoords: minCoords,
         maxCoords: maxCoords
       });
