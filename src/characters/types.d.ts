@@ -1,4 +1,5 @@
 import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
+import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 import Configs from '@/configs';
@@ -31,3 +32,8 @@ type CharacterSoundConfig = {
   player: boolean,
   play: boolean
 };
+
+// Temporary hack for @types/three v0.132.0:
+declare module 'three/examples/jsm/utils/SkeletonUtils' {
+  export function clone (source: Object3D): Object3D;
+}

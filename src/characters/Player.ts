@@ -56,6 +56,8 @@ export default class Player extends Character
     const character = await this.load(envMap);
 
     this.hand = character.scene.getObjectByName('swatRightHand');
+    this.meshes.forEach(child => child.updateMorphTargets());
+
     GameEvents.dispatch('Level::AddObject', this.object);
     this.currentAnimation = this.animations.pistolIdle;
 
@@ -134,24 +136,22 @@ export default class Player extends Character
     }
   }
 
-  public idle (): void {
-    const now = Date.now();
-
-    if (this.blockingAnimation()) return;
-    if (now - this.idleTime < 350) return;
+  public idle (now = Date.now()): void {
     const idle = this.getWeaponAnimation('Idle');
+
+    if (
+      this.blockingAnimation() ||
+      now - this.idleTime < 350 ||
+      this.lastAnimation === idle
+    ) return;
 
     GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     GameEvents.dispatch('Player::Run', false, true);
-    Camera.runAnimation(false);
 
     this.running = this.moving = false;
+    this.updateAnimation('Idle', idle);
+    Camera.runAnimation(false);
     this.idleTime = now;
-
-    setTimeout(
-      this.updateAnimation.bind(this, 'Idle', idle),
-      ~~(this.lastAnimation === idle) * 100
-    );
   }
 
   public move (directions: Directions): void {
@@ -362,11 +362,9 @@ export default class Player extends Character
 
     this.weapon.toggleVisibility(hideDelay, showDelay);
 
-    this.getModel().children[0].children[1].children.forEach(child => {
-      const childMesh = child as SkinnedMesh;
-
+    this.meshes.forEach(child => {
       anime({
-        targets: childMesh.material,
+        targets: child.material,
         delay: hideDelay,
         easing: 'linear',
         duration: 100,
@@ -374,7 +372,7 @@ export default class Player extends Character
       });
 
       setTimeout(() => anime({
-        targets: childMesh.material,
+        targets: child.material,
         easing: 'linear',
         duration: 100,
         opacity: 1.0
@@ -441,6 +439,10 @@ export default class Player extends Character
     delete this.hand;
 
     super.dispose();
+  }
+
+  private get meshes (): Array<SkinnedMesh> {
+    return this.getModel().children[0].children[1].children as Array<SkinnedMesh>;
   }
 
   public get location (): PlayerLocation {

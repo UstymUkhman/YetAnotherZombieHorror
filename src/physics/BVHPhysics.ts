@@ -1,5 +1,5 @@
 import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from '@/physics/types';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 
 import PhysicsWorld from '@/physics/PhysicsWorld';
@@ -53,7 +53,7 @@ export default class BVHPhysics extends PhysicsWorld
 			}
 		});
 
-		const mergedGeometry: BVHGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
+		const mergedGeometry: BVHGeometry = mergeBufferGeometries(geometries, false);
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
     GameEvents.dispatch('Level::AddObject', this.environment);

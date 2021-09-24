@@ -1,7 +1,7 @@
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
-import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
+import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
 import type { EnemyAnimations } from '@/characters/types';
 import type { Texture } from 'three/src/textures/Texture';
@@ -31,7 +31,7 @@ export default class Enemy extends Character
     this.id = id;
 
     if (model && envMap) {
-      this.character = SkeletonUtils.clone(model.scene) as Assets.GLTF;
+      this.character = clone(model.scene) as Assets.GLTF;
       this.setCharacterMaterial(this.character, envMap, 0.0);
 
       this.createAnimations(model);
