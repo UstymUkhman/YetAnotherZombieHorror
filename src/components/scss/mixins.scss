@@ -1,4 +1,4 @@
-@import '@/animations';
+@import "@/animations";
 
 @mixin loading ($duration: 2s) {
   animation: $duration ease-in-out infinite loading;

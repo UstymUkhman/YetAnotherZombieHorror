@@ -97,5 +97,5 @@
 
   - *Effects:*
 
-    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8)
     - [SardineFish](https://github.com/SardineFish) - [Screen Raindrops](https://github.com/SardineFish/raindrop-fx)
+    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8) | [Custom Blending](https://www.youtube.com/watch?v=AxopC4yW4uY)

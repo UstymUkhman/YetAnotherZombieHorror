@@ -74,13 +74,19 @@ export default class Player extends Character
   }
 
   private getMovementAnimation (directions: Directions): PlayerAnimations {
-    let direction = directions[Direction.UP] ? 'Forward' : directions[Direction.DOWN] ? 'Backward' : '';
+    let direction = directions[Direction.UP]
+      ? 'Forward' : directions[Direction.DOWN]
+      ? 'Backward' : '';
 
-    if (!this.equipRifle && !direction) {
-      direction = directions[Direction.LEFT] ? 'Left' : directions[Direction.RIGHT] ? 'Right' : direction;
-    } else if (this.equipRifle) {
-      direction += directions[Direction.LEFT] ? 'Left' : directions[Direction.RIGHT] ? 'Right' : '';
-    }
+    if (!this.equipRifle && !direction)
+      direction = directions[Direction.LEFT]
+        ? 'Left' : directions[Direction.RIGHT]
+        ? 'Right' : direction;
+
+    else if (this.equipRifle)
+      direction += directions[Direction.LEFT]
+        ? 'Left' : directions[Direction.RIGHT]
+        ? 'Right' : '';
 
     return direction as PlayerAnimations || 'Idle';
   }
@@ -137,26 +143,25 @@ export default class Player extends Character
   }
 
   public idle (now = Date.now()): void {
-    const idle = this.getWeaponAnimation('Idle');
-
-    if (
-      this.blockingAnimation() ||
-      now - this.idleTime < 350 ||
-      this.lastAnimation === idle
-    ) return;
+    if (this.blockingAnimation()) return;
+    if (now - this.idleTime < 350) return;
 
     GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     GameEvents.dispatch('Player::Run', false, true);
 
+    const idle = this.getWeaponAnimation('Idle');
     this.running = this.moving = false;
-    this.updateAnimation('Idle', idle);
+
     Camera.runAnimation(false);
     this.idleTime = now;
+
+    setTimeout(
+      this.updateAnimation.bind(this, 'Idle', idle),
+      +(this.lastAnimation === idle) * 100
+    );
   }
 
-  public move (directions: Directions): void {
-    const now = Date.now();
-
+  public move (directions: Directions, now = Date.now()): void {
     if (this.blockingAnimation()) return;
     if (now - this.moveTime < 350) return;
 
@@ -253,10 +258,10 @@ export default class Player extends Character
     if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
 
     this.shooting = true;
+    this.shootTime = now;
+
     const recoil = this.weapon.shoot();
     recoil && this.rotate(recoil.x, recoil.y);
-
-    this.shootTime = now;
     !this.equipRifle && this.stopShooting();
   }
 
@@ -280,8 +285,8 @@ export default class Player extends Character
     this.moving = false;
 
     this.reloadTimeout = setTimeout(
-      this.weapon.addAmmo.bind(this.weapon, 0), 2000
-    ) as unknown as number;
+      this.weapon.addAmmo.bind(this.weapon, 0)
+    , 2000) as unknown as number;
 
     setTimeout(() => {
       if (this.dead) return;

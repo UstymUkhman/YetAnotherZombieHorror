@@ -1,5 +1,6 @@
 import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import type { Matrix4 } from 'three/src/math/Matrix4';
+import type { Vector3 } from 'three/src/math/Vector3';
 import Configs from '@/configs';
 
 type BulletConfig       = typeof Configs.Pistol.bullet | typeof Configs.Rifle.bullet;
@@ -17,12 +18,21 @@ type RifleSounds        = typeof Configs.Rifle.sounds;
 type WeaponSoundsConfig = PistolSounds | RifleSounds;
 type Recoil             = { x: number, y: number };
 
-type FireParticle = {
+type SmokeParticle = Particle & {
+  position: Vector3,
+  velocity: number
+};
+
+type FireParticle = Particle & {
+  size: number
+};
+
+type Particle = {
   currentSize: number,
   rotation: number,
   maxLife: number,
 
   alpha: number,
-  size: number,
+  blend: number,
   life: number
 };

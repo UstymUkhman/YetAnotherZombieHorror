@@ -21,6 +21,8 @@
 
   "fire": {
     "position": [1.5, 0.53],
+    "particles": [3, 5],
+    "velocity": 0.25,
     "scale": 1.0
   },
 

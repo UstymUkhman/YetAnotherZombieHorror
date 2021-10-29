@@ -23,8 +23,8 @@ declare module '*.glsl' {
 	export default value;
 }
 
-declare const BUILD: string;
-declare const PRODUCTION: boolean;
-
 declare module 'ammo.js';
-declare module 'three-mesh-bvh/src/MeshBVH';
+declare module 'three-mesh-bvh';
+
+declare const PRODUCTION: boolean;
+declare const BUILD: string;

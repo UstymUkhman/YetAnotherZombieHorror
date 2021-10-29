@@ -179,7 +179,7 @@ export default class Weapon
   }
 
   private updateBullets (): void {
-    this.fire.update();
+    const visible = this.fire.update();
 
     for (let b = this.bullets.length; b--;) {
       const bullet = this.bullets[b];
@@ -190,7 +190,7 @@ export default class Weapon
 
       else {
         this.bullets.splice(b, 1);
-        !this.bullets.length && RAF.remove(this.onUpdate);
+        !visible && RAF.remove(this.onUpdate);
         GameEvents.dispatch('Level::RemoveObject', bullet);
       }
     }

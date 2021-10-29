@@ -60,7 +60,7 @@ export namespace Assets
         },
 
         onProgress: event => this.onProgress(
-          (event.target as ProgressEventTarget).responseURL, event.loaded, event.total
+          (event.target as ProgressEventTarget)?.responseURL, event.loaded, event.total
         ),
 
         onError: error => reject(error)
@@ -112,19 +112,19 @@ export namespace Assets
         progress: loaded * 100 / total,
         uuid: this.uuid
       }, true);
-    }
+    };
 
     public override onError = (url: string): void => {
       console.error(`Error occurred loading ${url}.`);
-    }
+    };
 
     public override onStart = (): void => {
       GameEvents.dispatch('Asset::LoadingStart', this.uuid, true);
-    }
+    };
 
     public override onLoad = (): void => {
       GameEvents.dispatch('Asset::LoadingComplete', this.uuid, true);
-    }
+    };
   }
 
   export type GLTFModel = { scene: GLTF, animations?: Animations };

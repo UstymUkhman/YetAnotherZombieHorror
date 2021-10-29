@@ -212,10 +212,16 @@ describe('Configs', () => {
   });
 
   test('Pistol.fire', () => {
+    const particlesAmount = [...Pistol.fire.particles];
     const firePosition = new Vector2(...Pistol.fire.position);
 
+    expect(Configs.Pistol.fire.particles).toStrictEqual(particlesAmount);
     expect(Configs.Pistol.fire.position).toStrictEqual(firePosition);
+
     expect(Configs.Pistol.fire.position).toBeInstanceOf(Vector2);
+    expect(Configs.Pistol.fire.particles).toBeInstanceOf(Array);
+
+    expect(Configs.Pistol.fire.velocity).toBeGreaterThan(0);
     expect(Configs.Pistol.fire.scale).toBeGreaterThan(0);
   });
 
@@ -269,10 +275,16 @@ describe('Configs', () => {
   });
 
   test('Rifle.fire', () => {
+    const particlesAmount = [...Rifle.fire.particles];
     const firePosition = new Vector2(...Rifle.fire.position);
 
+    expect(Configs.Rifle.fire.particles).toStrictEqual(particlesAmount);
     expect(Configs.Rifle.fire.position).toStrictEqual(firePosition);
+
     expect(Configs.Rifle.fire.position).toBeInstanceOf(Vector2);
+    expect(Configs.Rifle.fire.particles).toBeInstanceOf(Array);
+
+    expect(Configs.Rifle.fire.velocity).toBeGreaterThan(0);
     expect(Configs.Rifle.fire.scale).toBeGreaterThan(0);
   });
 

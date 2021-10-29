@@ -5,7 +5,6 @@ import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 import PhysicsWorld from '@/physics/PhysicsWorld';
 import { GameEvents } from '@/events/GameEvents';
 import { Matrix4 } from 'three/src/math/Matrix4';
-import MeshBVH from 'three-mesh-bvh/src/MeshBVH';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { Group } from 'three/src/objects/Group';
@@ -13,6 +12,7 @@ import { Mesh } from 'three/src/objects/Mesh';
 
 import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
+import { MeshBVH } from 'three-mesh-bvh';
 import { Vector } from '@/utils/Vector';
 
 const SPEED = 5.0;
@@ -111,7 +111,7 @@ export default class BVHPhysics extends PhysicsWorld
     this.box.min.addScalar(-radius);
     this.box.max.addScalar(radius);
 
-    environmentGeometry.boundsTree.shapecast(this.environmentCollider, {
+    environmentGeometry.boundsTree.shapecast({
       intersectsBounds: (box: Box3) => box.intersectsBox(this.box),
       intersectsTriangle: (tri: SeparatingAxisTriangle) => {
         const capsule = this.capsule;

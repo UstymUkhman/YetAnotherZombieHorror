@@ -17,7 +17,7 @@ export default class VolumetricFog extends FogExp2
   private time = 0.0;
 
   public constructor () {
-    super(Color.GRAY, 0.02);
+    super(Color.FOG, 0.025);
     this.loadShaders();
 
     Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)

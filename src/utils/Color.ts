@@ -4,17 +4,17 @@ export namespace Color
 {
   export type RGB = { r: number, g: number, b: number };
 
-  export const SILVER = 0xC0C0C0;
+  export const BLACK  = 0x000000;
   export const PORTAL = 0x222222;
+  export const BLUE   = 0x2D78FF;
 
-  export const BLACK = 0x000000;
-  export const WHITE = 0xFFFFFF;
+  export const FOG    = 0x333333;
+  export const RAIN   = 0x4B4B4B;
+  export const RED    = 0x8A0707;
 
-  export const MOON = 0xA8D9A7;
-  export const BLUE = 0x2D78FF;
-
-  export const GRAY = 0x4B4B4B;
-  export const RED = 0x8A0707;
+  export const MOON   = 0xA8D9A7;
+  export const SILVER = 0xC0C0C0;
+  export const WHITE  = 0xFFFFFF;
 
   export const blend = (initial: string, target: string, p = 0.5): string => {
     const iColor: RGB = hexToRGB(initial);

@@ -7,7 +7,7 @@ body {
   -webkit-overflow-scrolling: none;
   -webkit-touch-callout: none;
 
-  font-family: 'DrawingBlood', sans-serif;
+  font-family: DrawingBlood, sans-serif;
   text-rendering: optimizeLegibility;
   font-variant-ligatures: none;
   backface-visibility: hidden;
@@ -78,7 +78,7 @@ body {
 
 .disabled-js .disabled-js-copy strong,
 .not-supported .not-supported-copy strong {
-  font-family: 'FaceYourFears', monospace;
+  font-family: FaceYourFears, monospace;
   text-transform: uppercase;
   letter-spacing: 5px;
 
@@ -184,6 +184,7 @@ body {
   }
 }
 
+/* stylelint-disable-next-line selector-no-vendor-prefix */
 ::-moz-selection {
   background-color: #8a0707;
   color: #000000;

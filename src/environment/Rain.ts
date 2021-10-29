@@ -91,7 +91,7 @@ export default class Rain
       uniforms: {
         screenSize: { value: new Vector2(width, height) },
         soft: { value: Configs.Settings.softParticles },
-        color: { value: Color.getClass(Color.GRAY) },
+        color: { value: Color.getClass(Color.RAIN) },
 
         ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },

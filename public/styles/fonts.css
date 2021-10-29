@@ -1,6 +1,6 @@
 @font-face {
-  src: url('../assets/fonts/FaceYourFears.ttf') format('truetype');
-  font-family: 'FaceYourFears';
+  src: url("../assets/fonts/FaceYourFears.ttf") format("truetype");
+  font-family: FaceYourFears;
   font-display: block;
   font-style: normal;
   font-weight: 400;
@@ -26,8 +26,8 @@
 }
 
 @font-face {
-  src: url('../assets/fonts/DrawingBlood.ttf') format('truetype');
-  font-family: 'DrawingBlood';
+  src: url("../assets/fonts/DrawingBlood.ttf") format("truetype");
+  font-family: DrawingBlood;
   font-display: block;
   font-style: normal;
   font-weight: 400;
