@@ -46,7 +46,7 @@ export default class AudioScene
   private readonly player = new Object3D();
   private readonly scene = new Scene();
 
-  private ambient!: Audio;
+  private ambient?: Audio;
 
   public constructor () {
     this.camera.matrixAutoUpdate = false;
@@ -56,16 +56,16 @@ export default class AudioScene
     this.scene.autoUpdate = false;
     this.scene.add(this.player);
 
+    Configs.Settings.raining && this.createAmbientSound();
+    Configs.Settings.lighting && this.createThunderSounds();
+
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
 
     this.createWeaponSounds(Configs.Pistol.sounds);
     this.createWeaponSounds(Configs.Rifle.sounds);
 
-    this.createThunderSounds();
-    this.createAmbientSound();
     this.addEventListeners();
-
     RAF.add(this.onUpdate);
   }
 
@@ -135,11 +135,12 @@ export default class AudioScene
   }
 
   public updateAmbient (): void {
+    if (!Configs.Settings.raining) return;
     this.scene.updateMatrixWorld(true);
 
     setTimeout(() => anime({
-      targets: { volume: this.ambient.getVolume() },
-      update: ({ animations }) => this.ambient.setVolume(
+      targets: { volume: this.ambient?.getVolume() },
+      update: ({ animations }) => this.ambient?.setVolume(
         +animations[0].currentValue
       ),
 

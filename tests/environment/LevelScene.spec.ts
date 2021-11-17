@@ -130,6 +130,10 @@ describe('LevelScene', () => {
     expect(LevelScene.portals).toStrictEqual(LevelData.portals);
   });
 
+  test('bounds', () => {
+    expect(LevelScene.bounds).toStrictEqual(LevelData.bounds);
+  });
+
   test('center', () => {
     const x = (94 + -59.5) / 2.0;
     const z = (53 + -144) / 2.0;
@@ -138,10 +142,6 @@ describe('LevelScene', () => {
     expect(LevelScene.center.y).toStrictEqual(0.0);
     expect(LevelScene.center.x).toStrictEqual(x);
     expect(LevelScene.center.z).toStrictEqual(z);
-  });
-
-  test('bounds', () => {
-    expect(LevelScene.bounds).toStrictEqual(LevelData.bounds);
   });
 
   test('size', () => {

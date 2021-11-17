@@ -23,8 +23,8 @@
 </script>
 
 <style lang="scss">
-@use 'sass:math';
-@use '@/variables' as var;
+@use "sass:math";
+@use "@/variables" as var;
 
 div.container {
   transform-origin: 50% 50%;

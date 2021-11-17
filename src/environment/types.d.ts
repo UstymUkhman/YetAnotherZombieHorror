@@ -1,8 +1,11 @@
+import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 import type { Vector3 } from 'three/src/math/Vector3';
 
 type RainParticles = [Array<number>, Array<number>, Array<number>];
 type LevelBounds   = Readonly<Array<LevelCoords>>;
 type LevelCoords   = Readonly<[number, number]>;
+
+type ShaderCompileCallback = (shader: Shader) => void;
 
 type LevelParams = CoordsParams & {
   portals: LevelBounds,

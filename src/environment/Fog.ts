@@ -1,6 +1,7 @@
 import type { CanvasTexture } from 'three/src/textures/CanvasTexture';
 import { ShaderChunk } from 'three/src/renderers/shaders/ShaderChunk';
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
+import type { ShaderCompileCallback } from '@/environment/types';
 
 import { FogExp2 } from 'three/src/scenes/FogExp2';
 import { Assets } from '@/loaders/AssetsLoader';
@@ -8,7 +9,7 @@ import { Assets } from '@/loaders/AssetsLoader';
 import { Color } from '@/utils/Color';
 import Configs from '@/configs';
 
-export default class VolumetricFog extends FogExp2
+export default class Fog extends FogExp2
 {
   private readonly shaders: Array<Shader> = [];
   private noise?: CanvasTexture;
@@ -16,12 +17,15 @@ export default class VolumetricFog extends FogExp2
   private materials = 0;
   private time = 0.0;
 
-  public constructor () {
-    super(Color.FOG, 0.025);
-    this.loadShaders();
+  public constructor (private readonly volumetric: boolean) {
+    super(Color.FOG, Configs.Level.fogDensity);
 
-    Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)
-      .then(texture => this.noise = texture);
+    if (this.volumetric) {
+      this.loadShaders();
+
+      Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)
+        .then(texture => this.noise = texture);
+    }
   }
 
   private async loadShaders (): Promise<void> {
@@ -54,6 +58,7 @@ export default class VolumetricFog extends FogExp2
   }
 
   public update (delta: number): void {
+    if (!this.volumetric) return;
     this.time += delta * 0.025;
 
     for (let s = 0; s < this.materials; s++) {
@@ -62,12 +67,14 @@ export default class VolumetricFog extends FogExp2
   }
 
   public dispose (): void {
+    if (!this.volumetric) return;
+
     this.shaders.splice(0);
     this.noise?.dispose();
     this.materials = 0;
   }
 
-  public get setUniforms (): (shader: Shader) => void {
+  public get setUniforms (): ShaderCompileCallback {
     return this.setShaderUniforms.bind(this);
   }
 }

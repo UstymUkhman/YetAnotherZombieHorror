@@ -5,6 +5,7 @@ import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
+import { PI, random, randomInt } from '@/utils/Number';
 
 import { Object3D } from 'three/src/core/Object3D';
 import LevelScene from '@/environment/LevelScene';
@@ -14,7 +15,6 @@ import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
 
-import { PI, randomInt } from '@/utils/Number';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
@@ -28,23 +28,28 @@ export default class Clouds
   private readonly onHideLighting = this.hideLighting.bind(this);
 
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
+  private readonly count = Configs.Settings.clouds;
   private readonly matrix = new Matrix4();
-  private readonly radius = Clouds.height;
 
-  private clouds!: InstancedMesh;
+  private clouds?: InstancedMesh;
   private lighting!: PointLight;
 
   private timeout?: number;
   private paused = true;
 
-  public constructor (private readonly count: number) {
-    this.createLighting();
-    this.createClouds();
+  public constructor () {
+    const { fog, lighting } = Configs.Settings;
+
+    lighting && this.createLighting();
+    !fog && this.createClouds();
   }
 
   private async createLighting (): Promise<void> {
-    this.lighting = new PointLight(Color.BLUE, 10.0, this.radius, 2.0);
-    this.lighting.position.set(0.0, this.radius, 0.0);
+    const { fog, physicalLights } = Configs.Settings;
+    const decay = +(!fog && physicalLights) + 1.0;
+
+    this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
+    this.lighting.position.set(0.0, Clouds.height, 0.0);
 
     this.lighting.castShadow = true;
     this.lighting.power = 0.0;
@@ -57,17 +62,30 @@ export default class Clouds
   }
 
   private showLighting (): void {
-    this.clouds.getMatrixAt(randomInt(0, this.count - 1), this.matrix);
-    this.lighting.position.setFromMatrixPosition(this.matrix);
+    this.updateLightingPosition();
+    this.lighting.power = 100 + Math.random() * 150;
 
     setTimeout(this.onHideLighting, Math.random() * 400 + 100);
-    this.lighting.power = 100 + Math.random() * 150;
+    GameEvents.dispatch('SFX::Thunder', this.lighting.position, true);
+  }
+
+  private updateLightingPosition (): void {
+    if (this.clouds) {
+      this.clouds.getMatrixAt(randomInt(0, this.count - 1), this.matrix);
+      this.lighting.position.setFromMatrixPosition(this.matrix);
+    }
+
+    else {
+      this.lighting.position.set(
+        random(LevelScene.minCoords[0], LevelScene.maxCoords[0]),
+        Clouds.height / Configs.Level.height,
+        random(LevelScene.minCoords[1], LevelScene.maxCoords[1])
+      );
+    }
 
     this.lighting.position.y -= Math.random() * (
       this.lighting.position.y / 4.0
     );
-
-    GameEvents.dispatch('SFX::Thunder', this.lighting.position, true);
   }
 
   private hideLighting (): void {
@@ -76,7 +94,7 @@ export default class Clouds
   }
 
   private async createClouds (): Promise<void> {
-    const cloudsGeometry = new SphereGeometry(this.radius, 16, 16, 0, Math.PI);
+    const cloudsGeometry = new SphereGeometry(Clouds.height, 16, 16, 0, Math.PI);
     cloudsGeometry.parameters.phiLength = Math.PI;
     cloudsGeometry.rotateX(-PI.d2);
 
@@ -84,12 +102,11 @@ export default class Clouds
     const cloud = new Object3D();
 
     this.clouds = new InstancedMesh(
-      new PlaneGeometry(this.radius, this.radius),
+      new PlaneGeometry(Clouds.height, Clouds.height),
       new MeshLambertMaterial({
         transparent: true,
         depthWrite: false,
-        opacity: 0.25,
-        fog: false
+        opacity: 0.25
       }),
 
       this.count
@@ -117,7 +134,7 @@ export default class Clouds
   }
 
   public update (): void {
-    if (!Configs.Settings.dynamicClouds) return;
+    if (!Configs.Settings.dynamicClouds || !this.clouds) return;
 
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
@@ -138,7 +155,7 @@ export default class Clouds
 
   public dispose (): void {
     this.lighting.remove();
-    this.clouds.dispose();
+    this.clouds?.dispose();
   }
 
   public static get height (): number {
@@ -146,13 +163,15 @@ export default class Clouds
   }
 
   public set pause (pause: boolean) {
+    const { lighting } = Configs.Settings;
+
     !(this.paused = pause)
-      ? this.startLighting()
-      : clearTimeout(this.timeout);
+      ? lighting && this.startLighting()
+      : this.timeout && clearTimeout(this.timeout);
   }
 
   public get sky (): InstancedMesh {
-    return this.clouds;
+    return this.clouds as InstancedMesh;
   }
 
   public get flash (): PointLight {

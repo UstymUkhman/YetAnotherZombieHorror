@@ -1,6 +1,5 @@
 import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-
 import type { LevelCoords, LevelBounds } from '@/environment/types';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
@@ -9,7 +8,6 @@ import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
-import VolumetricFog from '@/environment/VolumetricFog';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import { CameraObject } from '@/managers/Camera';
@@ -24,24 +22,26 @@ import { Scene } from 'three/src/scenes/Scene';
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
 import { min, max } from '@/utils/Array';
+
 import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
+import Fog from '@/environment/Fog';
 
 import Physics from '@/physics';
 import Configs from '@/configs';
 
 export default class LevelScene
 {
-  private readonly clouds = new Clouds(300);
   private readonly renderer: WebGLRenderer;
   private readonly portals = new Portals();
+  private readonly clouds = new Clouds();
 
   private readonly pmrem: PMREMGenerator;
   private readonly scene = new Scene();
 
-  private fog?: VolumetricFog;
   private rain?: Rain;
   private csm?: CSM;
+  private fog?: Fog;
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
     this.renderer = new WebGLRenderer({
@@ -74,23 +74,30 @@ export default class LevelScene
   }
 
   private async createEnvironment (worker?: WebWorker): Promise<void> {
-    if (Configs.Settings.raining) {
-      this.rain = new Rain(this.renderer, this.scene, worker);
-    }
-
-    if (Configs.Settings.fog) {
-      this.fog = new VolumetricFog();
-      this.scene.fog = this.fog;
-    }
+    const { fog, raining, lighting } = Configs.Settings;
+    const volumetricFog = fog && Configs.Settings.volumetricFog;
 
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);
 
     level.position.copy(Configs.Level.position as Vector3);
     level.scale.copy(Configs.Level.scale as Vector3);
+    lighting && this.scene.add(this.clouds.flash);
 
-    this.scene.add(this.clouds.flash);
-    this.scene.add(this.clouds.sky);
+    if (raining) {
+      this.rain = new Rain(this.renderer, this.scene, worker);
+    }
+
+    if (fog) {
+      this.fog = new Fog(volumetricFog);
+      this.scene.fog = this.fog;
+
+      this.scene.background = Color.getClass(Color.FOG);
+      volumetricFog && this.portals.setFogUniforms(this.fog.setUniforms);
+    }
+
+    else this.scene.add(this.clouds.sky);
+
     this.createLights();
 
     level.traverse(child => {
@@ -108,7 +115,7 @@ export default class LevelScene
         childMesh.receiveShadow = true;
         this.csm?.setupMaterial(childMesh.material);
 
-        if (this.fog) {
+        if (this.fog && volumetricFog) {
           material.onBeforeCompile = this.fog.setUniforms;
         }
       }
@@ -126,9 +133,11 @@ export default class LevelScene
 
   private async createSkybox (folder: string): Promise<Texture> {
     const skybox = await Assets.Loader.loadCubeTexture(folder);
-
     skybox.encoding = sRGBEncoding;
-    this.scene.background = skybox;
+
+    if (!Configs.Settings.fog) {
+      this.scene.background = skybox;
+    }
 
     this.pmrem.compileCubemapShader();
     return this.pmrem.fromCubemap(skybox).texture;
@@ -167,7 +176,7 @@ export default class LevelScene
 
   private createRenderer (pixelRatio: number): void {
     const { physicalLights } = Configs.Settings;
-    const exposure = +physicalLights * 0.5 + 0.5;
+    const exposure = +physicalLights * 0.75 + 0.25;
 
     this.renderer.physicallyCorrectLights = physicalLights;
     this.renderer.toneMapping = ACESFilmicToneMapping;
@@ -248,16 +257,16 @@ export default class LevelScene
     return Configs.Level.portals as LevelBounds;
   }
 
+  public static get bounds (): LevelBounds {
+    return Configs.Level.bounds as LevelBounds;
+  }
+
   public static get center (): Vector3 {
     return new Vector3(
       (LevelScene.maxCoords[0] + LevelScene.minCoords[0]) / 2.0,
       0.0,
       (LevelScene.maxCoords[1] + LevelScene.minCoords[1]) / 2.0
     );
-  }
-
-  public static get bounds (): LevelBounds {
-    return Configs.Level.bounds as LevelBounds;
   }
 
   public static get size (): Vector2 {

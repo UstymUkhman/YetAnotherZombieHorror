@@ -6,18 +6,9 @@
 #endif
 
 #ifdef USE_FOG
-  #include ../fBm;
-  uniform float fogTime;
-
-  uniform vec3 fogColor;
-  varying vec3 vWorldPosition;
+  #include uniforms.frag;
 
   #ifdef FOG_EXP2
-    uniform float fogDensity;
-
-  #else
-    uniform float fogNear;
-    uniform float fogFar;
-
+    #include ../fBm;
   #endif
 #endif

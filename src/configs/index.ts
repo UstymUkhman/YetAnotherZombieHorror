@@ -68,6 +68,7 @@ namespace Configs
     portalsOffset: LevelData.portalsOffset,
     scale: new Vector3(...LevelData.scale),
 
+    fogDensity: LevelData.fogDensity,
     lighting: LevelData.lighting,
     sidewalk: LevelData.sidewalk,
     ambient:  LevelData.ambient,

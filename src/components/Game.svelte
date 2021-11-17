@@ -1,6 +1,9 @@
 <div id="game">
-  <canvas width={`${width}px`} height={`${height}px`} bind:this={scene}></canvas>
-  <canvas width={`${width}px`} height={`${height}px`} bind:this={raindrops}></canvas>
+  <canvas width={width} height={height} bind:this={scene} />
+
+  {#if raindrops}
+    <canvas width={width} height={height} bind:this={camera} />
+  {/if}
 
   {#if app}
     <Interface on:firstDraw={() => {
@@ -16,21 +19,24 @@
 
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
+
   import Viewport from '@/utils/Viewport';
+  import Configs from '@/configs';
 
   let app: Application;
   export let running: boolean;
 
   let scene: HTMLCanvasElement;
-  let raindrops: HTMLCanvasElement;
+  let camera: HTMLCanvasElement;
 
   const width = Viewport.size.width;
   const height = Viewport.size.height;
 
+  const { raindrops } = Configs.Settings;
   const dispatch = createEventDispatcher();
 
   onMount(() => {
-    app = new Application(scene, raindrops);
+    app = new Application(scene, camera);
     dispatch('ready');
   });
 
@@ -44,7 +50,7 @@
 </script>
 
 <style lang="scss">
-@use '@/variables' as var;
+@use "@/variables" as var;
 
 div#game,
 div#game > canvas {

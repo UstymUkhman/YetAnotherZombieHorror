@@ -1,5 +1,5 @@
 <div class="container" >
-  <div bind:this={aim} class="aim" class:hide class:shooting />
+  <div class="aim" class:hide class:shooting />
 </div>
 
 <script lang="ts">
@@ -7,7 +7,6 @@
   import { onMount, onDestroy } from 'svelte';
 
   export let hide: boolean;
-  let aim: HTMLDivElement;
   let shooting = false;
 
   function onShoot (): void {
@@ -26,7 +25,7 @@
 </script>
 
 <style lang="scss">
-@use '@/variables' as var;
+@use "@/variables" as var;
 
 div.container {
   position: absolute;

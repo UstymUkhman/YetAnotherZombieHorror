@@ -33,7 +33,7 @@ type CharacterSoundConfig = {
   play: boolean
 };
 
-// Temporary hack for @types/three v0.133.1:
+// Temporary hack for @types/three v0.134.0:
 declare module 'three/examples/jsm/utils/SkeletonUtils' {
   export function clone (source: Object3D): Object3D;
 }

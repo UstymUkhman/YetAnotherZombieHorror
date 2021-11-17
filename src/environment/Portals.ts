@@ -1,5 +1,6 @@
 import { CircleGeometry } from 'three/src/geometries/CircleGeometry';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
+import type { ShaderCompileCallback } from '@/environment/types';
 
 import LevelScene from '@/environment/LevelScene';
 import { Vector2 } from 'three/src/math/Vector2';
@@ -22,8 +23,6 @@ export default class Portals
   private readonly player = new Vector3();
   private readonly offset = new Vector2();
 
-  private material!: ShaderMaterial;
-
   private readonly triggers = this.coords
     .filter((_, c) => !(c % 2))
     .map((coords, c, portals) => coords[0] + (
@@ -31,12 +30,14 @@ export default class Portals
       ) * -0.1
     );
 
+  private material!: ShaderMaterial;
+
   public constructor () {
     this.createPortals();
   }
 
   private async createPortals (): Promise<void> {
-    this.material = await this.createMaterial();
+    await this.createMaterial();
 
     for (let p = 0, t = 0; t < this.triggers.length; p += 2, t++) {
       const z1 = this.coords[p][1];
@@ -63,53 +64,66 @@ export default class Portals
 
   private async createMaterial (): Promise<ShaderMaterial> {
     // Development imports:
-    /* const vertPortal = await (await import('../shaders/main.vert')).default;
-    const fragPortal = await (await import('../shaders/portal.frag')).default; */
+    /* const vertPortal = await (await import('../shaders/portal/main.vert')).default;
+    const fragPortal = await (await import('../shaders/portal/main.frag')).default; */
 
     // Production imports:
-    const vertPortal = await Assets.Loader.loadShader('main.vert');
-    const fragPortal = await Assets.Loader.loadShader('portal.frag');
+    const vertPortal = await Assets.Loader.loadShader('portal/main.vert');
+    const fragPortal = await Assets.Loader.loadShader('portal/main.frag');
 
     const backgroundColor = Color.getClass(Color.PORTAL);
     const spikesColor = Color.getClass(Color.MOON);
 
-    return new ShaderMaterial({
+    this.material = new ShaderMaterial({
       uniforms: {
+        fogDensity: { value: Configs.Level.fogDensity },
+        fogColor: { value: Color.getClass(Color.FOG) },
+
         backgroundColor: { value: backgroundColor },
         spikesColor: { value: spikesColor },
         deltaTime: { value: 0.0 }
       },
 
       fragmentShader: fragPortal,
+      fog: Configs.Settings.fog,
       vertexShader: vertPortal,
 
       glslVersion: GLSL3,
       transparent: true
     });
+
+    this.material.defines = {
+      VOLUMETRIC_FOG: Configs.Settings.volumetricFog,
+      USE_BAKED_FOG: Configs.Settings.bakedFog
+    };
+
+    return this.material;
   }
 
-  private updatePosition (x: number, z = x): void {
-    const bound = this.coords[x][0];
-    const step = Math.sign(bound) * -0.3;
+  private topPortalArea (): boolean {
+    if (this.player.z > this.coords[1][1]) {
+      if (this.player.x <= this.triggers[0]) {
+        this.offset.set(
+          this.coords[0][0] - this.player.x,
+          this.coords[0][1] - this.player.z
+        );
 
-    this.position.set(
-      this.coords[x][0] - this.offset.x + step,
-      this.player.y,
-      this.coords[z][1] + this.offset.y
-    );
-  }
+        this.updatePosition(2, 3);
+        return true;
+      }
 
-  public portalPassed (player: Vector3): boolean {
-    this.player.copy(player);
-    return this.topPortalArea() || this.bottomPortalArea();
-  }
+      else if (this.player.x >= this.triggers[3]) {
+        this.offset.set(
+          this.player.x - this.coords[6][0],
+          this.coords[7][1] - this.player.z
+        );
 
-  public get playerPosition (): Vector3 {
-    return this.position;
-  }
+        this.updatePosition(4);
+        return true;
+      }
+    }
 
-  public update (delta: number): void {
-    this.material.uniforms.deltaTime.value += delta / 10;
+    return false;
   }
 
   private bottomPortalArea (): boolean {
@@ -138,29 +152,31 @@ export default class Portals
     return false;
   }
 
-  private topPortalArea (): boolean {
-    if (this.player.z > this.coords[1][1]) {
-      if (this.player.x <= this.triggers[0]) {
-        this.offset.set(
-          this.coords[0][0] - this.player.x,
-          this.coords[0][1] - this.player.z
-        );
+  private updatePosition (x: number, z = x): void {
+    const bound = this.coords[x][0];
+    const step = Math.sign(bound) * -0.3;
 
-        this.updatePosition(2, 3);
-        return true;
-      }
+    this.position.set(
+      this.coords[x][0] - this.offset.x + step,
+      this.player.y,
+      this.coords[z][1] + this.offset.y
+    );
+  }
 
-      else if (this.player.x >= this.triggers[3]) {
-        this.offset.set(
-          this.player.x - this.coords[6][0],
-          this.coords[7][1] - this.player.z
-        );
+  public update (delta: number): void {
+    this.material.uniforms.deltaTime.value += delta / 10;
+  }
 
-        this.updatePosition(4);
-        return true;
-      }
-    }
+  public portalPassed (player: Vector3): boolean {
+    this.player.copy(player);
+    return this.topPortalArea() || this.bottomPortalArea();
+  }
 
-    return false;
+  public setFogUniforms (beforeCompile: ShaderCompileCallback): void {
+    this.material.onBeforeCompile = beforeCompile;
+  }
+
+  public get playerPosition (): Vector3 {
+    return this.position;
   }
 }

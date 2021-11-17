@@ -1,4 +1,2 @@
 dist/*
-build/*
 coverage/*
-jest.config.js

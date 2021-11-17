@@ -5,7 +5,7 @@
 </script>
 
 <style lang="scss">
-@use '@/variables' as var;
+@use "@/variables" as var;
 
 button {
   transition: border-color 0.5s, color 0.5s;

@@ -13,7 +13,7 @@
   uniform sampler2D noise;
 
 #else
- #include snoise;
+  #include snoise;
 #endif
 
 #ifndef USE_BAKED_FOG

@@ -28,8 +28,8 @@
 </script>
 
 <style lang="scss">
-@use '@/mixins' as mixin;
-@use '@/variables' as var;
+@use "@/mixins" as mixin;
+@use "@/variables" as var;
 
 div.screen {
   background-color: var.$black;

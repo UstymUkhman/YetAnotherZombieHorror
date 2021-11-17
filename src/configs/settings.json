@@ -1,11 +1,16 @@
 {
-  "physicalLights": true,
-  "dynamicClouds": true,
-  "softParticles": true,
   "ammoPhysics": false,
+  "physicalLights": true,
 
-  "raindrops": true,
-  "bakedFog": true,
   "raining": true,
-  "fog": true
+  "lighting": true,
+  "raindrops": true,
+  "softParticles": true,
+
+  "fog": true,
+  "bakedFog": true,
+  "volumetricFog": true,
+
+  "clouds": 300,
+  "dynamicClouds": true
 }

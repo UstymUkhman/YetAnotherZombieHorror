@@ -4,7 +4,7 @@ import LevelScene from '@/environment/LevelScene';
 import Clouds from '@/environment/Clouds';
 
 describe('Clouds', () => {
-  const clouds = new Clouds(100);
+  const clouds = new Clouds();
 
   test('Create', () => {
     expect(Clouds).toBeDefined();

@@ -29,7 +29,7 @@ export default class Application
 
   private readonly onResize = this.resize.bind(this);
 
-  public constructor (scene: HTMLCanvasElement, raindrops: HTMLCanvasElement) {
+  public constructor (scene: HTMLCanvasElement, raindrops?: HTMLCanvasElement) {
     const pixelRatio = window.devicePixelRatio || 1.0;
 
     GameEvents.createWorkerEvents(this.worker);
@@ -40,9 +40,7 @@ export default class Application
       this.manager = new Manager.default(scene, this.worker, pixelRatio)
     );
 
-    if (Configs.Settings.raindrops) {
-      this.createRaindrops(scene, raindrops);
-    }
+    raindrops && this.createRaindrops(scene, raindrops);
   }
 
   private async createRaindrops (scene: HTMLCanvasElement, canvas: HTMLCanvasElement): Promise<void> {

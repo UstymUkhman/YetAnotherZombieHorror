@@ -49,13 +49,13 @@
 </script>
 
 <style lang="scss" global>
-@use '@/variables' as var;
+@use "@/variables" as var;
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: 'FaceYourFears', sans-serif;
+  font-family: FaceYourFears, sans-serif;
   letter-spacing: normal;
   line-height: normal;
 
@@ -73,7 +73,7 @@ h6,
 span,
 strong,
 button {
-  font-family: 'DrawingBlood', sans-serif;
+  font-family: DrawingBlood, sans-serif;
   letter-spacing: 0.2rem;
   line-height: normal;
 

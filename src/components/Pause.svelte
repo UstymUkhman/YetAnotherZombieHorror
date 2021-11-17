@@ -12,7 +12,7 @@
 </script>
 
 <style lang="scss">
-@use '@/variables' as var;
+@use "@/variables" as var;
 
 div {
   background-color: var.$black;

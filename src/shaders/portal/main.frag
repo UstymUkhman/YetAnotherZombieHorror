@@ -5,13 +5,23 @@
   precision highp float;
 #endif
 
-#define PI  3.141592653589793
+#define PI 3.141592653589793
 #define INTERACTIONS 5
 #define PI2 PI * 2.0
 
 uniform vec3  backgroundColor;
 uniform vec3  spikesColor;
 uniform float deltaTime;
+
+#ifdef USE_FOG
+  #include ../fog/uniforms.frag;
+
+  #ifdef VOLUMETRIC_FOG
+    #include ../fBm;
+  #else
+    in float vFogDepth;
+  #endif
+#endif
 
 out vec4 fragColor;
 in  vec2 vUv;
@@ -49,4 +59,12 @@ void main (void)
   vec3 color = vec3(pow(abs(ammount), 8.0)) * spikesColor;
   color = clamp(color + backgroundColor, 0.0, 1.0);
   fragColor = vec4(color, mix(0.0, 1.0, alphaFactor));
+
+  #ifdef USE_FOG
+    #ifdef VOLUMETRIC_FOG
+      #include ../fog/volumetric.frag;
+    #else
+      #include ../fog/exp2.frag;
+    #endif
+  #endif
 }

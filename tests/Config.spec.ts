@@ -16,8 +16,10 @@ describe('Configs', () => {
   test('Constants', () => {
     expect(typeof Configs.offscreen).toStrictEqual('boolean');
     expect(typeof Configs.colliders).toStrictEqual('boolean');
+
     expect(typeof Configs.BASE_PATH).toStrictEqual('string');
     expect(typeof Configs.hitBoxes).toStrictEqual('boolean');
+
     expect(typeof Configs.VERSION).toStrictEqual('string');
     expect(typeof Configs.worker).toStrictEqual('boolean');
 
@@ -28,14 +30,22 @@ describe('Configs', () => {
   });
 
   test('Settings', () => {
-    expect(typeof Configs.Settings.dynamicClouds).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.softParticles).toStrictEqual('boolean');
     expect(typeof Configs.Settings.ammoPhysics).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.physicalLights).toStrictEqual('boolean');
 
-    expect(typeof Configs.Settings.raindrops).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.bakedFog).toStrictEqual('boolean');
     expect(typeof Configs.Settings.raining).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.lighting).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.raindrops).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.softParticles).toStrictEqual('boolean');
+
     expect(typeof Configs.Settings.fog).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.bakedFog).toStrictEqual('boolean');
+    expect(typeof Configs.Settings.volumetricFog).toStrictEqual('boolean');
+
+    expect(Configs.Settings.clouds).toBeLessThanOrEqual(300);
+    expect(Configs.Settings.clouds).toBeGreaterThanOrEqual(100);
+    expect(typeof Configs.Settings.clouds).toStrictEqual('number');
+    expect(typeof Configs.Settings.dynamicClouds).toStrictEqual('boolean');
   });
 
   test('Camera.fps', () => {
@@ -85,10 +95,14 @@ describe('Configs', () => {
     expect(Configs.Level.sidewalkHeight).toBeLessThan(Configs.Level.height);
 
     expect(Configs.Level.music).toStrictEqual('Day Of The Dead.mp3');
+    expect(typeof Configs.Level.fogDensity).toStrictEqual('number');
+
     expect(Configs.Level.model).toStrictEqual('level.glb');
     expect(Configs.Level.cloud).toStrictEqual('cloud.png');
 
     expect(Configs.Level.portals.length).toStrictEqual(8);
+    expect(Configs.Level.fogDensity).toBeGreaterThan(0.0);
+
     expect(Configs.Level.skybox).toStrictEqual('level');
     expect(Configs.Level.ambient).toContain('.mp3');
 
