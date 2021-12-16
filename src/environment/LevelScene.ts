@@ -6,6 +6,7 @@ import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
+import type { CMSMode } from 'three/examples/jsm/csm/CSM';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 
@@ -113,7 +114,7 @@ export default class LevelScene
 
         childMesh.renderOrder = 1.0;
         childMesh.receiveShadow = true;
-        this.csm?.setupMaterial(childMesh.material);
+        this.csm?.setupMaterial(material);
 
         if (this.fog && volumetricFog) {
           material.onBeforeCompile = this.fog.setUniforms;
@@ -148,22 +149,23 @@ export default class LevelScene
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
 
     this.csm = new CSM({
+      mode: 'logarithmic' as CMSMode,
       maxFar: CameraObject.far * 10,
+
       lightFar: CameraObject.far,
       lightDirection: direction,
+      lightIntensity: 0.25,
 
       camera: CameraObject,
-      lightIntensity: 0.25,
-      mode: 'logarithmic',
-
       parent: this.scene,
-      cascades: 4,
-      fade: true
+      cascades: 4
     });
 
     this.csm.lights.forEach(light =>
       light.color.set(Color.MOON)
     );
+
+    this.csm.fade = true;
   }
 
   private getSceneEnvMap (): Texture {

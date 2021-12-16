@@ -51,24 +51,18 @@
 
 <style lang="scss">
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
 
 div#game,
 div#game > canvas {
-  transform: translate(-50%, -50%);
+  @include mixin.size(var(--width), var(--height));
+  @include mixin.center-transform;
+
   aspect-ratio: var(--ratio);
-
-  height: var(--height);
-  width: var(--width);
-
-  position: absolute;
   overflow: hidden;
-  display: block;
 
   padding: 0;
   margin: 0;
-
-  left: 50%;
-  top: 50%;
 }
 
 div#game > canvas:nth-child(2) {

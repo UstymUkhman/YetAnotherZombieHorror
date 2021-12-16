@@ -23,27 +23,29 @@
 </script>
 
 <style lang="scss">
-@use "sass:math";
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
+@import "@/animations";
 
 div.container {
+  @include mixin.size(10vw);
+
   transform-origin: 50% 50%;
   border-radius: 50%;
 
   position: absolute;
   display: block;
 
-  height: 10vw;
-  width: 10vw;
-
   bottom: 2vw;
   right: 2vw;
 
   div.arc {
-    animation: pulse 1s var.$ease-out-sine infinite;
-    backface-visibility: hidden;
+    @include mixin.size(2.25vw);
 
+    animation: 1s var.$ease-out-sine infinite pulse;
     background-color: var.$white;
+
+    backface-visibility: hidden;
     transform-origin: 50% 50%;
 
     border-radius: 50%;
@@ -52,26 +54,11 @@ div.container {
     bottom: 8.875vw;
     right: 3.875vw;
 
-    height: 2.25vw;
-    width: 2.25vw;
-
     display: block;
     margin: auto;
 
     left: auto;
     top: auto;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(math.div(1, 3));
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 0;
   }
 }
 </style>

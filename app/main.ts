@@ -52,4 +52,4 @@ app.on('web-contents-created', (_, contents) => {
   }));
 });
 
-ipcMain.on('exit', () => game?.close());
+ipcMain.on('exit', () => game?.destroy());

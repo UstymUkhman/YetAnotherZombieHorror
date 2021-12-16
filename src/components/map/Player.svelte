@@ -6,22 +6,13 @@
 
 <style lang="scss">
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
 
 div {
   clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0% 100%);
+  @include mixin.center-size(1vw);
+
   background-color: var.$black;
-
-  position: absolute;
-  display: block;
-  margin: auto;
   padding: 0;
-
-  height: 1vw;
-  width: 1vw;
-
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
 }
 </style>

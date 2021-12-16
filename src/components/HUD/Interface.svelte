@@ -1,21 +1,21 @@
 {#if firstDrawCall}
   <Aim hide={!aiming} />
-{/if}
 
-{#if location}
-  <Map
-    playerRotation={location.rotation}
-    playerPosition={location.position}
-    radius={mapRadius / zoomScale}
-    scale={scale} zoom={zoomScale}
-    on:rifle={updateRifleAngle}
-  />
-
-  {#if visibleRifle}
-    <BorderRifle
+  {#if location}
+    <Map
       playerRotation={location.rotation}
-      angle={rifleAngle}
+      playerPosition={location.position}
+      radius={mapRadius / zoomScale}
+      scale={scale} zoom={zoomScale}
+      on:rifle={updateRifleAngle}
     />
+
+    {#if visibleRifle}
+      <BorderRifle
+        playerRotation={location.rotation}
+        angle={rifleAngle}
+      />
+    {/if}
   {/if}
 {/if}
 

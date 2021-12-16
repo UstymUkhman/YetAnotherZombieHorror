@@ -1,4 +1,5 @@
 import { version, dependencies } from '../package.json';
+import { contextBridge, ipcRenderer } from 'electron';
 
 window.addEventListener('DOMContentLoaded', () => {
   console.info(`App      : v${version}`);
@@ -7,3 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
   console.info(`Electron : v${process.versions.electron}`);
   console.info(`three.js : r${dependencies.three.slice(1)}`);
 });
+
+contextBridge.exposeInMainWorld('exit', () =>
+  ipcRenderer.sendSync('exit')
+);

@@ -9,6 +9,7 @@
   }],
 
   "rules": {
+    "no-invalid-position-at-import-rule": null,
     "block-closing-brace-newline-after": null,
     "declaration-empty-line-before": null,
     "selector-no-qualifying-type": null,

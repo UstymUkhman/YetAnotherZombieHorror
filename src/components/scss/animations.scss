@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @keyframes loading {
   0% {
     opacity: 0;
@@ -8,6 +10,32 @@
   }
 
   100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shoot {
+  0% {
+    transform: scale(1);
+  }
+
+  33% {
+    transform: scale(1.33);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(math.div(1, 3));
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
     opacity: 0;
   }
 }

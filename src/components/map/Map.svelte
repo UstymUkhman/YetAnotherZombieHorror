@@ -143,8 +143,11 @@
 
 <style lang="scss">
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
 
 div.map {
+  @include mixin.size(10vw);
+
   /* stylelint-disable-next-line color-function-notation */
   background-color: rgba(var.$white, 0.25);
   box-shadow: 0px 0px 25px var.$black;
@@ -158,13 +161,12 @@ div.map {
   overflow: hidden;
   display: block;
 
-  height: 10vw;
-  width: 10vw;
-
   bottom: 2vw;
   right: 2vw;
 
   div {
+    @include mixin.size(20vw);
+
     transform-origin: 50% 50%;
     box-sizing: content-box;
     border-radius: 50%;
@@ -173,20 +175,13 @@ div.map {
     overflow: hidden;
     display: block;
 
-    height: 20vw;
-    width: 20vw;
-
     left: -5vw;
     top: -5vw;
   }
 
   canvas {
-    position: absolute;
-    display: block;
-    margin: auto;
-
-    left: 50%;
-    top: 50%;
+    @include mixin.center-transform;
+    transform: none;
   }
 }
 </style>

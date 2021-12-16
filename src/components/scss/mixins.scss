@@ -1,5 +1,40 @@
-@import "@/animations";
+@use "sass:string";
 
-@mixin loading ($duration: 2s) {
-  animation: $duration ease-in-out infinite loading;
+@mixin font-size ($size) {
+  letter-spacing: string.unquote("0.#{$size}rem");
+  line-height: #{$size}vw;
+  font-size: #{$size}vw;
+}
+
+@mixin size ($width: 100%, $height: $width) {
+  height: $height;
+  width: $width;
+}
+
+@mixin center-size ($width: 100%, $height: $width) {
+  @include size($width, $height);
+  position: absolute;
+  display: block;
+  margin: auto;
+
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+@mixin center-transform {
+  transform: translate(-50%, -50%);
+  position: absolute;
+
+  display: block;
+  margin: auto;
+
+  left: 50%;
+  top: 50%;
+}
+
+@mixin absolute-size {
+  position: absolute;
+  @include size;
 }

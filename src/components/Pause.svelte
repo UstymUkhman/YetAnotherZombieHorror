@@ -4,7 +4,6 @@
 
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-
   import Button from '@components/Button.svelte';
   import { fade } from 'svelte/transition';
 
@@ -13,14 +12,13 @@
 
 <style lang="scss">
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
 
 div {
-  background-color: var.$black;
-  position: absolute;
-  display: block;
+  @include mixin.absolute-size;
 
-  height: 100%;
-  width: 100%;
+  background-color: var.$black;
+  display: block;
 
   z-index: 1;
   padding: 0;

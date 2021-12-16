@@ -1,16 +1,24 @@
 <main>
-  {#if paused && !loading}
+  {#if paused && !menuScreen && !loading}
     <Pause on:continue={() => paused = false} />
+  {/if}
+
+  {#if menuScreen && !showLoader}
+    <MainMenu
+      on:start={() => {
+        showLoader = true;
+        loading = true;
+        paused = false;
+      }}
+    />
   {/if}
 
   {#if appReady && showLoader}
     <Loader
       sceneLoading={loading}
-      on:complete={() => loading = false}
-
-      on:start={()=> {
-        loading = true;
-        paused = false;
+      on:complete={() => {
+        showLoader = false;
+        loading = false;
       }}
     />
   {/if}
@@ -20,6 +28,7 @@
     on:ready={() => appReady = true}
 
     on:firstDraw={() => {
+      menuScreen = false;
       showLoader = false;
       loading = false;
     }}
@@ -27,6 +36,7 @@
 </main>
 
 <script lang="ts">
+  import MainMenu from '@components/menu/MainMenu.svelte';
   import { GameEvents } from '@/events/GameEvents';
   import Loader from '@components/Loader.svelte';
 
@@ -34,7 +44,9 @@
   import Game from '@components/Game.svelte';
   import { onDestroy } from 'svelte';
 
+  let menuScreen = true;
   let showLoader = true;
+
   let appReady = false;
   let loading = true;
   let paused = true;
@@ -50,6 +62,7 @@
 
 <style lang="scss" global>
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
 
 h1,
 h2,
@@ -86,32 +99,22 @@ button {
 }
 
 h1 {
+  @include mixin.font-size(5);
   text-transform: uppercase;
-  letter-spacing: 0.5rem;
-
-  line-height: 5vw;
-  font-size: 5vw;
 }
 
 h2 {
-  letter-spacing: 0.4rem;
-  line-height: 4vw;
-  font-size: 4vw;
+  @include mixin.font-size(4);
 }
 
 h3 {
-  letter-spacing: 0.3rem;
-  line-height: 3vw;
-  font-size: 3vw;
+  @include mixin.font-size(3);
 }
 
 main {
-  position: absolute;
+  @include mixin.absolute-size;
   overflow: hidden;
   display: block;
-
-  height: 100%;
-  width: 100%;
 
   padding: 0;
   margin: 0;

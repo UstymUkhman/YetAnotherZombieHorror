@@ -26,22 +26,16 @@
 
 <style lang="scss">
 @use "@/variables" as var;
+@use "@/mixins" as mixin;
+@import "@/animations";
 
 div.container {
-  position: absolute;
-  display: block;
-  margin: auto;
-
-  height: 15px;
-  width: 15px;
+  @include mixin.center-size(15px);
   padding: 0;
 
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-
   div.aim {
+    @include mixin.absolute-size;
+
     transition-property: transform, opacity;
     transition-timing-function: ease-out;
     transform-origin: center center;
@@ -49,12 +43,7 @@ div.container {
 
     border: 2px solid var.$white;
     border-radius: 50%;
-
-    position: absolute;
     display: block;
-
-    height: 100%;
-    width: 100%;
 
     left: -2px;
     top: -2px;
@@ -63,7 +52,7 @@ div.container {
     margin: 0;
 
     &.shooting {
-      animation: shoot 150ms ease-out;
+      animation: 150ms ease-out shoot;
     }
 
     &.hide {
@@ -71,20 +60,6 @@ div.container {
       transform: scale(1.5);
       opacity: 0;
     }
-  }
-}
-
-@keyframes shoot {
-  0% {
-    transform: scale(1);
-  }
-
-  33% {
-    transform: scale(1.33);
-  }
-
-  100% {
-    transform: scale(1);
   }
 }
 </style>
