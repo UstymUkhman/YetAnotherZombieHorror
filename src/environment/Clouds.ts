@@ -4,22 +4,24 @@ import { MeshLambertMaterial } from 'three/src/materials/MeshLambertMaterial';
 import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
+
 import { PointLight } from 'three/src/lights/PointLight';
 import { PI, random, randomInt } from '@/utils/Number';
 
 import { Object3D } from 'three/src/core/Object3D';
 import LevelScene from '@/environment/LevelScene';
 import { GameEvents } from '@/events/GameEvents';
-
 import { Matrix4 } from 'three/src/math/Matrix4';
+
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
-
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 
 import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
+
+import Settings from '@/settings';
 import Configs from '@/configs';
 
 export default class Clouds
@@ -28,7 +30,7 @@ export default class Clouds
   private readonly onHideLighting = this.hideLighting.bind(this);
 
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
-  private readonly count = Configs.Settings.clouds;
+  private readonly count = Settings.clouds;
   private readonly matrix = new Matrix4();
 
   private clouds?: InstancedMesh;
@@ -38,14 +40,14 @@ export default class Clouds
   private paused = true;
 
   public constructor () {
-    const { fog, lighting } = Configs.Settings;
+    const { fog, lighting } = Settings;
 
     lighting && this.createLighting();
     !fog && this.createClouds();
   }
 
   private async createLighting (): Promise<void> {
-    const { fog, physicalLights } = Configs.Settings;
+    const { fog, physicalLights } = Settings;
     const decay = +(!fog && physicalLights) + 1.0;
 
     this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
@@ -134,7 +136,7 @@ export default class Clouds
   }
 
   public update (): void {
-    if (!Configs.Settings.dynamicClouds || !this.clouds) return;
+    if (!Settings.dynamicClouds || !this.clouds) return;
 
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
@@ -163,10 +165,8 @@ export default class Clouds
   }
 
   public set pause (pause: boolean) {
-    const { lighting } = Configs.Settings;
-
     !(this.paused = pause)
-      ? lighting && this.startLighting()
+      ? Settings.lighting && this.startLighting()
       : this.timeout && clearTimeout(this.timeout);
   }
 

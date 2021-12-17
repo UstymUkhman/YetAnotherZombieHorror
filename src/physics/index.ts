@@ -1,21 +1,18 @@
 /**
  * This file is dynamically configured by the "yarn setup" script.
  *
- * Avoid any change to lines 9 - 11 as they are generated via "build/physics.mjs"
+ * Avoid any change to lines 8 - 11 as they are generated via "build/physics.mjs"
  * script which relies on the "ammoPhysics" option in "src/configs/settings.json".
  */
 
-import Configs from '@/configs';
 import BVHPhysics from '@/physics/BVHPhysics';
+import Settings from '@/settings';
 
 const Physics = new BVHPhysics();
+const isAmmo = Physics.constructor.name.includes('Ammo');
 
-const { ammoPhysics } = Configs.Settings;
-const physics = Physics.constructor.name;
-const isAmmo = physics.includes('Ammo');
-
-const ammo = ammoPhysics && !isAmmo;
-const bvh = isAmmo && !ammoPhysics;
+const ammo = Settings.ammoPhysics && !isAmmo;
+const bvh = isAmmo && !Settings.ammoPhysics;
 
 if (!PRODUCTION && (ammo || bvh)) {
   console.warn(

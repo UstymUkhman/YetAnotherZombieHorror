@@ -1,5 +1,4 @@
 import type { CharacterMove } from '@/characters/types';
-import SettingsData from '@/configs/settings.json';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
@@ -38,10 +37,9 @@ namespace Configs
 
   type CharacterAnimations = Record<string, Readonly<Array<number>>>;
   export const BASE_PATH = (PRODUCTION || Configs.APP) && '.' || '';
-  const getAmmo = (value: number) => value < 0 ? Infinity : value;
 
+  const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
-  export const Settings = deepFreeze(SettingsData);
 
   export const offscreen = (
     typeof HTMLCanvasElement !== 'undefined' && !!(

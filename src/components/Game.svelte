@@ -1,7 +1,7 @@
 <div id="game">
   <canvas width={width} height={height} bind:this={scene} />
 
-  {#if raindrops}
+  {#if Settings.raindrops}
     <canvas width={width} height={height} bind:this={camera} />
   {/if}
 
@@ -21,7 +21,7 @@
   import { onMount, onDestroy } from 'svelte';
 
   import Viewport from '@/utils/Viewport';
-  import Configs from '@/configs';
+  import Settings from '@/settings';
 
   let app: Application;
   export let running: boolean;
@@ -32,7 +32,6 @@
   const width = Viewport.size.width;
   const height = Viewport.size.height;
 
-  const { raindrops } = Configs.Settings;
   const dispatch = createEventDispatcher();
 
   onMount(() => {

@@ -14,10 +14,10 @@ import { CameraManager } from '@/managers/Camera';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Audio } from 'three/src/audio/Audio';
-
 import { randomInt } from '@/utils/Number';
-import RAF from '@/managers/RAF';
 
+import Settings from '@/settings';
+import RAF from '@/managers/RAF';
 import Configs from '@/configs';
 import anime from 'animejs';
 
@@ -56,8 +56,8 @@ export default class AudioScene
     this.scene.autoUpdate = false;
     this.scene.add(this.player);
 
-    Configs.Settings.raining && this.createAmbientSound();
-    Configs.Settings.lighting && this.createThunderSounds();
+    Settings.raining && this.createAmbientSound();
+    Settings.lighting && this.createThunderSounds();
 
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
@@ -135,7 +135,7 @@ export default class AudioScene
   }
 
   public updateAmbient (): void {
-    if (!Configs.Settings.raining) return;
+    if (!Settings.raining) return;
     this.scene.updateMatrixWorld(true);
 
     setTimeout(() => anime({

@@ -13,6 +13,8 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { GLSL3 } from 'three/src/constants';
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
+
+import Settings from '@/settings';
 import Configs from '@/configs';
 
 export default class Portals
@@ -72,6 +74,7 @@ export default class Portals
     const fragPortal = await Assets.Loader.loadShader('portal/main.frag');
 
     const backgroundColor = Color.getClass(Color.PORTAL);
+    const { fog, volumetricFog, bakedFog } = Settings;
     const spikesColor = Color.getClass(Color.MOON);
 
     this.material = new ShaderMaterial({
@@ -85,16 +88,16 @@ export default class Portals
       },
 
       fragmentShader: fragPortal,
-      fog: Configs.Settings.fog,
       vertexShader: vertPortal,
 
       glslVersion: GLSL3,
-      transparent: true
+      transparent: true,
+      fog
     });
 
     this.material.defines = {
-      VOLUMETRIC_FOG: Configs.Settings.volumetricFog,
-      USE_BAKED_FOG: Configs.Settings.bakedFog
+      VOLUMETRIC_FOG: volumetricFog,
+      USE_BAKED_FOG: bakedFog
     };
 
     return this.material;

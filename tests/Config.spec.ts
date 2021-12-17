@@ -29,25 +29,6 @@ describe('Configs', () => {
     expect(Configs.APP).toStrictEqual(false);
   });
 
-  test('Settings', () => {
-    expect(typeof Configs.Settings.ammoPhysics).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.physicalLights).toStrictEqual('boolean');
-
-    expect(typeof Configs.Settings.raining).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.lighting).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.raindrops).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.softParticles).toStrictEqual('boolean');
-
-    expect(typeof Configs.Settings.fog).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.bakedFog).toStrictEqual('boolean');
-    expect(typeof Configs.Settings.volumetricFog).toStrictEqual('boolean');
-
-    expect(Configs.Settings.clouds).toBeLessThanOrEqual(300);
-    expect(Configs.Settings.clouds).toBeGreaterThanOrEqual(100);
-    expect(typeof Configs.Settings.clouds).toStrictEqual('number');
-    expect(typeof Configs.Settings.dynamicClouds).toStrictEqual('boolean');
-  });
-
   test('Camera.fps', () => {
     const cameraTPSIdlePosition = new Vector3(...Camera.fps.idle);
     const cameraTPSAimPosition = new Vector3(...Camera.fps.aim);

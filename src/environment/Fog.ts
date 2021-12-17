@@ -7,6 +7,7 @@ import { FogExp2 } from 'three/src/scenes/FogExp2';
 import { Assets } from '@/loaders/AssetsLoader';
 
 import { Color } from '@/utils/Color';
+import Settings from '@/settings';
 import Configs from '@/configs';
 
 export default class Fog extends FogExp2
@@ -23,7 +24,8 @@ export default class Fog extends FogExp2
     if (this.volumetric) {
       this.loadShaders();
 
-      Configs.Settings.bakedFog && Assets.Loader.loadTexture(Configs.Level.fog)
+      Settings.bakedFog && Assets.Loader
+        .loadTexture(Configs.Level.fog)
         .then(texture => this.noise = texture);
     }
   }
@@ -41,7 +43,7 @@ export default class Fog extends FogExp2
     const fogFrag = await Assets.Loader.loadShader('fog/main.frag');
     const fogVert = await Assets.Loader.loadShader('fog/main.vert');
 
-    ShaderChunk.fog_pars_fragment = Configs.Settings.bakedFog
+    ShaderChunk.fog_pars_fragment = Settings.bakedFog
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
 
     ShaderChunk.fog_pars_vertex = parsVert;

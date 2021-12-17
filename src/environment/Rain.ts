@@ -20,6 +20,8 @@ import type WebWorker from '@/worker/WebWorker';
 
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
+
+import Settings from '@/settings';
 import Configs from '@/configs';
 
 const DROP_RATIO = Math.tan(PI.d3) * 3;
@@ -47,7 +49,7 @@ export default class Rain
   }
 
   private createRenderTargets (): void {
-    if (!Configs.Settings.softParticles) return;
+    if (!Settings.softParticles) return;
     const { width, height } = this.renderer.domElement;
 
     const depthTexture = new DepthTexture(
@@ -90,8 +92,8 @@ export default class Rain
     this.material = new ShaderMaterial({
       uniforms: {
         screenSize: { value: new Vector2(width, height) },
-        soft: { value: Configs.Settings.softParticles },
         color: { value: Color.getClass(Color.RAIN) },
+        soft: { value: Settings.softParticles },
 
         ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },

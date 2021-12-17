@@ -28,6 +28,7 @@ import { Color } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 import Fog from '@/environment/Fog';
 
+import Settings from '@/settings';
 import Physics from '@/physics';
 import Configs from '@/configs';
 
@@ -46,7 +47,7 @@ export default class LevelScene
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: Configs.Settings.raindrops,
+      preserveDrawingBuffer: Settings.raindrops,
       antialias: true,
       alpha: false,
       canvas
@@ -75,8 +76,8 @@ export default class LevelScene
   }
 
   private async createEnvironment (worker?: WebWorker): Promise<void> {
-    const { fog, raining, lighting } = Configs.Settings;
-    const volumetricFog = fog && Configs.Settings.volumetricFog;
+    const { fog, raining, lighting } = Settings;
+    const volumetricFog = fog && Settings.volumetricFog;
 
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);
@@ -136,7 +137,7 @@ export default class LevelScene
     const skybox = await Assets.Loader.loadCubeTexture(folder);
     skybox.encoding = sRGBEncoding;
 
-    if (!Configs.Settings.fog) {
+    if (!Settings.fog) {
       this.scene.background = skybox;
     }
 
@@ -177,7 +178,7 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const { physicalLights } = Configs.Settings;
+    const { physicalLights } = Settings;
     const exposure = +physicalLights * 0.75 + 0.25;
 
     this.renderer.physicallyCorrectLights = physicalLights;
