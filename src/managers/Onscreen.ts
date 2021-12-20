@@ -14,6 +14,10 @@ export default class Onscreen implements ApplicationManager
     this.loop.resize(width, height);
   }
 
+  public set controls (disabled: boolean) {
+    this.loop.controls = disabled;
+  }
+
   public set pause (paused: boolean) {
     this.loop.pause = paused;
   }

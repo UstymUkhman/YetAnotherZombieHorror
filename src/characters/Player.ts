@@ -142,16 +142,22 @@ export default class Player extends Character
     }
   }
 
-  public idle (now = Date.now()): void {
+  public idle (delayed = false): void {
+    const now = Date.now();
     if (this.blockingAnimation()) return;
-    if (now - this.idleTime < 350) return;
+    const idleDelay = Math.max(350 - (now - this.idleTime), 0);
+
+    if (idleDelay) return setTimeout(
+      this.idle.bind(this, true), idleDelay
+    ) as unknown as void;
 
     GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     GameEvents.dispatch('Player::Run', false, true);
 
     const idle = this.getWeaponAnimation('Idle');
-    this.running = this.moving = false;
+    if (delayed && this.lastAnimation === idle) return;
 
+    this.running = this.moving = false;
     Camera.runAnimation(false);
     this.idleTime = now;
 
@@ -207,9 +213,8 @@ export default class Player extends Character
     }
   }
 
-  public startAiming (): void {
+  public startAiming (animation: boolean): void {
     if (this.blockingAnimation()) return;
-
     this.weapon.aiming = this.aiming = true;
     GameEvents.dispatch('Player::Run', false, true);
 
@@ -223,7 +228,7 @@ export default class Player extends Character
     this.weapon.setAim();
 
     if (this.lastAnimation !== next) {
-      this.aimTimeout = this.updateAnimation('Idle', next);
+      if (animation) this.aimTimeout = this.updateAnimation('Idle', next);
       this.running = false;
       this.moving = false;
     }

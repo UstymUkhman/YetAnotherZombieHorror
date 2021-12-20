@@ -12,12 +12,14 @@ import Configs from '@/configs';
 
 export interface ApplicationManager
 {
-  resize (width: number, height: number): void,
+  resize (width: number, height: number): void
+  set controls (disabled: boolean)
   set pause (paused: boolean)
 }
 
 export default class Application
 {
+  private started = false;
   private raindrops?: Raindrops;
   private manager!: ApplicationManager;
 
@@ -52,11 +54,25 @@ export default class Application
     this.manager.resize(width, height);
   }
 
+  private toggleControls (disabled: boolean) {
+    this.manager.controls = disabled;
+  }
+
+  private toggleAudio (paused: boolean) {
+    this.music[paused ? 'pause' : 'play']();
+    this.audioScene.pause = paused;
+  }
+
   public start (): void {
     const { width, height } = Viewport.size;
     this.audioScene.updateAmbient();
     this.resize(width, height);
+
+    this.toggleControls(false);
+    this.toggleAudio(false);
+
     this.raindrops?.start();
+    this.started = true;
   }
 
   public destroy (): void {
@@ -69,15 +85,16 @@ export default class Application
   }
 
   public set pause (paused: boolean) {
-    this.music[paused ? 'pause' : 'play']();
+    !paused
+      ? this.pointer.requestPointerLock()
+      : this.pointer.exitPointerLock();
 
-    paused
-      ? this.pointer.exitPointerLock()
-      : this.pointer.requestPointerLock();
+    if (this.started) {
+      this.toggleControls(paused);
+      this.toggleAudio(paused);
+    }
 
-    this.audioScene.pause = paused;
     this.manager.pause = paused;
-
     RAF.pause = paused;
   }
 

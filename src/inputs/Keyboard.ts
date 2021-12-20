@@ -61,7 +61,8 @@ export default class Keyboard
     }
 
     else if (event.button === BUTTON.RIGHT) {
-      this.player.startAiming();
+      const updateAnimation = this.move !== IDLING;
+      this.player.startAiming(updateAnimation);
       this.aimTime = Date.now();
     }
   }

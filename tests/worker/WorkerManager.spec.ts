@@ -60,6 +60,16 @@ describe('WorkerManager', () => {
     expect(response).toStrictEqual(undefined);
   });
 
+  test('Game::Controls', () => {
+    const response = WorkerManager.onmessage?.({ data: {
+      event: 'Game::Controls', params: {
+        disabled: false
+      }
+    }} as MessageEvent);
+
+    expect(response).toStrictEqual(undefined);
+  });
+
   test('Game::Pause', () => {
     const response = WorkerManager.onmessage?.({ data: {
       event: 'Game::Pause', params: {

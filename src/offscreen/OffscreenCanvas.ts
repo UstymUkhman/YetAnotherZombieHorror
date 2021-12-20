@@ -19,6 +19,10 @@ export default class OffscreenCanvas implements ApplicationManager
     this.worker.post('Game::Resize', { width, height });
   }
 
+  public set controls (disabled: boolean) {
+    this.worker.post('Game::Controls', { disabled });
+  }
+
   public set pause (paused: boolean) {
     this.worker.post('Game::Pause', { paused });
   }

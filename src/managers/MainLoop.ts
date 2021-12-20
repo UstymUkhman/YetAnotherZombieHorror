@@ -138,10 +138,12 @@ export default class MainLoop
     RAF.dispose();
   }
 
+  public set controls (disabled: boolean) {
+    this.input.pause = disabled;
+  }
+
   public set pause (paused: boolean) {
     this.level.pause = paused;
-    this.input.pause = paused;
-
     Physics.pause = paused;
     RAF.pause = paused;
   }

@@ -164,6 +164,7 @@ export class CameraManager
   public runAnimation (running: boolean): void {
     const { x, y, z } = this.getPosition(running);
 
+    anime.running.length = 0;
     this.runDelta = 0;
 
     anime({

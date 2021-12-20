@@ -21,6 +21,11 @@ const parseMessage = (event: string, params?: unknown) => {
     case 'Game::Resize':
       return OffscreenManager.resize(params as SizeParams);
 
+    case 'Game::Controls': {
+      const { disabled } = params as { disabled: boolean };
+      return OffscreenManager.controls = disabled;
+    }
+
     case 'Game::Pause': {
       const { paused } = params as { paused: boolean };
       return OffscreenManager.pause = paused;
@@ -37,7 +42,7 @@ self.onmessage = message => {
   const { event, params } = message.data;
   const response = parseMessage(event, params);
 
-  self.postMessage({ name: event, response } /*, '*' */);
+  self.postMessage({ name: event, response });
 };
 
 self.onerror = error => console.error(error);
