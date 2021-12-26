@@ -51,9 +51,10 @@ export default class MainLoop
       }
     );
 
-    GameEvents.add('Player::PickRifle', () =>
-      this.player.pickRifle(this.rifle)
-    );
+    GameEvents.add('Player::PickRifle', () => {
+      setTimeout(this.spawnRifle.bind(this));
+      this.player.pickRifle(this.rifle);
+    });
   }
 
   private async onLoad (event: GameEvent): Promise<void> {
@@ -63,6 +64,7 @@ export default class MainLoop
       this.player.setPistol(this.enemies.colliders, this.pistol);
       GameEvents.dispatch('Loading::Complete', null, true);
 
+      setTimeout(this.spawnRifle.bind(this), 5000);
       Physics.setPlayer(this.player.collider);
       RAF.add(this.loop);
     });
@@ -139,7 +141,6 @@ export default class MainLoop
   }
 
   public set controls (disabled: boolean) {
-    setTimeout(this.spawnRifle.bind(this), 5000);
     this.input.pause = disabled;
   }
 

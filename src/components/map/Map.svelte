@@ -135,9 +135,7 @@
   $: (scale => {
     if (!map || !scale) return;
     offset = PADDING * scale / 2;
-
     drawBounds();
-    centerPosition();
   })(scale);
 </script>
 

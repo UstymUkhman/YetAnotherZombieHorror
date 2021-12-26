@@ -49,7 +49,6 @@
 
   function pickRifle (): void {
     RAF.remove(spawnRifle);
-    clearRifle();
   }
 
   function clearRifle (): void {

@@ -55,11 +55,16 @@ export default class Rifle extends Weapon
   }
 
   public override addAmmo (ammo = Configs.Rifle.magazine): void {
-    if (ammo) this.totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
+    if (ammo) {
+      this.playSound('pick', false);
+      const totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
+      this.totalAmmo = this.empty ? totalAmmo : totalAmmo + this.loadedAmmo;
+    }
 
     else {
-      const toLoad = Math.min(this.magazine - this.loadedAmmo, this.magazine);
-      this.totalAmmo = Math.max(this.totalAmmo - toLoad, 0);
+      const toLoad = Math.min(Math.min(
+        this.magazine - this.loadedAmmo, this.magazine
+      ), this.totalAmmo);
 
       setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;

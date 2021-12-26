@@ -139,7 +139,9 @@ export default class Weapon
       this.playSound('shoot', true);
       this.bullets.push(bullet);
       this.fire.addParticles();
+
       this.loadedAmmo--;
+      this.totalAmmo--;
 
       target > -1 && console.log(hitBox.position.distanceToSquared(bullet.position)); /* setTimeout(() =>
         GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
@@ -264,9 +266,5 @@ export default class Weapon
 
   public get full (): boolean {
     return this.loadedAmmo === this.magazine;
-  }
-
-  public get ammo (): number {
-    return this.totalAmmo;
   }
 }

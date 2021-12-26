@@ -32,6 +32,7 @@
   "sounds": {
     "reload": "weapons/reload.mp3",
     "empty": "weapons/empty.mp3",
-    "shoot": "weapons/AK47.mp3"
+    "shoot": "weapons/AK47.mp3",
+    "pick": "weapons/pick.mp3"
   }
 }
