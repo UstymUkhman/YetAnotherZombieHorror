@@ -1,6 +1,6 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-// import { getRandomCoord } from '@/worker/getRandomCoord';
+import { getRandomCoord } from '@/worker/getRandomCoord';
 
 import type { LevelCoords } from '@/environment/types';
 import type { Vector3 } from 'three/src/math/Vector3';
@@ -72,7 +72,7 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
-  /* private spawnRifle (): void {
+  private spawnRifle (): void {
     if (this.rifle.onStage) return;
 
     this.worker
@@ -88,7 +88,7 @@ export default class MainLoop
         bounds: LevelScene.bounds
       })
     );
-  } */
+  }
 
   private update (): void {
     const delta = Math.min(this.clock.getDelta(), 0.1);
@@ -102,8 +102,8 @@ export default class MainLoop
   }
 
   private updateCharactersLocation (delta: number): Vector3 {
-    // this.enemies.update(delta);
     this.player.update(delta);
+    this.enemies.update(delta);
 
     const playerLocation = this.player.location;
     const playerPosition = playerLocation.position;
@@ -139,6 +139,7 @@ export default class MainLoop
   }
 
   public set controls (disabled: boolean) {
+    setTimeout(this.spawnRifle.bind(this), 5000);
     this.input.pause = disabled;
   }
 

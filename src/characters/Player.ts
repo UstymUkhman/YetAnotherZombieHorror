@@ -1,4 +1,5 @@
 import type { PlayerAnimations, CharacterAnimation, PlayerLocation, PlayerMovement } from '@/characters/types';
+import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
@@ -203,13 +204,11 @@ export default class Player extends Character
 
     if (directions[Direction.UP]) {
       GameEvents.dispatch('Player::Run', true, true);
+      this.running = this.moving = true;
       this.updateAnimation('Run', run);
 
       Camera.runAnimation(true);
       this.resetRotation(true);
-
-      this.running = true;
-      this.moving = true;
     }
   }
 
@@ -221,6 +220,7 @@ export default class Player extends Character
     Camera.runAnimation(false);
     Camera.aimAnimation(true, this.equipRifle);
     Camera.updateNearPlane(true, this.equipRifle);
+    setTimeout(this.toggleMesh.bind(this, true), 300);
 
     this.aimTime = this.equipRifle ? Date.now() : 0.0;
     const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
@@ -228,9 +228,11 @@ export default class Player extends Character
     this.weapon.setAim();
 
     if (this.lastAnimation !== next) {
-      if (animation) this.aimTimeout = this.updateAnimation('Idle', next);
-      this.running = false;
-      this.moving = false;
+      if (this.equipRifle || animation) {
+        this.aimTimeout = this.updateAnimation('Idle', next);
+      }
+
+      this.running = this.moving = false;
     }
 
     setTimeout(() =>
@@ -255,6 +257,7 @@ export default class Player extends Character
 
     this.weapon.cancelAim(duration);
     clearTimeout(this.aimTimeout);
+    this.toggleMesh(false);
   }
 
   public startShooting (now = Date.now()): void {
@@ -281,13 +284,15 @@ export default class Player extends Character
     GameEvents.dispatch('Player::Run', false, true);
     this.updateAnimation('Idle', 'rifleReload');
 
-    Camera.setNearPlane(0.15, 400);
+    const near = +this.running * 0.02 + 0.13;
+    this.running = this.moving = false;
+
+    Camera.setNearPlane(near, 400);
     this.weapon.startReloading();
     Camera.runAnimation(false);
 
     this.reloading = true;
-    this.running = false;
-    this.moving = false;
+    this.toggleMesh(true);
 
     this.reloadTimeout = setTimeout(
       this.weapon.addAmmo.bind(this.weapon, 0)
@@ -295,6 +300,7 @@ export default class Player extends Character
 
     setTimeout(() => {
       if (this.dead) return;
+      this.toggleMesh(false);
       this.reloading = false;
       Camera.setNearPlane(0.5, 100);
 
@@ -366,11 +372,18 @@ export default class Player extends Character
     }
   }
 
+  private toggleMesh (show: boolean): void {
+    Camera.isFPS && this.equipRifle && this.meshes.forEach(child =>
+      (child.material as MeshStandardMaterial).opacity = +show
+    );
+  }
+
   private toggleVisibility (): void {
     const hideDelay = +Camera.isFPS * 250;
     const showDelay = +Camera.isFPS * 150 + 250;
 
     this.weapon.toggleVisibility(hideDelay, showDelay);
+    const fadeIn = !(Camera.isFPS && this.equipRifle && !this.aiming);
 
     this.meshes.forEach(child => {
       anime({
@@ -381,7 +394,7 @@ export default class Player extends Character
         opacity: 0.0
       });
 
-      setTimeout(() => anime({
+      fadeIn && setTimeout(() => anime({
         targets: child.material,
         easing: 'linear',
         duration: 100,

@@ -4,13 +4,16 @@ import { Float16BufferAttribute, Float32BufferAttribute } from 'three/src/core/B
 import type { FireConfig, FireParticle, SmokeParticle } from '@/weapons/types';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { PointLight } from 'three/src/lights/PointLight';
 
 import { Points } from 'three/src/objects/Points';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
-
 import { PI, randomInt } from '@/utils/Number';
+
+import { Color } from '@/utils/Color';
 import Spline from '@/utils/Spline';
+import Settings from '@/settings';
 
 const RATIO = Math.tan(PI.d6) * 2;
 const FIRE = [0.0, 0.0, 0.0];
@@ -25,12 +28,31 @@ export default class Fire
   private readonly fireAlpha = new Spline();
 
   private material!: ShaderMaterial;
+  private light!: PointLight;
+
   private readonly geometry;
+  private lightPower = 0.0;
 
   public constructor (private readonly config: FireConfig, weapon: Assets.GLTF, textures: string) {
     this.geometry = new BufferGeometry();
+
+    this.createFireLight(weapon);
     this.createParticleGeometry();
     this.createParticles(weapon, textures);
+  }
+
+  private createFireLight (weapon: Assets.GLTF): void {
+    const decay = +Settings.physicalLights + 1.0;
+    const { intensity, position: { x, y } } = this.config;
+
+    this.light = new PointLight(Color.FIRE, intensity / decay, 1.0, decay);
+
+    this.lightPower = this.light.power;
+    this.light.position.set(x, y, 0.0);
+    this.light.castShadow = true;
+
+    this.light.power = 0.0;
+    weapon.add(this.light);
   }
 
   private createParticleGeometry (): void {
@@ -152,14 +174,11 @@ export default class Fire
   public update (): boolean {
     this.updateParticles();
 
-    this.fireParticles.length
-      ? this.updateFireGeometry()
-      : this.updateSmokeGeometry();
+    const { length } = this.fireParticles;
+    this.light.power = length * this.lightPower;
 
-    return !!(
-      this.fireParticles.length ||
-      this.smokeParticles.length
-    );
+    length ? this.updateFireGeometry() : this.updateSmokeGeometry();
+    return !!(length || this.smokeParticles.length);
   }
 
   private updateParticles (delta = 1 / 60): void {
@@ -296,5 +315,6 @@ export default class Fire
 
     this.geometry.dispose();
     this.material.dispose();
+    this.light.remove();
   }
 }

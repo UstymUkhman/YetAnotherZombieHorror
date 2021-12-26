@@ -14,6 +14,7 @@ export namespace Color
 
   export const MOON   = 0xA8D9A7;
   export const SILVER = 0xC0C0C0;
+  export const FIRE   = 0xFBB741;
   export const WHITE  = 0xFFFFFF;
 
   export const blend = (initial: string, target: string, p = 0.5): string => {

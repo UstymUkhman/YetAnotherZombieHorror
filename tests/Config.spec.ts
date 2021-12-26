@@ -216,6 +216,7 @@ describe('Configs', () => {
     expect(Configs.Pistol.fire.position).toBeInstanceOf(Vector2);
     expect(Configs.Pistol.fire.particles).toBeInstanceOf(Array);
 
+    expect(Configs.Pistol.fire.intensity).toBeGreaterThan(0);
     expect(Configs.Pistol.fire.velocity).toBeGreaterThan(0);
     expect(Configs.Pistol.fire.scale).toBeGreaterThan(0);
   });
@@ -279,6 +280,7 @@ describe('Configs', () => {
     expect(Configs.Rifle.fire.position).toBeInstanceOf(Vector2);
     expect(Configs.Rifle.fire.particles).toBeInstanceOf(Array);
 
+    expect(Configs.Rifle.fire.intensity).toBeGreaterThan(0);
     expect(Configs.Rifle.fire.velocity).toBeGreaterThan(0);
     expect(Configs.Rifle.fire.scale).toBeGreaterThan(0);
   });

@@ -46,7 +46,7 @@ export default class Clouds
     !fog && this.createClouds();
   }
 
-  private async createLighting (): Promise<void> {
+  private createLighting (): void {
     const { fog, physicalLights } = Settings;
     const decay = +(!fog && physicalLights) + 1.0;
 

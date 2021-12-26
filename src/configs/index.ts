@@ -141,6 +141,7 @@ namespace Configs
     fire: {
       position: new Vector2(...PistolData.fire.position),
       particles: PistolData.fire.particles,
+      intensity: PistolData.fire.intensity,
       velocity: PistolData.fire.velocity,
       scale: PistolData.fire.scale
     },
@@ -173,6 +174,7 @@ namespace Configs
     fire: {
       position: new Vector2(...RifleData.fire.position),
       particles: RifleData.fire.particles,
+      intensity: RifleData.fire.intensity,
       velocity: RifleData.fire.velocity,
       scale: RifleData.fire.scale
     },

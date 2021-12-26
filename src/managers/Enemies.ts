@@ -25,6 +25,9 @@ export default class Enemies
     ));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  public update (delta: number): void {}
+
   public get colliders (): Array<Object3D> {
     const colliders = [];
 
