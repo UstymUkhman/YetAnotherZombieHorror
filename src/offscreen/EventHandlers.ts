@@ -15,8 +15,9 @@ const eventPropsHandler = (props: Array<string>): EventHandler =>
     callback(data);
   };
 
-export const prevent = (event: Event): void =>
-  event.preventDefault();
+// Wheel Event:
+
+export const wheelEvent = eventPropsHandler(['deltaY']);
 
 // Mouse Events:
 
@@ -26,17 +27,6 @@ type EventHandler = (event: Event, callback: EventCallback) => void;
 export const mouseEvent = eventPropsHandler([
   'button', 'movementX', 'movementY'
 ]);
-
-// Wheel Events:
-
-const onWheelEvent = eventPropsHandler([
-  'deltaX', 'deltaY'
-]);
-
-export function wheelEvent (event: Event, callback: EventCallback): void {
-  event.preventDefault();
-  onWheelEvent(event, callback);
-}
 
 // Keyboard Events:
 
@@ -83,3 +73,8 @@ export function touchEvent (event: Event, callback: EventCallback): void {
 
   callback({ type: event.type, touches });
 }
+
+// Cancel Event:
+
+export const prevent = (event: Event): void =>
+  event.preventDefault();

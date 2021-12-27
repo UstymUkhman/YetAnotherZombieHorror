@@ -3,6 +3,7 @@ import EventsTarget from '@/offscreen/EventsTarget';
 
 import type Player from '@/characters/Player';
 import type { Directions } from '@/inputs';
+
 import { Direction } from '@/inputs';
 import Configs from '@/configs';
 
@@ -13,6 +14,7 @@ export default class Keyboard
 {
   private readonly events = Object.entries({
     contextmenu: this.onContextMenu.bind(this),
+    mousewheel: this.onMouseWheel.bind(this),
 
     mousedown: this.onMouseDown.bind(this),
     mousemove: this.onMouseMove.bind(this),
@@ -25,6 +27,7 @@ export default class Keyboard
   private moves: Directions = [0, 0, 0, 0];
 
   private aimTimeout = 0.0;
+  private wheelTime = 0.0;
   private aimTime = 0.0;
 
   private paused = true;
@@ -48,6 +51,16 @@ export default class Keyboard
     event.stopPropagation();
     event.preventDefault();
     return false;
+  }
+
+  private onMouseWheel (event: Event | WheelEvent): void {
+    const now = Date.now();
+    event.stopPropagation();
+
+    if (!this.disabled && now > this.wheelTime) {
+      this.wheelTime = now + 450;
+      this.player.changeWeapon();
+    }
   }
 
   private onMouseDown (event: Event | MouseEvent): void {
@@ -162,8 +175,16 @@ export default class Keyboard
         break;
 
       case 'KeyQ':
-      case 'KeyE':
-        return this.player.changeWeapon();
+      case 'KeyE': {
+        const now = Date.now();
+
+        if (now > this.wheelTime) {
+          this.wheelTime = now + 450;
+          this.player.changeWeapon();
+        }
+
+        return;
+      }
 
       case 'KeyC':
         return this.player.changeCamera(true);

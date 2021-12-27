@@ -6,10 +6,7 @@
   {/if}
 
   {#if app}
-    <Interface on:firstDraw={() => {
-      dispatch('firstDraw');
-      app.start();
-    }} />
+    <Interface on:firstDraw={onFirstDraw} />
   {/if}
 </div>
 
@@ -33,6 +30,11 @@
   const height = Viewport.size.height;
 
   const dispatch = createEventDispatcher();
+
+  function onFirstDraw (): void {
+    setTimeout(() => dispatch('firstDraw'), 2500);
+    app.start();
+  }
 
   onMount(() => {
     app = new Application(scene, camera);

@@ -60,10 +60,10 @@
 | Move Backward | S |
 | Move Right | D |
 | Run | Left Shift |
-| Shoot | *Mouse* Left Click |
-| Aim | *Mouse* Right Click |
-| Previous Weapon | Q |
-| Next Weapon | E |
+| Shoot | Mouse Left Click |
+| Aim | Mouse Right Click |
+| Previous Weapon | Q *or* Mouse Wheel Up |
+| Next Weapon | E *or* Mouse Wheel Down |
 | Reload | R |
 | Change Camera | C |
 | Change Shoulder | V |

@@ -328,11 +328,10 @@ export default class Player extends Character
   private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): number {
     this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
     this.animations[action].play();
+    this.lastAnimation = action;
 
     return setTimeout(() => {
       this.setAnimation(animation);
-      this.lastAnimation = action;
-
       this.currentAnimation.stop();
       this.currentAnimation = this.animations[action];
     }, duration * 1000) as unknown as number;

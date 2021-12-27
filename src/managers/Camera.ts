@@ -22,6 +22,8 @@ type CameraState = {
 export class CameraManager
 {
   private fps = false;
+
+  private runTimeout = 0.0;
   private runDelta!: number;
   private shakeDuration = 0.0;
   private rightShoulder = true;
@@ -162,19 +164,27 @@ export class CameraManager
   }
 
   public runAnimation (running: boolean): void {
-    const { x, y, z } = this.getPosition(running);
+    const position = this.getPosition(running);
+    if (this.camera.position.equals(position)) return;
 
-    if (running && anime.running.length < 4)
+    if (running) {
+      this.runTimeout = setTimeout(() => {
+        RAF.add(this.onRunning);
+      }, 500) as unknown as number;
+
       anime.running.length = 0;
+    }
 
+    else {
+      clearTimeout(this.runTimeout);
+      RAF.remove(this.onRunning);
+    }
+
+    const { x, y, z } = position;
     this.runDelta = 0;
 
     anime({
-      begin: () => !running && RAF.remove(this.onRunning),
-      complete: () => running && RAF.add(this.onRunning),
-
       targets: this.camera.position,
-      delay: +running * 100,
       easing: 'easeOutQuad',
       duration: 300,
       x, y, z
@@ -203,6 +213,7 @@ export class CameraManager
   }
 
   public dispose (): void {
+    clearTimeout(this.runTimeout);
     RAF.remove(this.onRunning);
   }
 

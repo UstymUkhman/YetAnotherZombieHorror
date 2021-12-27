@@ -1,4 +1,4 @@
-import { prevent, mouseEvent, keyboardEvent } from '@/offscreen/EventHandlers';
+import { mouseEvent, wheelEvent, keyboardEvent, prevent } from '@/offscreen/EventHandlers';
 import type { Event } from 'three/src/core/EventDispatcher';
 import type WebWorker from '@/worker/WebWorker';
 
@@ -14,6 +14,7 @@ export default class OffscreenEvents
       mousemove: mouseEvent,
       mouseup: mouseEvent,
 
+      mousewheel: wheelEvent,
       keydown: keyboardEvent,
       keyup: keyboardEvent,
       contextmenu: prevent

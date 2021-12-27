@@ -64,7 +64,7 @@ export default class MainLoop
       this.player.setPistol(this.enemies.colliders, this.pistol);
       GameEvents.dispatch('Loading::Complete', null, true);
 
-      setTimeout(this.spawnRifle.bind(this), 5000);
+      setTimeout(this.spawnRifle.bind(this), 1e4);
       Physics.setPlayer(this.player.collider);
       RAF.add(this.loop);
     });
