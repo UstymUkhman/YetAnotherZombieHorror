@@ -1,4 +1,5 @@
 import type { Texture } from 'three/src/textures/Texture';
+import { PointLight } from 'three/src/lights/PointLight';
 import type { LevelCoords } from '@/environment/types';
 
 import type { Vector3 } from 'three/src/math/Vector3';
@@ -8,18 +9,26 @@ import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
+import { Color } from '@/utils/Color';
 import Weapon from '@/weapons/Weapon';
+
+import Settings from '@/settings';
 import Configs from '@/configs';
 import anime from 'animejs';
 
 export default class Rifle extends Weapon
 {
+  private readonly light = new PointLight(Color.WHITE, 1, 0, +Settings.physicalLights + 1);
+  private readonly halfLightPower = +Settings.physicalLights * 70 + 5;
+
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;
   private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone?: Assets.GLTF;
   private reloading = false;
+
+  private spawnTime = 0.0;
   private spawned = false;
 
   public constructor (envMap: Texture) {
@@ -78,8 +87,8 @@ export default class Rifle extends Weapon
   }
 
   public override startReloading (): void {
-    this.model.position.set(this.position.x, this.position.y, 0);
-    this.model.rotation.set(this.rotation.x, this.rotation.y, 0);
+    this.model.position.set(this.position.x, this.position.y, 0.0);
+    this.model.rotation.set(this.rotation.x, this.rotation.y, 0.0);
 
     this.playSound('reload', true);
     this.reloading = true;
@@ -95,12 +104,17 @@ export default class Rifle extends Weapon
     if (!this.spawned || !this.clone) return;
     this.clone.rotation.y -= 0.025;
 
+    const normalizedPower = Math.cos(this.spawnTime += 0.05) + 1.0;
     const playerDistance = this.clone.position.distanceTo(player);
+    this.light.power = normalizedPower * this.halfLightPower;
 
     if (this.inStock < this.maxStock && playerDistance < 2.5) {
       GameEvents.dispatch('Level::RemoveObject', this.clone);
       GameEvents.dispatch('Player::PickRifle', this.clone);
       GameEvents.dispatch('Rifle::Pick', null, true);
+
+      this.clone.remove(this.light);
+      this.light.power = 0.0;
       this.spawned = false;
     }
   }
@@ -110,12 +124,16 @@ export default class Rifle extends Weapon
     this.clone = this.clone || this.getClone();
 
     this.clone.position.set(coords[0], 1.75, coords[1]);
+    this.clone.rotation.set(0.0, 0.0, 0.0);
     this.clone.scale.copy(worldScale);
-    this.clone.rotation.set(0, 0, 0);
 
     GameEvents.dispatch('Level::AddObject', this.clone);
     GameEvents.dispatch('Rifle::Spawn', coords, true);
 
+    this.light.power = this.halfLightPower * 2.0;
+    this.clone.add(this.light);
+
+    this.spawnTime = 0.0;
     this.spawned = true;
   }
 

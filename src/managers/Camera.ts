@@ -127,9 +127,8 @@ export class CameraManager
 
   public aimAnimation (aiming: boolean, rifle: boolean, duration = 400): void {
     const { x, y, z } = this.getPosition(false, aiming, rifle);
-
     aiming && RAF.remove(this.onRunning);
-    anime.running.length = 0;
+    // anime.running.length = 0;
 
     aiming && anime({
       targets: this.camera.rotation,
@@ -171,8 +170,7 @@ export class CameraManager
       this.runTimeout = setTimeout(() => {
         RAF.add(this.onRunning);
       }, 500) as unknown as number;
-
-      anime.running.length = 0;
+      // anime.running.length = 0;
     }
 
     else {

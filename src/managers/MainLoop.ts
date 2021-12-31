@@ -99,8 +99,8 @@ export default class MainLoop
     this.player.alive && Physics.update(delta);
     this.rifle.update(playerPosition);
 
-    Camera.updateState();
     this.level.render(delta);
+    Camera.updateState();
   }
 
   private updateCharactersLocation (delta: number): Vector3 {

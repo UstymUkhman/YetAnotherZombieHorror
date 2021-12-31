@@ -1,7 +1,7 @@
 <div class="screen" in:fade={{ delay: 500 }} out:fade>
   <menu style="{`
     transform: rotateY(12deg) rotateX(${rotation}deg);
-    height: ${items.length * 10 + 5}%;
+    height: ${items.length * 10 + 10}%;
   `}">
 
     {#each items as item, i}
