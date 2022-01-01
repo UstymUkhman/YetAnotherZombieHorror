@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('./package.json').version;
 
 // For a detailed explanation regarding each configuration property, visit:
@@ -141,7 +142,7 @@ module.exports = {
   // runner: 'jest-runner',
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFiles: ['jest-canvas-mock'],
+  setupFiles: ['jest-canvas-mock', 'fake-indexeddb/auto'],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],

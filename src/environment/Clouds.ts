@@ -1,6 +1,5 @@
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler';
 import { MeshLambertMaterial } from 'three/src/materials/MeshLambertMaterial';
-
 import { SphereGeometry } from 'three/src/geometries/SphereGeometry';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
@@ -20,17 +19,21 @@ import { Euler } from 'three/src/math/Euler';
 
 import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
-
 import Settings from '@/settings';
 import Configs from '@/configs';
 
 export default class Clouds
 {
+  private readonly count = Settings.getValue('clouds') as unknown as number;
+  private readonly staticClouds = !Settings.getValue('dynamicClouds');
+
   private readonly onShowLighting = this.showLighting.bind(this);
   private readonly onHideLighting = this.hideLighting.bind(this);
 
+  private readonly isLighting = Settings.getValue('lighting');
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
-  private readonly count = Settings.clouds;
+
+  private readonly useFog = Settings.getValue('fog');
   private readonly matrix = new Matrix4();
 
   private clouds?: InstancedMesh;
@@ -40,15 +43,12 @@ export default class Clouds
   private paused = true;
 
   public constructor () {
-    const { fog, lighting } = Settings;
-
-    lighting && this.createLighting();
-    !fog && this.createClouds();
+    this.isLighting && this.createLighting();
+    !this.useFog && this.createClouds();
   }
 
   private createLighting (): void {
-    const { fog, physicalLights } = Settings;
-    const decay = +(!fog && physicalLights) + 1.0;
+    const decay = +(!this.useFog && Settings.getValue('physicalLights')) + 1.0;
 
     this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
     this.lighting.position.set(0.0, Clouds.height, 0.0);
@@ -136,7 +136,7 @@ export default class Clouds
   }
 
   public update (): void {
-    if (!Settings.dynamicClouds || !this.clouds) return;
+    if (this.staticClouds || !this.clouds) return;
 
     for (let c = 0; c < this.count; c++) {
       const direction = c % 2 * 2 - 1;
@@ -166,7 +166,7 @@ export default class Clouds
 
   public set pause (pause: boolean) {
     !(this.paused = pause)
-      ? Settings.lighting && this.startLighting()
+      ? this.isLighting && this.startLighting()
       : this.timeout && clearTimeout(this.timeout);
   }
 

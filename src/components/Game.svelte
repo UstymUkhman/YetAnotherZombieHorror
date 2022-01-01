@@ -1,7 +1,7 @@
 <div id="game">
   <canvas width={width} height={height} bind:this={scene} />
 
-  {#if Settings.raindrops}
+  {#if raindrops}
     <canvas width={width} height={height} bind:this={camera} />
   {/if}
 
@@ -30,6 +30,7 @@
   const height = Viewport.size.height;
 
   const dispatch = createEventDispatcher();
+  const raindrops = Settings.getValue('raindrops');
 
   function onFirstDraw (): void {
     setTimeout(() => dispatch('firstDraw'), 2500);

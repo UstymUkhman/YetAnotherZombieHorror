@@ -26,6 +26,8 @@ export default class AudioScene
   private readonly characterSounds: CharacterSounds = new Map();
   private readonly weaponSounds: WeaponSounds = new Map();
 
+  private readonly isRaining = Settings.getValue('raining');
+
   private readonly onCharacter = this.playCharacter.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
 
@@ -56,8 +58,8 @@ export default class AudioScene
     this.scene.autoUpdate = false;
     this.scene.add(this.player);
 
-    Settings.raining && this.createAmbientSound();
-    Settings.lighting && this.createThunderSounds();
+    this.isRaining && this.createAmbientSound();
+    Settings.getValue('lighting') && this.createThunderSounds();
 
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
@@ -135,7 +137,7 @@ export default class AudioScene
   }
 
   public updateAmbient (): void {
-    if (!Settings.raining) return;
+    if (!this.isRaining) return;
     this.scene.updateMatrixWorld(true);
 
     setTimeout(() => anime({

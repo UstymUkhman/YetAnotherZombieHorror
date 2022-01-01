@@ -1,7 +1,4 @@
 {
-  "ammoPhysics": false,
-  "physicalLights": true,
-
   "raining": true,
   "lighting": true,
   "raindrops": true,
@@ -12,5 +9,6 @@
   "volumetricFog": true,
 
   "clouds": 300,
-  "dynamicClouds": true
+  "dynamicClouds": true,
+  "physicalLights": true
 }

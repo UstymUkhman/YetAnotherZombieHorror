@@ -49,7 +49,7 @@ export default class Rain
   }
 
   private createRenderTargets (): void {
-    if (!Settings.softParticles) return;
+    if (!Settings.getValue('softParticles')) return;
     const { width, height } = this.renderer.domElement;
 
     const depthTexture = new DepthTexture(
@@ -91,9 +91,9 @@ export default class Rain
 
     this.material = new ShaderMaterial({
       uniforms: {
+        soft: { value: Settings.getValue('softParticles') },
         screenSize: { value: new Vector2(width, height) },
         color: { value: Color.getClass(Color.RAIN) },
-        soft: { value: Settings.softParticles },
 
         ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },

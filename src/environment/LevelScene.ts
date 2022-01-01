@@ -1,5 +1,6 @@
 import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+
 import type { LevelCoords, LevelBounds } from '@/environment/types';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
@@ -47,7 +48,7 @@ export default class LevelScene
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: Settings.raindrops,
+      preserveDrawingBuffer: Settings.getValue('raindrops'),
       antialias: true,
       alpha: false,
       canvas
@@ -76,9 +77,11 @@ export default class LevelScene
   }
 
   private async createEnvironment (worker?: WebWorker): Promise<void> {
-    const { fog, raining, lighting } = Settings;
-    const volumetricFog = fog && Settings.volumetricFog;
+    const fog = Settings.getValue('fog');
+    const raining = Settings.getValue('raining');
+    const lighting = Settings.getValue('lighting');
 
+    const volumetricFog = fog && Settings.getValue('volumetricFog');
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);
 
@@ -137,7 +140,7 @@ export default class LevelScene
     const skybox = await Assets.Loader.loadCubeTexture(folder);
     skybox.encoding = sRGBEncoding;
 
-    if (!Settings.fog) {
+    if (!Settings.getValue('fog')) {
       this.scene.background = skybox;
     }
 
@@ -178,7 +181,7 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const { physicalLights } = Settings;
+    const physicalLights = Settings.getValue('physicalLights');
     const exposure = +physicalLights * 0.75 + 0.25;
 
     this.renderer.physicallyCorrectLights = physicalLights;
