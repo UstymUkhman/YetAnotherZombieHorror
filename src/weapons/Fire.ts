@@ -42,8 +42,8 @@ export default class Fire
   }
 
   private createFireLight (weapon: Assets.GLTF): void {
-    const decay = +Settings.getValue('physicalLights') + 1.0;
     const { intensity, position: { x, y } } = this.config;
+    const decay = +Settings.getEnvironmentValue('physicalLights') + 1.0;
 
     this.light = new PointLight(Color.FIRE, intensity, 1.0, decay);
 

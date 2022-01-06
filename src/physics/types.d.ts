@@ -1,6 +1,6 @@
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
-export type { Coords, Bounds } from '@/environment/LevelScene';
 import type { Quaternion } from 'three/src/math/Quaternion';
+export type { Coords, Bounds } from '@/scenes/LevelScene';
 
 import type { Triangle } from 'three/src/math/Triangle';
 import type { Vector3 } from 'three/src/math/Vector3';

@@ -1,6 +1,6 @@
 import { updateRainParticles } from '@/worker/updateRainParticles';
-import LevelScene from '@/environment/LevelScene';
 import { CameraObject } from '@/managers/Camera';
+import LevelScene from '@/scenes/LevelScene';
 
 describe('updateRainParticles', () => {
   test('updateRainParticles', () => {

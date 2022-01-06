@@ -25,41 +25,41 @@
 </script>
 
 <style lang="scss">
-@use "@/variables" as var;
-@use "@/mixins" as mixin;
-@import "@/animations";
+  @use "@/variables" as var;
+  @use "@/mixins" as mixin;
+  @import "@/animations";
 
-div.container {
-  @include mixin.center-size(15px);
-  padding: 0;
-
-  div.aim {
-    @include mixin.absolute-size;
-
-    transition-property: transform, opacity;
-    transition-timing-function: ease-out;
-    transform-origin: center center;
-    transition-duration: 250ms;
-
-    border: 2px solid var.$white;
-    border-radius: 50%;
-    display: block;
-
-    left: -2px;
-    top: -2px;
-
+  div.container {
+    @include mixin.center-size(15px);
     padding: 0;
-    margin: 0;
 
-    &.shooting {
-      animation: 150ms ease-out shoot;
-    }
+    div.aim {
+      @include mixin.absolute-size;
 
-    &.hide {
-      transition-timing-function: ease-in;
-      transform: scale(1.5);
-      opacity: 0;
+      transition-property: transform, opacity;
+      transition-timing-function: ease-out;
+      transform-origin: center center;
+      transition-duration: 250ms;
+
+      border: 2px solid var.$white;
+      border-radius: 50%;
+      display: block;
+
+      left: -2px;
+      top: -2px;
+
+      padding: 0;
+      margin: 0;
+
+      &.shooting {
+        animation: 150ms ease-out shoot;
+      }
+
+      &.hide {
+        transition-timing-function: ease-in;
+        transform: scale(1.5);
+        opacity: 0;
+      }
     }
   }
-}
 </style>

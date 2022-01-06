@@ -13,6 +13,7 @@ import { LoopOnce } from 'three/src/constants';
 import { Mesh } from 'three/src/objects/Mesh';
 
 import { HitBox } from '@/utils/Material';
+import { PI } from '@/utils/Number';
 import Configs from '@/configs';
 
 export default class Enemy extends Character
@@ -39,7 +40,7 @@ export default class Enemy extends Character
     }
   }
 
-  public async loadCharacter (envMap: Texture): Promise<Assets.GLTFModel> {
+  public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
     return this.load(envMap);
   }
 
@@ -103,7 +104,7 @@ export default class Enemy extends Character
       HitBox.clone()
     );
 
-    bodyHitBox.rotation.x -= Math.PI / 2;
+    bodyHitBox.rotation.x -= PI.d2;
     bodyHitBox.position.y += 15;
     bodyHitBox.position.z += 5;
 

@@ -1,4 +1,4 @@
-<div class="screen" in:fade={{ delay: 500 }} out:fade>
+<div in:fade={{ delay: 500 }} out:fade>
   <menu style="{`
     transform: rotateY(12deg) rotateX(${rotation}deg);
     height: ${items.length * 10 + 10}%;
@@ -88,59 +88,55 @@
 </script>
 
 <style lang="scss">
-@use "@/mixins" as mixin;
-@use "@/variables" as var;
+  @use "@/mixins" as mixin;
+  @use "@/variables" as var;
 
-div {
-  @include mixin.center-size;
-  background-color: var.$black;
+  div {
+    @include mixin.size;
 
-  perspective-origin: 0% 50%;
-  perspective: 25vmax;
+    perspective: 25vmax;
+    perspective-origin: 0% 50%;
 
-  z-index: 1;
-  padding: 0;
-
-  menu {
-    transition: transform 0.2s var.$ease-in-out-quad;
-    justify-content: space-between;
-    transform-style: preserve-3d;
-
-    align-content: space-between;
-    transform-origin: 50% 50%;
-
-    align-items: flex-start;
-    flex-direction: column;
-
-    position: absolute;
-    padding: 0 0 0 15%;
-
-    list-style: none;
-    margin: auto 0;
-    display: flex;
-
-    width: 50%;
-    bottom: 0;
-    top: 0;
-
-    li {
-      width: 100%;
-      cursor: pointer;
+    menu {
+      transition: transform 0.2s var.$ease-in-out-quad;
+      justify-content: space-between;
       transform-style: preserve-3d;
 
-      h3 {
-        transition: transform 0.4s var.$ease-in-out-quad, color 0.2s;
+      align-content: space-between;
+      transform-origin: 50% 50%;
+
+      align-items: flex-start;
+      flex-direction: column;
+
+      position: absolute;
+      padding: 0 0 0 15%;
+
+      list-style: none;
+      margin: auto 0;
+      display: flex;
+
+      width: 50%;
+      bottom: 0;
+      top: 0;
+
+      li {
+        width: 100%;
+        cursor: pointer;
         transform-style: preserve-3d;
 
-        transform-origin: 50% 50%;
-        pointer-events: none;
+        h3 {
+          transition: transform 0.4s var.$ease-in-out-quad, color 0.2s;
+          transform-style: preserve-3d;
 
-        &.active {
-          color: rgba(var.$white, 0.8);
-          transform: translateX(1vw);
+          transform-origin: 50% 50%;
+          pointer-events: none;
+
+          &.active {
+            color: rgba(var.$white, 0.8);
+            transform: translateX(1vw);
+          }
         }
       }
     }
   }
-}
 </style>

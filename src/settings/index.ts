@@ -68,7 +68,7 @@ class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public getValue (key: EnvironmentKeys): boolean {
+  public getEnvironmentValue (key: EnvironmentKeys): boolean {
     return this.environment[key] as boolean;
   }
 

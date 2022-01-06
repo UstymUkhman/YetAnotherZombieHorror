@@ -1,12 +1,12 @@
 import type Raindrops from '@/environment/Raindrops';
-import AudioScene from '@/environment/AudioScene';
 import { GameEvents } from '@/events/GameEvents';
+import AudioScene from '@/scenes/AudioScene';
 
 import WebWorker from '@/worker/WebWorker';
 import Pointer from '@/managers/Pointer';
 import Viewport from '@/utils/Viewport';
-
 import Music from '@/managers/Music';
+
 import RAF from '@/managers/RAF';
 import Configs from '@/configs';
 
@@ -81,6 +81,7 @@ export default class Application
 
     this.music.dispose();
     this.raindrops?.dispose();
+
     Viewport.removeResizeCallback(this.onResize);
   }
 

@@ -1,6 +1,7 @@
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { PointLight } from 'three/src/lights/PointLight';
-import LevelScene from '@/environment/LevelScene';
+
+import LevelScene from '@/scenes/LevelScene';
 import Clouds from '@/environment/Clouds';
 
 describe('Clouds', () => {

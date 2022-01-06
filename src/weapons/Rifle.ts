@@ -1,12 +1,11 @@
 import type { Texture } from 'three/src/textures/Texture';
 import { PointLight } from 'three/src/lights/PointLight';
-import type { LevelCoords } from '@/environment/types';
-
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
+import type { LevelCoords } from '@/scenes/types';
 import { GameEvents } from '@/events/GameEvents';
 
 import { Color } from '@/utils/Color';
@@ -18,8 +17,8 @@ import anime from 'animejs';
 
 export default class Rifle extends Weapon
 {
-  private readonly light = new PointLight(Color.WHITE, 1, 0, +Settings.getValue('physicalLights') + 1);
-  private readonly halfLightPower = +Settings.getValue('physicalLights') * 70 + 5;
+  private readonly light = new PointLight(Color.WHITE, 1, 0, +Settings.getEnvironmentValue('physicalLights') + 1);
+  private readonly halfLightPower = +Settings.getEnvironmentValue('physicalLights') * 70 + 5;
 
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;

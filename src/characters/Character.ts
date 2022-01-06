@@ -55,7 +55,7 @@ export default class Character
     };
   }
 
-  protected async load (envMap: Texture): Promise<Assets.GLTFModel> {
+  protected async load (envMap?: Texture): Promise<Assets.GLTFModel> {
     const character = await Assets.Loader.loadGLTF(this.config.model);
     character.scene.position.set(0.0, this.config.collider.z, 0.0);
 
@@ -75,7 +75,7 @@ export default class Character
     return character;
   }
 
-  protected setCharacterMaterial (character: Assets.GLTF, envMap: Texture, opacity = 1): void {
+  protected setCharacterMaterial (character: Assets.GLTF, envMap?: Texture, opacity = 1): void {
     character.traverse(child => {
       const childMesh = child as Mesh;
       const material = childMesh.material as MeshStandardMaterial;
@@ -84,11 +84,11 @@ export default class Character
         childMesh.castShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
+          envMap: envMap ?? null,
           transparent: true,
           map: material.map,
           side: FrontSide,
-          opacity,
-          envMap
+          opacity
         });
       }
     });

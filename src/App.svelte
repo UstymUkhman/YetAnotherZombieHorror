@@ -3,23 +3,17 @@
     <Pause on:continue={() => paused = false} />
   {/if}
 
-  {#if menuScreen && !showLoader}
-    <MainMenu
-      on:start={() => {
-        showLoader = true;
-        loading = true;
-        paused = false;
-      }}
-    />
+  {#if appReady && menuScreen && !loading}
+    <Menu on:start={() => {
+      loading = true;
+      paused = false;
+    }} />
   {/if}
 
-  {#if appReady && showLoader}
+  {#if appReady && loading}
     <Loader
       sceneLoading={loading}
-      on:complete={() => {
-        showLoader = false;
-        loading = false;
-      }}
+      on:complete={() => loading = false}
     />
   {/if}
 
@@ -29,14 +23,13 @@
 
     on:firstDraw={() => {
       menuScreen = false;
-      showLoader = false;
       loading = false;
     }}
   />
 </main>
 
 <script lang="ts">
-  import MainMenu from '@components/menu/MainMenu.svelte';
+  import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
   import Loader from '@components/Loader.svelte';
 
@@ -45,8 +38,6 @@
   import { onDestroy } from 'svelte';
 
   let menuScreen = true;
-  let showLoader = true;
-
   let appReady = false;
   let loading = true;
   let paused = true;
@@ -61,62 +52,62 @@
 </script>
 
 <style lang="scss" global>
-@use "@/variables" as var;
-@use "@/mixins" as mixin;
+  @use "@/variables" as var;
+  @use "@/mixins" as mixin;
 
-h1,
-h2,
-h3,
-h4 {
-  font-family: FaceYourFears, sans-serif;
-  letter-spacing: normal;
-  line-height: normal;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: FaceYourFears, sans-serif;
+    letter-spacing: normal;
+    line-height: normal;
 
-  position: relative;
-  color: var.$red;
-  display: block;
+    position: relative;
+    color: var.$red;
+    display: block;
 
-  padding: 0;
-  margin: 0;
-}
+    padding: 0;
+    margin: 0;
+  }
 
-p,
-h5,
-h6,
-span,
-strong,
-button {
-  font-family: DrawingBlood, sans-serif;
-  letter-spacing: 0.2rem;
-  line-height: normal;
+  p,
+  h5,
+  h6,
+  span,
+  strong,
+  button {
+    font-family: DrawingBlood, sans-serif;
+    letter-spacing: 0.2rem;
+    line-height: normal;
 
-  position: relative;
-  color: var.$grey;
-  display: block;
+    position: relative;
+    color: var.$grey;
+    display: block;
 
-  padding: 0;
-  margin: 0;
-}
+    padding: 0;
+    margin: 0;
+  }
 
-h1 {
-  @include mixin.font-size(5);
-  text-transform: uppercase;
-}
+  h1 {
+    @include mixin.font-size(5);
+    text-transform: uppercase;
+  }
 
-h2 {
-  @include mixin.font-size(4);
-}
+  h2 {
+    @include mixin.font-size(4);
+  }
 
-h3 {
-  @include mixin.font-size(3);
-}
+  h3 {
+    @include mixin.font-size(3);
+  }
 
-main {
-  @include mixin.absolute-size;
-  overflow: hidden;
-  display: block;
+  main {
+    @include mixin.absolute-size;
+    overflow: hidden;
+    display: block;
 
-  padding: 0;
-  margin: 0;
-}
+    padding: 0;
+    margin: 0;
+  }
 </style>

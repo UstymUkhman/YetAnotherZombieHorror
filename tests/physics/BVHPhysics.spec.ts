@@ -1,9 +1,9 @@
-import type { LevelBounds } from '@/environment/types';
-import LevelScene from '@/environment/LevelScene';
+import type { LevelBounds } from '@/scenes/types';
 import { Vector3 } from 'three/src/math/Vector3';
+import { Mesh } from 'three/src/objects/Mesh';
 
 import BVHPhysics from '@/physics/BVHPhysics';
-import { Mesh } from 'three/src/objects/Mesh';
+import LevelScene from '@/scenes/LevelScene';
 import { Line3 } from 'three/src/math/Line3';
 
 import { Vector } from '@/utils/Vector';

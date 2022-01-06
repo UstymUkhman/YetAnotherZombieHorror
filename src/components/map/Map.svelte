@@ -15,15 +15,15 @@
 
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
-  import type { LevelCoords, LevelBounds } from '@/environment/types';
+  import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import MapRifle from '@components/map/MapRifle.svelte';
   import type { Vector3 } from 'three/src/math/Vector3';
 
   import Player from '@components/map/Player.svelte';
-  import LevelScene from '@/environment/LevelScene';
   import { cloneBounds, max } from '@/utils/Array';
+  import LevelScene from '@/scenes/LevelScene';
 
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
@@ -140,30 +140,16 @@
 </script>
 
 <style lang="scss">
-@use "@/variables" as var;
-@use "@/mixins" as mixin;
+  @use "@/variables" as var;
+  @use "@/mixins" as mixin;
 
-div.map {
-  @include mixin.size(10vw);
+  div.map {
+    @include mixin.size(10vw);
 
-  /* stylelint-disable-next-line color-function-notation */
-  background-color: rgba(var.$white, 0.25);
-  box-shadow: 0px 0px 25px var.$black;
-  backdrop-filter: blur(5px);
-
-  transform-origin: 50% 50%;
-  box-sizing: content-box;
-  border-radius: 50%;
-
-  position: absolute;
-  overflow: hidden;
-  display: block;
-
-  bottom: 2vw;
-  right: 2vw;
-
-  div {
-    @include mixin.size(20vw);
+    /* stylelint-disable-next-line color-function-notation */
+    background-color: rgba(var.$white, 0.25);
+    box-shadow: 0px 0px 25px var.$black;
+    backdrop-filter: blur(5px);
 
     transform-origin: 50% 50%;
     box-sizing: content-box;
@@ -173,13 +159,27 @@ div.map {
     overflow: hidden;
     display: block;
 
-    left: -5vw;
-    top: -5vw;
-  }
+    bottom: 2vw;
+    right: 2vw;
 
-  canvas {
-    @include mixin.center-transform;
-    transform: none;
+    div {
+      @include mixin.size(20vw);
+
+      transform-origin: 50% 50%;
+      box-sizing: content-box;
+      border-radius: 50%;
+
+      position: absolute;
+      overflow: hidden;
+      display: block;
+
+      left: -5vw;
+      top: -5vw;
+    }
+
+    canvas {
+      @include mixin.center-transform;
+      transform: none;
+    }
   }
-}
 </style>

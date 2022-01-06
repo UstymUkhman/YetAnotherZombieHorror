@@ -6,15 +6,15 @@ import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 
 import { PointLight } from 'three/src/lights/PointLight';
 import { PI, random, randomInt } from '@/utils/Number';
-
 import { Object3D } from 'three/src/core/Object3D';
-import LevelScene from '@/environment/LevelScene';
 import { GameEvents } from '@/events/GameEvents';
-import { Matrix4 } from 'three/src/math/Matrix4';
 
+import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
+
 import { Mesh } from 'three/src/objects/Mesh';
+import LevelScene from '@/scenes/LevelScene';
 import { Euler } from 'three/src/math/Euler';
 
 import { Vector } from '@/utils/Vector';
@@ -24,16 +24,16 @@ import Configs from '@/configs';
 
 export default class Clouds
 {
-  private readonly count = Settings.getValue('clouds') as unknown as number;
-  private readonly staticClouds = !Settings.getValue('dynamicClouds');
+  private readonly count = Settings.getEnvironmentValue('clouds') as unknown as number;
+  private readonly staticClouds = !Settings.getEnvironmentValue('dynamicClouds');
+
+  private readonly isLighting = Settings.getEnvironmentValue('lighting');
+  private readonly useFog = Settings.getEnvironmentValue('fog');
 
   private readonly onShowLighting = this.showLighting.bind(this);
   private readonly onHideLighting = this.hideLighting.bind(this);
 
-  private readonly isLighting = Settings.getValue('lighting');
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
-
-  private readonly useFog = Settings.getValue('fog');
   private readonly matrix = new Matrix4();
 
   private clouds?: InstancedMesh;
@@ -48,7 +48,7 @@ export default class Clouds
   }
 
   private createLighting (): void {
-    const decay = +(!this.useFog && Settings.getValue('physicalLights')) + 1.0;
+    const decay = +(!this.useFog && Settings.getEnvironmentValue('physicalLights')) + 1.0;
 
     this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
     this.lighting.position.set(0.0, Clouds.height, 0.0);

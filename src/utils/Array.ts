@@ -1,4 +1,4 @@
-import type { LevelBounds } from '@/environment/types';
+import type { LevelBounds } from '@/scenes/types';
 
 export const cloneBounds = (bounds: LevelBounds): LevelBounds =>
   JSON.parse(JSON.stringify(bounds));

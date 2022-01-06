@@ -2,21 +2,22 @@ import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthSt
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import type { LevelCoords, RainParticles } from '@/environment/types';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { updateRainParticles } from '@/worker/updateRainParticles';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { DepthTexture } from 'three/src/textures/DepthTexture';
+import type { RainParticles } from '@/environment/types';
 
 import type { Scene } from 'three/src/scenes/Scene';
+import type { LevelCoords } from '@/scenes/types';
 import { Points } from 'three/src/objects/Points';
-import LevelScene from '@/environment/LevelScene';
-
 import { CameraObject } from '@/managers/Camera';
+
 import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
 import type WebWorker from '@/worker/WebWorker';
+import LevelScene from '@/scenes/LevelScene';
 
 import { Color } from '@/utils/Color';
 import { PI } from '@/utils/Number';
@@ -49,7 +50,7 @@ export default class Rain
   }
 
   private createRenderTargets (): void {
-    if (!Settings.getValue('softParticles')) return;
+    if (!Settings.getEnvironmentValue('softParticles')) return;
     const { width, height } = this.renderer.domElement;
 
     const depthTexture = new DepthTexture(
@@ -91,7 +92,7 @@ export default class Rain
 
     this.material = new ShaderMaterial({
       uniforms: {
-        soft: { value: Settings.getValue('softParticles') },
+        soft: { value: Settings.getEnvironmentValue('softParticles') },
         screenSize: { value: new Vector2(width, height) },
         color: { value: Color.getClass(Color.RAIN) },
 

@@ -83,14 +83,13 @@
   }
 
   function dispatchFirstDraw (): void {
-    if (!location) return;
     dispatch('firstDraw');
     firstDrawCall = true;
   }
 
   GameEvents.add('Characters::Location', event => {
-    !firstDrawCall && dispatchFirstDraw();
     location = (event.data as LocationEvent).player;
+    !firstDrawCall && dispatchFirstDraw();
   }, true);
 
   GameEvents.add('Player::Run', event => {

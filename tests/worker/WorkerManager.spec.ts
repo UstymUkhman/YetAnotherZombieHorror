@@ -1,8 +1,8 @@
 import WorkerManager from '@/worker/WorkerManager';
-import LevelScene from '@/environment/LevelScene';
-
 import { CameraObject } from '@/managers/Camera';
+
 import { Vector3 } from 'three/src/math/Vector3';
+import LevelScene from '@/scenes/LevelScene';
 
 describe('WorkerManager', () => {
   const maxCoords = LevelScene.maxCoords;

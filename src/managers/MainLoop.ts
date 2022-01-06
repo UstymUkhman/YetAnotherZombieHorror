@@ -2,11 +2,11 @@ import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
 import { getRandomCoord } from '@/worker/getRandomCoord';
 
-import type { LevelCoords } from '@/environment/types';
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { LevelCoords } from '@/scenes/types';
 
-import LevelScene from '@/environment/LevelScene';
 import type WebWorker from '@/worker/WebWorker';
+import LevelScene from '@/scenes/LevelScene';
 import { Clock } from 'three/src/core/Clock';
 
 import Enemies from '@/managers/Enemies';
@@ -36,6 +36,7 @@ export default class MainLoop
 
   public constructor (scene: HTMLCanvasElement, pixelRatio: number, private readonly worker?: WebWorker) {
     this.level = new LevelScene(scene, pixelRatio, worker);
+    GameEvents.dispatch('Game::LoopInit', null, true);
     this.addEventListeners();
   }
 

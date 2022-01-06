@@ -1,8 +1,8 @@
-<div id="game">
-  <canvas width={width} height={height} bind:this={scene} />
+<div>
+  <canvas bind:this={scene} width={width} height={height} />
 
   {#if raindrops}
-    <canvas width={width} height={height} bind:this={camera} />
+    <canvas bind:this={camera} width={width} height={height} />
   {/if}
 
   {#if app}
@@ -12,6 +12,7 @@
 
 <script lang="ts">
   import Interface from '@components/HUD/Interface.svelte';
+  import { GameEvents } from '@/events/GameEvents';
   import Application from '@/managers/Application';
 
   import { createEventDispatcher } from 'svelte';
@@ -30,16 +31,20 @@
   const height = Viewport.size.height;
 
   const dispatch = createEventDispatcher();
-  const raindrops = Settings.getValue('raindrops');
+  const raindrops = Settings.getEnvironmentValue('raindrops');
 
   function onFirstDraw (): void {
-    setTimeout(() => dispatch('firstDraw'), 2500);
+    dispatch('firstDraw');
     app.start();
   }
 
   onMount(() => {
     app = new Application(scene, camera);
-    dispatch('ready');
+
+    GameEvents.add('Game::LoopInit', () => {
+      GameEvents.remove('Game::LoopInit', true);
+      dispatch('ready');
+    }, true);
   });
 
   !import.meta.hot && onDestroy(
@@ -52,24 +57,24 @@
 </script>
 
 <style lang="scss">
-@use "@/variables" as var;
-@use "@/mixins" as mixin;
+  @use "@/variables" as var;
+  @use "@/mixins" as mixin;
 
-div#game,
-div#game > canvas {
-  @include mixin.size(var(--width), var(--height));
-  @include mixin.center-transform;
+  div,
+  div > canvas {
+    @include mixin.size(var(--width), var(--height));
+    @include mixin.center-transform;
 
-  aspect-ratio: var(--ratio);
-  overflow: hidden;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
 
-  padding: 0;
-  margin: 0;
-}
+    padding: 0;
+    margin: 0;
+  }
 
-div#game > canvas:nth-child(2) {
-  transition: opacity 5s 500ms;
-  pointer-events: none;
-  opacity: 0;
-}
+  div > canvas:nth-child(2) {
+    transition: opacity 5s 500ms;
+    pointer-events: none;
+    opacity: 0;
+  }
 </style>

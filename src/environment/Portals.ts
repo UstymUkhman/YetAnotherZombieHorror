@@ -2,13 +2,13 @@ import { CircleGeometry } from 'three/src/geometries/CircleGeometry';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import type { ShaderCompileCallback } from '@/environment/types';
 
-import LevelScene from '@/environment/LevelScene';
+import { GameEvents } from '@/events/GameEvents';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
-import { GameEvents } from '@/events/GameEvents';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
+import LevelScene from '@/scenes/LevelScene';
 
 import { GLSL3 } from 'three/src/constants';
 import { Color } from '@/utils/Color';
@@ -86,7 +86,7 @@ export default class Portals
         deltaTime: { value: 0.0 }
       },
 
-      fog: Settings.getValue('fog'),
+      fog: Settings.getEnvironmentValue('fog'),
 
       fragmentShader: fragPortal,
       vertexShader: vertPortal,
@@ -96,8 +96,8 @@ export default class Portals
     });
 
     this.material.defines = {
-      VOLUMETRIC_FOG: Settings.getValue('volumetricFog'),
-      USE_BAKED_FOG: Settings.getValue('bakedFog')
+      VOLUMETRIC_FOG: Settings.getEnvironmentValue('volumetricFog'),
+      USE_BAKED_FOG: Settings.getEnvironmentValue('bakedFog')
     };
 
     return this.material;

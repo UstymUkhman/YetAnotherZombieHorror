@@ -1,11 +1,11 @@
 import type { OffscreenParams, SizeParams } from '@/offscreen/types';
-import type { LevelParams, RainParams } from '@/environment/types';
-
 import { updateRainParticles } from '@/worker/updateRainParticles';
 import { OffscreenManager } from '@/offscreen/OffscreenManager';
 
 import type { Event } from 'three/src/core/EventDispatcher';
 import { getRandomCoord } from '@/worker/getRandomCoord';
+import type { RainParams } from '@/environment/types';
+import type { LevelParams } from '@/scenes/types';
 
 const parseMessage = (event: string, params?: unknown) => {
   switch (event) {

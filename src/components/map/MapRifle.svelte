@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { LevelCoords } from '@/environment/types';
+  import type { LevelCoords } from '@/scenes/types';
   import { PI, easeOutSine } from '@/utils/Number';
 
   export let context: CanvasRenderingContext2D;

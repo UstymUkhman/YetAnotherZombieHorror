@@ -1,5 +1,5 @@
-import type { LevelBounds } from '@/environment/types';
 import { cloneBounds, min, max } from '@/utils/Array';
+import type { LevelBounds } from '@/scenes/types';
 import Level from '@/configs/level.json';
 
 describe('Array', () => {

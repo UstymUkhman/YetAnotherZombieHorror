@@ -21,26 +21,26 @@
 </script>
 
 <style lang="scss">
-@use "@/variables" as var;
-@use "@/mixins" as mixin;
-@import "@/animations";
+  @use "@/variables" as var;
+  @use "@/mixins" as mixin;
+  @import "@/animations";
 
-div.screen {
-  @include mixin.center-size;
-  background-color: var.$black;
+  div.screen {
+    @include mixin.center-size;
+    background-color: var.$black;
 
-  justify-content: center;
-  align-items: center;
-  display: flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 
-  z-index: 1;
-  padding: 0;
-  margin: 0;
+    z-index: 1;
+    padding: 0;
+    margin: 0;
 
-  h1.progress {
-    text-align: center;
-    @include mixin.center-size(100%, 5vw);
-    animation: 2s linear infinite loading;
+    h1.progress {
+      text-align: center;
+      @include mixin.center-size(100%, 5vw);
+      animation: 2s linear infinite loading;
+    }
   }
-}
 </style>

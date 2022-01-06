@@ -1,4 +1,4 @@
-import type { LevelCoords, LevelParams } from '@/environment/types';
+import type { LevelCoords, LevelParams } from '@/scenes/types';
 import { cloneBounds, min, max } from '@/utils/Array';
 import { random } from '@/utils/Number';
 

@@ -23,6 +23,7 @@ export const updateRainParticles = (params: RainParams): RainParticles => {
 
   addParticles(params);
   updateParticles(delta);
+
   return updateGeometry();
 };
 

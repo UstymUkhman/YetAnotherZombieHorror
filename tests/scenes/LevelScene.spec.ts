@@ -2,11 +2,10 @@ import { Texture } from 'three/src/textures/Texture';
 import type { GameEvent } from '@/events/GameEvents';
 
 import { Object3D } from 'three/src/core/Object3D';
-import LevelScene from '@/environment/LevelScene';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 
+import LevelScene from '@/scenes/LevelScene';
 import LevelData from '@/configs/level.json';
 import Configs from '@/configs';
 

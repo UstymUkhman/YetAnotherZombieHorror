@@ -23,10 +23,10 @@ import anime from 'animejs';
 
 export default class AudioScene
 {
+  private readonly isRaining = Settings.getEnvironmentValue('raining');
+
   private readonly characterSounds: CharacterSounds = new Map();
   private readonly weaponSounds: WeaponSounds = new Map();
-
-  private readonly isRaining = Settings.getValue('raining');
 
   private readonly onCharacter = this.playCharacter.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
@@ -51,6 +51,8 @@ export default class AudioScene
   private ambient?: Audio;
 
   public constructor () {
+    const isLighting = Settings.getEnvironmentValue('lighting');
+
     this.camera.matrixAutoUpdate = false;
     this.scene.matrixAutoUpdate = false;
     this.camera.add(this.listener);
@@ -59,7 +61,7 @@ export default class AudioScene
     this.scene.add(this.player);
 
     this.isRaining && this.createAmbientSound();
-    Settings.getValue('lighting') && this.createThunderSounds();
+    isLighting && this.createThunderSounds();
 
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
@@ -154,6 +156,7 @@ export default class AudioScene
 
   private playThuder (event: GameEvent): void {
     this.thunder.position.copy(event.data as Vector3);
+
     this.thunder.updateMatrix();
     this.thunder.updateMatrixWorld();
 

@@ -1,9 +1,9 @@
 import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, sRGBEncoding } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 
-import type { LevelCoords, LevelBounds } from '@/environment/types';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
+import type { LevelCoords, LevelBounds } from '@/scenes/types';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
@@ -47,8 +47,10 @@ export default class LevelScene
   private fog?: Fog;
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
+    const raindrops = Settings.getEnvironmentValue('raindrops');
+
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: Settings.getValue('raindrops'),
+      preserveDrawingBuffer: raindrops,
       antialias: true,
       alpha: false,
       canvas
@@ -77,11 +79,11 @@ export default class LevelScene
   }
 
   private async createEnvironment (worker?: WebWorker): Promise<void> {
-    const fog = Settings.getValue('fog');
-    const raining = Settings.getValue('raining');
-    const lighting = Settings.getValue('lighting');
+    const fog = Settings.getEnvironmentValue('fog');
+    const raining = Settings.getEnvironmentValue('raining');
+    const lighting = Settings.getEnvironmentValue('lighting');
 
-    const volumetricFog = fog && Settings.getValue('volumetricFog');
+    const volumetricFog = fog && Settings.getEnvironmentValue('volumetricFog');
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);
 
@@ -140,7 +142,7 @@ export default class LevelScene
     const skybox = await Assets.Loader.loadCubeTexture(folder);
     skybox.encoding = sRGBEncoding;
 
-    if (!Settings.getValue('fog')) {
+    if (!Settings.getEnvironmentValue('fog')) {
       this.scene.background = skybox;
     }
 
@@ -181,7 +183,7 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const physicalLights = Settings.getValue('physicalLights');
+    const physicalLights = Settings.getEnvironmentValue('physicalLights');
     const exposure = +physicalLights * 0.75 + 0.25;
 
     this.renderer.physicallyCorrectLights = physicalLights;

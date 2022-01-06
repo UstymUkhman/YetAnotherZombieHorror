@@ -60,8 +60,8 @@
 | Move Backward | S |
 | Move Right | D |
 | Run | Left Shift |
-| Shoot | Mouse Left Click |
-| Aim | Mouse Right Click |
+| Shoot | Mouse Left Button |
+| Aim | Mouse Right Button |
 | Previous Weapon | Q *or* Mouse Wheel Up |
 | Next Weapon | E *or* Mouse Wheel Down |
 | Reload | R |
