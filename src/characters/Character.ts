@@ -57,7 +57,9 @@ export default class Character
 
   protected async load (envMap?: Texture): Promise<Assets.GLTFModel> {
     const character = await Assets.Loader.loadGLTF(this.config.model);
+
     character.scene.position.set(0.0, this.config.collider.z, 0.0);
+    if (character.animations) this.createAnimations(character);
 
     this.object.position.copy(this.config.position as Vector3);
     this.object.scale.copy(this.config.scale as Vector3);
@@ -67,16 +69,12 @@ export default class Character
     this.position.copy(this.object.position);
     this.object.add(character.scene);
 
-    if (character.animations) {
-      this.createAnimations(character);
-    }
-
     this.model = character.scene;
     return character;
   }
 
-  protected setCharacterMaterial (character: Assets.GLTF, envMap?: Texture, opacity = 1): void {
-    character.traverse(child => {
+  protected setCharacterMaterial (model: Assets.GLTF, envMap?: Texture, opacity = 1): void {
+    model.traverse(child => {
       const childMesh = child as Mesh;
       const material = childMesh.material as MeshStandardMaterial;
 
@@ -94,9 +92,9 @@ export default class Character
     });
   }
 
-  protected createAnimations (model: Assets.GLTFModel): void {
-    const animations = model.animations as Assets.Animations;
-    this.mixer = new AnimationMixer(model.scene);
+  protected createAnimations (character: Assets.GLTFModel): void {
+    const animations = character.animations as Assets.Animations;
+    this.mixer = new AnimationMixer(character.scene);
 
     for (let a = animations.length; a--;) {
       const clip = camelCase(animations[a].name);
@@ -106,6 +104,14 @@ export default class Character
 
   protected setAnimation (animation: CharacterAnimation): void {
     this.step = this.config.moves[animation];
+  }
+
+  protected getAnimationDuration (animation: string): number {
+    return this.animations[animation].getClip().duration;
+  }
+
+  protected setMixerTimeScale (time: number): void {
+    if (this.mixer) this.mixer.timeScale = time;
   }
 
   protected setMixerTime (time: number): void {
@@ -160,8 +166,7 @@ export default class Character
   protected death (player = false): void {
     GameEvents.dispatch('SFX::Character', {
       matrix: this.object.matrixWorld,
-      sfx: 'death',
-      player
+      sfx: 'death', player
     }, true);
 
     this.hitting = false;
@@ -192,9 +197,8 @@ export default class Character
       delete this.animations[animation];
     }
 
-    for (let c = children.length; c--;) {
+    for (let c = children.length; c--;)
       model.remove(children[c]);
-    }
 
     delete this.mixer;
     delete this.model;

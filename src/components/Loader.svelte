@@ -1,4 +1,4 @@
-<div class="screen" transition:fade>
+<div transition:fade>
   {#if assetsLoading || sceneLoading}
     <h1 class="progress">Loading...</h1>
   {/if}
@@ -25,7 +25,7 @@
   @use "@/mixins" as mixin;
   @import "@/animations";
 
-  div.screen {
+  div {
     @include mixin.center-size;
     background-color: var.$black;
 

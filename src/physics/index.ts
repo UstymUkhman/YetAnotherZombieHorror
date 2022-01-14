@@ -6,9 +6,9 @@
  */
 
 import PhysicsSettings from '@/settings/physics.json';
-import BVHPhysics from '@/physics/BVHPhysics';
+import AmmoPhysics from '@/physics/AmmoPhysics';
 
-const Physics = new BVHPhysics();
+const Physics = new AmmoPhysics();
 const isAmmo = Physics.constructor.name.includes('Ammo');
 
 const ammo = PhysicsSettings.ammo && !isAmmo;

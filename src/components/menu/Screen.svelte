@@ -1,18 +1,36 @@
 <div>
   <canvas bind:this={scene} width={width} height={height} />
-  <Menu on:start />
+
+  {#if sceneLoaded}
+    <Menu on:play={onPlay} />
+  {/if}
 </div>
 
 <script lang="ts">
+  import { GameEvents } from '@/events/GameEvents';
   import Menu from '@/components/menu/Main.svelte';
   import type MenuScene from '@/scenes/MenuScene';
+
+  import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
 
+  let sceneLoaded = false;
   let menuScene: MenuScene;
   let scene: HTMLCanvasElement;
 
   const width = window.innerWidth;
   const height = window.innerHeight;
+  const dispatch = createEventDispatcher();
+
+  function onPlay (): void {
+    menuScene.playScreamAnimation();
+    setTimeout(() => dispatch('start'), 3000);
+  }
+
+  GameEvents.add('MenuScene::Loaded', () => {
+    GameEvents.remove('MenuScene::Loaded');
+    sceneLoaded = true;
+  });
 
   onMount(() => import('@/scenes/MenuScene').then(MenuScene =>
     menuScene = new MenuScene.default(scene)

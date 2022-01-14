@@ -1,29 +1,38 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
+import { PositionalAudio } from 'three/src/audio/PositionalAudio';
+
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import { AudioListener } from 'three/src/audio/AudioListener';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 
 import { sRGBEncoding } from 'three/src/constants';
+import { GameEvents } from '@/events/GameEvents';
+import { Assets } from '@/loaders/AssetsLoader';
+import MenuEnemy from '@/characters/MenuEnemy';
+
 import { Scene } from 'three/src/scenes/Scene';
 import { Clock } from 'three/src/core/Clock';
-
 import Viewport from '@/utils/Viewport';
-import Enemy from '@/characters/Enemy';
 import { Color } from '@/utils/Color';
+
 import RAF from '@/managers/RAF';
+import Configs from '@/configs';
 
 export default class MenuScene
 {
   private readonly clock = new Clock();
   private readonly scene = new Scene();
-  private readonly enemy = new Enemy();
 
   private readonly renderer: WebGLRenderer;
+  private readonly enemy = new MenuEnemy();
+  private readonly listener = new AudioListener();
 
   private readonly onRender = this.render.bind(this);
   private readonly onResize = this.resize.bind(this);
 
   private ratio = window.innerWidth / window.innerHeight;
+  private readonly scream = new PositionalAudio(this.listener);
   private readonly camera = new PerspectiveCamera(45, this.ratio, 1, 500);
 
   public constructor (canvas: HTMLCanvasElement) {
@@ -36,13 +45,30 @@ export default class MenuScene
       canvas
     });
 
-    this.camera.position.set(0, 0.5, -3);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.rotation.set(0, Math.PI, 0);
+    this.camera.position.set(0.7, 0.1, -3);
 
+    this.camera.add(this.listener);
     RAF.add(this.onRender);
+
+    this.loadScreamSound();
     this.createRenderer();
     this.createLights();
     this.createEnemy();
+  }
+
+  private async loadScreamSound (): Promise<void> {
+    const { scream } = Configs.Enemy.sounds;
+    const sound = await Assets.Loader.loadAudio(scream);
+
+    this.scream.setBuffer(sound);
+    this.scream.setVolume(0.5);
+    this.scream.setLoop(false);
+  }
+
+  public playScreamAnimation (): void {
+    this.scream.play(0.25);
+    this.enemy.scream();
   }
 
   private createRenderer (): void {
@@ -69,10 +95,12 @@ export default class MenuScene
   }
 
   private async createEnemy (): Promise<void> {
-    const character = await this.enemy.loadCharacter();
-    character.scene.rotation.set(0, Math.PI, 0);
+    const character = await this.enemy.load();
 
+    GameEvents.dispatch('MenuScene::Loaded');
     this.scene.add(character.scene);
+
+    this.enemy.fade(true);
     RAF.pause = false;
   }
 

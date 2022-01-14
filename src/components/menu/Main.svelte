@@ -1,4 +1,4 @@
-<div in:fade={{ delay: 500 }} out:fade>
+<div in:fade={{ duration: 100, delay: 500 }} out:fade>
   <menu style="{`
     transform: rotateY(12deg) rotateX(${rotation}deg);
     height: ${items.length * 10 + 10}%;
@@ -65,7 +65,7 @@
   function onClick () {
     switch (selected) {
       case 0:
-        dispatch('start');
+        dispatch('play');
       break;
 
       case 1:
@@ -109,7 +109,7 @@
       flex-direction: column;
 
       position: absolute;
-      padding: 0 0 0 15%;
+      padding: 0 0 0 20%;
 
       list-style: none;
       margin: auto 0;
