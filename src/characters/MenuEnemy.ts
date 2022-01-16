@@ -5,6 +5,7 @@ import type { Mesh } from 'three/src/objects/Mesh';
 
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
+
 import Configs from '@/configs';
 import anime from 'animejs';
 
@@ -35,10 +36,11 @@ export default class MenuEnemy extends Character
 
   public override async load (): Promise<Assets.GLTFModel> {
     const character = await super.load();
-    character.scene.rotation.set(0, Math.PI - 0.25, 0);
+    character.scene.rotation.set(0, 2.85, 0);
 
     this.createAnimations(character);
     this.setDefaultState();
+    this.reset();
 
     return character;
   }
@@ -66,8 +68,6 @@ export default class MenuEnemy extends Character
     setTimeout(this.animations.idle.stop.bind(this.animations.idle), 250);
     this.animations.idle.crossFadeTo(this.animations.scream, 0.250, true);
 
-    const duration = this.getAnimationDuration('scream');
-
     setTimeout(() => {
       this.fade(false);
       this.animations.idle.play();
@@ -75,6 +75,6 @@ export default class MenuEnemy extends Character
 
       this.animations.scream.crossFadeTo(this.animations.idle, 0.1, true);
       setTimeout(this.animations.scream.stop.bind(this.animations.scream), 100);
-    }, duration * 1e3 - 100);
+    }, this.getAnimationDuration('scream') * 1e3 - 100);
   }
 }

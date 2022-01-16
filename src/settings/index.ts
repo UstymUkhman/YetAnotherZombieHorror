@@ -3,8 +3,11 @@ import EnvironmentData from '@/settings/environment.json';
 
 class Settings
 {
-  private readonly environment: Environment = EnvironmentData;
   private readonly request: IDBOpenDBRequest;
+
+  private readonly environment = new Map(
+    Object.entries(EnvironmentData)
+  ) as Environment;
 
   constructor () {
     this.request = indexedDB.open('YAZH');
@@ -32,7 +35,7 @@ class Settings
       if (!cursor) return updated ? null : this.updateEnvironmentStore(db);
 
       const key = cursor.key as EnvironmentKeys;
-      this.environment[key] = cursor.value;
+      this.environment.set(key, cursor.value);
 
       cursor.continue();
       updated = true;
@@ -47,7 +50,7 @@ class Settings
 
     for (const setting in environment) {
       const key = setting as EnvironmentKeys;
-      this.environment[key] = environment[key];
+      this.environment.set(key, environment[key]);
 
       environmentStore[add ? 'add' : 'put'](environment[key], key)
         .onerror = this.onQueryError.bind(this);
@@ -69,7 +72,11 @@ class Settings
   }
 
   public getEnvironmentValue (key: EnvironmentKeys): boolean {
-    return this.environment[key] as boolean;
+    return this.environment.get(key) as boolean;
+  }
+
+  public getEnvironmentValues (): Environment {
+    return this.environment;
   }
 
   public resetDefaults (): void {

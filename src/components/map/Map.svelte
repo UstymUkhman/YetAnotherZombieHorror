@@ -14,7 +14,7 @@
 </div>
 
 <script lang="ts">
-  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/utils';
+  import { getScaledCoords, pointInCircle, getAngleToRifle } from './utils';
   import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 

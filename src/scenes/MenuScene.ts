@@ -18,6 +18,7 @@ import { Color } from '@/utils/Color';
 
 import RAF from '@/managers/RAF';
 import Configs from '@/configs';
+import anime from 'animejs';
 
 export default class MenuScene
 {
@@ -64,6 +65,15 @@ export default class MenuScene
     this.scream.setBuffer(sound);
     this.scream.setVolume(0.5);
     this.scream.setLoop(false);
+  }
+
+  public rotateCamera (left = false): void {
+    anime({
+      targets: this.camera.rotation,
+      y: Math.PI + +left * -0.5,
+      easing: 'easeInOutQuad',
+      duration: 500
+    });
   }
 
   public playScreamAnimation (): void {
