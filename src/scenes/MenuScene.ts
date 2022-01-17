@@ -9,24 +9,26 @@ import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { sRGBEncoding } from 'three/src/constants';
 import { GameEvents } from '@/events/GameEvents';
 import { Assets } from '@/loaders/AssetsLoader';
-import MenuEnemy from '@/characters/MenuEnemy';
 
 import { Scene } from 'three/src/scenes/Scene';
 import { Clock } from 'three/src/core/Clock';
+
+import Zombie from '@/characters/Zombie';
 import Viewport from '@/utils/Viewport';
 import { Color } from '@/utils/Color';
 
-import RAF from '@/managers/RAF';
 import Configs from '@/configs';
 import anime from 'animejs';
 
 export default class MenuScene
 {
+  private frame = 0.0;
+
   private readonly clock = new Clock();
   private readonly scene = new Scene();
+  private readonly enemy = new Zombie();
 
   private readonly renderer: WebGLRenderer;
-  private readonly enemy = new MenuEnemy();
   private readonly listener = new AudioListener();
 
   private readonly onRender = this.render.bind(this);
@@ -40,17 +42,15 @@ export default class MenuScene
     this.scene.background = Color.getClass(Color.BLACK);
     Viewport.addResizeCallback(this.onResize);
 
+    this.camera.rotation.set(0, Math.PI, 0);
+    this.camera.position.set(0.7, 0.1, -3);
+    this.camera.add(this.listener);
+
     this.renderer = new WebGLRenderer({
       antialias: true,
       alpha: false,
       canvas
     });
-
-    this.camera.rotation.set(0, Math.PI, 0);
-    this.camera.position.set(0.7, 0.1, -3);
-
-    this.camera.add(this.listener);
-    RAF.add(this.onRender);
 
     this.loadScreamSound();
     this.createRenderer();
@@ -107,17 +107,17 @@ export default class MenuScene
   private async createEnemy (): Promise<void> {
     const character = await this.enemy.load();
 
+    this.frame = requestAnimationFrame(this.onRender);
     GameEvents.dispatch('MenuScene::Loaded');
-    this.scene.add(character.scene);
 
+    this.scene.add(character.scene);
     this.enemy.fade(true);
-    RAF.pause = false;
   }
 
   private render (): void {
-    const delta = Math.min(this.clock.getDelta(), 0.1);
+    this.frame = requestAnimationFrame(this.onRender);
     this.renderer.render(this.scene, this.camera);
-    this.enemy.update(delta);
+    this.enemy.update(this.clock.getDelta());
   }
 
   private resize (): void {
@@ -136,7 +136,7 @@ export default class MenuScene
       this.scene.remove(this.scene.children[0]);
 
     Viewport.removeResizeCallback(this.onResize);
-    RAF.remove(this.onRender);
+    cancelAnimationFrame(this.frame);
 
     this.renderer.dispose();
     this.enemy.dispose();

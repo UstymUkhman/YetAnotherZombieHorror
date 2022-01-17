@@ -1,29 +1,30 @@
-import type { Environment, EnvironmentKeys } from '@/settings/types';
+import type { Environment, EnvironmentKeys, RequestSuccess } from '@/settings/types';
 import EnvironmentData from '@/settings/environment.json';
 
-class Settings
+export default class Settings
 {
-  private readonly request: IDBOpenDBRequest;
-
-  private readonly environment = new Map(
+  private static readonly environment = new Map(
     Object.entries(EnvironmentData)
   ) as Environment;
 
-  constructor () {
-    this.request = indexedDB.open('YAZH');
-    this.request.onerror = this.onRequestError.bind(this);
-    this.request.onsuccess  = this.onRequestSuccess.bind(this);
-    this.request.onupgradeneeded = this.onUpgradeNeeded.bind(this);
+  public constructor () {
+    this.openDBConnection(this.getEnviromentSettings.bind(this));
+  }
+
+  private openDBConnection (onSuccess: RequestSuccess): void {
+    const request = indexedDB.open('YAZH');
+    request.onerror = this.onRequestError.bind(this);
+    request.onupgradeneeded = this.onUpgradeNeeded.bind(this);
+
+    request.onsuccess = (event: Event) => {
+      const db = (event.target as IDBRequest).result;
+      onSuccess(db);
+    };
   }
 
   private onUpgradeNeeded (event: IDBVersionChangeEvent): void {
     const db = (event.target as IDBRequest).result;
     db.createObjectStore('Environment');
-  }
-
-  private onRequestSuccess (event: Event): void {
-    const db = (event.target as IDBRequest).result;
-    this.getEnviromentSettings(db);
   }
 
   private getEnviromentSettings (db: IDBDatabase, updated = false): void {
@@ -35,7 +36,7 @@ class Settings
       if (!cursor) return updated ? null : this.updateEnvironmentStore(db);
 
       const key = cursor.key as EnvironmentKeys;
-      this.environment.set(key, cursor.value);
+      Settings.environment.set(key, cursor.value);
 
       cursor.continue();
       updated = true;
@@ -50,13 +51,17 @@ class Settings
 
     for (const setting in environment) {
       const key = setting as EnvironmentKeys;
-      this.environment.set(key, environment[key]);
+      Settings.environment.set(key, environment[key]);
 
       environmentStore[add ? 'add' : 'put'](environment[key], key)
         .onerror = this.onQueryError.bind(this);
     }
 
     transaction.oncomplete = this.onTransactionComplete.bind(this, db);
+  }
+
+  private resetEnvironmentStore (db: IDBDatabase): void {
+    this.updateEnvironmentStore(db, false);
   }
 
   private onTransactionComplete (db: IDBDatabase): void {
@@ -71,17 +76,15 @@ class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public getEnvironmentValue (key: EnvironmentKeys): boolean {
+  public static getEnvironmentValue (key: EnvironmentKeys): boolean {
     return this.environment.get(key) as boolean;
   }
 
-  public getEnvironmentValues (): Environment {
+  public static getEnvironmentValues (): Environment {
     return this.environment;
   }
 
-  public resetDefaults (): void {
-    this.updateEnvironmentStore(this.request.result, false);
+  public resetEnvironmentValues (): void {
+    this.openDBConnection(this.resetEnvironmentStore.bind(this));
   }
 }
-
-export default new Settings();

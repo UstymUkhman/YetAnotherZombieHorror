@@ -4,10 +4,13 @@
   {/if}
 
   {#if appReady && menuScreen && !loading}
-    <Menu on:start={() => {
-      loading = true;
-      paused = false;
-    }} />
+    <Menu
+      on:reset={resetEnvironment}
+      on:start={() => {
+        loading = true;
+        paused = false;
+      }}
+    />
   {/if}
 
   {#if appReady && loading}
@@ -29,6 +32,8 @@
 </main>
 
 <script lang="ts">
+  import { resetEnvironment } from '@components/menu/utils';
+
   import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
   import Loader from '@components/Loader.svelte';

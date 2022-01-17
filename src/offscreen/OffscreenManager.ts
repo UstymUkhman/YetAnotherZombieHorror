@@ -4,7 +4,7 @@ import type { Event } from 'three/src/core/EventDispatcher';
 import EventsTarget from '@/offscreen/EventsTarget';
 import MainLoop from '@/managers/MainLoop';
 
-class OffscreenApplication
+class OffscreenManager
 {
   private loop!: MainLoop;
 
@@ -34,8 +34,8 @@ class OffscreenApplication
     this.loop.resize(width, height);
   }
 
-  public set controls (disabled: boolean) {
-    this.loop.controls = disabled;
+  public set inputs (disabled: boolean) {
+    this.loop.inputs = disabled;
   }
 
   public set pause (paused: boolean) {
@@ -43,4 +43,4 @@ class OffscreenApplication
   }
 }
 
-export const OffscreenManager = new OffscreenApplication();
+export default new OffscreenManager();

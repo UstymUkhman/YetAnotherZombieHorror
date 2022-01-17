@@ -16,9 +16,9 @@ import Camera from '@/managers/Camera';
 import Pistol from '@/weapons/Pistol';
 import Rifle from '@/weapons/Rifle';
 
+import Controls from '@/controls';
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
-import Input from '@/inputs';
 
 export default class MainLoop
 {
@@ -31,7 +31,7 @@ export default class MainLoop
   private readonly player = new Player();
 
   private readonly loop = this.update.bind(this);
-  private readonly input = new Input(this.player);
+  private readonly controls = new Controls(this.player);
   private readonly onSceneLoad = this.onLoad.bind(this);
 
   public constructor (scene: HTMLCanvasElement, pixelRatio: number, private readonly worker?: WebWorker) {
@@ -141,8 +141,8 @@ export default class MainLoop
     RAF.dispose();
   }
 
-  public set controls (disabled: boolean) {
-    this.input.pause = disabled;
+  public set inputs (disabled: boolean) {
+    this.controls.pause = disabled;
   }
 
   public set pause (paused: boolean) {

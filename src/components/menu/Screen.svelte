@@ -2,12 +2,16 @@
   <canvas bind:this={scene} width={width} height={height} />
 
   {#if sceneLoaded && visibleSettings}
-    <Settings on:menu={() => changeView(false)} />
+    <Settings
+      on:menu={() => changeView(false)}
+      on:reset
+    />
   {/if}
 
   {#if sceneLoaded && visibleMenu}
     <Menu
       on:settings={() => changeView(true)}
+      menuFade={fadingMenu}
       on:play={onPlay}
     />
   {/if}
@@ -26,6 +30,7 @@
   let visibleSettings = false;
   let sceneLoaded = false;
   let visibleMenu = true;
+  let fadingMenu = true;
 
   let menuScene: MenuScene;
   let scene: HTMLCanvasElement;
@@ -38,9 +43,11 @@
     menuScene.rotateCamera(settings);
     visibleSettings = settings;
     visibleMenu = !settings;
+    fadingMenu = false;
   }
 
   function onPlay (): void {
+    visibleMenu = false;
     menuScene.playScreamAnimation();
     setTimeout(() => dispatch('start'), 3000);
   }

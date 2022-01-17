@@ -9,7 +9,7 @@ import Character from '@/characters/Character';
 import Configs from '@/configs';
 import anime from 'animejs';
 
-export default class MenuEnemy extends Character
+export default class Zombie extends Character
 {
   public constructor () {
     const path = !!Configs.BASE_PATH && '../assets/models/' || '';

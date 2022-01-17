@@ -140,11 +140,11 @@ export default class Character
 
   protected update (delta: number): void {
     this.mixer?.update(delta);
-    this.updateLocation();
 
     if (this.moving) {
-      Physics.move(this.direction);
       this.still = false;
+      this.updateLocation();
+      Physics.move(this.direction);
     }
 
     else if (!this.still) {

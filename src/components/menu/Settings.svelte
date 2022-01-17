@@ -1,4 +1,4 @@
-<div in:fade={{ delay: 500 }} out:fade>
+<div in:screenFly={{ show: true }} out:screenFly>
   <ul>
     {#each environment as value, v}
       <li on:mouseover={() => selected = v}
@@ -19,7 +19,7 @@
     </li>
 
     <li on:mouseover={() => selected = back}
-        on:click={() => dispatch('menu')}
+        on:click={onBackClick}
         on:focus
     >
       <h4 class:active="{selected === back}">Back</h4>
@@ -31,10 +31,8 @@
   import type { EnvironmentSettings } from '@/settings/types';
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
-  import { fade } from 'svelte/transition';
-
+  import { getKey, screenFly } from './utils';
   import Settings from '@/settings';
-  import onKeyEvent from './utils';
 
   const dispatch = createEventDispatcher();
   let environment = parseEnvironmentData();
@@ -50,14 +48,21 @@
   }
 
   function onKeyUp (event: KeyboardEvent): void {
-    const key = onKeyEvent(event, selected, back + 1);
+    const key = getKey(event, selected, back + 1);
     if (key === -1) onClick();
     else selected = key;
   }
 
   function onResetClick (): void {
-    Settings.resetDefaults();
-    environment = parseEnvironmentData();
+    setTimeout(() =>
+      environment = parseEnvironmentData()
+    , 100);
+
+    dispatch('reset');
+  }
+
+  function onBackClick (): void {
+    dispatch('menu');
   }
 
   function onClick (): void {

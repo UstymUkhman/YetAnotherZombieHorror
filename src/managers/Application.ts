@@ -13,7 +13,7 @@ import Configs from '@/configs';
 export interface ApplicationManager
 {
   resize (width: number, height: number): void
-  set controls (disabled: boolean)
+  set inputs (disabled: boolean)
   set pause (paused: boolean)
 }
 
@@ -54,8 +54,8 @@ export default class Application
     this.manager.resize(width, height);
   }
 
-  private toggleControls (disabled: boolean) {
-    this.manager.controls = disabled;
+  private toggleInputs (disabled: boolean) {
+    this.manager.inputs = disabled;
   }
 
   private toggleAudio (paused: boolean) {
@@ -68,7 +68,7 @@ export default class Application
     this.audioScene.updateAmbient();
     this.resize(width, height);
 
-    this.toggleControls(false);
+    this.toggleInputs(false);
     this.toggleAudio(false);
 
     this.raindrops?.start();
@@ -91,7 +91,7 @@ export default class Application
       : this.pointer.exitPointerLock();
 
     if (this.started) {
-      this.toggleControls(paused);
+      this.toggleInputs(paused);
       this.toggleAudio(paused);
     }
 

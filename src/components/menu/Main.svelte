@@ -1,8 +1,9 @@
-<div in:fade={{ duration: 100, delay: 500 }} out:fade>
+<div in:screenFade={{ show: true, menuFade }} out:screenFade={{ menuFade }}>
   <menu style="{`
     transform: rotateY(12deg) rotateX(${rotation}deg);
     height: ${items.length * 10 + 10}%;
   `}">
+
     {#each items as item, i}
       <li on:mouseover={() => onMouseOver(i)}
           on:click={onClick}
@@ -11,37 +12,39 @@
         <h3 class:active="{selected === i}">{item}</h3>
       </li>
     {/each}
+
   </menu>
 </div>
 
 <script lang="ts">
-  import Configs from '@/configs';
-  import onKeyEvent from './utils';
-  import { mix } from '@/utils/Number';
-
-  import { fade } from 'svelte/transition';
-  import { onMount, onDestroy } from 'svelte';
   import { createEventDispatcher } from 'svelte';
+  import { getKey, screenFade } from './utils';
+  import { onMount, onDestroy } from 'svelte';
+
+  import { mix } from '@/utils/Number';
+  import Configs from '@/configs';
 
   const items = ['Play', 'Settings', 'Credits'];
   const dispatch = createEventDispatcher();
+
   Configs.APP && items.push('Exit');
   const last = items.length - 1;
+  export let menuFade: boolean;
 
   let rotation = -6;
   let selected = 0;
 
-  function onMouseOver (index: number): void {
-    selected = index;
-    updateRotation();
-  }
-
   function onKeyUp (event: KeyboardEvent): void {
-    const key = onKeyEvent(event, selected, items.length);
+    const key = getKey(event, selected, items.length);
 
     if (key === -1) onClick();
     else selected = key;
 
+    updateRotation();
+  }
+
+  function onMouseOver (index: number): void {
+    selected = index;
     updateRotation();
   }
 
@@ -53,10 +56,12 @@
     switch (selected) {
       case 0:
         dispatch('play');
+        menuFade = true;
       break;
 
       case 1:
         dispatch('settings');
+        menuFade = false;
       break;
 
       case 2:
