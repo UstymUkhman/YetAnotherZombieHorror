@@ -18,7 +18,7 @@ export default class Settings
 
     request.onsuccess = (event: Event) => {
       const db = (event.target as IDBRequest).result;
-      onSuccess(db);
+      onSuccess(db as IDBDatabase);
     };
   }
 
@@ -77,11 +77,17 @@ export default class Settings
   }
 
   public static getEnvironmentValue (key: EnvironmentKeys): boolean {
-    return this.environment.get(key) as boolean;
+    return Settings.environment.get(key) as boolean;
   }
 
   public static getEnvironmentValues (): Environment {
-    return this.environment;
+    return Settings.environment;
+  }
+
+  public updateEnvironmentValues (environment: typeof EnvironmentData): void {
+    this.openDBConnection((db: IDBDatabase) =>
+      this.updateEnvironmentStore(db, false, environment)
+    );
   }
 
   public resetEnvironmentValues (): void {

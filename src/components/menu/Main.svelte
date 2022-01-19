@@ -1,15 +1,15 @@
 <div in:screenFade={{ show: true, menuFade }} out:screenFade={{ menuFade }}>
-  <menu style="{`
+  <menu style={`
     transform: rotateY(12deg) rotateX(${rotation}deg);
     height: ${items.length * 10 + 10}%;
-  `}">
+  `}>
 
     {#each items as item, i}
       <li on:mouseover={() => onMouseOver(i)}
           on:click={onClick}
           on:focus
       >
-        <h3 class:active="{selected === i}">{item}</h3>
+        <h3 class:active={selected === i}>{item}</h3>
       </li>
     {/each}
 
@@ -34,7 +34,7 @@
   let rotation = -6;
   let selected = 0;
 
-  function onKeyUp (event: KeyboardEvent): void {
+  function onKeyDown (event: KeyboardEvent): void {
     const key = getKey(event, selected, items.length);
 
     if (key === -1) onClick();
@@ -74,11 +74,11 @@
   }
 
   onMount(() =>
-    document.addEventListener('keyup', onKeyUp, true)
+    document.addEventListener('keydown', onKeyDown, true)
   );
 
   onDestroy(() =>
-    document.removeEventListener('keyup', onKeyUp, true)
+    document.removeEventListener('keydown', onKeyDown, true)
   );
 </script>
 

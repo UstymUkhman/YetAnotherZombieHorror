@@ -1,13 +1,30 @@
 <div in:screenFly={{ show: true }} out:screenFly>
   <ul>
-    {#each environment as value, v}
+    {#each environment as variable, v}
       <li on:mouseover={() => selected = v}
-          on:click={onClick}
+          on:click={onListItemClick}
           on:focus
       >
-        <h5 class:active="{selected === v}">
-          {value.name}
+        <h5 class:active={selected === v}>
+          {variable.name}
         </h5>
+
+        {#if typeof variable.value === 'number'}
+          <Range
+            on:update={onRangeUpdate}
+            active={selected === v}
+            value={variable.value}
+            max={maxClouds + 99}
+            offset={99}
+            min={99}
+          />
+
+        {:else}
+          <Checkbox
+            checked={variable.value}
+            active={selected === v}
+          />
+        {/if}
       </li>
     {/each}
 
@@ -15,28 +32,32 @@
         on:click={onResetClick}
         on:focus
     >
-      <h5 class:active="{selected === reset}">Reset</h5>
+      <h5 class:active={selected === reset}>Reset</h5>
     </li>
 
     <li on:mouseover={() => selected = back}
         on:click={onBackClick}
         on:focus
     >
-      <h4 class:active="{selected === back}">Back</h4>
+      <h4 class:active={selected === back}>Back</h4>
     </li>
   </ul>
 </div>
 
 <script lang="ts">
+  import { getKey, screenFly, updateEnvironment, resetEnvironment } from './utils';
   import type { EnvironmentSettings } from '@/settings/types';
+  import { Checkbox, Range } from '@components/common/index';
+  import EnvironmentData from '@/settings/environment.json';
+
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
-  import { getKey, screenFly } from './utils';
   import Settings from '@/settings';
 
   const dispatch = createEventDispatcher();
   let environment = parseEnvironmentData();
 
+  const maxClouds = EnvironmentData.clouds;
   const back = environment.length + 1;
   const reset = environment.length;
   let selected = back;
@@ -47,7 +68,12 @@
     }));
   }
 
-  function onKeyUp (event: KeyboardEvent): void {
+  function onListItemClick (event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    onClick(target.tagName === 'LI');
+  }
+
+  function onKeyDown (event: KeyboardEvent): void {
     const key = getKey(event, selected, back + 1);
     if (key === -1) onClick();
     else selected = key;
@@ -58,24 +84,41 @@
       environment = parseEnvironmentData()
     , 100);
 
-    dispatch('reset');
+    resetEnvironment();
   }
 
   function onBackClick (): void {
+    updateEnvironment(environment);
     dispatch('menu');
   }
 
-  function onClick (): void {
-    if (selected === back) return dispatch('menu');
-    console.log(selected, environment[selected]);
+  function onClick (toggle = true): void {
+    if (selected === reset) return onResetClick();
+    if (selected === back) return onBackClick();
+
+    const { value } = environment[selected];
+
+    if (typeof value === 'number') {
+      const extreme = value ? 0 : maxClouds;
+      const detail = toggle ? extreme : value;
+      onRangeUpdate({ detail } as CustomEvent);
+    }
+
+    else {
+      environment[selected].value = !value;
+    }
+  }
+
+  function onRangeUpdate (event: CustomEvent): void {
+    environment[selected].value = event.detail;
   }
 
   onMount(() =>
-    document.addEventListener('keyup', onKeyUp, true)
+    document.addEventListener('keydown', onKeyDown, true)
   );
 
   onDestroy(() =>
-    document.removeEventListener('keyup', onKeyUp, true)
+    document.removeEventListener('keydown', onKeyDown, true)
   );
 </script>
 
@@ -103,17 +146,37 @@
     width: 100%;
   }
 
-  li:last-child {
-    text-align: center;
-    margin-top: 5%;
+  li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25em;
+    justify-content: space-between;
 
-    h4 {
-      @include mixin.font-size(3);
-      text-decoration: underline;
-      color: var.$grey;
+    h5 {
+      letter-spacing: 0.1rem;
+      line-height: 1rem;
+      font-size: 1rem;
+    }
 
-      &.active {
-        color: var.$white;
+    :global(input[type=checkbox]) {
+      pointer-events: none;
+    }
+
+    &:last-child {
+      text-align: center;
+      margin-bottom: 0;
+
+      margin-top: 5%;
+      display: block;
+
+      h4 {
+        @include mixin.font-size(3);
+        text-decoration: underline;
+        color: var.$grey;
+
+        &.active {
+          color: var.$white;
+        }
       }
     }
   }

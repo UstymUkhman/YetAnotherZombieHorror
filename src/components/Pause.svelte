@@ -3,7 +3,7 @@
 </div>
 
 <script lang="ts">
-  import Button from '@components/common/Button.svelte';
+  import { Button } from '@components/common/index';
   import { createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
 

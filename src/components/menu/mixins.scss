@@ -23,7 +23,7 @@
   cursor: pointer;
 
   #{$heading} {
-    transition: transform 0.4s var.$ease-in-out-quad, color 0.2s;
+    transition: transform 400ms var.$ease-in-out-quad, color 200ms;
     pointer-events: none;
     color: var.$red;
 

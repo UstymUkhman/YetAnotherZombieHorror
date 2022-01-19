@@ -5,7 +5,6 @@
 
   {#if appReady && menuScreen && !loading}
     <Menu
-      on:reset={resetEnvironment}
       on:start={() => {
         loading = true;
         paused = false;
@@ -32,8 +31,6 @@
 </main>
 
 <script lang="ts">
-  import { resetEnvironment } from '@components/menu/utils';
-
   import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
   import Loader from '@components/Loader.svelte';
@@ -94,17 +91,10 @@
     margin: 0;
   }
 
-  h1 {
-    @include mixin.font-size(5);
-    text-transform: uppercase;
-  }
-
-  h2 {
-    @include mixin.font-size(4);
-  }
-
-  h3 {
-    @include mixin.font-size(3);
+  @for $h from 1 through 3 {
+    h#{$h} {
+      @include mixin.font-size(#{6 - $h});
+    }
   }
 
   main {

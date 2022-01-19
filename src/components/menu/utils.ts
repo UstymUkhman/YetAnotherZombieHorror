@@ -1,6 +1,11 @@
 import type { FlyParams, TransitionConfig } from 'svelte/transition';
+import type EnvironmentData from '@/settings/environment.json';
+import type { EnvironmentSettings } from '@/settings/types';
+
 import { quadIn, quadOut } from 'svelte/easing';
 import { fade, fly } from 'svelte/transition';
+
+import Viewport from '@/utils/Viewport';
 import Settings from '@/settings';
 
 type ScreenFade = ScreenFly & { menuFade?: boolean };
@@ -16,15 +21,15 @@ export const screenFade = (node: Element, { show, menuFade }: ScreenFade): Trans
   (menuFade ? fade : fly)(node, {
     ...(!menuFade && { easing: show ? quadOut : quadIn }),
     delay: +!!(menuFade && show) * 250 + (+!!show * 250),
-    duration: +!!(menuFade && !show) * 250 + 250,
-    x: window.innerWidth * -0.5
+    x: Viewport.size.width * -0.5,
+    duration: 250
   }
 );
 
 export const screenFly = (node: Element, { show }: ScreenFly): TransitionConfig =>
   fly(node, {
     easing: show ? quadOut : quadIn,
-    x: window.innerWidth * 0.5,
+    x: Viewport.size.width * 0.5,
     delay: +!!show * 250,
     duration: 250
   }
@@ -41,4 +46,11 @@ export const getKey = (event: KeyboardEvent, selected: number, items: number): n
   return updateSelected(key, selected, items);
 };
 
-export const resetEnvironment = (): void => settings.resetEnvironmentValues();
+export const updateEnvironment = (environment: EnvironmentSettings): void => {
+  settings.updateEnvironmentValues(environment.reduce((environment, variable) => ({
+    ...environment, [variable.key]: variable.value
+  }), {}) as typeof EnvironmentData);
+};
+
+export const resetEnvironment = (): void =>
+  settings.resetEnvironmentValues();

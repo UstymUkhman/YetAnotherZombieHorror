@@ -67,18 +67,22 @@ export default class MenuScene
     this.scream.setLoop(false);
   }
 
-  public rotateCamera (left = false): void {
+  public rotateCamera (y = 0, duration = 500): void {
     anime({
       targets: this.camera.rotation,
-      y: Math.PI + +left * -0.5,
       easing: 'easeInOutQuad',
-      duration: 500
+      y: Math.PI + y,
+      duration
     });
   }
 
   public playScreamAnimation (): void {
-    this.scream.play(0.25);
-    this.enemy.scream();
+    this.rotateCamera(-0.25, 250);
+
+    setTimeout(() => {
+      this.scream.play(0.25);
+      this.enemy.scream();
+    }, 100);
   }
 
   private createRenderer (): void {
@@ -132,8 +136,9 @@ export default class MenuScene
   }
 
   public dispose (): void {
-    while (this.scene.children.length > 0)
+    while (this.scene.children.length > 0) {
       this.scene.remove(this.scene.children[0]);
+    }
 
     Viewport.removeResizeCallback(this.onResize);
     cancelAnimationFrame(this.frame);

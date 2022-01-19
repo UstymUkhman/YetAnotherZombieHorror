@@ -4,7 +4,6 @@
   {#if sceneLoaded && visibleSettings}
     <Settings
       on:menu={() => changeView(false)}
-      on:reset
     />
   {/if}
 
@@ -40,7 +39,7 @@
   const dispatch = createEventDispatcher();
 
   function changeView (settings: boolean): void {
-    menuScene.rotateCamera(settings);
+    menuScene.rotateCamera(+settings * -0.5);
     visibleSettings = settings;
     visibleMenu = !settings;
     fadingMenu = false;
