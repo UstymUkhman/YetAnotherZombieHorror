@@ -78,4 +78,8 @@ export default class Pistol extends Weapon
       }), showDelay);
     });
   }
+
+  public override dispose (): void {
+    super.dispose();
+  }
 }

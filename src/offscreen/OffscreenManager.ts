@@ -2,7 +2,10 @@ import type { OffscreenParams, SizeParams } from '@/offscreen/types';
 import type { Event } from 'three/src/core/EventDispatcher';
 
 import EventsTarget from '@/offscreen/EventsTarget';
+import { GameEvents } from '@/events/GameEvents';
+
 import MainLoop from '@/managers/MainLoop';
+import Settings from '@/settings';
 
 class OffscreenManager
 {
@@ -10,8 +13,18 @@ class OffscreenManager
 
   public takeControl (params: OffscreenParams): void {
     const canvas = params.element as unknown as HTMLCanvasElement;
-    this.loop = new MainLoop(canvas, params.pixelRatio);
+
+    GameEvents.add('Game::SettingsInit', () =>
+      this.createMainLoop(canvas, params.pixelRatio)
+    );
+
     this.resetDOMElements();
+    new Settings();
+  }
+
+  private createMainLoop (canvas: HTMLCanvasElement, pixelRatio: number): void {
+    this.loop = new MainLoop(canvas, pixelRatio);
+    GameEvents.remove('Game::SettingsInit');
   }
 
   private resetDOMElements (): void {
@@ -32,6 +45,10 @@ class OffscreenManager
   public resize (size: SizeParams): void {
     const { width, height } = size;
     this.loop.resize(width, height);
+  }
+
+  public dispose (): void {
+    this.loop.dispose();
   }
 
   public set inputs (disabled: boolean) {

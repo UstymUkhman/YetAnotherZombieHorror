@@ -241,15 +241,18 @@ export default class AudioScene
   }
 
   public dispose (): void {
-    while (this.scene.children.length > 0) {
+    while (this.scene.children.length > 0)
       this.scene.remove(this.scene.children[0]);
-    }
 
     GameEvents.remove('SFX::Character', true);
     GameEvents.remove('SFX::Thunder', true);
     GameEvents.remove('SFX::Weapon', true);
 
+    this.characterSounds.clear();
+    this.weaponSounds.clear();
+
     RAF.remove(this.onUpdate);
     this.renderer.dispose();
+    this.pause = true;
   }
 }

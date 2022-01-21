@@ -5,14 +5,15 @@ import type Configs from '@/configs';
 
 export default class OffscreenCanvas implements ApplicationManager
 {
+  private readonly events: OffscreenEvents;
+
   public constructor (scene: HTMLCanvasElement, private readonly worker: WebWorker, pixelRatio: number) {
-    new OffscreenEvents(this.worker);
+    this.events = new OffscreenEvents(this.worker);
 
     this.worker.transfer((
         scene as Configs.OffscreenCanvas
-      ).transferControlToOffscreen(), {
-      pixelRatio
-    });
+      ).transferControlToOffscreen(), { pixelRatio }
+    );
   }
 
   public resize (width: number, height: number): void {
@@ -25,5 +26,10 @@ export default class OffscreenCanvas implements ApplicationManager
 
   public set pause (paused: boolean) {
     this.worker.post('Game::Pause', { paused });
+  }
+
+  public dispose(): void {
+    this.worker.post('Game::Dispose');
+    this.events.dispose();
   }
 }

@@ -1,5 +1,6 @@
 import type { Environment, EnvironmentKeys, RequestSuccess } from '@/settings/types';
 import EnvironmentData from '@/settings/environment.json';
+import { GameEvents } from '@/events/GameEvents';
 
 export default class Settings
 {
@@ -42,7 +43,7 @@ export default class Settings
       updated = true;
     };
 
-    transaction.oncomplete = this.onTransactionComplete.bind(this, db);
+    transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
   }
 
   private updateEnvironmentStore (db: IDBDatabase, add = true, environment = EnvironmentData): void {
@@ -57,15 +58,16 @@ export default class Settings
         .onerror = this.onQueryError.bind(this);
     }
 
-    transaction.oncomplete = this.onTransactionComplete.bind(this, db);
+    transaction.oncomplete = this.onTransactionComplete.bind(this, db, false);
+  }
+
+  private onTransactionComplete (db: IDBDatabase, get: boolean): void {
+    get && GameEvents.dispatch('Game::SettingsInit');
+    db.close();
   }
 
   private resetEnvironmentStore (db: IDBDatabase): void {
     this.updateEnvironmentStore(db, false);
-  }
-
-  private onTransactionComplete (db: IDBDatabase): void {
-    db.close();
   }
 
   private onRequestError (event: Event): void {
@@ -76,18 +78,18 @@ export default class Settings
     console.error('Settings DB Query Error:', event);
   }
 
+  public updateEnvironmentValues (environment: typeof EnvironmentData): void {
+    this.openDBConnection((db: IDBDatabase) =>
+      this.updateEnvironmentStore(db, false, environment)
+    );
+  }
+
   public static getEnvironmentValue (key: EnvironmentKeys): boolean {
     return Settings.environment.get(key) as boolean;
   }
 
   public static getEnvironmentValues (): Environment {
     return Settings.environment;
-  }
-
-  public updateEnvironmentValues (environment: typeof EnvironmentData): void {
-    this.openDBConnection((db: IDBDatabase) =>
-      this.updateEnvironmentStore(db, false, environment)
-    );
   }
 
   public resetEnvironmentValues (): void {

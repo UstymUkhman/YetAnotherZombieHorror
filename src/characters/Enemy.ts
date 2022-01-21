@@ -166,10 +166,11 @@ export default class Enemy extends Character
   public override dispose (): void {
     this.head?.remove(this.hitBoxes[0]);
 
-    for (let box = this.hitBoxes.length; box--;) {
-      this.hitBoxes.splice(box);
-    }
+    for (let box = this.hitBoxes.length; box--;)
+      delete this.hitBoxes[box];
 
+    this.character?.clear();
+    this.hitBoxes.splice(0);
     super.dispose();
   }
 

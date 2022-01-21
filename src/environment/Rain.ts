@@ -2,6 +2,7 @@ import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthSt
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import type { CanvasTexture } from 'three/src/textures/CanvasTexture';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { updateRainParticles } from '@/worker/updateRainParticles';
@@ -208,6 +209,15 @@ export default class Rain
   }
 
   public dispose (): void {
+    const drops = this.material.uniforms.diffuse;
+    const depthTexture = this.material.uniforms.depth;
+
+    (depthTexture.value as DepthTexture)?.dispose();
+
+    (drops.value as Array<CanvasTexture>)?.forEach(
+      texture => texture.dispose()
+    );
+
     this.worker?.remove('Rain::UpdateParticles');
 
     this.renderTargets?.forEach(renderTarget => {
@@ -216,7 +226,9 @@ export default class Rain
       renderTarget.dispose();
     });
 
-    this.scene.remove(this.drops);
+    this.minCoords.splice(0);
+    this.maxCoords.splice(0);
+
     this.material?.dispose();
     this.geometry.dispose();
 

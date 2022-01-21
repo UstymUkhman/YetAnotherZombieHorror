@@ -179,6 +179,11 @@ export default class Portals
     this.material.onBeforeCompile = beforeCompile;
   }
 
+  public dispose (): void {
+    this.material.dispose();
+    this.triggers.splice(0);
+  }
+
   public get playerPosition (): Vector3 {
     return this.position;
   }

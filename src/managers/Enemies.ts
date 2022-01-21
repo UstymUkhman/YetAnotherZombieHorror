@@ -28,6 +28,16 @@ export default class Enemies
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   public update (delta: number): void {}
 
+  public dispose (): void {
+    for (let enemy = this.enemies.length; enemy--;) {
+      this.enemies[enemy].dispose();
+      delete this.enemies[enemy];
+    }
+
+    this.enemyModel.scene.clear();
+    this.enemies.splice(0);
+  }
+
   public get colliders (): Array<Object3D> {
     const colliders = [];
 

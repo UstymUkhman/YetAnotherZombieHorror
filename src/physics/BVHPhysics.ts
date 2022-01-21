@@ -30,8 +30,8 @@ export default class BVHPhysics extends PhysicsWorld
   private environmentCollider?: Mesh;
   private readonly box = new Box3();
 
-  private paused = false;
   private player!: Mesh;
+  private paused = true;
   private delta = 0.0;
 
   private addPhysicsCollider (): void {
@@ -151,9 +151,13 @@ export default class BVHPhysics extends PhysicsWorld
   }
 
   public dispose (): void {
-    delete this.environmentCollider;
-    this.environment.clear();
+    const environmentGeometry = this.environmentCollider?.geometry as BVHGeometry;
+    environmentGeometry.disposeBoundsTree();
+    environmentGeometry.dispose();
+
     this.paused = true;
+    this.environment.clear();
+    delete this.environmentCollider;
   }
 
   public set pause (pause: boolean) {

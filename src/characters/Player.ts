@@ -460,6 +460,10 @@ export default class Player extends Character
     delete this.reloadTimeout;
     delete this.aimTimeout;
 
+    this.pistol?.dispose();
+    this.rifle?.dispose();
+    this.weapon.dispose();
+
     delete this.pistol;
     delete this.rifle;
     delete this.hand;

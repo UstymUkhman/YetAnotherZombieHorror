@@ -49,7 +49,7 @@ export default abstract class PhysicsWorld
 
     if (w && d) {
       const deeper = d > w;
-      const length = Math.sqrt(w ** 2 + d ** 2);
+      const length = Math.hypot(w, d);
 
       this.rotationVector.set(0, deeper
         ? PI.d2 + Math.atan(d / w)

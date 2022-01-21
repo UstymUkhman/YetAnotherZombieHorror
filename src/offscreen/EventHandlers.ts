@@ -1,3 +1,4 @@
+import type { EventHandler, EventCallback, ActiveKeys, Touches } from '@/offscreen/types';
 import type { Event } from 'three/src/core/EventDispatcher';
 
 const copyEventProps = (event: Event, props: Array<string>, data: Event): void => {
@@ -21,9 +22,6 @@ export const wheelEvent = eventPropsHandler(['deltaY']);
 
 // Mouse Events:
 
-export type EventCallback = (data: Event) => void;
-type EventHandler = (event: Event, callback: EventCallback) => void;
-
 export const mouseEvent = eventPropsHandler([
   'button', 'movementX', 'movementY'
 ]);
@@ -31,9 +29,6 @@ export const mouseEvent = eventPropsHandler([
 // Keyboard Events:
 
 const onKeyboardEvent = eventPropsHandler(['code']);
-
-type KeyboardCode = Readonly<KeyboardEvent['code']>;
-type ActiveKeys = Record<KeyboardCode, boolean>;
 
 const keys: ActiveKeys = Object.freeze({
   'KeyW'      : true,
@@ -43,7 +38,6 @@ const keys: ActiveKeys = Object.freeze({
 
   'KeyQ'      : true,
   'KeyE'      : true,
-
   'KeyC'      : true,
   'KeyV'      : true,
 
@@ -60,8 +54,6 @@ export function keyboardEvent (event: Event, callback: EventCallback): void {
 
 // Touch Events:
 
-type Touches = Array<Record<'pageX' | 'pageY', number>>;
-
 export function touchEvent (event: Event, callback: EventCallback): void {
   const eventTouches = (event as TouchEvent).touches;
   const touches: Touches = [];
@@ -73,8 +65,6 @@ export function touchEvent (event: Event, callback: EventCallback): void {
 
   callback({ type: event.type, touches });
 }
-
-// Cancel Event:
 
 export const prevent = (event: Event): void =>
   event.preventDefault();

@@ -29,10 +29,11 @@
 
   Configs.APP && items.push('Exit');
   const last = items.length - 1;
+
   export let menuFade: boolean;
+  export let selected: number;
 
   let rotation = -6;
-  let selected = 0;
 
   function onKeyDown (event: KeyboardEvent): void {
     const key = getKey(event, selected, items.length);
@@ -80,6 +81,8 @@
   onDestroy(() =>
     document.removeEventListener('keydown', onKeyDown, true)
   );
+
+  $: updateRotation();
 </script>
 
 <style lang="scss">

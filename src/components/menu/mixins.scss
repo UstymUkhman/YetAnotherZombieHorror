@@ -21,9 +21,11 @@
 @mixin item ($heading) {
   width: 100%;
   cursor: pointer;
+  backface-visibility: hidden;
 
   #{$heading} {
     transition: transform 400ms var.$ease-in-out-quad, color 200ms;
+    backface-visibility: hidden;
     pointer-events: none;
     color: var.$red;
 

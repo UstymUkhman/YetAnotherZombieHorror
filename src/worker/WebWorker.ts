@@ -43,4 +43,10 @@ export default class WebWorker
   public remove (event: string): void {
     this.events.delete(event);
   }
+
+  public dispose (): void {
+    this.worker.onmessage = null;
+    this.worker.onerror = null;
+    this.events.clear();
+  }
 }

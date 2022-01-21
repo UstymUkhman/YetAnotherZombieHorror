@@ -18,7 +18,7 @@ export default class AmmoPhysics extends PhysicsWorld
 
   private player!: AmmoCollider;
   private world: AmmoWorld;
-  private paused = false;
+  private paused = true;
 
   public constructor () {
     super();

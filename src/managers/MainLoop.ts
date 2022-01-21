@@ -136,8 +136,17 @@ export default class MainLoop
 
   public dispose (): void {
     this.removeEventListeners();
+
+    this.controls.dispose();
+    this.enemies.dispose();
+    this.player.dispose();
+
+    this.pistol.dispose();
+    this.rifle.dispose();
     this.level.dispose();
+
     Physics.dispose();
+    Camera.dispose();
     RAF.dispose();
   }
 

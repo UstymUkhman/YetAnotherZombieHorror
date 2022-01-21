@@ -4,6 +4,7 @@ import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMater
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
 import type { LevelCoords, LevelBounds } from '@/scenes/types';
+import { CubeTexture } from 'three/src/textures/CubeTexture';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
@@ -233,18 +234,27 @@ export default class LevelScene
   }
 
   public dispose (): void {
+    this.fog?.dispose();
+    this.csm?.dispose();
+    this.rain?.dispose();
+
+    this.pmrem.dispose();
+    this.clouds.dispose();
+    this.portals.dispose();
+    this.renderer.dispose();
+
+    this.csm?.lights.forEach(light =>
+      light.dispose()
+    );
+
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('Level::RemoveObject');
 
-    while (this.scene.children.length > 0) {
+    while (this.scene.children.length > 0)
       this.scene.remove(this.scene.children[0]);
-    }
 
-    this.renderer.dispose();
-    this.clouds.dispose();
-    this.rain?.dispose();
-    this.csm?.dispose();
-    this.fog?.dispose();
+    if (this.scene.background instanceof CubeTexture)
+      this.scene.background.dispose();
   }
 
   public static get maxCoords (): LevelCoords {

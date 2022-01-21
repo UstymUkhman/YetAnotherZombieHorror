@@ -1,15 +1,16 @@
 import type { CharacterConfig, CharacterAnimation, CharacterMove } from '@/characters/types';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
-
 import type { Texture } from 'three/src/textures/Texture';
-import type { Object3D } from 'three/src/core/Object3D';
+
 import { DynamicCollider } from '@/utils/Material';
+import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
 
-import { GameEvents } from '@/events/GameEvents';
 import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -179,7 +180,6 @@ export default class Character
 
   public teleport (position: Vector3): void {
     Physics.pause = true;
-
     this.object.position.copy(position);
     this.getModel().rotateOnWorldAxis(Vector.UP, Math.PI);
 
@@ -188,8 +188,9 @@ export default class Character
   }
 
   public dispose (): void {
-    const model = this.getModel();
-    const children = model.children as Array<Object3D>;
+    this.object.userData = {};
+    this.object.geometry.dispose();
+    (this.object.material as MeshBasicMaterial).dispose();
 
     for (const animation in this.animations) {
       this.animations[animation].stopFading();
@@ -197,11 +198,15 @@ export default class Character
       delete this.animations[animation];
     }
 
-    for (let c = children.length; c--;)
-      model.remove(children[c]);
+    if (this.model) {
+      this.object.remove(this.model);
+      this.model.clear();
+      delete this.model;
+    }
 
+    this.animations = {};
     delete this.mixer;
-    delete this.model;
+    this.reset();
   }
 
   public reset (): void {

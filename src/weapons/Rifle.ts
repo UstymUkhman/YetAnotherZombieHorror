@@ -144,4 +144,10 @@ export default class Rifle extends Weapon
   public get onStage (): boolean {
     return this.spawned;
   }
+
+  public override dispose (): void {
+    this.light.dispose();
+    this.clone?.clear();
+    super.dispose();
+  }
 }

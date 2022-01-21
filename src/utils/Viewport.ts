@@ -50,7 +50,7 @@ class Viewport
 
   public dispose (): void {
     window.removeEventListener('resize', this.update, false);
-    this.callbacks.splice(0, this.callbacks.length);
+    this.callbacks.splice(0);
   }
 
   public get ratio (): number {

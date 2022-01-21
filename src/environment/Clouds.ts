@@ -156,8 +156,13 @@ export default class Clouds
   }
 
   public dispose (): void {
-    this.lighting.remove();
+    const material = this.clouds?.material as MeshLambertMaterial;
+    clearTimeout(this.timeout);
+    material?.map?.dispose();
+
+    this.lighting?.dispose();
     this.clouds?.dispose();
+    material?.dispose();
   }
 
   public static get height (): number {

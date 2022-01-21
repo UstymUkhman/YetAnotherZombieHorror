@@ -131,4 +131,18 @@ export default class Bullet
 
     bullet.rotateY(0.5);
   }
+
+  public dispose (): void {
+    const bulletMaterial = this.bullet.material as MeshStandardMaterial;
+
+    const path = this.bullet.children[0] as Mesh | undefined;
+    (path?.material as ShaderMaterial)?.dispose();
+
+    this.bullet.geometry.dispose();
+    bulletMaterial.map?.dispose();
+
+    path?.geometry.dispose();
+    bulletMaterial.dispose();
+    this.bullet.clear();
+  }
 }

@@ -9,6 +9,9 @@ import type { LevelParams } from '@/scenes/types';
 
 const parseMessage = (event: string, params?: unknown) => {
   switch (event) {
+    case 'EventsTarget::Dispatch':
+      return OffscreenManager.dispatch(params as Event);
+
     case 'Rain::UpdateParticles':
       return updateRainParticles(params as RainParams);
 
@@ -31,8 +34,8 @@ const parseMessage = (event: string, params?: unknown) => {
       return OffscreenManager.pause = paused;
     }
 
-    case 'EventsTarget::Dispatch':
-      return OffscreenManager.dispatch(params as Event);
+    case 'Game::Dispose':
+      return OffscreenManager.dispose();
   }
 
   return params;

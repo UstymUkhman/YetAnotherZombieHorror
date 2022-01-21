@@ -15,6 +15,7 @@ export interface ApplicationManager
   resize (width: number, height: number): void
   set inputs (disabled: boolean)
   set pause (paused: boolean)
+  dispose (): void
 }
 
 export default class Application
@@ -75,14 +76,21 @@ export default class Application
     this.started = true;
   }
 
-  public destroy (): void {
+  public dispose (): void {
+    Viewport.removeResizeCallback(this.onResize);
+
+    this.audioScene.dispose();
+    this.raindrops?.dispose();
+    this.manager?.dispose();
+
+    this.pointer.dispose();
+    this.worker.dispose();
+    this.music.dispose();
+
+    delete this.raindrops;
+    this.started = false;
     this.pause = true;
     RAF.dispose();
-
-    this.music.dispose();
-    this.raindrops?.dispose();
-
-    Viewport.removeResizeCallback(this.onResize);
   }
 
   public set pause (paused: boolean) {

@@ -2,8 +2,10 @@
   <ul>
     {#each environment as variable, v}
       <li on:mouseover={() => selected = v}
+          on:mouseout={() => selected = -1}
           on:click={onListItemClick}
           on:focus
+          on:blur
       >
         <h5 class:active={selected === v}>
           {variable.name}
@@ -29,8 +31,10 @@
     {/each}
 
     <li on:mouseover={() => selected = reset}
+        on:mouseout={() => selected = -1}
         on:click={onResetClick}
         on:focus
+        on:blur
     >
       <h5 class:active={selected === reset}>Reset</h5>
     </li>

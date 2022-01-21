@@ -1,5 +1,6 @@
 import type { WeaponConfig, FireConfig, WeaponSound, Recoil } from '@/weapons/types';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
@@ -210,6 +211,35 @@ export default class Weapon
 
   public resize (height: number): void {
     this.fire?.resize(height);
+  }
+
+  protected dispose (): void {
+    for (let b = this.bullets.length; b--;) {
+      const bullet = this.bullets[b];
+      const path = bullet.children[0] as Mesh;
+      const bulletMaterial = bullet.material as MeshStandardMaterial;
+
+      GameEvents.dispatch('Level::RemoveObject', bullet);
+      (path.material as ShaderMaterial).dispose();
+
+      bulletMaterial.map?.dispose();
+      bullet.geometry.dispose();
+
+      bulletMaterial.dispose();
+      path.geometry.dispose();
+      bullet.clear();
+    }
+
+    RAF.remove(this.onUpdate);
+
+    this.targets.splice(0);
+    this.bullets.splice(0);
+
+    this.bullet.dispose();
+    this.fire.dispose();
+
+    this.weapon.clear();
+    this.asset.clear();
   }
 
   private get originOffset (): number {

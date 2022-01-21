@@ -1,6 +1,6 @@
 <div transition:fade>
   {#if assetsLoading || sceneLoading}
-    <h1 class="progress">Loading...</h1>
+    <h1>Loading...</h1>
   {/if}
 </div>
 
@@ -23,7 +23,6 @@
 <style lang="scss">
   @use "@/variables" as var;
   @use "@/mixins" as mixin;
-  @import "@/animations";
 
   div {
     @include mixin.center-size;
@@ -37,10 +36,9 @@
     padding: 0;
     margin: 0;
 
-    h1.progress {
+    h1 {
       text-align: center;
       @include mixin.center-size(100%, 5vw);
-      animation: 2s linear infinite loading;
     }
   }
 </style>

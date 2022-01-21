@@ -34,7 +34,7 @@ class RAF
 
   public dispose (): void {
     cancelAnimationFrame(this.raf);
-    this.calls.splice(0, this.calls.length);
+    this.calls.splice(0);
   }
 
   public set pause (paused: boolean) {

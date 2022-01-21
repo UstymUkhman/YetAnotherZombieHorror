@@ -21,4 +21,8 @@ export default class Onscreen implements ApplicationManager
   public set pause (paused: boolean) {
     this.loop.pause = paused;
   }
+
+  public dispose (): void {
+    this.loop.dispose();
+  }
 }

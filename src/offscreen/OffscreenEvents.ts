@@ -4,23 +4,23 @@ import type WebWorker from '@/worker/WebWorker';
 
 export default class OffscreenEvents
 {
+  private readonly eventHandlers = Object.entries({
+    pointerdown: mouseEvent,
+    pointermove: mouseEvent,
+    pointerup: mouseEvent,
+
+    mousedown: mouseEvent,
+    mousemove: mouseEvent,
+    mouseup: mouseEvent,
+
+    mousewheel: wheelEvent,
+    keydown: keyboardEvent,
+    keyup: keyboardEvent,
+    contextmenu: prevent
+  });
+
   public constructor (private readonly worker: WebWorker) {
-    const eventHandlers = Object.entries({
-      pointerdown: mouseEvent,
-      pointermove: mouseEvent,
-      pointerup: mouseEvent,
-
-      mousedown: mouseEvent,
-      mousemove: mouseEvent,
-      mouseup: mouseEvent,
-
-      mousewheel: wheelEvent,
-      keydown: keyboardEvent,
-      keyup: keyboardEvent,
-      contextmenu: prevent
-    });
-
-    for (const [event, handler] of eventHandlers) {
+    for (const [event, handler] of this.eventHandlers) {
       document.addEventListener(event, event =>
         handler(event, this.dispatch.bind(this))
       );
@@ -29,5 +29,13 @@ export default class OffscreenEvents
 
   private dispatch (event: Event): void {
     this.worker.post('EventsTarget::Dispatch', event);
+  }
+
+  public dispose (): void {
+    for (const [event, handler] of this.eventHandlers) {
+      document.removeEventListener(event, event =>
+        handler(event, this.dispatch.bind(this))
+      );
+    }
   }
 }

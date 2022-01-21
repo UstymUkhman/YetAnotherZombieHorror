@@ -10,6 +10,7 @@
   {#if sceneLoaded && visibleMenu}
     <Menu
       on:settings={() => changeView(true)}
+      selected={selectedItem}
       menuFade={fadingMenu}
       on:play={onPlay}
     />
@@ -30,6 +31,7 @@
   let sceneLoaded = false;
   let visibleMenu = true;
   let fadingMenu = true;
+  let selectedItem = 0;
 
   let menuScene: MenuScene;
   let scene: HTMLCanvasElement;
@@ -40,7 +42,10 @@
 
   function changeView (settings: boolean): void {
     menuScene.rotateCamera(+settings * -0.5);
+    dispatch('settings', settings);
+
     visibleSettings = settings;
+    selectedItem = +!settings;
     visibleMenu = !settings;
     fadingMenu = false;
   }

@@ -1,7 +1,7 @@
 import { OneMinusSrcAlphaFactor, CustomBlending, AddEquation, OneFactor, GLSL3 } from 'three/src/constants';
 import { Float16BufferAttribute, Float32BufferAttribute } from 'three/src/core/BufferAttribute';
-
 import type { FireConfig, FireParticle, SmokeParticle } from '@/weapons/types';
+
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { PointLight } from 'three/src/lights/PointLight';
@@ -140,6 +140,7 @@ export default class Fire
     this.fireParticles.push({
       rotation: Math.random() * PI.m2,
       currentSize: size,
+
       maxLife: life,
       life, size,
 
@@ -306,6 +307,9 @@ export default class Fire
   }
 
   public dispose (): void {
+    this.material.uniforms.smoke.value.dispose();
+    this.material.uniforms.fire.value.dispose();
+
     this.smokeParticles.splice(0);
     this.fireParticles.splice(0);
 
@@ -315,6 +319,6 @@ export default class Fire
 
     this.geometry.dispose();
     this.material.dispose();
-    this.light.remove();
+    this.light.dispose();
   }
 }
