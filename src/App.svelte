@@ -1,10 +1,10 @@
 <main>
-  {#if paused && !menuScreen && !loading}
-    <Pause on:continue={() => paused = false} />
-  {/if}
-
-  {#if appReady && menuScreen && !loading}
+  {#if menuScreen && !loading}
     <Menu
+      ready={appReady}
+      on:hide={() => appReady = false}
+      on:update={({ detail }) => updating = detail}
+
       on:start={() => {
         loading = true;
         paused = false;
@@ -12,39 +12,43 @@
     />
   {/if}
 
+  {#if paused && !menuScreen}
+    <Pause on:continue={() => paused = false} />
+  {/if}
+
   {#if appReady && loading}
-    <Loader
-      sceneLoading={loading}
+    <Await
       on:complete={() => loading = false}
+      loading
     />
   {/if}
 
-  <Game
-    running={!paused}
-    on:ready={() => appReady = true}
-
-    on:firstDraw={() => {
-      menuScreen = false;
-      loading = false;
-    }}
-  />
+  {#if !updating}
+    <Game
+      running={!paused}
+      on:ready={() => appReady = true}
+      on:firstDraw={() => {
+        menuScreen = false;
+        loading = false;
+      }}
+    />
+  {/if}
 </main>
 
 <script lang="ts">
+  import { Await, Pause } from '@components/overlay/index';
   import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
-  import Loader from '@components/Loader.svelte';
-
-  import Pause from '@components/Pause.svelte';
   import Game from '@components/Game.svelte';
   import { onDestroy } from 'svelte';
 
   let menuScreen = true;
+  let updating = false;
   let appReady = false;
   let loading = true;
   let paused = true;
 
-  !import.meta.hot && onDestroy(() =>
+  onDestroy(() =>
     GameEvents.remove('Game::Pause')
   );
 

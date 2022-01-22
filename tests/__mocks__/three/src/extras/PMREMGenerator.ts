@@ -20,6 +20,7 @@ class PMREMGenerator {
   }
 
   /* eslint-enable @typescript-eslint/no-unused-vars */
+  public dispose (): void { return; }
 }
 
 export { PMREMGenerator };

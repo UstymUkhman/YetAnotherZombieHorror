@@ -31,25 +31,24 @@
   const height = Viewport.size.height;
 
   const dispatch = createEventDispatcher();
-  const raindrops = Settings.getEnvironmentValue('raindrops');
+  let raindrops = Settings.getEnvironmentValue('raindrops');
 
   function onFirstDraw (): void {
     dispatch('firstDraw');
-    app.start();
+    app.start(camera);
   }
 
   onMount(() => {
-    app = new Application(scene, camera);
+    app = new Application(scene);
 
     GameEvents.add('Game::LoopInit', () => {
+      raindrops = Settings.getEnvironmentValue('raindrops');
       GameEvents.remove('Game::LoopInit', true);
       dispatch('ready');
     }, true);
   });
 
-  !import.meta.hot && onDestroy(
-    () => app.destroy()
-  );
+  onDestroy(() => app.dispose());
 
   $: (run => {
     if (app?.ready) app.pause = !run;

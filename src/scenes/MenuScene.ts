@@ -147,4 +147,8 @@ export default class MenuScene
     this.enemy.dispose();
     this.scene.clear();
   }
+
+  public set freeze (frozen: boolean) {
+    this.enemy.freeze = frozen;
+  }
 }

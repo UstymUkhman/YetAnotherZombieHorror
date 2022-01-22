@@ -209,14 +209,16 @@ export default class Rain
   }
 
   public dispose (): void {
-    const drops = this.material.uniforms.diffuse;
-    const depthTexture = this.material.uniforms.depth;
+    if (this.material) {
+      const drops = this.material.uniforms.diffuse;
+      const depthTexture = this.material.uniforms.depth;
 
-    (depthTexture.value as DepthTexture)?.dispose();
+      (depthTexture.value as DepthTexture)?.dispose();
 
-    (drops.value as Array<CanvasTexture>)?.forEach(
-      texture => texture.dispose()
-    );
+      (drops.value as Array<CanvasTexture>)?.forEach(
+        texture => texture.dispose()
+      );
+    }
 
     this.worker?.remove('Rain::UpdateParticles');
 

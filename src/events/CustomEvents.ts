@@ -1,7 +1,6 @@
-import type { EventCallback } from '@/events/GameEvents';
 import { GameEvent } from '@/events/GameEvents';
 
-export class CustomEvents
+export default class CustomEvents
 {
   private readonly target = new EventTarget();
   private readonly events: Map<string, GameEvent> = new Map();

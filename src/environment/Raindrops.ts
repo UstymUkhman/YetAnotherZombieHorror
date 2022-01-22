@@ -34,9 +34,11 @@ export default class Raindrops
       evaporate: 25,
       mist: false
     });
+
+    this.start();
   }
 
-  public start (): void {
+  private start (): void {
     this.raindrops.start().then(() => {
       this.canvas.style.opacity = '1';
 

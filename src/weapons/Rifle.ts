@@ -18,7 +18,7 @@ import anime from 'animejs';
 export default class Rifle extends Weapon
 {
   private readonly light = new PointLight(Color.WHITE, 1, 0, +Settings.getEnvironmentValue('physicalLights') + 1);
-  private readonly halfLightPower = +Settings.getEnvironmentValue('physicalLights') * 70 + 5;
+  private readonly halfLightPower = +Settings.getEnvironmentValue('physicalLights') * 74 + 1;
 
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;

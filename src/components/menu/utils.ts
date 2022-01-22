@@ -1,6 +1,6 @@
+import type { Environment, EnvironmentKeys, EnvironmentSettings } from '@/settings/types';
 import type { FlyParams, TransitionConfig } from 'svelte/transition';
 import type EnvironmentData from '@/settings/environment.json';
-import type { EnvironmentSettings } from '@/settings/types';
 
 import { quadIn, quadOut } from 'svelte/easing';
 import { fade, fly } from 'svelte/transition';
@@ -46,11 +46,32 @@ export const getKey = (event: KeyboardEvent, selected: number, items: number): n
   return updateSelected(key, selected, items);
 };
 
-export const updateEnvironment = (environment: EnvironmentSettings): void => {
-  settings.updateEnvironmentValues(environment.reduce((environment, variable) => ({
+const environmentNeedsUpdate = (environment: EnvironmentSettings, values: Environment): typeof EnvironmentData | void => {
+  const settings = environment.reduce((environment, variable) => ({
     ...environment, [variable.key]: variable.value
-  }), {}) as typeof EnvironmentData);
+  }), {}) as typeof EnvironmentData;
+
+  for (const variable in settings) {
+    const key = variable as EnvironmentKeys;
+
+    if (values.get(key) !== settings[key]) {
+      return settings;
+    }
+  }
 };
 
-export const resetEnvironment = (): void =>
-  settings.resetEnvironmentValues();
+export const updateEnvironment = (updated: EnvironmentSettings): boolean => {
+  const current = Settings.getEnvironmentValues();
+  const values = environmentNeedsUpdate(updated, current);
+
+  values && settings.updateEnvironmentValues(values);
+  return !!values;
+};
+
+export const resetEnvironment = (updated: EnvironmentSettings): boolean => {
+  const initial = Settings.getDefaultEnvironmentValues();
+  const values = environmentNeedsUpdate(updated, initial);
+
+  values && settings.resetEnvironmentValues();
+  return !!values;
+};

@@ -14,7 +14,7 @@ export default class Pointer
     event.stopPropagation();
     event.preventDefault();
 
-    !this.locked && GameEvents.dispatch('Game::Pause', false);
+    !this.locked && GameEvents.dispatch('Game::Pause');
   }
 
   private onLockError (event: Event): void {

@@ -1,4 +1,4 @@
-import { CustomEvents } from '@/events/CustomEvents';
+import CustomEvents from '@/events/CustomEvents';
 import WorkerEvents from '@/events/WorkerEvents';
 
 import type WebWorker from '@/worker/WebWorker';
@@ -32,11 +32,10 @@ class Events extends CustomEvents
   }
 
   public override dispose (): void {
+    this.workerEvents?.dispose();
     super.dispose();
   }
 }
-
-export type EventCallback = (event: GameEvent) => void;
 
 export class GameEvent extends CustomEvent<unknown> {
   public data: unknown = null;

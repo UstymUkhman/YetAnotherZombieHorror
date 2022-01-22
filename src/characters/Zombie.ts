@@ -77,4 +77,8 @@ export default class Zombie extends Character
       setTimeout(this.animations.scream.stop.bind(this.animations.scream), 100);
     }, this.getAnimationDuration('scream') * 1e3 - 100);
   }
+
+  public set freeze (frozen: boolean) {
+    this.setMixerTimeScale(+!frozen * 0.5);
+  }
 }

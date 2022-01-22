@@ -4,9 +4,7 @@ import { GameEvents } from '@/events/GameEvents';
 
 export default class Settings
 {
-  private static readonly environment = new Map(
-    Object.entries(EnvironmentData)
-  ) as Environment;
+  private static readonly environment = Settings.getDefaultEnvironmentValues();
 
   public constructor () {
     this.openDBConnection(this.getEnviromentSettings.bind(this));
@@ -86,6 +84,10 @@ export default class Settings
 
   public static getEnvironmentValue (key: EnvironmentKeys): boolean {
     return Settings.environment.get(key) as boolean;
+  }
+
+  public static getDefaultEnvironmentValues (): Environment {
+    return new Map(Object.entries(EnvironmentData)) as Environment;
   }
 
   public static getEnvironmentValues (): Environment {

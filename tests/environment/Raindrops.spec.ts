@@ -10,12 +10,6 @@ describe('Raindrops', () => {
     expect(raindrops).toBeInstanceOf(Raindrops);
   });
 
-  test('start', () => {
-    const start = jest.fn(raindrops.start.bind(raindrops));
-    start();
-    expect(start).toHaveReturnedWith(undefined);
-  });
-
   test('update', () => {
     const raindropsPrototype = Object.getPrototypeOf(raindrops);
     const update = jest.fn(raindropsPrototype.update.bind(raindrops));

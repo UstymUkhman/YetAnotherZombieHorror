@@ -64,7 +64,9 @@
   const maxClouds = EnvironmentData.clouds;
   const back = environment.length + 1;
   const reset = environment.length;
+
   let selected = back;
+  let reseted = false;
 
   function parseEnvironmentData (): EnvironmentSettings {
     return Array.from(Settings.getEnvironmentValues()).map(([ key, value ]) => ({
@@ -84,16 +86,16 @@
   }
 
   function onResetClick (): void {
-    setTimeout(() =>
+    reseted = resetEnvironment(environment);
+
+    reseted && setTimeout(() =>
       environment = parseEnvironmentData()
     , 100);
-
-    resetEnvironment();
   }
 
   function onBackClick (): void {
-    updateEnvironment(environment);
-    dispatch('menu');
+    const update = updateEnvironment(environment);
+    dispatch('menu', update || reseted);
   }
 
   function onClick (toggle = true): void {

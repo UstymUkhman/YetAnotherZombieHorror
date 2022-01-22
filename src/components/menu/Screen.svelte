@@ -3,7 +3,7 @@
 
   {#if sceneLoaded && visibleSettings}
     <Settings
-      on:menu={() => changeView(false)}
+      on:menu={({ detail }) => changeView(false, detail)}
     />
   {/if}
 
@@ -15,34 +15,48 @@
       on:play={onPlay}
     />
   {/if}
+
+  {#if settingsUpdate}
+    <Await updating />
+  {/if}
 </div>
 
 <script lang="ts">
   import Settings from '@/components/menu/Settings.svelte';
+  import { Await } from '@components/overlay/index';
   import { GameEvents } from '@/events/GameEvents';
 
   import Menu from '@/components/menu/Main.svelte';
   import type MenuScene from '@/scenes/MenuScene';
-
   import { createEventDispatcher } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
 
+  let scene: HTMLCanvasElement;
   let visibleSettings = false;
+  let settingsUpdate = false;
+  export let ready: boolean;
+  let menuScene: MenuScene;
+
   let sceneLoaded = false;
   let visibleMenu = true;
   let fadingMenu = true;
   let selectedItem = 0;
 
-  let menuScene: MenuScene;
-  let scene: HTMLCanvasElement;
-
   const width = window.innerWidth;
   const height = window.innerHeight;
   const dispatch = createEventDispatcher();
 
-  function changeView (settings: boolean): void {
+  function saveSettingsUpdate (): void {
+    setTimeout(() => dispatch('update', false));
+    dispatch('update', true);
+    menuScene.freeze = true;
+    settingsUpdate = true;
+    dispatch('hide');
+  }
+
+  function changeView (settings: boolean, update = false): void {
+    if (update) return saveSettingsUpdate();
     menuScene.rotateCamera(+settings * -0.5);
-    dispatch('settings', settings);
 
     visibleSettings = settings;
     selectedItem = +!settings;
@@ -66,6 +80,14 @@
   ));
 
   onDestroy(() => menuScene?.dispose());
+
+  $: (now =>
+    settingsUpdate && now && setTimeout(() => {
+      menuScene.freeze = false;
+      settingsUpdate = false;
+      changeView(false);
+    }, 500)
+  )(ready);
 </script>
 
 <style lang="scss">

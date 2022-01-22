@@ -180,7 +180,7 @@ export default class Portals
   }
 
   public dispose (): void {
-    this.material.dispose();
+    this.material?.dispose();
     this.triggers.splice(0);
   }
 

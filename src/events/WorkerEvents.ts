@@ -17,4 +17,8 @@ export default class WorkerEvents
   public remove (name: string): void {
     this.worker.remove(name);
   }
+
+  public dispose (): void {
+    this.worker.clear();
+  }
 }

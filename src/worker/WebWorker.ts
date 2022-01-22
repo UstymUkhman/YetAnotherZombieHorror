@@ -47,6 +47,9 @@ export default class WebWorker
   public dispose (): void {
     this.worker.onmessage = null;
     this.worker.onerror = null;
+  }
+
+  public clear (): void {
     this.events.clear();
   }
 }

@@ -32,7 +32,7 @@ export default class Application
 
   private readonly onResize = this.resize.bind(this);
 
-  public constructor (scene: HTMLCanvasElement, raindrops?: HTMLCanvasElement) {
+  public constructor (private readonly scene: HTMLCanvasElement) {
     const pixelRatio = window.devicePixelRatio || 1.0;
 
     GameEvents.createWorkerEvents(this.worker);
@@ -40,15 +40,27 @@ export default class Application
     this.audioScene = new AudioScene();
 
     import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/Onscreen').then(Manager =>
-      this.manager = new Manager.default(scene, this.worker, pixelRatio)
+      this.manager = new Manager.default(this.scene, this.worker, pixelRatio)
     );
-
-    raindrops && this.createRaindrops(scene, raindrops);
   }
 
-  private async createRaindrops (scene: HTMLCanvasElement, canvas: HTMLCanvasElement): Promise<void> {
-    const Raindrops = await import('@/environment/Raindrops');
-    this.raindrops = new Raindrops.default(scene, canvas);
+  private async createRaindrops (scene: HTMLCanvasElement, raindrops?: HTMLCanvasElement): Promise<void> {
+    if (raindrops) {
+      const Raindrops = await import('@/environment/Raindrops');
+      this.raindrops = new Raindrops.default(scene, raindrops);
+    }
+  }
+
+  public start (raindrops?: HTMLCanvasElement): void {
+    this.createRaindrops(this.scene, raindrops);
+    const { width, height } = Viewport.size;
+
+    this.audioScene.updateAmbient();
+    this.resize(width, height);
+
+    this.toggleInputs(false);
+    this.toggleAudio(false);
+    this.started = true;
   }
 
   private resize (width: number, height: number): void {
@@ -64,19 +76,9 @@ export default class Application
     this.audioScene.pause = paused;
   }
 
-  public start (): void {
-    const { width, height } = Viewport.size;
-    this.audioScene.updateAmbient();
-    this.resize(width, height);
-
-    this.toggleInputs(false);
-    this.toggleAudio(false);
-
-    this.raindrops?.start();
-    this.started = true;
-  }
-
   public dispose (): void {
+    RAF.dispose();
+    GameEvents.dispose();
     Viewport.removeResizeCallback(this.onResize);
 
     this.audioScene.dispose();
@@ -90,7 +92,6 @@ export default class Application
     delete this.raindrops;
     this.started = false;
     this.pause = true;
-    RAF.dispose();
   }
 
   public set pause (paused: boolean) {
