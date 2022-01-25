@@ -27,7 +27,7 @@
     <Game
       running={!paused}
       on:ready={() => appReady = true}
-      on:firstDraw={() => {
+      on:firstUpdate={() => {
         menuScreen = false;
         loading = false;
       }}
@@ -43,17 +43,19 @@
   import { onDestroy } from 'svelte';
 
   let menuScreen = true;
-  let updating = false;
   let appReady = false;
+
+  let updating = false;
   let loading = true;
   let paused = true;
 
-  onDestroy(() =>
-    GameEvents.remove('Game::Pause')
-  );
+  $: (update => update
+    ? GameEvents.remove('Game::Pause')
+    : GameEvents.add('Game::Pause', () => paused = true)
+  )(updating);
 
-  GameEvents.add('Game::Pause', () =>
-    paused = true
+  !import.meta.hot && onDestroy(() =>
+    GameEvents.remove('Game::Pause')
   );
 </script>
 

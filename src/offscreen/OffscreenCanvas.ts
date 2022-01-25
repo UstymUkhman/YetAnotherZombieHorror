@@ -26,10 +26,10 @@ export default class OffscreenCanvas implements ApplicationManager
 
   public set pause (paused: boolean) {
     this.worker.post('Game::Pause', { paused });
+    this.events.pause = paused;
   }
 
   public dispose(): void {
-    this.worker.post('Game::Dispose');
     this.events.dispose();
   }
 }

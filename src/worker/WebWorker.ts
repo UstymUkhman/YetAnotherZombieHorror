@@ -47,6 +47,7 @@ export default class WebWorker
   public dispose (): void {
     this.worker.onmessage = null;
     this.worker.onerror = null;
+    this.post('Game::Dispose');
   }
 
   public clear (): void {

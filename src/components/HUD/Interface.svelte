@@ -1,7 +1,7 @@
-{#if firstDrawCall}
-  <Aim hide={!aiming} />
+{#if visibleHUD}
+  <div transition:fade>
+    <Aim hide={!aiming} />
 
-  {#if location}
     <Map
       playerRotation={location.rotation}
       playerPosition={location.position}
@@ -16,21 +16,20 @@
         angle={rifleAngle}
       />
     {/if}
-  {/if}
+  </div>
 {/if}
 
 <script lang="ts">
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import BorderRifle from '@components/map/BorderRifle.svelte';
   import type { PlayerLocation } from '@/characters/types';
 
   import { GameEvents } from '@/events/GameEvents';
-  import { createEventDispatcher } from 'svelte';
-
   import Aim from '@components/HUD/Aim.svelte';
   import Map from '@components/map/Map.svelte';
-  import { onMount, onDestroy } from 'svelte';
 
   import { Elastic } from '@/utils/Elastic';
+  import { fade } from 'svelte/transition';
   import Viewport from '@/utils/Viewport';
 
   import { PI } from '@/utils/Number';
@@ -50,10 +49,11 @@
   const zoom = new Elastic.Number(0);
   let location: PlayerLocation;
 
-  let firstDrawCall = false;
   let visibleRifle = false;
-  let rifleAngle: number;
+  let firstUpdate = false;
+  let visibleHUD = false;
 
+  let rifleAngle: number;
   let zoomScale: number;
   let mapRadius: number;
 
@@ -82,14 +82,17 @@
     }
   }
 
-  function dispatchFirstDraw (): void {
-    dispatch('firstDraw');
-    firstDrawCall = true;
+  function dispatchUpdate (): void {
+    setTimeout(() => dispatch('firstUpdate'), 1000);
+    setTimeout(() => visibleHUD = true, 2000);
+
+    firstUpdate = true;
+    dispatch('start');
   }
 
   GameEvents.add('Characters::Location', event => {
     location = (event.data as LocationEvent).player;
-    !firstDrawCall && dispatchFirstDraw();
+    !firstUpdate && dispatchUpdate();
   }, true);
 
   GameEvents.add('Player::Run', event => {
@@ -120,3 +123,15 @@
     RAF.remove(updateZoom);
   });
 </script>
+
+<style lang="scss">
+  @use "@/mixins" as mixin;
+
+  div {
+    @include mixin.center-size;
+    pointer-events: none;
+
+    padding: 0;
+    margin: 0;
+  }
+</style>

@@ -1,10 +1,14 @@
 import { mouseEvent, wheelEvent, keyboardEvent, prevent } from '@/offscreen/EventHandlers';
+import type { Events, EventHandler } from '@/offscreen/types';
 import type { Event } from 'three/src/core/EventDispatcher';
 import type WebWorker from '@/worker/WebWorker';
 
 export default class OffscreenEvents
 {
-  private readonly eventHandlers = Object.entries({
+  private paused = true;
+  private readonly dispatch = this.onDispatch.bind(this);
+
+  private readonly eventHandlers = new Map(Object.entries({
     pointerdown: mouseEvent,
     pointermove: mouseEvent,
     pointerup: mouseEvent,
@@ -17,25 +21,30 @@ export default class OffscreenEvents
     keydown: keyboardEvent,
     keyup: keyboardEvent,
     contextmenu: prevent
-  });
+  }));
 
   public constructor (private readonly worker: WebWorker) {
-    for (const [event, handler] of this.eventHandlers) {
-      document.addEventListener(event, event =>
-        handler(event, this.dispatch.bind(this))
-      );
+    for (const [name] of this.eventHandlers) {
+      document.addEventListener(name, this.dispatch);
     }
   }
 
-  private dispatch (event: Event): void {
-    this.worker.post('EventsTarget::Dispatch', event);
+  private onDispatch (event: Event): void {
+    if (!this.paused) {
+      const handler = this.eventHandlers.get(event.type as Events) as EventHandler;
+      handler(event, event => this.worker.post('EventsTarget::Dispatch', event));
+    }
   }
 
   public dispose (): void {
-    for (const [event, handler] of this.eventHandlers) {
-      document.removeEventListener(event, event =>
-        handler(event, this.dispatch.bind(this))
-      );
+    this.paused = true;
+
+    for (const [name] of this.eventHandlers) {
+      document.removeEventListener(name, this.dispatch);
     }
+  }
+
+  public set pause (paused: boolean) {
+    this.paused = paused;
   }
 }

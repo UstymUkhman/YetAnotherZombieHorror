@@ -22,14 +22,13 @@
 </div>
 
 <script lang="ts">
+  import { createEventDispatcher, tick, onMount, onDestroy } from 'svelte';
   import Settings from '@/components/menu/Settings.svelte';
+
   import { Await } from '@components/overlay/index';
   import { GameEvents } from '@/events/GameEvents';
-
   import Menu from '@/components/menu/Main.svelte';
   import type MenuScene from '@/scenes/MenuScene';
-  import { createEventDispatcher } from 'svelte';
-  import { onMount, onDestroy } from 'svelte';
 
   let scene: HTMLCanvasElement;
   let visibleSettings = false;
@@ -46,15 +45,7 @@
   const height = window.innerHeight;
   const dispatch = createEventDispatcher();
 
-  function saveSettingsUpdate (): void {
-    setTimeout(() => dispatch('update', false));
-    dispatch('update', true);
-    menuScene.freeze = true;
-    settingsUpdate = true;
-    dispatch('hide');
-  }
-
-  function changeView (settings: boolean, update = false): void {
+  async function changeView (settings: boolean, update = false): Promise<void> {
     if (update) return saveSettingsUpdate();
     menuScene.rotateCamera(+settings * -0.5);
 
@@ -62,6 +53,25 @@
     selectedItem = +!settings;
     visibleMenu = !settings;
     fadingMenu = false;
+  }
+
+  async function saveSettingsUpdate (): Promise<void> {
+    dispatch('update', true);
+    menuScene.freeze = true;
+    settingsUpdate = true;
+
+    dispatch('hide');
+    await tick();
+    dispatch('update', false)
+  }
+
+  function settingsUpdated (): void {
+    setTimeout(() => changeView(false), 1000);
+
+    setTimeout(() => {
+      menuScene.freeze = false;
+      settingsUpdate = false;
+    }, 500);
   }
 
   function onPlay (): void {
@@ -82,11 +92,7 @@
   onDestroy(() => menuScene?.dispose());
 
   $: (now =>
-    settingsUpdate && now && setTimeout(() => {
-      menuScene.freeze = false;
-      settingsUpdate = false;
-      changeView(false);
-    }, 500)
+    settingsUpdate && now && settingsUpdated()
   )(ready);
 </script>
 

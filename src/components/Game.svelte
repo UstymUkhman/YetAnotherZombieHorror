@@ -6,7 +6,7 @@
   {/if}
 
   {#if app}
-    <Interface on:firstDraw={onFirstDraw} />
+    <Interface on:start={() => app.start(camera)} on:firstUpdate />
   {/if}
 </div>
 
@@ -32,11 +32,6 @@
 
   const dispatch = createEventDispatcher();
   let raindrops = Settings.getEnvironmentValue('raindrops');
-
-  function onFirstDraw (): void {
-    dispatch('firstDraw');
-    app.start(camera);
-  }
 
   onMount(() => {
     app = new Application(scene);

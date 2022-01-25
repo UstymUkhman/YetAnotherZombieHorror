@@ -45,10 +45,9 @@ export default class Application
   }
 
   private async createRaindrops (scene: HTMLCanvasElement, raindrops?: HTMLCanvasElement): Promise<void> {
-    if (raindrops) {
-      const Raindrops = await import('@/environment/Raindrops');
-      this.raindrops = new Raindrops.default(scene, raindrops);
-    }
+    raindrops && import('@/environment/Raindrops').then(Raindrops =>
+      this.raindrops = new Raindrops.default(scene, raindrops)
+    );
   }
 
   public start (raindrops?: HTMLCanvasElement): void {
@@ -78,7 +77,10 @@ export default class Application
 
   public dispose (): void {
     RAF.dispose();
-    GameEvents.dispose();
+
+    this.pause = true;
+    this.started = false;
+
     Viewport.removeResizeCallback(this.onResize);
 
     this.audioScene.dispose();
@@ -90,8 +92,7 @@ export default class Application
     this.music.dispose();
 
     delete this.raindrops;
-    this.started = false;
-    this.pause = true;
+    GameEvents.dispose();
   }
 
   public set pause (paused: boolean) {
