@@ -17,9 +17,8 @@
 </div>
 
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { getKey, screenFade } from './utils';
-  import { onMount, onDestroy } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { getKey, screenFade } from '@components/menu/utils';
 
   import { mix } from '@/utils/Number';
   import Configs from '@/configs';

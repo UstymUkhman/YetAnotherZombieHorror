@@ -53,7 +53,7 @@ export default class LevelScene
     this.renderer = new WebGLRenderer({
       preserveDrawingBuffer: raindrops,
       antialias: true,
-      alpha: false,
+      alpha: true,
       canvas
     });
 

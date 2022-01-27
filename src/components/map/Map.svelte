@@ -14,7 +14,8 @@
 </div>
 
 <script lang="ts">
-  import { getScaledCoords, pointInCircle, getAngleToRifle } from './utils';
+  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/map/utils';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
@@ -24,9 +25,6 @@
   import Player from '@components/map/Player.svelte';
   import { cloneBounds, max } from '@/utils/Array';
   import LevelScene from '@/scenes/LevelScene';
-
-  import { createEventDispatcher } from 'svelte';
-  import { onMount, onDestroy } from 'svelte';
 
   const minCoords = LevelScene.minCoords.map(
     coord => Math.abs(coord) + PADDING

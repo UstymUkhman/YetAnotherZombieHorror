@@ -1,6 +1,7 @@
 import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from '@/physics/types';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { MeshBVH, disposeBoundsTree } from 'three-mesh-bvh';
 
 import PhysicsWorld from '@/physics/PhysicsWorld';
 import { GameEvents } from '@/events/GameEvents';
@@ -12,7 +13,6 @@ import { Mesh } from 'three/src/objects/Mesh';
 
 import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
-import { MeshBVH } from 'three-mesh-bvh';
 import { Vector } from '@/utils/Vector';
 
 const SPEED = 5.0;
@@ -152,8 +152,10 @@ export default class BVHPhysics extends PhysicsWorld
 
   public dispose (): void {
     const environmentGeometry = this.environmentCollider?.geometry as BVHGeometry;
-    environmentGeometry.disposeBoundsTree();
+    const disposeBVHGeometry = disposeBoundsTree.bind(environmentGeometry);
+
     environmentGeometry.dispose();
+    disposeBVHGeometry();
 
     this.paused = true;
     this.environment.clear();

@@ -1,7 +1,8 @@
 <div in:screenFly={{ show: true }} out:screenFly>
   <ul>
     {#each environment as variable, v}
-      <li on:mouseover={() => selected = v}
+      <li class:disabled={!variable.enabled}
+          on:mouseover={() => selected = v}
           on:mouseout={() => selected = -1}
           on:click={onListItemClick}
           on:focus
@@ -49,29 +50,59 @@
 </div>
 
 <script lang="ts">
-  import { getKey, screenFly, updateEnvironment, resetEnvironment } from './utils';
-  import type { EnvironmentSettings } from '@/settings/types';
+  import type { EnvironmentSettings, EnvironmentKeys, EnvironmentValues } from '@/settings/types';
+  import { getOptionDependencies, updateEnvironment, resetEnvironment } from '@/settings/utils';
+
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { getKey, screenFly } from '@components/menu/utils';
+
   import { Checkbox, Range } from '@components/common/index';
   import EnvironmentData from '@/settings/environment.json';
 
-  import { createEventDispatcher } from 'svelte';
-  import { onMount, onDestroy } from 'svelte';
   import Settings from '@/settings';
 
   const dispatch = createEventDispatcher();
-  let environment = parseEnvironmentData();
-
   const maxClouds = EnvironmentData.clouds;
-  const back = environment.length + 1;
-  const reset = environment.length;
 
-  let selected = back;
+  let parseEnvironmentData: () => void;
+  let environment: EnvironmentSettings;
+
+  let selected: number;
   let reseted = false;
 
-  function parseEnvironmentData (): EnvironmentSettings {
-    return Array.from(Settings.getEnvironmentValues()).map(([ key, value ]) => ({
-      name: key.replace(/[A-Z]/g, char => ` ${char}`), key, value
+  let reset: number;
+  let back: number;
+
+  (parseEnvironmentData = () => {
+    environment = Array.from(Settings.getEnvironmentValues()).map(([ key, value ]) => ({
+      name: key.replace(/[A-Z]/g, char => ` ${char}`),
+      enabled: true, key, value
     }));
+
+    selected = back = environment.length + 1;
+    reset = environment.length;
+    updateEnvironmentData();
+  })();
+
+  function updateEnvironmentData (key?: EnvironmentKeys, value?: EnvironmentValues): void {
+    if (!key && !value) return environment.forEach(({ key, value }) =>
+      updateOptionDependencies(key, value)
+    );
+
+    updateOptionDependencies(key as EnvironmentKeys, value as EnvironmentValues);
+  }
+
+  function updateOptionDependencies (key: EnvironmentKeys, value: EnvironmentValues): void {
+    const dependencies = getOptionDependencies(key);
+    if (!dependencies) return;
+
+    dependencies.forEach(key => {
+      const dependency = environment.find(variable => variable.key === key);
+      if (!dependency) return;
+
+      if (!value) dependency.value = false;
+      dependency.enabled = !!value;
+    });
   }
 
   function onListItemClick (event: MouseEvent): void {
@@ -87,10 +118,7 @@
 
   function onResetClick (): void {
     reseted = resetEnvironment(environment);
-
-    reseted && setTimeout(() =>
-      environment = parseEnvironmentData()
-    , 100);
+    reseted && setTimeout(parseEnvironmentData, 100);
   }
 
   function onBackClick (): void {
@@ -102,7 +130,7 @@
     if (selected === reset) return onResetClick();
     if (selected === back) return onBackClick();
 
-    const { value } = environment[selected];
+    const { key, value } = environment[selected];
 
     if (typeof value === 'number') {
       const extreme = value ? 0 : maxClouds;
@@ -113,6 +141,8 @@
     else {
       environment[selected].value = !value;
     }
+
+    updateEnvironmentData(key, environment[selected].value);
   }
 
   function onRangeUpdate (event: CustomEvent): void {
@@ -156,6 +186,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 1.25em;
+    transition: opacity 250ms;
     justify-content: space-between;
 
     h5 {
@@ -166,6 +197,11 @@
 
     :global(input[type=checkbox]) {
       pointer-events: none;
+    }
+
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.5;
     }
 
     &:last-child {

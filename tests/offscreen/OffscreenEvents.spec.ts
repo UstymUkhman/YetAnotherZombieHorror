@@ -9,11 +9,18 @@ describe('OffscreenEvents', () => {
     expect(events).toBeInstanceOf(OffscreenEvents);
   });
 
-  test('dispatch', () => {
+  test('onDispatch', () => {
     const eventsPrototype = Object.getPrototypeOf(events);
-    const dispatch = jest.fn(eventsPrototype.dispatch.bind(events));
+    const onDispatch = jest.fn(eventsPrototype.onDispatch.bind(events));
 
-    dispatch();
-    expect(dispatch).toHaveReturnedWith(undefined);
+    onDispatch();
+    expect(onDispatch).toHaveReturnedWith(undefined);
+  });
+
+  test('dispose', () => {
+    const dispose = jest.fn(events.dispose.bind(events));
+
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
   });
 });

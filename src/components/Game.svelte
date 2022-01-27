@@ -11,12 +11,11 @@
 </div>
 
 <script lang="ts">
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import Interface from '@components/HUD/Interface.svelte';
+
   import { GameEvents } from '@/events/GameEvents';
   import Application from '@/managers/Application';
-
-  import { createEventDispatcher } from 'svelte';
-  import { onMount, onDestroy } from 'svelte';
 
   import Viewport from '@/utils/Viewport';
   import Settings from '@/settings';
