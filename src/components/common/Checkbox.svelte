@@ -34,7 +34,7 @@
     padding: 0;
     margin: 0;
 
-    &:after {
+    &::after {
       transition: background-color 200ms, transform 250ms, opacity 250ms;
       will-change: background-color, transform, opacity;
       transition-timing-function: var.$ease-in-quad;
@@ -46,7 +46,7 @@
       transform: scale(0);
       position: absolute;
 
-      content: '';
+      content: "";
       opacity: 0;
 
       left: 2px;
@@ -56,13 +56,14 @@
     &.checked {
       transition-timing-function: var.$ease-out-quad;
 
-      &:after {
+      &::after {
         transform: scale(1);
         opacity: 1;
       }
     }
 
-    &:hover:after, &.active:after {
+    &:hover::after,
+    &.active::after {
       background-color: rgba(var.$white, 0.8);
     }
   }

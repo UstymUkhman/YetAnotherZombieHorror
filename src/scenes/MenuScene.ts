@@ -48,7 +48,6 @@ export default class MenuScene
 
     this.renderer = new WebGLRenderer({
       antialias: true,
-      alpha: true,
       canvas
     });
 

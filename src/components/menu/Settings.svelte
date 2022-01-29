@@ -195,7 +195,7 @@
       font-size: 1rem;
     }
 
-    :global(input[type=checkbox]) {
+    :global(input[type="checkbox"]) {
       pointer-events: none;
     }
 

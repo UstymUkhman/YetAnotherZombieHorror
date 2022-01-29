@@ -144,7 +144,6 @@
   div.map {
     @include mixin.size(10vw);
 
-    /* stylelint-disable-next-line color-function-notation */
     background-color: rgba(var.$white, 0.25);
     box-shadow: 0px 0px 25px var.$black;
     backdrop-filter: blur(5px);

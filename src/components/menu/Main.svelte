@@ -109,17 +109,17 @@
       width: 50%;
       bottom: 0;
       top: 0;
+    }
 
-      li {
+    li {
+      transform-style: preserve-3d;
+
+      h3 {
         transform-style: preserve-3d;
+        transform-origin: 50% 50%;
 
-        h3 {
-          transform-style: preserve-3d;
-          transform-origin: 50% 50%;
-
-          &.active {
-            transform: translateX(1vw);
-          }
+        &.active {
+          transform: translateX(1vw);
         }
       }
     }

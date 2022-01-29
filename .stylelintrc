@@ -17,6 +17,7 @@
     "comment-empty-line-before": null,
     "at-rule-empty-line-before": null,
     "number-no-trailing-zeros": null,
+    "color-function-notation": null,
     "rule-empty-line-before": null,
     "length-zero-no-unit": null,
     "function-name-case": null,

@@ -3,9 +3,9 @@ import { LoadingManager } from 'three/src/loaders/LoadingManager';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { Texture } from 'three/src/textures/Texture';
 
+import { RGBAFormat } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Group } from 'three/src/objects/Group';
-import { RGBFormat } from 'three/src/constants';
 
 type AssetTypes = CanvasTexture | CubeTexture | Assets.GLTFModel | AudioBuffer;
 type Reject = (error: ErrorEvent) => void;
@@ -31,7 +31,7 @@ describe('AssetsLoader', () => {
       expect(callbacks.onLoad(new CubeTexture())).toHaveReturnedWith(undefined);
     }).then(asset => {
       expect(asset).toBeInstanceOf(CubeTexture);
-      expect((asset as CubeTexture).format).toStrictEqual(RGBFormat);
+      expect((asset as CubeTexture).format).toStrictEqual(RGBAFormat);
     });
 
     new Promise((resolve, reject) => {

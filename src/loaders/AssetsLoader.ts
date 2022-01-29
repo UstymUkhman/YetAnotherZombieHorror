@@ -12,7 +12,7 @@ import type { Group } from 'three/src/objects/Group';
 
 import TextureLoader from '@/loaders/TextureLoader';
 import { GameEvents } from '@/events/GameEvents';
-import { RGBFormat } from 'three/src/constants';
+import { RGBAFormat } from 'three/src/constants';
 
 import Configs from '@/configs';
 
@@ -53,7 +53,7 @@ export namespace Assets
       return {
         onLoad: asset => {
           if (asset instanceof CubeTexture) {
-            asset.format = RGBFormat;
+            asset.format = RGBAFormat;
           }
 
           resolve(asset);

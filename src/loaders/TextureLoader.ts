@@ -1,9 +1,9 @@
 import { ImageBitmapLoader } from 'three/src/loaders/ImageBitmapLoader';
 import type { LoadingManager } from 'three/src/loaders/LoadingManager';
-
 import { CanvasTexture } from 'three/src/textures/CanvasTexture';
-import { RGBAFormat, RGBFormat } from 'three/src/constants';
+
 import { Loader } from 'three/src/loaders/Loader';
+import { RGBAFormat } from 'three/src/constants';
 
 type ProgressCallback = (event: ProgressEvent) => void;
 type LoadCallback = (texture: CanvasTexture) => void;
@@ -23,10 +23,7 @@ export default class TextureLoader extends Loader
       const texture = new CanvasTexture(imageBitmap);
       texture.image = imageBitmap;
 
-      // JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
-			const isJPEG = url.search( /\.jpe?g($|\?)/i ) > 0 || url.search( /^data:image\/jpeg/ ) === 0;
-
-			texture.format = isJPEG ? RGBFormat : RGBAFormat;
+			texture.format = RGBAFormat;
 			texture.needsUpdate = true;
 
       onLoad && onLoad(texture);

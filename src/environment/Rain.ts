@@ -1,4 +1,4 @@
-import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBFormat, DepthStencilFormat, GLSL3 } from 'three/src/constants';
+import { AdditiveBlending, UnsignedInt248Type, NearestFilter, RGBAFormat, DepthStencilFormat, GLSL3 } from 'three/src/constants';
 import { WebGLRenderTarget } from 'three/src/renderers/WebGLRenderTarget';
 import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
 import type { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
@@ -73,8 +73,8 @@ export default class Rain
       renderTarget.texture.minFilter = NearestFilter;
       renderTarget.texture.magFilter = NearestFilter;
       renderTarget.texture.generateMipmaps = false;
+      renderTarget.texture.format = RGBAFormat;
 
-      renderTarget.texture.format = RGBFormat;
       renderTarget.stencilBuffer = true;
       renderTarget.depthBuffer = true;
     });
@@ -152,7 +152,7 @@ export default class Rain
     if (this.renderTargets) {
       const lastRenderTarget = this.renderTargets[0];
 
-      this.material.uniforms.depth.value = this.renderTargets[0].depthTexture;
+      this.material.uniforms.depth.value = lastRenderTarget.depthTexture;
       this.material.uniforms.near.value = CameraObject.near;
       this.material.uniforms.far.value = CameraObject.far;
 
