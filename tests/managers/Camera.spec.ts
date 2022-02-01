@@ -7,8 +7,8 @@ import Configs from '@/configs';
 
 describe('Camera', () => {
   test('setCamera', () => {
-    const сameraPrototype = Object.getPrototypeOf(Camera);
-    const setCamera = jest.fn(сameraPrototype.setCamera.bind(Camera));
+    const cameraPrototype = Object.getPrototypeOf(Camera);
+    const setCamera = jest.fn(cameraPrototype.setCamera.bind(Camera));
 
     setCamera();
     expect(setCamera).toHaveReturnedWith(undefined);
@@ -22,8 +22,8 @@ describe('Camera', () => {
   });
 
   test('getPosition', () => {
-    const сameraPrototype = Object.getPrototypeOf(Camera);
-    const getPosition = jest.fn(сameraPrototype.getPosition.bind(Camera));
+    const cameraPrototype = Object.getPrototypeOf(Camera);
+    const getPosition = jest.fn(cameraPrototype.getPosition.bind(Camera));
 
     getPosition();
     expect(getPosition).toHaveReturnedWith(Configs.Camera.tps.idle);
@@ -139,8 +139,8 @@ describe('Camera', () => {
   });
 
   test('run', () => {
-    const сameraPrototype = Object.getPrototypeOf(Camera);
-    const run = jest.fn(сameraPrototype.run.bind(Camera));
+    const cameraPrototype = Object.getPrototypeOf(Camera);
+    const run = jest.fn(cameraPrototype.run.bind(Camera));
 
     run();
     expect(run).toHaveReturnedWith(undefined);
@@ -169,7 +169,7 @@ describe('Camera', () => {
   test('dispose', () => {
     const dispose = jest.fn(Camera.dispose.bind(Camera));
     dispose();
-    expect(dispose).toHaveReturnedWith(undefined);
+    expect(dispose).toHaveReturnedWith(0.0);
   });
 
   test('config', () => {

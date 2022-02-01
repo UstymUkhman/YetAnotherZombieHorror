@@ -236,7 +236,7 @@ export default class AudioScene
   }
 
   public set pause (paused: boolean) {
-    this.ambient && this.ambient[paused ? 'pause' : 'play']();
+    this.ambient?.[paused ? 'pause' : 'play']();
     this.listener.setMasterVolume(+!paused);
   }
 

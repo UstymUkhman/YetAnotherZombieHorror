@@ -102,9 +102,11 @@ export default class Keyboard
       clearTimeout(this.aimTimeout);
 
       this.aimTimeout = setTimeout(() => {
-        this.player.stopAiming();
+        const forward = !!this.moves[Direction.UP];
+        const running = this.shift && forward;
+        this.player.stopAiming(running);
 
-        this.shift && this.moves[Direction.UP]
+        running
           ? this.player.run(this.moves, true)
           : this.player.move(this.moves);
       }, Math.max(450 - (Date.now() - this.aimTime), 0)) as unknown as number;

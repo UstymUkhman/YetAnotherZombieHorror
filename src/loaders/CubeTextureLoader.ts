@@ -26,7 +26,7 @@ export default class CubeTextureLoader extends ThreeCubeTextureLoader
 
 				if (loaded === 6) {
 					texture.needsUpdate = true;
-					onLoad && onLoad(texture);
+					onLoad?.(texture);
 				}
 			}, onProgress, onError);
 		}

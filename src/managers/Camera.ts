@@ -94,7 +94,7 @@ export class CameraManager
     const duration = +fpRifle * -300 + 400;
 
     const near = aiming ? 0.03 : this.fps
-      ? rifle ? 0.5 : 0.32 : 0.1;
+      ? rifle ? 0.5 : 0.315 : 0.1;
 
     if (this.fps && running && rifle) {
       this.camera.position.z = 0.2;
@@ -106,7 +106,9 @@ export class CameraManager
 
   public setNearPlane (near: number, duration: number): void {
     anime({
+      complete: () => this.camera.updateProjectionMatrix(),
       update: () => this.camera.updateProjectionMatrix(),
+
       targets: this.camera,
       easing: 'linear',
       duration, near
@@ -162,18 +164,15 @@ export class CameraManager
   }
 
   public runAnimation (running: boolean): void {
+    if (running && this.runTimeout) return;
+
+    this.runTimeout = running
+      ? setTimeout(() =>
+          RAF.add(this.onRunning), 500
+        ) as unknown as number
+      : this.dispose();
+
     const position = this.getPosition(running);
-    if (this.camera.position.equals(position)) return;
-
-    if (running) this.runTimeout = setTimeout(
-      () => RAF.add(this.onRunning), 500
-    ) as unknown as number;
-
-    else {
-      clearTimeout(this.runTimeout);
-      RAF.remove(this.onRunning);
-    }
-
     const { x, y, z } = position;
     this.runDelta = 0;
 
@@ -206,9 +205,10 @@ export class CameraManager
     this.camera.updateProjectionMatrix();
   }
 
-  public dispose (): void {
+  public dispose (): number {
     clearTimeout(this.runTimeout);
     RAF.remove(this.onRunning);
+    return 0.0;
   }
 
   public static get config (): CameraState {

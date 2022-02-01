@@ -223,12 +223,15 @@ export default class Player extends Character
     }, 400);
   }
 
-  public stopAiming (): void {
-    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
+  public stopAiming (running: boolean): void {
     const duration = Math.min(Date.now() - this.aimTime, 400);
+    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
 
-    Camera.aimAnimation(false, this.equipRifle, duration);
-    Camera.updateNearPlane(false, this.equipRifle);
+    !running && Camera.aimAnimation(false, this.equipRifle, duration);
+
+    Camera.isFPS && running
+      ? Camera.setNearPlane(this.equipRifle ? 0.5 : 0.315, 0)
+      : Camera.updateNearPlane(false, this.equipRifle);
 
     this.weapon.aiming = this.aiming = false;
     this.currentAnimation.paused = false;

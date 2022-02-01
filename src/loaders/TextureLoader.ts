@@ -26,7 +26,7 @@ export default class TextureLoader extends Loader
 			texture.format = RGBAFormat;
 			texture.needsUpdate = true;
 
-      onLoad && onLoad(texture);
+      onLoad?.(texture);
       return texture;
 
     }, onProgress, onError);
