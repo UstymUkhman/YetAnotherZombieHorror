@@ -13,7 +13,6 @@ export default class Raindrops
     private readonly background: HTMLCanvasElement,
     private readonly canvas: HTMLCanvasElement
   ) {
-    RAF.add(this.onUpdate);
     Viewport.addResizeCallback(this.onResize);
 
     this.raindrops = new Raindrop({
@@ -39,6 +38,8 @@ export default class Raindrops
   }
 
   private start (): void {
+    RAF.add(this.onUpdate);
+
     this.raindrops.start().then(() => {
       this.canvas.style.opacity = '1';
 
@@ -61,6 +62,18 @@ export default class Raindrops
 
     this.canvas.height = height;
     this.canvas.width = width;
+  }
+
+  public pause (paused: boolean): void {
+    if (paused) {
+      this.raindrops.stop();
+      RAF.remove(this.onUpdate);
+    }
+
+    else {
+      RAF.add(this.onUpdate);
+      this.raindrops.start();
+    }
   }
 
   public dispose (): void {

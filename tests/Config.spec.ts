@@ -222,6 +222,9 @@ describe('Configs', () => {
   });
 
   test('Rifle', () => {
+    const rifleSpinePosition = new Vector3(...Rifle.spinePosition);
+    const rifleSpineRotation = new Euler(...Rifle.spineRotation);
+
     const riflePosition = new Vector3(...Rifle.position);
     const rifleRotation = new Euler(...Rifle.rotation);
 
@@ -237,6 +240,12 @@ describe('Configs', () => {
 
     expect(typeof Configs.Rifle.maxStock).toStrictEqual('number');
     expect(typeof Configs.Rifle.ammo).toStrictEqual('number');
+
+    expect(Configs.Rifle.spinePosition).toStrictEqual(rifleSpinePosition);
+    expect(Configs.Rifle.spinePosition).toBeInstanceOf(Vector3);
+
+    expect(Configs.Rifle.spineRotation).toStrictEqual(rifleSpineRotation);
+    expect(Configs.Rifle.spineRotation).toBeInstanceOf(Euler);
 
     expect(Configs.Rifle.position).toStrictEqual(riflePosition);
     expect(Configs.Rifle.position).toBeInstanceOf(Vector3);

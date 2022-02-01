@@ -162,7 +162,10 @@ namespace Configs
       scale: RifleData.bullet.scale
     },
 
+    spinePosition: new Vector3(...RifleData.spinePosition),
+    spineRotation: new Euler(...RifleData.spineRotation),
     worldScale: new Vector3(...RifleData.worldScale),
+
     position: new Vector3(...RifleData.position),
     rotation: new Euler(...RifleData.rotation),
 

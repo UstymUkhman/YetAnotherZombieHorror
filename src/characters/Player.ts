@@ -7,6 +7,7 @@ import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import { Quaternion } from 'three/src/math/Quaternion';
 import { radToDeg } from 'three/src/math/MathUtils';
+import type { Bone } from 'three/src/objects/Bone';
 
 import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
@@ -137,6 +138,7 @@ export default class Player extends Character
     if (this.lastAnimation === idle) return;
 
     this.running = this.moving = false;
+    this.rifle?.updatePosition(0);
     Camera.runAnimation(false);
     this.idleTime = now;
 
@@ -160,6 +162,7 @@ export default class Player extends Character
     GameEvents.dispatch('Player::Aim', false, true);
 
     this.moving = direction !== 'Idle';
+    this.rifle?.updatePosition(1);
     Camera.runAnimation(false);
 
     this.running = false;
@@ -184,6 +187,7 @@ export default class Player extends Character
       GameEvents.dispatch('Player::Run', true, true);
       this.running = this.moving = true;
       this.updateAnimation('Run', run);
+      this.rifle?.updatePosition(1.5);
 
       Camera.runAnimation(true);
       this.resetRotation(true);
@@ -358,6 +362,7 @@ export default class Player extends Character
     );
 
     this.hasRifle = this.equipRifle || rifle;
+    this.toggleRifle(!rifle);
     this.equipRifle = rifle;
   }
 
@@ -447,8 +452,28 @@ export default class Player extends Character
 
   public pickRifle (rifle: Rifle): void {
     this.rifle = rifle;
+
+    if (!this.hasRifle) {
+      this.toggleRifle(true);
+    }
+
     this.hasRifle = true;
     this.rifle.addAmmo();
+  }
+
+  private toggleRifle (append: boolean): void {
+    if (!this.rifle) return;
+
+    if (append) {
+      const factor = +this.running * 0.5 + +this.moving;
+      this.spine.add(this.rifle.model);
+      this.rifle.append(factor);
+    }
+
+    else {
+      this.spine.remove(this.rifle.model);
+      this.rifle.reset();
+    }
   }
 
   public override update (delta: number): void {
@@ -476,6 +501,10 @@ export default class Player extends Character
 
   private get meshes (): Array<SkinnedMesh> {
     return this.getModel().children[0].children[1].children as Array<SkinnedMesh>;
+  }
+
+  private get spine (): Bone {
+    return this.getModel().children[0].children[0].children[0] as Bone;
   }
 
   public get location (): PlayerLocation {

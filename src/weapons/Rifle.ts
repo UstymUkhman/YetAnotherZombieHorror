@@ -24,12 +24,16 @@ export default class Rifle extends Weapon
 
   private readonly halfLightPower = +Settings.getEnvironmentValue('physicalLights') * 70 + 5;
 
+  private readonly spinePosition = Configs.Rifle.spinePosition as Vector3;
+  private readonly spineRotation = Configs.Rifle.spineRotation as Euler;
+
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;
   private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone?: Assets.GLTF;
   private reloading = false;
+  private appended = false;
 
   private spawnTime = 0.0;
   private spawned = false;
@@ -140,9 +144,28 @@ export default class Rifle extends Weapon
     this.spawned = true;
   }
 
-  private reset (): void {
+  public updatePosition (factor: number): void {
+    this.appended && anime({
+      targets: this.model.position,
+      duration: +!factor * 100,
+      x: factor * 10.0 - 10.0,
+      easing: 'linear'
+    });
+  }
+
+  public append (factor: number): void {
+    this.model.position.copy(this.spinePosition);
+    this.model.rotation.copy(this.spineRotation);
+
+    this.appended = true;
+    this.updatePosition(factor);
+  }
+
+  public reset (): void {
     this.model.position.copy(this.position);
     this.model.rotation.copy(this.rotation);
+
+    this.appended = false;
   }
 
   public get onStage (): boolean {

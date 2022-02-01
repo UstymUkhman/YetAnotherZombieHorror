@@ -44,7 +44,7 @@ export default class Clouds
 
   public constructor () {
     this.isLighting && this.createLighting();
-    !this.useFog && this.createClouds();
+    (this.isLighting || !this.useFog) && this.createClouds();
   }
 
   private createLighting (): void {

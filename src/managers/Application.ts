@@ -105,6 +105,7 @@ export default class Application
       this.toggleAudio(paused);
     }
 
+    this.raindrops?.pause(paused);
     this.manager.pause = paused;
     RAF.pause = paused;
   }
