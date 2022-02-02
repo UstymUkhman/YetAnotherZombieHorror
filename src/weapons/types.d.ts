@@ -7,7 +7,7 @@ type BulletConfig       = typeof Configs.Pistol.bullet | typeof Configs.Rifle.bu
 type FireConfig         = typeof Configs.Pistol.fire   | typeof Configs.Rifle.fire;
 
 type WeaponSoundConfig  = { matrix: Matrix4, sfx: WeaponSound, play: boolean };
-type WeaponConfig       = typeof Configs.Pistol | typeof Configs.Rifle;
+type WeaponConfig       = typeof Configs.Pistol & typeof Configs.Rifle;
 
 type WeaponSound        = keyof PistolSounds | keyof RifleSounds;
 type WeaponSounds       = Map<WeaponSound, PositionalAudio>;

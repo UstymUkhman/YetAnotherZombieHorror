@@ -13,7 +13,7 @@ describe('Material', () => {
   });
 
   test('StaticCollider', () => {
-    expect(StaticCollider.color).toStrictEqual(new TColor(Color.SILVER));
+    expect(StaticCollider.color).toStrictEqual(new TColor(Color.RAIN));
     expect(StaticCollider.visible).toStrictEqual(Configs.colliders);
     expect(StaticCollider.transparent).toStrictEqual(true);
     expect(StaticCollider.opacity).toBeLessThan(1);

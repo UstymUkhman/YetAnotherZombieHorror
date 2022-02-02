@@ -13,7 +13,6 @@ export namespace Color
   export const RED    = 0x8A0707;
 
   export const MOON   = 0xA8D9A7;
-  export const SILVER = 0xC0C0C0;
   export const FIRE   = 0xFBB741;
   export const WHITE  = 0xFFFFFF;
 

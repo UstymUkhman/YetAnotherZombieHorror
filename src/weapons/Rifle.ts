@@ -2,6 +2,7 @@ import type { Texture } from 'three/src/textures/Texture';
 import { PointLight } from 'three/src/lights/PointLight';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
+import type { WeaponConfig } from '@/weapons/types';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
@@ -10,7 +11,6 @@ import { GameEvents } from '@/events/GameEvents';
 
 import { Color } from '@/utils/Color';
 import Weapon from '@/weapons/Weapon';
-
 import Settings from '@/settings';
 import Configs from '@/configs';
 import anime from 'animejs';
@@ -39,7 +39,7 @@ export default class Rifle extends Weapon
   private spawned = false;
 
   public constructor (envMap: Texture) {
-    super(Configs.Rifle, envMap);
+    super(Configs.Rifle as WeaponConfig, envMap);
   }
 
   public override setAim (): void {

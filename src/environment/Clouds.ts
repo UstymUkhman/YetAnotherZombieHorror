@@ -44,7 +44,7 @@ export default class Clouds
 
   public constructor () {
     this.isLighting && this.createLighting();
-    (this.isLighting || !this.useFog) && this.createClouds();
+    this.createClouds();
   }
 
   private createLighting (): void {
@@ -96,6 +96,8 @@ export default class Clouds
   }
 
   private async createClouds (): Promise<void> {
+    if (!this.count || (!this.isLighting && this.useFog)) return;
+
     const cloudsGeometry = new SphereGeometry(Clouds.height, 16, 16, 0, Math.PI);
     cloudsGeometry.parameters.phiLength = Math.PI;
     cloudsGeometry.rotateX(-PI.d2);

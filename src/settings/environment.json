@@ -1,14 +1,14 @@
 {
   "raining": true,
   "lighting": true,
-  "raindrops": true,
-  "softParticles": true,
+  "raindrops": false,
+  "softParticles": false,
 
-  "fog": true,
-  "bakedFog": true,
-  "volumetricFog": true,
+  "fog": false,
+  "bakedFog": false,
+  "volumetricFog": false,
 
   "clouds": 300,
   "dynamicClouds": true,
-  "physicalLights": true
+  "physicalLights": false
 }

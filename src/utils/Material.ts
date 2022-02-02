@@ -10,9 +10,9 @@ export const DynamicCollider = new MeshBasicMaterial({
 
 export const StaticCollider = new MeshBasicMaterial({
   visible: Configs.colliders,
-  color: Color.SILVER,
   transparent: true,
   depthWrite: false,
+  color: Color.RAIN,
   opacity: 0.5
 });
 

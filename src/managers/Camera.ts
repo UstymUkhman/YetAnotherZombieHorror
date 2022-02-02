@@ -176,7 +176,7 @@ export class CameraManager
     const { x, y, z } = position;
     this.runDelta = 0;
 
-    anime({
+    !this.camera.position.equals(position) && anime({
       targets: this.camera.position,
       easing: 'easeOutQuad',
       duration: 300,

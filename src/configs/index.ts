@@ -123,20 +123,28 @@ namespace Configs
   });
 
   export const Pistol = deepFreeze({
-    bullet: {
-      position: new Vector3(...PistolData.bullet.position),
-      lifeTime: PistolData.bullet.lifeTime,
-      speed: PistolData.bullet.speed,
-      scale: PistolData.bullet.scale
-    },
-
+    emissiveIntensity: PistolData.emissiveIntensity,
     position: new Vector3(...PistolData.position),
     rotation: new Euler(...PistolData.rotation),
 
     spread: new Vector2(...PistolData.spread),
     recoil: new Vector2(...PistolData.recoil),
     scale: new Vector3(...PistolData.scale),
+
     magazine: getAmmo(PistolData.magazine),
+    ammo: getAmmo(PistolData.ammo),
+
+    textures: PistolData.textures,
+    emissive: PistolData.emissive,
+    damage: PistolData.damage,
+    model: PistolData.model,
+
+    bullet: {
+      position: new Vector3(...PistolData.bullet.position),
+      lifeTime: PistolData.bullet.lifeTime,
+      speed: PistolData.bullet.speed,
+      scale: PistolData.bullet.scale
+    },
 
     fire: {
       position: new Vector2(...PistolData.fire.position),
@@ -146,22 +154,10 @@ namespace Configs
       scale: PistolData.fire.scale
     },
 
-    ammo: getAmmo(PistolData.ammo),
-    textures: PistolData.textures,
-
-    sounds: PistolData.sounds,
-    damage: PistolData.damage,
-    model: PistolData.model
+    sounds: PistolData.sounds
   });
 
   export const Rifle = deepFreeze({
-    bullet: {
-      position: new Vector3(...RifleData.bullet.position),
-      lifeTime: RifleData.bullet.lifeTime,
-      speed: RifleData.bullet.speed,
-      scale: RifleData.bullet.scale
-    },
-
     spinePosition: new Vector3(...RifleData.spinePosition),
     spineRotation: new Euler(...RifleData.spineRotation),
     worldScale: new Vector3(...RifleData.worldScale),
@@ -172,7 +168,21 @@ namespace Configs
     spread: new Vector2(...RifleData.spread),
     recoil: new Vector2(...RifleData.recoil),
     scale: new Vector3(...RifleData.scale),
+
     magazine: getAmmo(RifleData.magazine),
+    ammo: getAmmo(RifleData.ammo),
+
+    textures: RifleData.textures,
+    maxStock: RifleData.maxStock,
+    damage: RifleData.damage,
+    model: RifleData.model,
+
+    bullet: {
+      position: new Vector3(...RifleData.bullet.position),
+      lifeTime: RifleData.bullet.lifeTime,
+      speed: RifleData.bullet.speed,
+      scale: RifleData.bullet.scale
+    },
 
     fire: {
       position: new Vector2(...RifleData.fire.position),
@@ -182,13 +192,7 @@ namespace Configs
       scale: RifleData.fire.scale
     },
 
-    ammo: getAmmo(RifleData.ammo),
-    textures: RifleData.textures,
-    maxStock: RifleData.maxStock,
-
-    sounds: RifleData.sounds,
-    damage: RifleData.damage,
-    model: RifleData.model
+    sounds: RifleData.sounds
   });
 }
 

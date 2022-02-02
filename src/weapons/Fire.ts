@@ -45,7 +45,7 @@ export default class Fire
     const { intensity, position: { x, y } } = this.config;
     const decay = +Settings.getEnvironmentValue('physicalLights') + 1.0;
 
-    this.light = new PointLight(Color.FIRE, intensity, 1.0, decay);
+    this.light = new PointLight(Color.FIRE, intensity * (3.0 - decay), 1.0, decay);
 
     this.lightPower = this.light.power;
     this.light.position.set(x, y, 0.0);

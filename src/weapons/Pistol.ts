@@ -1,5 +1,6 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { WeaponConfig } from '@/weapons/types';
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
 
@@ -13,7 +14,7 @@ export default class Pistol extends Weapon
   private readonly rotation = Configs.Pistol.rotation as Euler;
 
   public constructor (envMap: Texture) {
-    super(Configs.Pistol, envMap);
+    super(Configs.Pistol as WeaponConfig, envMap);
   }
 
   public override setAim (): void {

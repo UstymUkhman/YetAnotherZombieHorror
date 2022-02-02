@@ -161,9 +161,9 @@ export default class Player extends Character
     GameEvents.dispatch('Player::Run', false, true);
     GameEvents.dispatch('Player::Aim', false, true);
 
-    this.moving = direction !== 'Idle';
     this.rifle?.updatePosition(1);
-    Camera.runAnimation(false);
+    this.moving = direction !== 'Idle';
+    this.moving && Camera.runAnimation(false);
 
     this.running = false;
     this.moveTime = now;
@@ -376,9 +376,10 @@ export default class Player extends Character
       !Camera.isFPS && this.resetRotation();
       this.toggleVisibility();
 
-      setTimeout(() =>
-        GameEvents.dispatch('Player::Aim', !aiming, true)
-      , +aiming * 300);
+      setTimeout(() => {
+        const aim = !this.moving && !aiming;
+        GameEvents.dispatch('Player::Aim', aim, true);
+      }, +aiming * 300);
     }
   }
 
@@ -415,8 +416,9 @@ export default class Player extends Character
 
   public changeWeapon (): void {
     if (!this.hasRifle || this.blockingAnimation()) return;
+    const aim = !this.moving && this.equipRifle;
 
-    GameEvents.dispatch('Player::Aim', this.equipRifle, true);
+    GameEvents.dispatch('Player::Aim', aim, true);
     const targets = this.weapon.targets;
     this.toggleMesh(true);
 

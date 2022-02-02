@@ -55,6 +55,7 @@ export default class Weapon
   }
 
   private async load (envMap: Texture): Promise<void> {
+    const { emissive = Color.BLACK, emissiveIntensity = 1.0 } = this.config;
     this.weapon = (await Assets.Loader.loadGLTF(this.config.model)).scene;
 
     this.weapon.traverse(child => {
@@ -66,16 +67,15 @@ export default class Weapon
         childMesh.receiveShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
-          emissiveIntensity: 0.025,
-          emissive: Color.SILVER,
           refractionRatio: 0.75,
-
+          emissiveIntensity,
           transparent: true,
           map: material.map,
           side: FrontSide,
 
           roughness: 0.75,
           metalness: 0.25,
+          emissive,
           envMap
         });
       }
