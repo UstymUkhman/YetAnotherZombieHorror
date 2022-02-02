@@ -28,7 +28,7 @@
   import { Await } from '@components/overlay/index';
   import { GameEvents } from '@/events/GameEvents';
   import Menu from '@/components/menu/Main.svelte';
-  import type MenuScene from '@/scenes/MenuScene';
+  import MenuScene from '@/scenes/MenuScene';
 
   let scene: HTMLCanvasElement;
   let visibleSettings = false;
@@ -85,9 +85,7 @@
     sceneLoaded = true;
   });
 
-  onMount(() => import('@/scenes/MenuScene').then(MenuScene =>
-    menuScene = new MenuScene.default(scene)
-  ));
+  onMount(() => menuScene = new MenuScene(scene));
 
   onDestroy(() => menuScene?.dispose());
 

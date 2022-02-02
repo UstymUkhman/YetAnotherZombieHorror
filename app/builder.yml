@@ -1,4 +1,4 @@
-copyright: Copyright © 2021 Ustym Ukhman
+copyright: Copyright © 2019 - 2022 Ustym Ukhman
 productName: Yet Another Zombie Horror
 publish: null
 appId: yazh
@@ -17,7 +17,7 @@ directories:
   buildResources: dist/favicon
 
 win:
-  legalTrademarks: Copyright © 2021 Ustym Ukhman
+  legalTrademarks: Copyright © 2019 - 2022 Ustym Ukhman
   icon: dist/favicon/favicon-512x512.png
   publisherName: Ustym Ukhman
 

@@ -64,7 +64,7 @@
 | Fog             | *Boolean* | `false`       | Whether there will be fog in the level. |
 | Baked Fog       | *Boolean* | `false`       | Whether to use noise texture instead of the [Fractional Brownian Motion](https://www.iquilezles.org/www/articles/fbm/fbm.htm) algorithm to generate Volumetric Fog effect. Setting this to `true` will lead to better performance. **Can be `true` only if `fog` and `volumetricFog` are `true`.** |
 | Volumetric Fog  | *Boolean* | `false`       | Whether to use [Volumetric Fog](https://www.gamedeveloper.com/programming/atmospheric-scattering-and-volumetric-fog-algorithm-part-1) instead of the [exponential squared](https://threejs.org/docs/#api/en/scenes/FogExp2) in the level. Setting this to `true` will lead to worse performance on low-end devices. **Can be `true` only if `fog` is `true`.** |
-| Clouds         | *Number*  | `300`         | Amount of cloud sprites that will be covering the skybox. Reducing this number may lead to slightly better performance. **Min value is `0`; max value is `300`.** |
+| Clouds         | *Number*  | `300`          | Amount of cloud sprites that will be covering the skybox. Reducing this number may lead to slightly better performance. **Min value is `0`; max value is `300`.** |
 | Dynamic Clouds  | *Boolean* | `true`        | Whether clouds will be rotating. Setting this to `false` will lead to slightly better performance. **Can be `true` only if `clouds` is greater than `0`.** |
 | Physical Lights | *Boolean* | `false`       | Whether to use physically correct lighting mode. Setting this to `true` will lead to slightly worse performance on low-end devices. |
 
