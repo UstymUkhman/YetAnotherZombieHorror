@@ -1,5 +1,13 @@
 @use "sass:string";
 
+@mixin cursor ($pointer: false) {
+  cursor: url("/assets/cursor/default.png"), auto;
+
+  @if $pointer {
+    cursor: url("/assets/cursor/pointer.png"), pointer;
+  }
+}
+
 @mixin font-size ($size) {
   letter-spacing: string.unquote("0.#{$size}rem");
   line-height: #{$size}vw;

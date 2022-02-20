@@ -18,6 +18,7 @@
   @use "@/variables" as var;
 
   input {
+    @include mixin.cursor(true);
     @include mixin.size(1.25rem);
 
     background-color: transparent;
@@ -27,7 +28,6 @@
     position: relative;
     appearance: none;
 
-    cursor: pointer;
     display: block;
     outline: none;
 

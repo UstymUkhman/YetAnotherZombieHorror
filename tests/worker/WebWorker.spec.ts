@@ -53,4 +53,16 @@ describe('WebWorker', () => {
     remove('message');
     expect(remove).toHaveReturnedWith(undefined);
   });
+
+  test('dispose', () => {
+    const dispose = jest.fn(webWorker.dispose.bind(webWorker));
+    dispose();
+    expect(dispose).toHaveReturnedWith(undefined);
+  });
+
+  test('clear', () => {
+    const clear = jest.fn(webWorker.clear.bind(webWorker));
+    clear();
+    expect(clear).toHaveReturnedWith(undefined);
+  });
 });

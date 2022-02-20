@@ -31,8 +31,8 @@ export namespace Assets
 
   class LoadingManager extends ThreeLoadingManager
   {
+    private readonly textureBasePath = `${Configs.BASE_PATH || '/assets'}/textures/`;
     private readonly shaderBasePath  = `${Configs.BASE_PATH || '/assets'}/shaders/`;
-    private readonly textureBasePath = `${Configs.BASE_PATH || '/assets'}/images/`;
     private readonly modelBasePath   = `${Configs.BASE_PATH || '/assets'}/models/`;
     private readonly audioBasePath   = `${Configs.BASE_PATH    }/assets/sounds/`;
 

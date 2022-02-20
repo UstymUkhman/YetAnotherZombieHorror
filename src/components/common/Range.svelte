@@ -22,12 +22,12 @@
 
   input {
     background-color: transparent;
+    @include mixin.cursor(true);
 
     position: relative;
     appearance: none;
     height: 1.25rem;
 
-    cursor: pointer;
     display: block;
     outline: none;
 

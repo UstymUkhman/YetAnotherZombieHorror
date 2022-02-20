@@ -31,6 +31,15 @@ describe('Raindrops', () => {
     expect(resize).toHaveReturnedWith(undefined);
   });
 
+  test('pause', () => {
+    const pause = jest.fn(raindrops.pause.bind(raindrops));
+    pause(true);
+    expect(pause).toHaveReturnedWith(undefined);
+
+    pause(false);
+    expect(pause).toHaveReturnedWith(undefined);
+  });
+
   test('dispose', () => {
     const dispose = jest.fn(raindrops.dispose.bind(raindrops));
     dispose();

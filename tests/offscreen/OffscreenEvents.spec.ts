@@ -15,6 +15,10 @@ describe('OffscreenEvents', () => {
 
     onDispatch();
     expect(onDispatch).toHaveReturnedWith(undefined);
+
+    events.pause = false;
+    onDispatch({ type: 'keydown' });
+    expect(onDispatch).toHaveReturnedWith(undefined);
   });
 
   test('dispose', () => {
@@ -22,5 +26,13 @@ describe('OffscreenEvents', () => {
 
     dispose();
     expect(dispose).toHaveReturnedWith(undefined);
+  });
+
+  test('pause', () => {
+    events.pause = false;
+    expect(events.pause).toStrictEqual(undefined);
+
+    events.pause = true;
+    expect(events.pause).toStrictEqual(undefined);
   });
 });

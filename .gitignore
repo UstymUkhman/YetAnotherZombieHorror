@@ -16,5 +16,13 @@ coverage/
 !build/*.mjs
 node_modules/
 
+public/**/*.ico
+public/**/*.png
+public/**/*.jpg
+
+public/**/*.mp3
+public/**/*.glb
+
 public/assets/shaders/*
+!public/assets/sounds/YAZH.mp3
 !public/assets/shaders/.gitkeep

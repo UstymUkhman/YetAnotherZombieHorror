@@ -105,6 +105,8 @@
 
   main {
     @include mixin.absolute-size;
+    @include mixin.cursor;
+
     overflow: hidden;
     display: block;
 
