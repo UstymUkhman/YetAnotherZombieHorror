@@ -1,0 +1,36 @@
+@use "@/variables" as var;
+
+@mixin list ($headings) {
+  justify-content: space-between;
+  align-content: space-between;
+
+  align-items: flex-start;
+  flex-direction: column;
+
+  list-style: none;
+  display: flex;
+  padding: 0;
+
+  li {
+    @each $heading in $headings {
+      @include item($heading);
+    }
+  }
+}
+
+@mixin item ($heading) {
+  width: 100%;
+  cursor: pointer;
+  backface-visibility: hidden;
+
+  #{$heading} {
+    transition: transform 400ms var.$ease-in-out-quad, color 200ms;
+    backface-visibility: hidden;
+    pointer-events: none;
+    color: var.$red;
+
+    &.active {
+      color: rgba(var.$white, 0.8);
+    }
+  }
+}

@@ -1,0 +1,50 @@
+copyright: Copyright © 2019 - 2022 Ustym Ukhman
+productName: Yet Another Zombie Horror
+publish: null
+appId: yazh
+
+extraMetadata:
+  main: build/app/main.js
+
+files:
+  - dist/**/*
+  - build/**/*
+  - node_modules/**/*
+  - package.json
+
+directories:
+  output: build
+  buildResources: dist/favicon
+
+win:
+  legalTrademarks: Copyright © 2019 - 2022 Ustym Ukhman
+  icon: dist/favicon/favicon-512x512.png
+  publisherName: Ustym Ukhman
+
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: msi
+      arch:
+        - x64
+        - ia32
+    - target: zip
+      arch:
+        - x64
+        - ia32
+
+linux:
+  icon: dist/favicon/favicon-512x512.png
+  maintainer: Ustym Ukhman
+  category: game
+
+  target:
+    - AppImage
+    - freebsd
+    - tar.xz
+    - tar.gz
+    - snap
+    - deb
+    - zip

@@ -1,0 +1,38 @@
+{
+  "root": true,
+  "customSyntax": "postcss-scss",
+  "extends": "stylelint-config-standard",
+
+  "overrides": [{
+    "files": ["**/*.svelte"],
+    "customSyntax": "postcss-html"
+  }],
+
+  "rules": {
+    "no-invalid-position-at-import-rule": null,
+    "block-closing-brace-newline-after": null,
+    "declaration-empty-line-before": null,
+    "selector-no-qualifying-type": null,
+    "function-comma-space-after": null,
+    "comment-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "number-no-trailing-zeros": null,
+    "color-function-notation": null,
+    "rule-empty-line-before": null,
+    "length-zero-no-unit": null,
+    "function-name-case": null,
+    "color-hex-length": null,
+    "max-nesting-depth": 3,
+
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": [
+        "at-root", "include", "use", "mixin", "function",
+        "content", "for", "each", "if", "else", "return"
+      ]
+    }],
+
+    "selector-pseudo-class-no-unknown": [true, {
+      "ignorePseudoClasses": ["global", "export"]
+    }]
+  }
+}

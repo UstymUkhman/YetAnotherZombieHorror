@@ -1,0 +1,26 @@
+{
+  "collider": [0.6, 1.7, -0.85],
+  "position": [0.0, 1.25, 0.0],
+  "scale": [1.5, 1.5, 1.5],
+  "model": "player.glb",
+
+  "sounds": {
+    "death": "player/death.mp3",
+    "hit": "player/hit.mp3"
+  },
+
+  "animations": {
+    "Idle": [0, 0, 0, 0],
+    "Run": [8.75, 1, 0, 0],
+    "Left": [3.5, 1, -1, 1],
+    "Right": [4.5, 1, 1, -1],
+
+    "Backward": [3, -1, 0, 0],
+    "BackwardLeft": [2, -1, -0.5, 0.5],
+    "BackwardRight": [2, -1, 0.5, -0.5],
+
+    "ForwardRight": [4, 1, 0.5, -0.5],
+    "ForwardLeft": [4, 1, -0.5, 0.5],
+    "Forward": [5, 1, 0, 0]
+  }
+}
