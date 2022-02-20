@@ -1,3 +1,0 @@
-User-agent: *
-Disallow: ./assets/
-Sitemap: http://35.158.218.205/experiments/YetAnotherZombieHorror/sitemap.xml
