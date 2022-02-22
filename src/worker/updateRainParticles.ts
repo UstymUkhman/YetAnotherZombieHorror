@@ -29,7 +29,7 @@ export const updateRainParticles = (params: RainParams): RainParticles => {
 
 const addParticles = (params: RainParams): void => {
   const { minCoords, maxCoords } = params;
-  const time = timeElapsed * 100.0 >> 0;
+  const time = timeElapsed * 100.0 | 0;
 
   timeElapsed -= time / 100.0;
   const particles = time * 50.0;

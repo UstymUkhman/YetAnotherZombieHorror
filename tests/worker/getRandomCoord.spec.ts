@@ -1,5 +1,4 @@
 import { getRandomCoord } from '@/worker/getRandomCoord';
-import { Vector3 } from 'three/src/math/Vector3';
 import LevelScene from '@/scenes/LevelScene';
 
 describe('getRandomCoord', () => {
@@ -11,7 +10,6 @@ describe('getRandomCoord', () => {
       const coords = getRandomCoord({
         portals: LevelScene.portals,
         bounds: LevelScene.bounds,
-        player: new Vector3(),
         minCoords: minCoords,
         maxCoords: maxCoords
       });

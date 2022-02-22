@@ -60,6 +60,12 @@ namespace Configs
   export const colliders = false;
   export const hitBoxes = false;
 
+  export const RandomCoords = deepFreeze({
+    playerDistance: 5.0,
+    boundOffset: 0.5,
+    ammount: 10.0
+  });
+
   export const Level = deepFreeze({
     position: new Vector3(...LevelData.position),
     sidewalkHeight: LevelData.sidewalkHeight,

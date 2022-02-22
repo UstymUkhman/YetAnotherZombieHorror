@@ -1,10 +1,10 @@
 @use "sass:string";
 
 @mixin cursor ($pointer: false) {
-  cursor: url("/assets/cursor/default.png"), auto;
+  cursor: var(--default-cursor), auto;
 
   @if $pointer {
-    cursor: url("/assets/cursor/pointer.png"), pointer;
+    cursor: var(--pointer-cursor), pointer;
   }
 }
 

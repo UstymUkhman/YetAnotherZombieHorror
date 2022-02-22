@@ -6,7 +6,6 @@ import type { WeaponConfig } from '@/weapons/types';
 
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
-import type { LevelCoords } from '@/scenes/types';
 import { GameEvents } from '@/events/GameEvents';
 
 import { Color } from '@/utils/Color';

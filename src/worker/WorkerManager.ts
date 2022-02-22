@@ -5,7 +5,6 @@ import type { Event } from 'three/src/core/EventDispatcher';
 import OffscreenManager from '@/offscreen/OffscreenManager';
 import { getRandomCoord } from '@/worker/getRandomCoord';
 import type { RainParams } from '@/environment/types';
-import type { LevelParams } from '@/scenes/types';
 
 const parseMessage = (event: string, params?: unknown) => {
   switch (event) {

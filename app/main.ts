@@ -13,9 +13,9 @@ function createWindow(): void {
   if (game !== null) return;
 
   game = new BrowserWindow({
-    webPreferences: !PRODUCTION && ({
+    webPreferences: {
       preload: join(__dirname, './preloader.js')
-    }) || undefined,
+    },
 
     backgroundColor: '#000000',
     fullscreen: PRODUCTION,

@@ -10,6 +10,7 @@ import { radToDeg } from 'three/src/math/MathUtils';
 import type { Bone } from 'three/src/objects/Bone';
 
 import { GameEvents } from '@/events/GameEvents';
+import { Vector2 } from 'three/src/math/Vector2';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 
@@ -27,6 +28,8 @@ import anime from 'animejs';
 export default class Player extends Character
 {
   private readonly modelRotation = new Quaternion();
+  private readonly levelPosition = new Vector2();
+
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
   private weapon!: Pistol | Rifle;
@@ -516,6 +519,11 @@ export default class Player extends Character
         Math.atan2(-this.rotation.x, this.rotation.z)
       )
     };
+  }
+
+  public get coords (): Vector2 {
+    const { x, z } = this.position;
+    return this.levelPosition.set(x, z);
   }
 
   public get uuid (): string {

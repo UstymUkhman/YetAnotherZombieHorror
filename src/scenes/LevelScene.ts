@@ -3,7 +3,6 @@ import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMater
 
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
-import type { LevelCoords, LevelBounds } from '@/scenes/types';
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 
 import { AmbientLight } from 'three/src/lights/AmbientLight';

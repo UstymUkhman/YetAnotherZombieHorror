@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { LevelCoords } from '@/scenes/types';
   import { PI, easeOutSine } from '@/utils/Number';
 
   export let context: CanvasRenderingContext2D;
@@ -36,7 +35,7 @@
     context.beginPath();
 
     circ = start += FRAME;
-    circ = easeOutSine(circ - (circ >> 0));
+    circ = easeOutSine(circ - (circ | 0));
 
     context.strokeStyle = `rgba(${RIFLE_RGB}, ${1.0 - circ})`;
 

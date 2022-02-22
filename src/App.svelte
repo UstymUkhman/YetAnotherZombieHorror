@@ -39,8 +39,10 @@
   import { Await, Pause } from '@components/overlay/index';
   import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
+
   import Game from '@components/Game.svelte';
   import { onDestroy } from 'svelte';
+  import Configs from '@/configs';
 
   let menuScreen = true;
   let appReady = false;
@@ -53,6 +55,17 @@
     ? GameEvents.remove('Game::Pause')
     : GameEvents.add('Game::Pause', () => paused = true)
   )(updating);
+
+  (() => {
+    const { style } = document.documentElement;
+    const assetsPath = `${Configs.BASE_PATH || '/assets'}`;
+
+    const defaultCursor = `${assetsPath}/cursor/default.png`;
+    const pointerCursor = `${assetsPath}/cursor/pointer.png`;
+
+    style.setProperty('--default-cursor', `url("${defaultCursor}")`);
+    style.setProperty('--pointer-cursor', `url("${pointerCursor}")`);
+  })();
 
   !import.meta.hot && onDestroy(() =>
     GameEvents.remove('Game::Pause')

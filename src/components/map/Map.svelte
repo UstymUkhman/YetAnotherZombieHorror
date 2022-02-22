@@ -16,7 +16,6 @@
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/map/utils';
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
-  import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import MapRifle from '@components/map/MapRifle.svelte';
@@ -27,7 +26,7 @@
   import LevelScene from '@/scenes/LevelScene';
 
   const minCoords = LevelScene.minCoords.map(
-    coord => Math.abs(coord) + PADDING
+    (coord: number) => Math.abs(coord) + PADDING
   ) as unknown as LevelCoords;
 
   const dispatch = createEventDispatcher();
@@ -62,7 +61,9 @@
   }
 
   function getNormalizedBounds (): LevelBounds {
-    const cBounds = cloneBounds(bounds).map(bound => getScaledCoords(bound, minCoords, scale));
+    const cBounds = cloneBounds(bounds).map((bound: LevelCoords) =>
+      getScaledCoords(bound, minCoords, scale)
+    );
 
     map.height = max(cBounds.map((coords: LevelCoords) => coords[1])) + PADDING * 2;
     map.width = max(cBounds.map((coords: LevelCoords) => coords[0])) + PADDING * 2;

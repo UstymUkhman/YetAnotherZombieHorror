@@ -11,7 +11,6 @@ import { DepthTexture } from 'three/src/textures/DepthTexture';
 import type { RainParticles } from '@/environment/types';
 
 import type { Scene } from 'three/src/scenes/Scene';
-import type { LevelCoords } from '@/scenes/types';
 import { Points } from 'three/src/objects/Points';
 import { CameraObject } from '@/managers/Camera';
 

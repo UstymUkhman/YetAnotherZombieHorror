@@ -1,11 +1,8 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
-import { getRandomCoord } from '@/worker/getRandomCoord';
-
 import type { Vector3 } from 'three/src/math/Vector3';
-import type { LevelCoords } from '@/scenes/types';
-
 import type WebWorker from '@/worker/WebWorker';
+
 import LevelScene from '@/scenes/LevelScene';
 import { Clock } from 'three/src/core/Clock';
 
@@ -16,6 +13,7 @@ import Camera from '@/managers/Camera';
 import Pistol from '@/weapons/Pistol';
 import Rifle from '@/weapons/Rifle';
 
+import Coords from '@/utils/Coords';
 import Controls from '@/controls';
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
@@ -43,14 +41,14 @@ export default class MainLoop
   private addEventListeners (): void {
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
 
-    this.worker?.add('Level::GetRandomCoord', event =>
-      this.rifle.spawn(event.data as LevelCoords), {
-        minCoords: LevelScene.minCoords,
-        maxCoords: LevelScene.maxCoords,
-        portals: LevelScene.portals,
-        bounds: LevelScene.bounds
+    this.worker?.add('Level::GetRandomCoord', event => {
+      if (Coords.addLevelCoords(event.data as LevelCoords)) {
+        GameEvents.dispatch('Loading::Complete', null, true);
+        setTimeout(this.spawnRifle.bind(this), 1e4);
       }
-    );
+
+      else this.worker?.post('Level::GetRandomCoord');
+    });
 
     GameEvents.add('Player::PickRifle', () => {
       setTimeout(this.spawnRifle.bind(this));
@@ -63,10 +61,9 @@ export default class MainLoop
 
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.enemies.colliders, this.pistol);
-      GameEvents.dispatch('Loading::Complete', null, true);
-
-      setTimeout(this.spawnRifle.bind(this), 1e4);
       Physics.setPlayer(this.player.collider);
+
+      this.createRandomCoords();
       RAF.add(this.loop);
     });
 
@@ -75,22 +72,19 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
+  private createRandomCoords (): void {
+    if (this.worker) {
+      return this.worker.post('Level::GetRandomCoord');
+    }
+
+    Coords.fillRandomLevelCoords();
+    setTimeout(this.spawnRifle.bind(this), 1e4);
+    GameEvents.dispatch('Loading::Complete', null, true);
+  }
+
   private spawnRifle (): void {
     if (this.rifle.onStage) return;
-
-    this.worker
-      ? this.worker.post('Level::GetRandomCoord', {
-        player: this.player.location.position
-      })
-
-      : this.rifle.spawn(getRandomCoord({
-        player: this.player.location.position,
-        minCoords: LevelScene.minCoords,
-        maxCoords: LevelScene.maxCoords,
-        portals: LevelScene.portals,
-        bounds: LevelScene.bounds
-      })
-    );
+    this.rifle.spawn(Coords.getRandomLevelCoords(this.player.coords));
   }
 
   private update (): void {

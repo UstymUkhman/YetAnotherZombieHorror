@@ -29,33 +29,12 @@ describe('Configs', () => {
     expect(Configs.APP).toStrictEqual(false);
   });
 
-  test('Camera.fps', () => {
-    const cameraTPSIdlePosition = new Vector3(...Camera.fps.idle);
-    const cameraTPSAimPosition = new Vector3(...Camera.fps.aim);
-
-    expect(Configs.Camera.fps.idle).toStrictEqual(cameraTPSIdlePosition);
-    expect(Configs.Camera.fps.idle).toBeInstanceOf(Vector3);
-
-    expect(Configs.Camera.fps.run).toStrictEqual(cameraTPSIdlePosition);
-    expect(Configs.Camera.fps.run).toBeInstanceOf(Vector3);
-
-    expect(Configs.Camera.fps.aim).toStrictEqual(cameraTPSAimPosition);
-    expect(Configs.Camera.fps.aim).toBeInstanceOf(Vector3);
-  });
-
-  test('Camera.tps', () => {
-    const cameraTPSIdlePosition = new Vector3(...Camera.tps.idle);
-    const cameraTPSRunPosition = new Vector3(...Camera.tps.run);
-    const cameraTPSAimPosition = new Vector3(...Camera.tps.aim);
-
-    expect(Configs.Camera.tps.idle).toStrictEqual(cameraTPSIdlePosition);
-    expect(Configs.Camera.tps.idle).toBeInstanceOf(Vector3);
-
-    expect(Configs.Camera.tps.run).toStrictEqual(cameraTPSRunPosition);
-    expect(Configs.Camera.tps.run).toBeInstanceOf(Vector3);
-
-    expect(Configs.Camera.tps.aim).toStrictEqual(cameraTPSAimPosition);
-    expect(Configs.Camera.tps.aim).toBeInstanceOf(Vector3);
+  test('RandomCoords', () => {
+    expect(Configs.RandomCoords.playerDistance).toBeGreaterThan(0.0);
+    expect(Configs.RandomCoords.boundOffset).toBeGreaterThan(0.0);
+    expect(Configs.RandomCoords.boundOffset).toBeLessThan(1.0);
+    expect(Configs.RandomCoords.ammount).toBeGreaterThanOrEqual(5.0);
+    expect(Configs.RandomCoords.ammount).toBeLessThanOrEqual(100.0);
   });
 
   test('Level', () => {
@@ -106,6 +85,35 @@ describe('Configs', () => {
     Configs.Level.rain.forEach(drop =>
       expect(drop).toContain('.png')
     );
+  });
+
+  test('Camera.fps', () => {
+    const cameraTPSIdlePosition = new Vector3(...Camera.fps.idle);
+    const cameraTPSAimPosition = new Vector3(...Camera.fps.aim);
+
+    expect(Configs.Camera.fps.idle).toStrictEqual(cameraTPSIdlePosition);
+    expect(Configs.Camera.fps.idle).toBeInstanceOf(Vector3);
+
+    expect(Configs.Camera.fps.run).toStrictEqual(cameraTPSIdlePosition);
+    expect(Configs.Camera.fps.run).toBeInstanceOf(Vector3);
+
+    expect(Configs.Camera.fps.aim).toStrictEqual(cameraTPSAimPosition);
+    expect(Configs.Camera.fps.aim).toBeInstanceOf(Vector3);
+  });
+
+  test('Camera.tps', () => {
+    const cameraTPSIdlePosition = new Vector3(...Camera.tps.idle);
+    const cameraTPSRunPosition = new Vector3(...Camera.tps.run);
+    const cameraTPSAimPosition = new Vector3(...Camera.tps.aim);
+
+    expect(Configs.Camera.tps.idle).toStrictEqual(cameraTPSIdlePosition);
+    expect(Configs.Camera.tps.idle).toBeInstanceOf(Vector3);
+
+    expect(Configs.Camera.tps.run).toStrictEqual(cameraTPSRunPosition);
+    expect(Configs.Camera.tps.run).toBeInstanceOf(Vector3);
+
+    expect(Configs.Camera.tps.aim).toStrictEqual(cameraTPSAimPosition);
+    expect(Configs.Camera.tps.aim).toBeInstanceOf(Vector3);
   });
 
   test('Player', () => {

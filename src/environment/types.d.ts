@@ -1,6 +1,5 @@
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 import type { Vector3 } from 'three/src/math/Vector3';
-import type { CoordsParams } from '@/scenes/types';
 
 type RainParticles = [Array<number>, Array<number>, Array<number>];
 type ShaderCompileCallback = (shader: Shader) => void;
