@@ -186,6 +186,8 @@ export default class LevelScene
     const exposure = +physicalLights * 0.75 + 0.25;
 
     this.renderer.physicallyCorrectLights = physicalLights;
+    this.renderer.debug.checkShaderErrors = !PRODUCTION;
+
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 

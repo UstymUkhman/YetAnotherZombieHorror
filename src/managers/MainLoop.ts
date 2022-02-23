@@ -48,6 +48,11 @@ export default class MainLoop
       }
 
       else this.worker?.post('Level::GetRandomCoord');
+    }, {
+      minCoords: LevelScene.minCoords,
+      maxCoords: LevelScene.maxCoords,
+      portals: LevelScene.portals,
+      bounds: LevelScene.bounds
     });
 
     GameEvents.add('Player::PickRifle', () => {

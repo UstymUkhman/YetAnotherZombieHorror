@@ -93,10 +93,10 @@ describe('Camera', () => {
   test('changeShoulder', () => {
     const changeShoulder = jest.fn(Camera.changeShoulder.bind(Camera));
 
-    changeShoulder();
+    changeShoulder(true, true);
     expect(changeShoulder).toHaveReturnedWith(undefined);
 
-    changeShoulder();
+    changeShoulder(true, false);
     expect(changeShoulder).toHaveReturnedWith(undefined);
   });
 

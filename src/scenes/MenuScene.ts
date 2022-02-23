@@ -89,10 +89,12 @@ export default class MenuScene
     const height = window.innerHeight;
     const ratio = window.devicePixelRatio;
 
-    this.renderer.setClearColor(Color.BLACK, 1);
+    this.renderer.debug.checkShaderErrors = !PRODUCTION;
     this.renderer.outputEncoding = sRGBEncoding;
 
+    this.renderer.setClearColor(Color.BLACK, 1);
     this.renderer.setPixelRatio(ratio || 1.0);
+
     this.renderer.shadowMap.enabled = false;
     this.renderer.setSize(width, height);
   }

@@ -68,10 +68,12 @@ export class CameraManager
 
   private getPosition (running = false, aiming = false, rifle = false): Vector3 {
     if (this.fps && aiming && rifle) return this.fpRifleAim;
-    const { idle, run, aim } = Configs.Camera[this.fps ? 'fps' : 'tps'];
 
+    const { idle, run, aim } = Configs.Camera[this.fps ? 'fps' : 'tps'];
     this.position.copy((running ? run : aiming ? aim : idle) as Vector3);
-    this.position.x *= +(!this.fps && !this.rightShoulder) * -2 + 1;
+
+    this.position.x -= +(!this.fps && this.rightShoulder && rifle) * 0.1;
+    this.position.x *= +(!this.fps && !this.rightShoulder) * -2.0 + 1.0;
 
     return this.position;
   }
@@ -115,15 +117,22 @@ export class CameraManager
     });
   }
 
-  public changeShoulder (): void {
+  public changeShoulder (aiming: boolean, rifle: boolean): void {
     if (this.fps) return;
+    let { x } = this.camera.position;
     this.rightShoulder = !this.rightShoulder;
+
+    if (aiming && rifle) {
+      const { x: horizontalX } = Configs.Camera.tps.aim;
+      x = horizontalX - +this.rightShoulder * 0.1;
+      x *= +this.rightShoulder * -2.0 + 1.0;
+    }
 
     anime({
       targets: this.camera.position,
-      x: -this.camera.position.x,
       easing: 'easeInOutQuad',
-      duration: 500
+      duration: 500,
+      x: -x
     });
   }
 

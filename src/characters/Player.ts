@@ -370,7 +370,7 @@ export default class Player extends Character
   }
 
   public changeCamera (view: boolean): void {
-    if (!view) Camera.changeShoulder();
+    if (!view) Camera.changeShoulder(this.aiming, this.equipRifle);
 
     else {
       const aiming = this.equipRifle && !this.aiming || !Camera.isFPS && this.aiming;

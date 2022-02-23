@@ -52,6 +52,7 @@ export default class AudioScene
 
   public constructor () {
     const isLighting = Settings.getEnvironmentValue('lighting');
+    this.renderer.debug.checkShaderErrors = !PRODUCTION;
 
     this.camera.matrixAutoUpdate = false;
     this.scene.matrixAutoUpdate = false;

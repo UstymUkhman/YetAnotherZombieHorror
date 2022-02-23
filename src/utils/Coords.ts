@@ -26,7 +26,6 @@ export default class Coords
 
   public static addLevelCoords (coords: LevelCoords): boolean {
     Coords.coords.push(coords);
-    console.log(Coords.coords.length, Coords.ammount);
     return Coords.coords.length === Coords.ammount;
   }
 
