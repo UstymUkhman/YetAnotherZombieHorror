@@ -19,6 +19,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { getKey, screenFade } from '@components/menu/utils';
+  import Sounds from '@components/menu/Sounds';
 
   import { mix } from '@/utils/Number';
   import Configs from '@/configs';
@@ -36,14 +37,15 @@
 
   function onKeyDown (event: KeyboardEvent): void {
     const key = getKey(event, selected, items.length);
+    if (key === -1) return onClick();
 
-    if (key === -1) onClick();
-    else selected = key;
-
+    selected = key;
+    Sounds.onHover();
     updateRotation();
   }
 
   function onMouseOver (index: number): void {
+    selected !== index && Sounds.onHover();
     selected = index;
     updateRotation();
   }
@@ -53,6 +55,8 @@
   }
 
   function onClick (): void {
+    Sounds.onClick();
+
     switch (selected) {
       case 0:
         dispatch('play');

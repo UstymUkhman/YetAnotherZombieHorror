@@ -1,8 +1,8 @@
 <div in:screenFly={{ show: true }} out:screenFly>
   <ul>
     {#each environment as variable, v}
-      <li class:disabled={!variable.enabled}
-          on:mouseover={() => selected = v}
+      <li on:mouseover={() => onListItemHover(v)}
+          class:disabled={!variable.enabled}
           on:mouseout={() => selected = -1}
           on:click={onListItemClick}
           on:focus
@@ -31,7 +31,7 @@
       </li>
     {/each}
 
-    <li on:mouseover={() => selected = reset}
+    <li on:mouseover={() => onListItemHover(reset)}
         on:mouseout={() => selected = -1}
         on:click={onResetClick}
         on:focus
@@ -40,7 +40,7 @@
       <h5 class:active={selected === reset}>Reset</h5>
     </li>
 
-    <li on:mouseover={() => selected = back}
+    <li on:mouseover={() => onListItemHover(back)}
         on:click={onBackClick}
         on:focus
     >
@@ -59,6 +59,7 @@
   import { Checkbox, Range } from '@components/common/index';
   import EnvironmentData from '@/settings/environment.json';
 
+  import Sounds from '@components/menu/Sounds';
   import Settings from '@/settings';
 
   const dispatch = createEventDispatcher();
@@ -105,18 +106,32 @@
     });
   }
 
+  function onListItemHover (index: number): void {
+    selected !== index && Sounds.onHover();
+    selected = index;
+  }
+
   function onListItemClick (event: MouseEvent): void {
     const target = event.target as HTMLElement;
     onClick(target.tagName === 'LI');
   }
 
-  function onKeyDown (event: KeyboardEvent): void {
-    const key = getKey(event, selected, back + 1);
-    if (key === -1) onClick();
-    else selected = key;
+  function onKeyDown (event: KeyboardEvent, index?: number): void {
+    const key = index ?? getKey(event, selected, back + 1);
+
+    if (environment[key] && !environment[key].enabled) {
+      const direction = +(event.code === 'ArrowDown') * 2 - 1;
+      return onKeyDown(event, key + direction);
+    }
+
+    if (key === -1) return onClick();
+
+    Sounds.onHover();
+    selected = key;
   }
 
   function onResetClick (): void {
+    Sounds.onClick();
     reseted = resetEnvironment(environment);
     reseted && setTimeout(parseEnvironmentData, 100);
   }
@@ -124,6 +139,7 @@
   function onBackClick (): void {
     const update = updateEnvironment(environment);
     dispatch('menu', update || reseted);
+    Sounds.onClick();
   }
 
   function onClick (toggle = true): void {
@@ -143,6 +159,7 @@
     }
 
     updateEnvironmentData(key, environment[selected].value);
+    Sounds.onClick();
   }
 
   function onRangeUpdate (event: CustomEvent): void {
