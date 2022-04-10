@@ -13,7 +13,10 @@
   {/if}
 
   {#if paused && !menuScreen}
-    <Pause on:continue={() => paused = false} />
+    <Pause
+      on:continue={() => paused = false}
+      on:quit={onQuit}
+    />
   {/if}
 
   {#if appReady && loading}
@@ -50,6 +53,12 @@
   let updating = false;
   let loading = true;
   let paused = true;
+
+  function onQuit (): void {
+    setTimeout(() => updating = false, 3e3);
+    menuScreen = true;
+    updating = true;
+  }
 
   $: (update => update
     ? GameEvents.remove('Game::Pause')

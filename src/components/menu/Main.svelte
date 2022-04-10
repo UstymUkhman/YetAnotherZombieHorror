@@ -1,7 +1,7 @@
 <div in:screenFade={{ show: true, menuFade }} out:screenFade={{ menuFade }}>
   <menu style={`
     transform: rotateY(12deg) rotateX(${rotation}deg);
-    height: ${items.length * 10 + 10}%;
+    height: ${items.length * 10 + 20}%;
   `}>
 
     {#each items as item, i}
@@ -110,7 +110,7 @@
       padding-left: 20%;
       margin: auto 0;
 
-      width: 50%;
+      width: 30%;
       bottom: 0;
       top: 0;
     }

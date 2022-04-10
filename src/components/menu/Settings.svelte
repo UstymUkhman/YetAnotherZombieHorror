@@ -120,8 +120,8 @@
     const key = index ?? getKey(event, selected, back + 1);
 
     if (environment[key] && !environment[key].enabled) {
-      const direction = +(event.code === 'ArrowDown') * 2 - 1;
-      return onKeyDown(event, key + direction);
+      const direction = +(event.code === 'ArrowDown');
+      return onKeyDown(event, key + direction * 2 - 1);
     }
 
     if (key === -1) return onClick();
@@ -194,8 +194,6 @@
 
     box-sizing: border-box;
     padding-inline: 10vw;
-
-    height: 60%;
     width: 100%;
   }
 
