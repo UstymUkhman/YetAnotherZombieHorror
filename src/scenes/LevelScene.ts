@@ -102,7 +102,7 @@ export default class LevelScene
       volumetricFog && this.portals.setFogUniforms(this.fog.setUniforms);
     }
 
-    else this.scene.add(this.clouds.sky);
+    else if (this.clouds.sky) this.scene.add(this.clouds.sky);
 
     this.createLights();
 
@@ -127,7 +127,7 @@ export default class LevelScene
       }
     });
 
-    const envMap = this.getSceneEnvMap().clone();
+    const envMap = this.getSceneEnvMap();
     GameEvents.dispatch('Level::EnvMap', envMap);
   }
 

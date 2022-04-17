@@ -1,5 +1,5 @@
 <div class="container" >
-  <div class="aim" class:hide class:shooting />
+  <div class="aim" bind:this={aim} class:hide class:shooting />
 </div>
 
 <script lang="ts">
@@ -7,10 +7,15 @@
   import { onMount, onDestroy } from 'svelte';
 
   export let hide: boolean;
+  let aim: HTMLDivElement;
   let shooting = false;
 
   function onShoot (): void {
-    setTimeout(() => shooting = false, 150);
+    setTimeout(() => {
+      void aim.offsetWidth;
+      shooting = false;
+    }, 150);
+
     setTimeout(() => shooting = true);
     shooting = false;
   }

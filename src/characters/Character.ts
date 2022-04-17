@@ -64,7 +64,7 @@ export default class Character
 
     this.object.position.copy(this.config.position as Vector3);
     this.object.scale.copy(this.config.scale as Vector3);
-    this.object.rotation.toVector3(this.rotation);
+    this.rotation.setFromEuler(this.object.rotation);
 
     this.setCharacterMaterial(character.scene, envMap);
     this.position.copy(this.object.position);

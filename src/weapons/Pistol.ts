@@ -1,5 +1,6 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
+
 import type { WeaponConfig } from '@/weapons/types';
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
@@ -14,12 +15,13 @@ export default class Pistol extends Weapon
   private readonly rotation = Configs.Pistol.rotation as Euler;
 
   public constructor (envMap: Texture) {
-    super(Configs.Pistol as WeaponConfig, envMap);
+    super(Configs.Pistol as WeaponConfig);
+    this.load(envMap);
   }
 
   public override setAim (): void {
     anime({
-      targets: this.model.rotation,
+      targets: this.object.rotation,
       y: this.rotation.y + 0.015,
       x: this.rotation.x,
       easing: 'linear',
@@ -29,7 +31,7 @@ export default class Pistol extends Weapon
     });
 
     anime({
-      targets: this.model.position,
+      targets: this.object.position,
       x: this.position.x,
       z: this.position.z,
       easing: 'linear',
@@ -41,7 +43,7 @@ export default class Pistol extends Weapon
 
   public override cancelAim (duration: number): void {
     anime({
-      targets: this.model.rotation,
+      targets: this.object.rotation,
       x: this.rotation.x,
       y: this.rotation.y,
       z: this.rotation.z,
@@ -50,7 +52,7 @@ export default class Pistol extends Weapon
     });
 
     anime({
-      targets: this.model.position,
+      targets: this.object.position,
       x: this.position.x,
       y: this.position.y,
       z: this.position.z,
@@ -60,7 +62,7 @@ export default class Pistol extends Weapon
   }
 
   public override toggleVisibility (hideDelay: number, showDelay: number): void {
-    this.model.children[0].children.forEach(child => {
+    this.object.children[0].children.forEach(child => {
       const childMesh = child as Mesh;
 
       anime({

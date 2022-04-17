@@ -1,13 +1,13 @@
 <div>
   <canvas bind:this={scene} width={width} height={height} />
 
-  {#if sceneLoaded && visibleSettings}
+  {#if visibleSettings}
     <Settings
       on:menu={({ detail }) => changeView(false, detail)}
     />
   {/if}
 
-  {#if sceneLoaded && visibleMenu}
+  {#if visibleMenu}
     <Menu
       on:settings={() => changeView(true)}
       selected={selectedItem}
@@ -24,9 +24,7 @@
 <script lang="ts">
   import { createEventDispatcher, tick, onMount, onDestroy } from 'svelte';
   import Settings from '@/components/menu/Settings.svelte';
-
   import { Await } from '@components/overlay/index';
-  import { GameEvents } from '@/events/GameEvents';
   import Menu from '@/components/menu/Main.svelte';
   import MenuScene from '@/scenes/MenuScene';
 
@@ -36,7 +34,6 @@
   export let ready: boolean;
   let menuScene: MenuScene;
 
-  let sceneLoaded = false;
   let visibleMenu = true;
   let fadingMenu = true;
   let selectedItem = 0;
@@ -79,11 +76,6 @@
     menuScene.playScreamAnimation();
     setTimeout(() => dispatch('start'), 3000);
   }
-
-  GameEvents.add('MenuScene::Loaded', () => {
-    GameEvents.remove('MenuScene::Loaded');
-    sceneLoaded = true;
-  });
 
   onMount(() => menuScene = new MenuScene(scene));
 

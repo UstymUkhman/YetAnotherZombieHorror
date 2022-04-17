@@ -55,7 +55,7 @@
   let paused = true;
 
   function onQuit (): void {
-    setTimeout(() => updating = false, 3e3);
+    setTimeout(() => updating = false, 1e3);
     menuScreen = true;
     updating = true;
   }

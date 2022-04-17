@@ -72,7 +72,7 @@ export class CameraManager
     const { idle, run, aim } = Configs.Camera[this.fps ? 'fps' : 'tps'];
     this.position.copy((running ? run : aiming ? aim : idle) as Vector3);
 
-    this.position.x -= +(!this.fps && this.rightShoulder && rifle) * 0.1;
+    this.position.x -= +(!this.fps && this.rightShoulder && rifle) * 0.125;
     this.position.x *= +(!this.fps && !this.rightShoulder) * -2.0 + 1.0;
 
     return this.position;
@@ -123,8 +123,8 @@ export class CameraManager
     this.rightShoulder = !this.rightShoulder;
 
     if (aiming && rifle) {
-      const { x: horizontalX } = Configs.Camera.tps.aim;
-      x = horizontalX - +this.rightShoulder * 0.1;
+      x = Configs.Camera.tps.aim.x;
+      x -= +this.rightShoulder * 0.125;
       x *= +this.rightShoulder * -2.0 + 1.0;
     }
 

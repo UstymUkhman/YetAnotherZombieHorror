@@ -14,12 +14,9 @@ export default class Coords
   private static readonly lastIndex = Configs.RandomCoords.ammount - 1;
   private static readonly distance = Configs.RandomCoords.playerDistance ** 2;
 
-  public static getRandomLevelCoords (player: Vector2): LevelCoords {
-    let distance = Coords.setRandomCoords(player);
-
-    while (distance < Coords.distance) {
-      distance = Coords.setRandomCoords(player);
-    }
+  public static getRandomLevelCoords (player: Vector2, distance?: number): LevelCoords {
+    do distance = Coords.setRandomCoords(player);
+    while (distance < Coords.distance);
 
     return Coords.levelCoords.toArray();
   }

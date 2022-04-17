@@ -15,7 +15,7 @@
 
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/map/utils';
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { createEventDispatcher, tick, onMount, onDestroy } from 'svelte';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import MapRifle from '@components/map/MapRifle.svelte';
@@ -71,6 +71,14 @@
     return cBounds;
   }
 
+  async function pickRifle (): Promise<void> {
+    visibleRifle = false;
+    await tick();
+
+    renderRifle = false;
+    drawBounds();
+  }
+
   function centerPosition (): void {
     const px = playerPosition.x, pz = playerPosition.z;
 
@@ -106,15 +114,6 @@
 
     context.closePath();
     context.stroke();
-  }
-
-  function pickRifle (): void {
-    visibleRifle = false;
-
-    setTimeout(() => {
-      renderRifle = false;
-      drawBounds();
-    });
   }
 
   GameEvents.add('Rifle::Spawn', spawnRifle, true);

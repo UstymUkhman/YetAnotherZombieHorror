@@ -63,7 +63,7 @@ namespace Configs
   export const RandomCoords = deepFreeze({
     playerDistance: 5.0,
     boundOffset: 0.5,
-    ammount: 10.0
+    ammount: 25.0
   });
 
   export const Level = deepFreeze({

@@ -47,7 +47,7 @@ export default class Player extends Character
 
   private hand?: Object3D;
   private pistol?: Pistol;
-  private rifle?: Rifle;
+  private rifle!: Rifle;
 
   private shootTime = 0.0;
   private idleTime = 0.0;
@@ -140,8 +140,8 @@ export default class Player extends Character
     const idle = this.getWeaponAnimation('Idle');
     if (this.lastAnimation === idle) return;
 
+    this.hasRifle && this.rifle.updatePosition(0);
     this.running = this.moving = false;
-    this.rifle?.updatePosition(0);
     Camera.runAnimation(false);
     this.idleTime = now;
 
@@ -164,9 +164,9 @@ export default class Player extends Character
     GameEvents.dispatch('Player::Run', false, true);
     GameEvents.dispatch('Player::Aim', false, true);
 
-    this.rifle?.updatePosition(1);
     this.moving = direction !== 'Idle';
     this.moving && Camera.runAnimation(false);
+    this.hasRifle && this.rifle.updatePosition(1);
 
     this.running = false;
     this.moveTime = now;
@@ -187,10 +187,11 @@ export default class Player extends Character
     }
 
     if (directions[Direction.UP]) {
+      this.hasRifle && this.rifle.updatePosition(1.5);
       GameEvents.dispatch('Player::Run', true, true);
+
       this.running = this.moving = true;
       this.updateAnimation('Run', run);
-      this.rifle?.updatePosition(1.5);
 
       Camera.runAnimation(true);
       this.resetRotation(true);
@@ -297,22 +298,6 @@ export default class Player extends Character
     }, 2500);
   }
 
-  public die (): void {
-    this.updateAnimation('Idle', 'death', 0.5);
-    GameEvents.dispatch('Player::Death');
-    clearTimeout(this.reloadTimeout);
-
-    this.weapon.stopReloading();
-    this.setAnimation('Idle');
-    Camera.deathAnimation();
-
-    this.reloading = false;
-    this.shooting = false;
-    this.aiming = false;
-
-    this.death(true);
-  }
-
   private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): number {
     this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
     this.animations[action].play();
@@ -335,16 +320,16 @@ export default class Player extends Character
     this.pistol = pistol;
 
     pistol.targets = targets;
-    this.hand?.add(pistol.model);
+    this.hand?.add(pistol.object);
   }
 
-  private setRifle (targets: Array<Object3D>, rifle: Rifle): void {
+  private setRifle (targets: Array<Object3D>): void {
     this.setWeapon(true);
-    this.weapon = rifle;
-    this.rifle = rifle;
+    this.weapon = this.rifle;
 
-    rifle.targets = targets;
-    this.hand?.add(rifle.model);
+    this.hand?.add(this.rifle.object);
+    this.rifle.targets = targets;
+    this.rifle.visible = true;
   }
 
   private setWeapon (rifle: boolean): void {
@@ -353,7 +338,7 @@ export default class Player extends Character
       this.lastAnimation.replace('rifle', 'pistol');
 
     GameEvents.dispatch('Weapon::Change', rifle);
-    this.hand?.remove(this.weapon?.model);
+    this.hand?.remove(this.weapon?.object);
 
     if (!rifle && !this.animations[animation]) {
       animation = animation.replace(/BackwardLeft|BackwardRight/gm, 'Backward');
@@ -367,6 +352,21 @@ export default class Player extends Character
     this.hasRifle = this.equipRifle || rifle;
     this.toggleRifle(!rifle);
     this.equipRifle = rifle;
+  }
+
+  private toggleRifle (append: boolean): void {
+    if (!this.rifle) return;
+
+    if (append) {
+      const factor = +this.running * 0.5 + +this.moving;
+      this.spine.add(this.rifle.object);
+      this.rifle.append(factor);
+    }
+
+    else {
+      this.spine.remove(this.rifle.object);
+      this.rifle.reset();
+    }
   }
 
   public changeCamera (view: boolean): void {
@@ -383,6 +383,29 @@ export default class Player extends Character
         const aim = !this.moving && !aiming;
         GameEvents.dispatch('Player::Aim', aim, true);
       }, +aiming * 300);
+    }
+  }
+
+  private resetRotation (run = false): void {
+    if (run) {
+      const model = this.getModel();
+      const targetRotation = new Quaternion()
+        .setFromAxisAngle(Vector.RIGHT, this.rotation.y);
+
+      this.modelRotation.copy(model.quaternion);
+      this.modelRotation.multiply(targetRotation);
+
+      anime({
+        targets: model.quaternion,
+        easing: 'easeInOutQuad',
+        ...this.modelRotation,
+        duration: 500
+      });
+    }
+
+    else if (this.rotation.y < -0.2) {
+      const y = this.rotation.y + 0.2;
+      this.getModel().rotateOnAxis(Vector.RIGHT, y);
     }
   }
 
@@ -426,59 +449,25 @@ export default class Player extends Character
     this.toggleMesh(true);
 
     !this.equipRifle
-      ? this.setRifle(targets, this.rifle as Rifle)
+      ? this.setRifle(targets)
       : this.setPistol(targets, this.pistol as Pistol);
 
     Camera.updateNearPlane(this.aiming, this.equipRifle, this.running);
   }
 
-  private resetRotation (run = false): void {
-    if (run) {
-      const model = this.getModel();
-      const targetRotation = new Quaternion()
-        .setFromAxisAngle(Vector.RIGHT, this.rotation.y);
-
-      this.modelRotation.copy(model.quaternion);
-      this.modelRotation.multiply(targetRotation);
-
-      anime({
-        targets: model.quaternion,
-        easing: 'easeInOutQuad',
-        ...this.modelRotation,
-        duration: 500
-      });
-    }
-
-    else if (this.rotation.y < -0.2) {
-      const y = this.rotation.y + 0.2;
-      this.getModel().rotateOnAxis(Vector.RIGHT, y);
-    }
+  public addRifle (rifle: Rifle): void {
+    this.rifle = rifle;
+    rifle.visible = false;
+    this.toggleRifle(true);
   }
 
-  public pickRifle (rifle: Rifle): void {
-    this.rifle = rifle;
+  public pickRifle (): void {
+    const factor = +this.running * 0.5 + +this.moving;
+    this.rifle.updatePosition(factor);
 
-    if (!this.hasRifle) {
-      this.toggleRifle(true);
-    }
-
+    this.rifle.visible = true;
     this.hasRifle = true;
     this.rifle.addAmmo();
-  }
-
-  private toggleRifle (append: boolean): void {
-    if (!this.rifle) return;
-
-    if (append) {
-      const factor = +this.running * 0.5 + +this.moving;
-      this.spine.add(this.rifle.model);
-      this.rifle.append(factor);
-    }
-
-    else {
-      this.spine.remove(this.rifle.model);
-      this.rifle.reset();
-    }
   }
 
   public override update (delta: number): void {
@@ -494,14 +483,29 @@ export default class Player extends Character
     delete this.aimTimeout;
 
     this.pistol?.dispose();
-    this.rifle?.dispose();
     this.weapon.dispose();
+    this.rifle.dispose();
 
     delete this.pistol;
-    delete this.rifle;
     delete this.hand;
 
     super.dispose();
+  }
+
+  public die (): void {
+    this.updateAnimation('Idle', 'death', 0.5);
+    GameEvents.dispatch('Player::Death');
+    clearTimeout(this.reloadTimeout);
+
+    this.weapon.stopReloading();
+    this.setAnimation('Idle');
+    Camera.deathAnimation();
+
+    this.reloading = false;
+    this.shooting = false;
+    this.aiming = false;
+
+    this.death(true);
   }
 
   private get meshes (): Array<SkinnedMesh> {

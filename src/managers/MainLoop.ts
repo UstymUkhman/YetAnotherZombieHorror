@@ -56,8 +56,8 @@ export default class MainLoop
     });
 
     GameEvents.add('Player::PickRifle', () => {
-      setTimeout(this.spawnRifle.bind(this));
-      this.player.pickRifle(this.rifle);
+      setTimeout(this.spawnRifle.bind(this), 1e4);
+      this.player.pickRifle();
     });
   }
 
@@ -67,6 +67,7 @@ export default class MainLoop
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.enemies.colliders, this.pistol);
       Physics.setPlayer(this.player.collider);
+      this.player.addRifle(this.rifle);
 
       this.createRandomCoords();
       RAF.add(this.loop);

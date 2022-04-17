@@ -1,15 +1,12 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
-
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AudioListener } from 'three/src/audio/AudioListener';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 
 import { sRGBEncoding } from 'three/src/constants';
-import { GameEvents } from '@/events/GameEvents';
 import { Assets } from '@/loaders/AssetsLoader';
-
 import { Scene } from 'three/src/scenes/Scene';
 import { Clock } from 'three/src/core/Clock';
 
@@ -111,9 +108,7 @@ export default class MenuScene
 
   private async createEnemy (): Promise<void> {
     const character = await this.enemy.load();
-
     this.frame = requestAnimationFrame(this.onRender);
-    GameEvents.dispatch('MenuScene::Loaded');
 
     this.scene.add(character.scene);
     this.enemy.fade(true);

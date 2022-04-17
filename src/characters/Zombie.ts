@@ -53,11 +53,10 @@ export default class Zombie extends Character
     const mesh = this.getModel().children[0].children[1] as SkinnedMesh;
 
     anime({
+      duration: +visible * 150 + 100,
       targets: mesh.material,
-      delay: +visible * 500,
       opacity: +visible,
-      easing: 'linear',
-      duration: 100
+      easing: 'linear'
     });
   }
 

@@ -37,24 +37,20 @@ export default class Weapon
   protected readonly magazine: number;
   private bullets: Array<Mesh> = [];
 
+  private weapon!: Assets.GLTF;
   protected loadedAmmo: number;
   protected totalAmmo: number;
-
-  private weapon!: Assets.GLTF;
-  private asset!: Assets.GLTF;
 
   public aiming = false;
   private fire!: Fire;
 
-  public constructor (private readonly config: WeaponConfig, envMap: Texture) {
+  public constructor (private readonly config: WeaponConfig) {
     this.magazine = config.magazine;
     this.loadedAmmo = config.ammo;
     this.totalAmmo = config.ammo;
-
-    this.load(envMap);
   }
 
-  private async load (envMap: Texture): Promise<void> {
+  protected async load (envMap: Texture): Promise<Assets.GLTF> {
     const { emissive = Color.BLACK, emissiveIntensity = 1.0 } = this.config;
     this.weapon = (await Assets.Loader.loadGLTF(this.config.model)).scene;
 
@@ -67,7 +63,6 @@ export default class Weapon
         childMesh.receiveShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
-          refractionRatio: 0.75,
           emissiveIntensity,
           transparent: true,
           map: material.map,
@@ -90,7 +85,7 @@ export default class Weapon
       this.weapon, this.config.textures
     );
 
-    this.asset = this.model.clone();
+    return this.object.clone();
   }
 
   /* private getEvent (index: number): string {
@@ -103,14 +98,14 @@ export default class Weapon
     stop && this.stopSound(sfx);
 
     GameEvents.dispatch('SFX::Weapon', {
-      matrix: this.model.matrixWorld,
+      matrix: this.object.matrixWorld,
       play: true, sfx
     }, true);
   }
 
   protected stopSound (sfx: WeaponSound): void {
     GameEvents.dispatch('SFX::Weapon', {
-      matrix: this.model.matrixWorld,
+      matrix: this.object.matrixWorld,
       play: false, sfx
     }, true);
   }
@@ -130,12 +125,11 @@ export default class Weapon
       const target = this.target;
       const { ray } = this.raycaster;
       const hitBox = this.targets[target];
+      const recoil = this.animateRecoil();
 
       const bullet = this.bullet.shoot(ray, this.aiming);
+      GameEvents.dispatch('Player::Shoot', true, true);
       !this.bullets.length && RAF.add(this.onUpdate);
-
-      GameEvents.dispatch('Player::Shoot', true);
-      const recoil = this.animateRecoil();
 
       this.playSound('shoot', true);
       this.bullets.push(bullet);
@@ -156,10 +150,8 @@ export default class Weapon
   }
 
   private animateRecoil (): Recoil {
-    const recoil = this.recoil;
-    if (!this.weapon) return recoil;
-
     const { x, y } = this.weapon.position;
+    const recoil = this.recoil;
 
     anime({
       targets: this.weapon.rotation,
@@ -205,10 +197,6 @@ export default class Weapon
 
   public addAmmo (): void { return; }
 
-  protected getClone (): Assets.GLTF {
-    return this.asset as Assets.GLTF;
-  }
-
   public resize (height: number): void {
     this.fire?.resize(height);
   }
@@ -231,15 +219,12 @@ export default class Weapon
     }
 
     RAF.remove(this.onUpdate);
-
     this.targets.splice(0);
     this.bullets.splice(0);
 
     this.bullet.dispose();
     this.fire.dispose();
-
     this.weapon.clear();
-    this.asset.clear();
   }
 
   private get originOffset (): number {
@@ -247,7 +232,7 @@ export default class Weapon
     return this.aiming ? y : x;
   }
 
-  public get model (): Assets.GLTF {
+  public get object (): Assets.GLTF {
     return this.weapon as Assets.GLTF;
   }
 
