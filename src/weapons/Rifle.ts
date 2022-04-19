@@ -31,6 +31,8 @@ export default class Rifle extends Weapon
   private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone!: Assets.GLTF;
+  private spine!: Assets.GLTF;
+
   private reloading = false;
   private appended = false;
 
@@ -44,6 +46,7 @@ export default class Rifle extends Weapon
 
   protected override async load (envMap: Texture): Promise<Assets.GLTF> {
     const clone = await super.load(envMap);
+    this.spine = clone.clone();
 
     clone.scale.copy(Configs.Rifle.worldScale as Vector3);
     GameEvents.dispatch('Level::AddObject', clone);
@@ -68,8 +71,10 @@ export default class Rifle extends Weapon
   }
 
   public override toggleVisibility (hideDelay: number, showDelay: number): void {
+    const mesh = this.object.children[0] as Mesh;
+
     anime({
-      targets: this.mesh.material,
+      targets: mesh.material,
       delay: hideDelay,
       easing: 'linear',
       duration: 100,
@@ -77,7 +82,7 @@ export default class Rifle extends Weapon
     });
 
     setTimeout(() => anime({
-      targets: this.mesh.material,
+      targets: mesh.material,
       easing: 'linear',
       duration: 100,
       opacity: 1.0
@@ -153,7 +158,7 @@ export default class Rifle extends Weapon
 
   public updatePosition (factor: number): void {
     this.appended && anime({
-      targets: this.object.position,
+      targets: this.spine.position,
       duration: +!factor * 100,
       x: factor * 10.0 - 10.0,
       easing: 'linear'
@@ -161,22 +166,26 @@ export default class Rifle extends Weapon
   }
 
   public append (factor: number): void {
-    this.object.position.copy(this.spinePosition);
-    this.object.rotation.copy(this.spineRotation);
+    this.spine.position.copy(this.spinePosition);
+    this.spine.rotation.copy(this.spineRotation);
 
     this.appended = true;
     this.updatePosition(factor);
   }
 
-  public reset (): void {
+  private reset (): void {
     this.object.position.copy(this.position);
     this.object.rotation.copy(this.rotation);
-
     this.appended = false;
   }
 
-  public set visible (visible: boolean) {
-    this.mesh.visible = visible;
+  public set toggle (equip: boolean) {
+    this.spine.visible = !equip;
+    this.visible = equip;
+  }
+
+  public get dummy (): Assets.GLTF {
+    return this.spine;
   }
 
   public override dispose (): void {
@@ -187,9 +196,5 @@ export default class Rifle extends Weapon
 
   public get onStage (): boolean {
     return this.spawned;
-  }
-
-  public get mesh (): Mesh {
-    return this.object.children[0] as Mesh;
   }
 }

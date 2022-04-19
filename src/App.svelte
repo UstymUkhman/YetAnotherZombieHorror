@@ -54,6 +54,9 @@
   let loading = true;
   let paused = true;
 
+  const getAssetsPath = () =>
+    Configs.APP ? '.' : `${Configs.BASE_PATH}/assets`;
+
   function onQuit (): void {
     setTimeout(() => updating = false, 1e3);
     menuScreen = true;
@@ -66,8 +69,8 @@
   )(updating);
 
   (() => {
+    const assetsPath = getAssetsPath();
     const { style } = document.documentElement;
-    const assetsPath = `${Configs.BASE_PATH || '/assets'}`;
 
     const defaultCursor = `${assetsPath}/cursor/default.png`;
     const pointerCursor = `${assetsPath}/cursor/pointer.png`;

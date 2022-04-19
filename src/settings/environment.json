@@ -10,5 +10,5 @@
 
   "clouds": 300,
   "dynamicClouds": true,
-  "physicalLights": true
+  "physicalLights": false
 }

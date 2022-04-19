@@ -59,8 +59,7 @@ export default class Weapon
       const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
-        childMesh.castShadow = true;
-        childMesh.receiveShadow = true;
+        childMesh.castShadow = childMesh.receiveShadow = true;
 
         childMesh.material = new MeshStandardMaterial({
           emissiveIntensity,
@@ -80,12 +79,14 @@ export default class Weapon
     this.weapon.rotation.copy(this.config.rotation as Euler);
     this.weapon.scale.copy(this.config.scale as Vector3);
 
+    const clone = this.weapon.clone();
+
     this.fire = new Fire(
       this.config.fire as FireConfig,
       this.weapon, this.config.textures
     );
 
-    return this.object.clone();
+    return clone;
   }
 
   /* private getEvent (index: number): string {
@@ -230,6 +231,10 @@ export default class Weapon
   private get originOffset (): number {
     const { x, y } = this.config.bullet.position;
     return this.aiming ? y : x;
+  }
+
+  public set visible (visible: boolean) {
+    this.weapon.children[0].visible = visible;
   }
 
   public get object (): Assets.GLTF {

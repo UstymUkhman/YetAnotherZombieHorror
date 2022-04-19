@@ -314,31 +314,39 @@ export default class Player extends Character
     }, duration * 1e3) as unknown as number;
   }
 
-  public setPistol (targets: Array<Object3D>, pistol: Pistol): void {
+  public setPistol (targets: Array<Object3D>, pistol?: Pistol): void {
     this.setWeapon(false);
-    this.weapon = pistol;
-    this.pistol = pistol;
 
-    pistol.targets = targets;
-    this.hand?.add(pistol.object);
+    if (pistol) {
+      this.pistol = pistol;
+      this.weapon = this.pistol;
+      this.pistol.targets = targets;
+      this.hand?.add(this.pistol.object);
+    }
+
+    else {
+      this.weapon = (this.pistol as Pistol);
+      this.updateRiflePosition(true);
+      this.weapon.targets = targets;
+      this.weapon.visible = true;
+      this.rifle.toggle = false;
+    }
   }
 
   private setRifle (targets: Array<Object3D>): void {
-    this.setWeapon(true);
-    this.weapon = this.rifle;
-
-    this.hand?.add(this.rifle.object);
     this.rifle.targets = targets;
-    this.rifle.visible = true;
+    this.weapon.visible = false;
+    this.rifle.toggle = true;
+    this.weapon = this.rifle;
+    this.setWeapon(true);
   }
 
   private setWeapon (rifle: boolean): void {
+    GameEvents.dispatch('Weapon::Change', rifle);
+
     let animation = rifle ?
       this.lastAnimation.replace('pistol', 'rifle') :
       this.lastAnimation.replace('rifle', 'pistol');
-
-    GameEvents.dispatch('Weapon::Change', rifle);
-    this.hand?.remove(this.weapon?.object);
 
     if (!rifle && !this.animations[animation]) {
       animation = animation.replace(/BackwardLeft|BackwardRight/gm, 'Backward');
@@ -350,23 +358,7 @@ export default class Player extends Character
     );
 
     this.hasRifle = this.equipRifle || rifle;
-    this.toggleRifle(!rifle);
     this.equipRifle = rifle;
-  }
-
-  private toggleRifle (append: boolean): void {
-    if (!this.rifle) return;
-
-    if (append) {
-      const factor = +this.running * 0.5 + +this.moving;
-      this.spine.add(this.rifle.object);
-      this.rifle.append(factor);
-    }
-
-    else {
-      this.spine.remove(this.rifle.object);
-      this.rifle.reset();
-    }
   }
 
   public changeCamera (view: boolean): void {
@@ -448,26 +440,33 @@ export default class Player extends Character
     const targets = this.weapon.targets;
     this.toggleMesh(true);
 
-    !this.equipRifle
-      ? this.setRifle(targets)
-      : this.setPistol(targets, this.pistol as Pistol);
-
+    !this.equipRifle ? this.setRifle(targets) : this.setPistol(targets);
     Camera.updateNearPlane(this.aiming, this.equipRifle, this.running);
   }
 
   public addRifle (rifle: Rifle): void {
     this.rifle = rifle;
-    rifle.visible = false;
-    this.toggleRifle(true);
+    this.rifle.toggle = false;
+    this.rifle.dummy.visible = false;
+
+    this.hand?.add(this.rifle.object);
+    this.spine.add(this.rifle.dummy);
+    this.updateRiflePosition(true);
   }
 
   public pickRifle (): void {
-    const factor = +this.running * 0.5 + +this.moving;
-    this.rifle.updatePosition(factor);
-
-    this.rifle.visible = true;
+    this.rifle.dummy.visible = !this.equipRifle;
+    this.updateRiflePosition();
     this.hasRifle = true;
     this.rifle.addAmmo();
+  }
+
+  private updateRiflePosition (append = false): void {
+    const factor = +this.running * 0.5 + +this.moving;
+
+    append
+      ? this.rifle.append(factor)
+      : this.rifle.updatePosition(factor);
   }
 
   public override update (delta: number): void {
