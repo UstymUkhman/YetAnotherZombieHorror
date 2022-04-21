@@ -32,11 +32,12 @@ export default class Player extends Character
 
   private currentAnimation!: AnimationAction;
   private lastAnimation = 'pistolIdle';
-  private weapon!: Pistol | Rifle;
-
   private animationUpdate = false;
-  private reloadTimeout?: number;
-  private aimTimeout?: number;
+
+  private reloadTimeout!: NodeJS.Timeout;
+  private animTimeout!: NodeJS.Timeout;
+  private aimTimeout!: NodeJS.Timeout;
+  private weapon!: Pistol | Rifle;
 
   private equipRifle = false;
   private hasRifle = false;
@@ -215,13 +216,13 @@ export default class Player extends Character
 
     if (this.lastAnimation !== next) {
       if (this.equipRifle || animation) {
-        this.aimTimeout = this.updateAnimation('Idle', next);
+        this.animTimeout = this.updateAnimation('Idle', next);
       }
 
       this.running = this.moving = false;
     }
 
-    setTimeout(() =>
+    this.aimTimeout = setTimeout(() =>
       GameEvents.dispatch('Player::Aim', !Camera.isFPS, true)
     , 300 + +this.equipRifle * 300);
 
@@ -232,9 +233,10 @@ export default class Player extends Character
   }
 
   public stopAiming (running: boolean): void {
+    this.equipRifle && clearTimeout(this.aimTimeout);
     const duration = Math.min(Date.now() - this.aimTime, 400);
-    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
 
+    GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     !running && Camera.aimAnimation(false, this.equipRifle, duration);
 
     Camera.isFPS && running
@@ -245,7 +247,7 @@ export default class Player extends Character
     this.currentAnimation.paused = false;
 
     this.weapon.cancelAim(duration);
-    clearTimeout(this.aimTimeout);
+    clearTimeout(this.animTimeout);
     this.toggleMesh(false);
   }
 
@@ -285,7 +287,7 @@ export default class Player extends Character
 
     this.reloadTimeout = setTimeout(
       this.weapon.addAmmo.bind(this.weapon, 0)
-    , 2000) as unknown as number;
+    , 2000);
 
     setTimeout(() => {
       if (this.dead) return;
@@ -298,7 +300,7 @@ export default class Player extends Character
     }, 2500);
   }
 
-  private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): number {
+  private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): NodeJS.Timeout {
     this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
     this.animations[action].play();
     this.animationUpdate = true;
@@ -311,7 +313,7 @@ export default class Player extends Character
       this.animationUpdate = false;
 
       this.currentAnimation = this.animations[action];
-    }, duration * 1e3) as unknown as number;
+    }, duration * 1e3);
   }
 
   public setPistol (targets: Array<Object3D>, pistol?: Pistol): void {
@@ -476,10 +478,8 @@ export default class Player extends Character
 
   public override dispose (): void {
     clearTimeout(this.reloadTimeout);
+    clearTimeout(this.animTimeout);
     clearTimeout(this.aimTimeout);
-
-    delete this.reloadTimeout;
-    delete this.aimTimeout;
 
     this.pistol?.dispose();
     this.weapon.dispose();
