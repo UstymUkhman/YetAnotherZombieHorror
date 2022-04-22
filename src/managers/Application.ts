@@ -30,6 +30,7 @@ export default class Application
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
+  private readonly onUpdate = this.update.bind(this);
   private readonly onResize = this.resize.bind(this);
 
   public constructor (private readonly scene: HTMLCanvasElement) {
@@ -44,22 +45,27 @@ export default class Application
     );
   }
 
-  private async createRaindrops (scene: HTMLCanvasElement, raindrops?: HTMLCanvasElement): Promise<void> {
-    raindrops && import('@/environment/Raindrops').then(Raindrops =>
-      this.raindrops = new Raindrops.default(scene, raindrops)
-    );
+  private createRaindrops (canvas?: HTMLCanvasElement): void {
+    canvas && import('@/environment/Raindrops').then(Raindrops => {
+      this.raindrops = new Raindrops.default(canvas);
+      RAF.add(this.onUpdate);
+    });
   }
 
-  public start (raindrops?: HTMLCanvasElement): void {
-    this.createRaindrops(this.scene, raindrops);
+  public start (camera?: HTMLCanvasElement): void {
     const { width, height } = Viewport.size;
 
     this.audioScene.updateAmbient();
+    this.createRaindrops(camera);
     this.resize(width, height);
 
     this.toggleInputs(false);
     this.toggleAudio(false);
     this.started = true;
+  }
+
+  private update (): void {
+    (this.raindrops as Raindrops).update(this.scene);
   }
 
   private resize (width: number, height: number): void {
@@ -75,9 +81,12 @@ export default class Application
     this.audioScene.pause = paused;
   }
 
+  private toggleRain (paused: boolean) {
+    RAF[paused ? 'remove' : 'add'](this.onUpdate);
+  }
+
   public dispose (): void {
     RAF.dispose();
-
     this.pause = true;
     this.started = false;
 
@@ -103,6 +112,7 @@ export default class Application
     if (this.started) {
       this.toggleInputs(paused);
       this.toggleAudio(paused);
+      this.toggleRain(paused);
     }
 
     this.raindrops?.pause(paused);

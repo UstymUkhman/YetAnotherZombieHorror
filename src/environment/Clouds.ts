@@ -26,7 +26,6 @@ export default class Clouds
 {
   private readonly count = Settings.getEnvironmentValue('clouds') as unknown as number;
   private readonly staticClouds = !Settings.getEnvironmentValue('dynamicClouds');
-
   private readonly isLighting = Settings.getEnvironmentValue('lighting');
   private readonly useFog = Settings.getEnvironmentValue('fog');
 
@@ -36,10 +35,9 @@ export default class Clouds
   private readonly rotation = new Euler(PI.d2, 0.0, 0.0);
   private readonly matrix = new Matrix4();
 
+  private timeout!: NodeJS.Timeout;
   private clouds?: InstancedMesh;
   private lighting!: PointLight;
-
-  private timeout?: number;
   private paused = true;
 
   public constructor () {
@@ -60,7 +58,7 @@ export default class Clouds
   private startLighting (): void {
     this.timeout = setTimeout(this.onShowLighting, 1e3 * (
       Math.random() * 15 + 15
-    )) as unknown as number;
+    ));
   }
 
   private showLighting (): void {
@@ -174,7 +172,7 @@ export default class Clouds
   public set pause (pause: boolean) {
     !(this.paused = pause)
       ? this.isLighting && this.startLighting()
-      : this.timeout && clearTimeout(this.timeout);
+      : clearTimeout(this.timeout);
   }
 
   public get sky (): InstancedMesh {

@@ -25,8 +25,8 @@ export default class Keyboard
   });
 
   private moves: Directions = [0, 0, 0, 0];
+  private aimTimeout!: NodeJS.Timeout;
 
-  private aimTimeout = 0.0;
   private wheelTime = 0.0;
   private aimTime = 0.0;
 
@@ -109,7 +109,7 @@ export default class Keyboard
         running
           ? this.player.run(this.moves, true)
           : this.player.move(this.moves);
-      }, Math.max(450 - (Date.now() - this.aimTime), 0)) as unknown as number;
+      }, Math.max(450 - (Date.now() - this.aimTime), 0));
     }
   }
 
