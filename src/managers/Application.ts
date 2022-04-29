@@ -7,6 +7,7 @@ import Pointer from '@/managers/Pointer';
 import Viewport from '@/utils/Viewport';
 import Music from '@/managers/Music';
 
+import Settings from '@/settings';
 import RAF from '@/managers/RAF';
 import Configs from '@/configs';
 
@@ -30,7 +31,6 @@ export default class Application
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
-  private readonly onUpdate = this.update.bind(this);
   private readonly onResize = this.resize.bind(this);
 
   public constructor (private readonly scene: HTMLCanvasElement) {
@@ -45,14 +45,13 @@ export default class Application
     );
   }
 
-  private createRaindrops (canvas?: HTMLCanvasElement): void {
-    canvas && import('@/environment/Raindrops').then(Raindrops => {
-      this.raindrops = new Raindrops.default(canvas);
-      RAF.add(this.onUpdate);
-    });
+  private async createRaindrops (canvas: HTMLCanvasElement): Promise<void> {
+    Settings.getEnvironmentValue('raindrops') && import('@/environment/Raindrops').then(Raindrops =>
+      this.raindrops = new Raindrops.default(this.scene, canvas)
+    );
   }
 
-  public start (camera?: HTMLCanvasElement): void {
+  public start (camera: HTMLCanvasElement): void {
     const { width, height } = Viewport.size;
 
     this.audioScene.updateAmbient();
@@ -62,10 +61,6 @@ export default class Application
     this.toggleInputs(false);
     this.toggleAudio(false);
     this.started = true;
-  }
-
-  private update (): void {
-    (this.raindrops as Raindrops).update(this.scene);
   }
 
   private resize (width: number, height: number): void {
@@ -79,10 +74,6 @@ export default class Application
   private toggleAudio (paused: boolean) {
     this.music[paused ? 'pause' : 'play']();
     this.audioScene.pause = paused;
-  }
-
-  private toggleRain (paused: boolean) {
-    RAF[paused ? 'remove' : 'add'](this.onUpdate);
   }
 
   public dispose (): void {
@@ -112,7 +103,6 @@ export default class Application
     if (this.started) {
       this.toggleInputs(paused);
       this.toggleAudio(paused);
-      this.toggleRain(paused);
     }
 
     this.raindrops?.pause(paused);

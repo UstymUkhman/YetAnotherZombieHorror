@@ -1,15 +1,23 @@
+import { GameEvents } from '@/events/GameEvents';
 import Viewport from '@/utils/Viewport';
 import Raindrop from 'raindrop-fx';
+import RAF from '@/managers/RAF';
 
 export default class Raindrops
 {
-  private raindrop: Raindrop;
+  private raindrops: Raindrop;
+
+  private readonly onUpdate = this.update.bind(this);
   private readonly onResize = this.resize.bind(this);
 
-  public constructor (private readonly canvas: HTMLCanvasElement) {
+  public constructor (
+    private readonly background: HTMLCanvasElement,
+    private readonly canvas: HTMLCanvasElement
+  ) {
     Viewport.addResizeCallback(this.onResize);
 
-    this.raindrop = new Raindrop({
+    this.raindrops = new Raindrop({
+      background: this.background,
       motionInterval: [0.25, 0.5],
       spawnInterval: [0.1, 0.5],
       spawnSize: [75.0, 100.0],
@@ -31,36 +39,45 @@ export default class Raindrops
   }
 
   private start (): void {
-    this.raindrop.start().then(() => {
-      this.canvas.style.opacity = '1';
+    RAF.add(this.onUpdate);
+
+    this.raindrops.start().then(() => {
+      GameEvents.dispatch('Rain::Toggle', true);
 
       // Dirty hack to bypass the need of mandatory background blur:
       // https://github.com/SardineFish/raindrop-fx/pull/3#issuecomment-877057762
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const raindropRenderer = this.raindrop?.renderer as any;
-      raindropRenderer.blurryBackground = raindropRenderer.background;
+      const raindropsRenderer = this.raindrops?.renderer as any;
+      raindropsRenderer.blurryBackground = raindropsRenderer.background;
     });
   }
 
-  private resize (width: number, height: number): void {
-    if (!this.canvas.style.opacity) return;
-    this.raindrop.resize(width, height);
+  private update (): void {
+    this.raindrops.setBackground(this.background);
+  }
 
+  private resize (width: number, height: number): void {
+    this.raindrops.resize(width, height);
     this.canvas.height = height;
     this.canvas.width = width;
   }
 
-  public update (canvas: HTMLCanvasElement): void {
-    this.raindrop.setBackground(canvas);
-  }
-
   public pause (paused: boolean): void {
-    this.raindrop[paused ? 'stop' : 'start']();
+    if (paused) {
+      this.raindrops.stop();
+      RAF.remove(this.onUpdate);
+    }
+
+    else {
+      RAF.add(this.onUpdate);
+      this.raindrops.start();
+    }
   }
 
   public dispose (): void {
     Viewport.removeResizeCallback(this.onResize);
-    this.raindrop.stop();
+    RAF.remove(this.onUpdate);
+    this.raindrops.stop();
   }
 }

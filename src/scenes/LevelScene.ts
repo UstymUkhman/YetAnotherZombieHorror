@@ -35,6 +35,9 @@ import Configs from '@/configs';
 
 export default class LevelScene
 {
+  private readonly physicalLights = Settings.getEnvironmentValue('physicalLights');
+  private readonly raindrops = Settings.getEnvironmentValue('raindrops');
+
   private readonly renderer: WebGLRenderer;
   private readonly portals = new Portals();
   private readonly clouds = new Clouds();
@@ -47,10 +50,9 @@ export default class LevelScene
   private fog?: Fog;
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
-    const raindrops = Settings.getEnvironmentValue('raindrops');
-
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: raindrops,
+      preserveDrawingBuffer: this.raindrops,
+      powerPreference: 'high-performance',
       antialias: true,
       canvas
     });
@@ -151,6 +153,7 @@ export default class LevelScene
 
   private createLights (): void {
     this.scene.add(new AmbientLight(Color.WHITE, 0.1));
+    const intensity = 0.25 + +!this.physicalLights * 0.1;
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
 
     this.csm = new CSM({
@@ -159,7 +162,7 @@ export default class LevelScene
 
       lightFar: CameraObject.far,
       lightDirection: direction,
-      lightIntensity: 0.25,
+      lightIntensity: intensity,
 
       camera: CameraObject,
       parent: this.scene,
@@ -182,10 +185,9 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const physicalLights = Settings.getEnvironmentValue('physicalLights');
-    const exposure = +physicalLights * 0.75 + 0.25;
+    const exposure = +this.physicalLights * 0.75 + 0.25;
 
-    this.renderer.physicallyCorrectLights = physicalLights;
+    this.renderer.physicallyCorrectLights = this.physicalLights;
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
 
     this.renderer.toneMapping = ACESFilmicToneMapping;

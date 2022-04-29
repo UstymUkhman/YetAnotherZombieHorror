@@ -131,6 +131,7 @@
     @include mixin.center-size;
     pointer-events: none;
 
+    z-index: 1;
     padding: 0;
     margin: 0;
   }

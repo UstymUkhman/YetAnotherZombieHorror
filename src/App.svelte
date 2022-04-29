@@ -29,6 +29,7 @@
   {#if !updating}
     <Game
       running={!paused}
+      raindrops={raindrops}
       on:ready={() => appReady = true}
       on:firstUpdate={() => {
         menuScreen = false;
@@ -36,10 +37,12 @@
       }}
     />
   {/if}
+
+  <Raindrops bind:this={raindrops} updating={updating} />
 </main>
 
 <script lang="ts">
-  import { Await, Pause } from '@components/overlay/index';
+  import { Await, Pause, Raindrops } from '@components/overlay/index';
   import Menu from '@components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
 
@@ -47,6 +50,7 @@
   import { onDestroy } from 'svelte';
   import Configs from '@/configs';
 
+  let raindrops: Raindrops;
   let menuScreen = true;
   let appReady = false;
 
@@ -54,11 +58,15 @@
   let loading = true;
   let paused = true;
 
-  const getAssetsPath = () =>
-    Configs.APP ? '.' : `${Configs.BASE_PATH}/assets`;
+  const getAssetsPath = () => {
+    const base = Configs.BASE_PATH;
+    return !base && '/assets' || base;
+  };
 
   function onQuit (): void {
+    GameEvents.dispatch('Rain::Toggle', false);
     setTimeout(() => updating = false, 1e3);
+
     menuScreen = true;
     updating = true;
   }

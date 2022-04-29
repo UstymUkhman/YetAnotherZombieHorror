@@ -30,6 +30,7 @@ export default class OffscreenCanvas implements ApplicationManager
   }
 
   public dispose(): void {
+    this.worker.post('Game::Dispose');
     this.events.dispose();
   }
 }
