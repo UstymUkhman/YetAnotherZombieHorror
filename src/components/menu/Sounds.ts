@@ -5,11 +5,11 @@ export default class Sounds
   private static vol = 0.5;
 
   private static readonly hover = new Audio(
-    `${Configs.BASE_PATH}/assets/sounds/${Configs.Rifle.sounds.empty}`
+    `${Configs.basePath()}/sounds/${Configs.Rifle.sounds.empty}`
   );
 
   private static readonly click = new Audio(
-    `${Configs.BASE_PATH}/assets/sounds/${Configs.Rifle.sounds.pick}`
+    `${Configs.basePath()}/sounds/${Configs.Rifle.sounds.pick}`
   );
 
   public static set volume (volume: number) {

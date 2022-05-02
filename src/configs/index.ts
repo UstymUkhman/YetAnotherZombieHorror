@@ -36,8 +36,6 @@ namespace Configs
   export const APP = navigator.userAgent.toLowerCase().includes('electron');
 
   type CharacterAnimations = Record<string, Readonly<Array<number>>>;
-  export const BASE_PATH = (PRODUCTION || Configs.APP) && '.' || '';
-
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
 
@@ -52,13 +50,10 @@ namespace Configs
     self instanceof WorkerGlobalScope
   );
 
-  /* eslint-disable no-undef */
-  export const DEBUG = !PRODUCTION;
-  export const VERSION = BUILD;
-  /* eslint-enable no-undef */
-
-  export const colliders = false;
-  export const hitBoxes = false;
+  export const basePath = (menu = false) =>
+    !Configs.APP ? menu ? '' : '/assets'
+    : (Configs.offscreen || !Configs.worker)
+    ? menu ? './' : './assets' : './';
 
   export const RandomCoords = deepFreeze({
     playerDistance: 5.0,

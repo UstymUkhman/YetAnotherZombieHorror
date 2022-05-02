@@ -29,12 +29,14 @@ export namespace Assets
     onError: Reject
   }
 
+  const BASE_PATH = Configs.basePath();
+
   class LoadingManager extends ThreeLoadingManager
   {
-    private readonly textureBasePath = `${Configs.BASE_PATH || '/assets'}/textures/`;
-    private readonly shaderBasePath  = `${Configs.BASE_PATH || '/assets'}/shaders/`;
-    private readonly modelBasePath   = `${Configs.BASE_PATH || '/assets'}/models/`;
-    private readonly audioBasePath   = `${Configs.BASE_PATH    }/assets/sounds/`;
+    private readonly audioBasePath   = `${BASE_PATH}/sounds/`;
+    private readonly modelBasePath   = `${BASE_PATH}/models/`;
+    private readonly shaderBasePath  = `${BASE_PATH}/shaders/`;
+    private readonly textureBasePath = `${BASE_PATH}/textures/`;
 
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);

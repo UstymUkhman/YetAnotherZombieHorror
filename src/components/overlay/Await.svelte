@@ -1,4 +1,4 @@
-<div transition:fade>
+<div transition:fade class:loading>
   {#if loading}
     <h1>Loading...</h1>
   {/if}
@@ -40,6 +40,10 @@
 
     @include mixin.absolute-size;
     background-color: rgba(var.$black, 0.8);
+
+    &.loading {
+      background-color: var.$black;
+    }
 
     h1 {
       padding: 2.5vw 2.5vw 1.75vw;

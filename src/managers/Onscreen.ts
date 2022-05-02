@@ -4,10 +4,10 @@ import MainLoop from '@/managers/MainLoop';
 
 export default class Onscreen implements ApplicationManager
 {
-  private loop: MainLoop;
+  private loop!: MainLoop;
 
   public constructor (scene: HTMLCanvasElement, worker: WebWorker, pixelRatio: number) {
-    this.loop = new MainLoop(scene, pixelRatio, worker);
+    setTimeout(() => this.loop = new MainLoop(scene, pixelRatio, worker), 500);
   }
 
   public resize (width: number, height: number): void {

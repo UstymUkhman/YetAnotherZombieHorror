@@ -9,7 +9,7 @@ export default class Music
 
   public constructor () {
     const track = Configs.Level.music;
-    const audio = `${Configs.BASE_PATH}/assets/music/${track}`;
+    const audio = `${Configs.basePath()}/music/${track}`;
 
     this.track = new Audio(audio);
     this.track.autoplay = !this.paused;

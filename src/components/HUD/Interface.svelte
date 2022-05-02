@@ -83,8 +83,8 @@
   }
 
   function dispatchUpdate (): void {
-    setTimeout(() => dispatch('firstUpdate'), 1000);
-    setTimeout(() => visibleHUD = true, 2000);
+    setTimeout(() => dispatch('firstUpdate'), 1500);
+    setTimeout(() => visibleHUD = true, 2500);
 
     firstUpdate = true;
     dispatch('start');

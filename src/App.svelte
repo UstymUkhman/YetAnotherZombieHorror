@@ -1,15 +1,11 @@
 <main>
   {#if menuScreen && !loading}
     <Menu
-      ready={appReady}
-      on:hide={() => appReady = false}
       on:update={({ detail }) => updating = detail}
-
-      on:start={() => {
-        loading = true;
-        paused = false;
-      }}
-    />
+      on:hide={() => appReady = false}
+      on:start={onStart}
+      ready={appReady}
+      />
   {/if}
 
   {#if paused && !menuScreen}
@@ -59,9 +55,14 @@
   let paused = true;
 
   const getAssetsPath = () => {
-    const base = Configs.BASE_PATH;
+    const base = Configs.basePath(true);
     return !base && '/assets' || base;
   };
+
+  function onStart (): void {
+    setTimeout(() => paused = false, 500);
+    loading = true;
+  }
 
   function onQuit (): void {
     GameEvents.dispatch('Rain::Toggle', false);

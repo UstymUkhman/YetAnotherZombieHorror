@@ -35,10 +35,9 @@ import Configs from '@/configs';
 
 export default class LevelScene
 {
-  private readonly physicalLights = Settings.getEnvironmentValue('physicalLights');
-  private readonly raindrops = Settings.getEnvironmentValue('raindrops');
-
+  private readonly physicalLights: boolean;
   private readonly renderer: WebGLRenderer;
+
   private readonly portals = new Portals();
   private readonly clouds = new Clouds();
 
@@ -50,9 +49,12 @@ export default class LevelScene
   private fog?: Fog;
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
+    this.physicalLights = Settings.getEnvironmentValue('physicalLights');
+    const raindrops = Settings.getEnvironmentValue('raindrops');
+
     this.renderer = new WebGLRenderer({
-      preserveDrawingBuffer: this.raindrops,
       powerPreference: 'high-performance',
+      preserveDrawingBuffer: raindrops,
       antialias: true,
       canvas
     });

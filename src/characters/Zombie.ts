@@ -12,8 +12,10 @@ import anime from 'animejs';
 export default class Zombie extends Character
 {
   public constructor () {
-    const path = !!Configs.BASE_PATH && '../assets/models/' || '';
-    super({ ...Configs.Enemy, model: `${path}${Configs.Enemy.model}` });
+    super({
+      ...Configs.Enemy,
+      model: `${Configs.basePath(true)}${Configs.Enemy.model}`
+    });
   }
 
   private setDefaultState (): void {
