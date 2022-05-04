@@ -55,8 +55,11 @@
   let paused = true;
 
   const getAssetsPath = () => {
+    let path = window.location.pathname;
     const base = Configs.basePath(true);
-    return !base && '/assets' || base;
+
+    path = path.slice(0, path.lastIndexOf('/'));
+    return !base && `${path}/assets` || base;
   };
 
   function onStart (): void {

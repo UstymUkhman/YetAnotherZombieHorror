@@ -19,6 +19,11 @@ namespace Configs
 {
   export type OffscreenCanvas = HTMLCanvasElement & { transferControlToOffscreen: () => Transferable };
 
+  const getAssetsPath = () =>
+    !Configs.offscreen
+      ? STAGING ? '/dist/assets' : '/assets'
+      : `${window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'))}/assets`;
+
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
     Object.assign({}, ...Object.keys(animations).map(animation => ({ [animation]: {
       speed: animations[animation][0],
@@ -51,9 +56,9 @@ namespace Configs
   );
 
   export const basePath = (menu = false) =>
-    !Configs.APP ? menu ? '' : '/assets'
-    : (Configs.offscreen || !Configs.worker)
-    ? menu ? './' : './assets' : './';
+    !Configs.APP ? menu ? '' : getAssetsPath()
+      : (Configs.offscreen || !Configs.worker)
+      ? menu ? './' : './assets' : './';
 
   export const RandomCoords = deepFreeze({
     playerDistance: 5.0,

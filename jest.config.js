@@ -63,6 +63,7 @@ module.exports = {
   // A set of global variables that need to be available in all test environments
   globals: {
     PRODUCTION: false,
+    STAGING: false,
     BUILD: version
   },
 
@@ -151,7 +152,7 @@ module.exports = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing: 'jsdom' | jest-environment-jsdom-fourteen | 'node'
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-jsdom',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},

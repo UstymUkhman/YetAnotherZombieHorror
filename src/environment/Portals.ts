@@ -86,8 +86,6 @@ export default class Portals
         deltaTime: { value: 0.0 }
       },
 
-      fog: Settings.getEnvironmentValue('fog'),
-
       fragmentShader: fragPortal,
       vertexShader: vertPortal,
 
@@ -99,6 +97,8 @@ export default class Portals
       VOLUMETRIC_FOG: Settings.getEnvironmentValue('volumetricFog'),
       USE_BAKED_FOG: Settings.getEnvironmentValue('bakedFog')
     };
+
+    this.material.fog = Settings.getEnvironmentValue('fog');
 
     return this.material;
   }

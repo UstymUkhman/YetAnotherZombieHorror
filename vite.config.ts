@@ -10,9 +10,9 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
   base: './',
 
   define: {
+    STAGING: !!process.env.prod,
     BUILD: JSON.stringify(version),
-    PRODUCTION: mode === 'production',
-    'process.env.NODE_ENV': JSON.stringify(mode)
+    PRODUCTION: mode === 'production'
   },
 
   resolve: { alias: {

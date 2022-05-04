@@ -27,4 +27,5 @@ declare module 'ammo.js';
 declare module 'three-mesh-bvh';
 
 declare const PRODUCTION: boolean;
+declare const STAGING: boolean;
 declare const BUILD: string;
