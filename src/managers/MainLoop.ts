@@ -44,7 +44,7 @@ export default class MainLoop
     this.worker?.add('Level::GetRandomCoord', event => {
       if (Coords.addLevelCoords(event.data as LevelCoords)) {
         GameEvents.dispatch('Loading::Complete', null, true);
-        setTimeout(this.spawnRifle.bind(this), 1e4);
+        // setTimeout(this.spawnRifle.bind(this), 1e4);
       }
 
       else this.worker?.post('Level::GetRandomCoord');
@@ -84,7 +84,7 @@ export default class MainLoop
     }
 
     Coords.fillRandomLevelCoords();
-    setTimeout(this.spawnRifle.bind(this), 1e4);
+    // setTimeout(this.spawnRifle.bind(this), 1e4);
     GameEvents.dispatch('Loading::Complete', null, true);
   }
 

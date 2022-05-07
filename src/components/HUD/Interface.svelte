@@ -125,11 +125,16 @@
 </script>
 
 <style lang="scss">
+  @use "@/variables" as var;
   @use "@/mixins" as mixin;
 
   div {
-    @include mixin.center-size;
+    @include mixin.size(var(--width), var(--height));
+    @include mixin.center-transform;
+
+    aspect-ratio: var(--ratio);
     pointer-events: none;
+    overflow: hidden;
 
     z-index: 1;
     padding: 0;

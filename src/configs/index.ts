@@ -21,7 +21,7 @@ namespace Configs
 
   const getAssetsPath = () =>
     !Configs.offscreen
-      ? STAGING ? '/dist/assets' : '/assets'
+      ? STAGING ? '/experiments/YetAnotherZombieHorror/assets' : '/assets'
       : `${window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'))}/assets`;
 
   const parseCharacterMoves = (animations: CharacterAnimations): CharacterMoves =>
