@@ -157,7 +157,7 @@ describe('Configs', () => {
 
     for (const animation of animationKeys) {
       const name = animation as keyof typeof Enemy.animations;
-      expect(Configs.Enemy.animations[name].length).toStrictEqual(2);
+      expect(Configs.Enemy.animations[name].length).toStrictEqual(4);
     }
   });
 

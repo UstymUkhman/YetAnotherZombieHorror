@@ -64,7 +64,8 @@ module.exports = {
   globals: {
     PRODUCTION: false,
     STAGING: false,
-    BUILD: version
+    BUILD: version,
+    DEBUG: false
   },
 
   // The maximum amount of workers used to run your tests. Can be specified as % or a number.

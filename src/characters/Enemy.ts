@@ -8,12 +8,11 @@ import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Assets } from '@/loaders/AssetsLoader';
 
-import Character from '@/characters/Character';
+import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
+import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
-
 import { HitBox } from '@/utils/Material';
-import { PI } from '@/utils/Number';
 import Configs from '@/configs';
 
 export default class Enemy extends Character
@@ -32,16 +31,37 @@ export default class Enemy extends Character
     this.id = id;
 
     if (model && envMap) {
+      GameEvents.dispatch('Level::AddObject', this.object);
       this.character = clone(model.scene) as Assets.GLTF;
-      this.setCharacterMaterial(this.character, envMap, 0.0);
+      this.mesh = this.character;
 
-      this.createAnimations(model);
+      this.setMaterial(envMap);
+      this.setTransform(model);
       this.setDefaultState();
     }
   }
 
   public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
     return this.load(envMap);
+  }
+
+  public override update (delta: number): void {
+    super.update(delta);
+
+    if (this.alive && this.character) {
+      this.character.lookAt(0.0, 0.0, 0.0);
+    }
+  }
+
+  public override dispose (): void {
+    this.head?.remove(this.hitBoxes[0]);
+
+    for (let box = this.hitBoxes.length; box--;)
+      delete this.hitBoxes[box];
+
+    this.character?.clear();
+    this.hitBoxes.splice(0);
+    super.dispose();
   }
 
   private setDefaultState (): void {
@@ -100,11 +120,10 @@ export default class Enemy extends Character
     const spine = this.character.getObjectByName('Spine') as Object3D;
 
     const bodyHitBox = new Mesh(
-      new RoundedBoxGeometry(0.5, 0.95, 0.5, 2, 0.2),
+      new RoundedBoxGeometry(35, 80, 35, 2, 0.2),
       HitBox.clone()
     );
 
-    bodyHitBox.rotation.x -= PI.d2;
     bodyHitBox.position.y += 15;
     bodyHitBox.position.z += 5;
 
@@ -153,25 +172,6 @@ export default class Enemy extends Character
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
-  }
-
-  public override update (delta: number): void {
-    super.update(delta);
-
-    /* if (this.alive && this.character) {
-      this.character.lookAt(this.playerPosition);
-    } */
-  }
-
-  public override dispose (): void {
-    this.head?.remove(this.hitBoxes[0]);
-
-    for (let box = this.hitBoxes.length; box--;)
-      delete this.hitBoxes[box];
-
-    this.character?.clear();
-    this.hitBoxes.splice(0);
-    super.dispose();
   }
 
   public get hitBox (): Array<Object3D> {

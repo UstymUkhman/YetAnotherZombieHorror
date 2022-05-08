@@ -44,13 +44,13 @@ namespace Configs
   const getAmmo = (value: number) => value < 0 ? Infinity : value;
   type CharacterMoves = { [key: string]: CharacterMove };
 
-  export const offscreen = (
+  export const offscreen = !DEBUG && (
     typeof HTMLCanvasElement !== 'undefined' && !!(
       HTMLCanvasElement.prototype as OffscreenCanvas
     ).transferControlToOffscreen
   );
 
-  export const worker = (
+  export const worker = !DEBUG && (
     typeof WorkerGlobalScope !== 'undefined' &&
     self instanceof WorkerGlobalScope
   );

@@ -4,14 +4,14 @@ import { Color } from '@/utils/Color';
 export const DynamicCollider = new MeshBasicMaterial({
   color: Color.RED,
   wireframe: true,
-  visible: false
+  visible: DEBUG
 });
 
 export const StaticCollider = new MeshBasicMaterial({
   transparent: true,
   depthWrite: false,
   color: Color.RAIN,
-  visible: false,
+  visible: DEBUG,
   opacity: 0.5
 });
 
@@ -27,6 +27,6 @@ export const HitBox = new MeshBasicMaterial({
   transparent: true,
   depthWrite: false,
   color: Color.RED,
-  visible: false,
+  visible: DEBUG,
   opacity: 0.33
 });

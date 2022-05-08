@@ -15,41 +15,41 @@
 
 `cd YetAnotherZombieHorror`
 
-`yarn`
+`pnpm`
 
 ## Develop ##
 
-`yarn setup`
+`pnpm setup`
 
-`yarn start:web`
+`pnpm start:web`
 
-`yarn start:app`
+`pnpm start:app`
 
-`yarn lint:js`
+`pnpm lint:js`
 
-`yarn lint:css`
+`pnpm lint:css`
 
 ## Build ##
 
-`yarn build:web`
+`pnpm build:web`
 
-`yarn build:app`
+`pnpm build:app`
 
 ## Test ##
 
-`yarn test:run`
+`pnpm test:run`
 
-`yarn test:cover`
+`pnpm test:cover`
 
-`yarn serve:web`
+`pnpm serve:web`
 
 ## Distribute ##
 
-`yarn pack:app`
+`pnpm pack:app`
 
-  - **Linux:** `yarn dist:app -l`
+  - **Linux:** `pnpm dist:app -l`
 
-  - **Windows:** `yarn dist:app -w`
+  - **Windows:** `pnpm dist:app -w`
 
 ## Settings ##
 
@@ -74,7 +74,7 @@
 | ------ | --------- | ------------- |
 | ammo   | *Boolean* | `false`       |
 
-**Note:** *This option can only be changed manually in `src/settings/physics.json` before launching the game. Every time this setting is updated, you will need to run `yarn setup` in order to use the corresponding Physics Engine [in here](https://github.com/UstymUkhman/YetAnotherZombieHorror/blob/main/src/physics/index.ts). If set to:*
+**Note:** *This option can only be changed manually in `src/settings/physics.json` before launching the game. Every time this setting is updated, you will need to run `pnpm setup` in order to use the corresponding Physics Engine [in here](https://github.com/UstymUkhman/YetAnotherZombieHorror/blob/main/src/physics/index.ts). If set to:*
 
   - `true` - [**ammo.js**](https://github.com/kripken/ammo.js), a direct port of [Bullet Physics Engine](https://pybullet.org/) will be used.
   - `false` - [**three-mesh-bvh**](https://github.com/gkjohnson/three-mesh-bvh) will be used, which may lead to slightly better performance.

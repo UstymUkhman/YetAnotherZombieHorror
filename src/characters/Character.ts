@@ -58,29 +58,25 @@ export default class Character
 
   protected async load (envMap?: Texture): Promise<Assets.GLTFModel> {
     const character = await Assets.Loader.loadGLTF(this.config.model);
+    this.mesh = character.scene;
 
-    character.scene.position.set(0.0, this.config.collider.z, 0.0);
-    if (character.animations) this.createAnimations(character);
-
-    this.object.position.copy(this.config.position as Vector3);
-    this.object.scale.copy(this.config.scale as Vector3);
-    this.rotation.setFromEuler(this.object.rotation);
-
-    this.setCharacterMaterial(character.scene, envMap);
-    this.position.copy(this.object.position);
-    this.object.add(character.scene);
-
-    this.model = character.scene;
+    this.setTransform(character);
+    this.setMaterial(envMap, 1);
     return character;
   }
 
-  protected setCharacterMaterial (model: Assets.GLTF, envMap?: Texture, opacity = 1): void {
-    model.traverse(child => {
+  protected setAnimation (animation: CharacterAnimation): void {
+    this.step = this.config.moves[animation];
+  }
+
+  protected setMaterial (envMap?: Texture, opacity = 0): void {
+    this.mesh.traverse(child => {
       const childMesh = child as Mesh;
       const material = childMesh.material as MeshStandardMaterial;
 
       if (childMesh.isMesh) {
         childMesh.castShadow = true;
+        childMesh.updateMorphTargets();
 
         childMesh.material = new MeshStandardMaterial({
           envMap: envMap ?? null,
@@ -93,9 +89,13 @@ export default class Character
     });
   }
 
-  protected createAnimations (character: Assets.GLTFModel): void {
+  protected getAnimationDuration (animation: string): number {
+    return this.animations[animation].getClip().duration;
+  }
+
+  private setAnimations (character: Assets.GLTFModel): void {
     const animations = character.animations as Assets.Animations;
-    this.mixer = new AnimationMixer(character.scene);
+    this.mixer = new AnimationMixer(this.mesh);
 
     for (let a = animations.length; a--;) {
       const clip = camelCase(animations[a].name);
@@ -103,12 +103,16 @@ export default class Character
     }
   }
 
-  protected setAnimation (animation: CharacterAnimation): void {
-    this.step = this.config.moves[animation];
-  }
+  protected setTransform (model: Assets.GLTFModel): void {
+    this.object.position.copy(this.config.position as Vector3);
+    this.mesh.position.set(0.0, this.config.collider.z, 0.0);
+    this.object.scale.copy(this.config.scale as Vector3);
 
-  protected getAnimationDuration (animation: string): number {
-    return this.animations[animation].getClip().duration;
+    this.rotation.setFromEuler(this.object.rotation);
+    this.position.copy(this.object.position);
+
+    this.object.add(this.mesh);
+    this.setAnimations(model);
   }
 
   protected setMixerTimeScale (time: number): void {
@@ -119,24 +123,13 @@ export default class Character
     this.mixer?.setTime(time);
   }
 
-  private updateLocation (): void {
-    const model = this.getModel();
-    const { speed, direction } = this.step;
+  public teleport (position: Vector3): void {
+    Physics.pause = true;
+    this.object.position.copy(position);
+    this.mesh.rotateOnWorldAxis(Vector.UP, Math.PI);
 
-    model.getWorldDirection(this.rotation);
-    this.object.getWorldPosition(this.position);
-
-    const x = this.rotation.x * speed;
-    const z = this.rotation.z * speed;
-
-    const { z0, x0, x1 } = direction;
-    const min = Math.min(x0, x1);
-
-    this.direction.set(
-      x * z0 + x * min + z * x1,
-      -1.0,
-      z * z0 + z * min + x * x0
-    );
+    Physics.teleportCollider?.(this.object.uuid);
+    Physics.pause = false;
   }
 
   protected update (delta: number): void {
@@ -154,17 +147,7 @@ export default class Character
     }
   }
 
-  protected checkIfAlive (): void {
-    if (this.dead) return;
-    this.dead = this.dead || !this.health;
-    // this.dead && this.death();
-  }
-
-  protected getModel (): Assets.GLTF {
-    return this.model as Assets.GLTF;
-  }
-
-  protected death (player = false): void {
+  protected die (player = false): void {
     GameEvents.dispatch('SFX::Character', {
       matrix: this.object.matrixWorld,
       sfx: 'death', player
@@ -178,13 +161,29 @@ export default class Character
     this.dead = true;
   }
 
-  public teleport (position: Vector3): void {
-    Physics.pause = true;
-    this.object.position.copy(position);
-    this.getModel().rotateOnWorldAxis(Vector.UP, Math.PI);
+  private updateLocation (): void {
+    const { speed, direction } = this.step;
 
-    Physics.teleportCollider?.(this.object.uuid);
-    Physics.pause = false;
+    this.mesh.getWorldDirection(this.rotation);
+    this.object.getWorldPosition(this.position);
+
+    const x = this.rotation.x * speed;
+    const z = this.rotation.z * speed;
+
+    const { z0, x0, x1 } = direction;
+    const min = Math.min(x0, x1);
+
+    this.direction.set(
+      x * z0 + x * min + z * x1,
+      -1.0,
+      z * z0 + z * min + x * x0
+    );
+  }
+
+  protected checkIfAlive (): void {
+    if (this.dead) return;
+    this.dead = this.dead || !this.health;
+    // this.dead && this.death();
   }
 
   public dispose (): void {
@@ -223,6 +222,14 @@ export default class Character
     this.health = 100;
     this.still = true;
     this.dead = false;
+  }
+
+  protected set mesh (mesh: Assets.GLTF) {
+    this.model = mesh;
+  }
+
+  protected get mesh (): Assets.GLTF {
+    return this.model as Assets.GLTF;
   }
 
   public get collider (): Mesh {

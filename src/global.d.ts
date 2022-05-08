@@ -28,4 +28,5 @@ declare module 'three-mesh-bvh';
 
 declare const PRODUCTION: boolean;
 declare const STAGING: boolean;
+declare const DEBUG: boolean;
 declare const BUILD: string;

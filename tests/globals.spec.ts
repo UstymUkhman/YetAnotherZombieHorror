@@ -11,6 +11,11 @@ describe('globals', () => {
     expect(STAGING).toStrictEqual(false);
   });
 
+  test('DEBUG', () => {
+    expect(typeof DEBUG).toStrictEqual('boolean');
+    expect(DEBUG).toStrictEqual(false);
+  });
+
   test('BUILD', () => {
     expect(typeof BUILD).toStrictEqual('string');
     expect(BUILD).toStrictEqual(version);

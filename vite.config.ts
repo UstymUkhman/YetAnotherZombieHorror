@@ -12,7 +12,8 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
   define: {
     STAGING: !!process.env.prod,
     BUILD: JSON.stringify(version),
-    PRODUCTION: mode === 'production'
+    PRODUCTION: mode === 'production',
+    DEBUG: false && mode !== 'production'
   },
 
   resolve: { alias: {

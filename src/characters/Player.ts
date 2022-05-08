@@ -63,8 +63,6 @@ export default class Player extends Character
     const character = await this.load(envMap);
 
     this.hand = character.scene.getObjectByName('swatRightHand');
-    this.meshes.forEach(child => child.updateMorphTargets());
-
     GameEvents.dispatch('Level::AddObject', this.object);
     this.currentAnimation = this.animations.pistolIdle;
 
@@ -113,9 +111,9 @@ export default class Player extends Character
 
   public rotate (x: number, y: number, maxTilt = 0.25): void {
     const lookDown = y > 0;
+    const model = this.mesh;
     const fps = +Camera.isFPS;
     const tilt = this.rotation.y;
-    const model = this.getModel();
 
     model.rotateOnWorldAxis(Vector.UP, x);
     if (this.running) return;
@@ -382,7 +380,7 @@ export default class Player extends Character
 
   private resetRotation (run = false): void {
     if (run) {
-      const model = this.getModel();
+      const model = this.mesh;
       const targetRotation = new Quaternion()
         .setFromAxisAngle(Vector.RIGHT, this.rotation.y);
 
@@ -399,7 +397,7 @@ export default class Player extends Character
 
     else if (this.rotation.y < -0.2) {
       const y = this.rotation.y + 0.2;
-      this.getModel().rotateOnAxis(Vector.RIGHT, y);
+      this.mesh.rotateOnAxis(Vector.RIGHT, y);
     }
   }
 
@@ -491,7 +489,7 @@ export default class Player extends Character
     super.dispose();
   }
 
-  public die (): void {
+  public override die (): void {
     this.updateAnimation('Idle', 'death', 0.5);
     GameEvents.dispatch('Player::Death');
     clearTimeout(this.reloadTimeout);
@@ -504,15 +502,11 @@ export default class Player extends Character
     this.shooting = false;
     this.aiming = false;
 
-    this.death(true);
+    super.die(true);
   }
 
   private get meshes (): Array<SkinnedMesh> {
-    return this.getModel().children[0].children[1].children as Array<SkinnedMesh>;
-  }
-
-  private get spine (): Bone {
-    return this.getModel().children[0].children[0].children[0] as Bone;
+    return this.mesh.children[0].children[1].children as Array<SkinnedMesh>;
   }
 
   public get location (): PlayerLocation {
@@ -527,6 +521,10 @@ export default class Player extends Character
   public get coords (): Vector2 {
     const { x, z } = this.position;
     return this.levelPosition.set(x, z);
+  }
+
+  private get spine (): Bone {
+    return this.mesh.children[0].children[0].children[0] as Bone;
   }
 
   public get uuid (): string {

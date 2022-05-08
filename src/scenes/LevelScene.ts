@@ -154,9 +154,10 @@ export default class LevelScene
   }
 
   private createLights (): void {
-    this.scene.add(new AmbientLight(Color.WHITE, 0.1));
+    const ambientIntensity = 0.1 + (+DEBUG * 0.9);
     const intensity = 0.25 + +!this.physicalLights * 0.1;
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
+    this.scene.add(new AmbientLight(Color.WHITE, ambientIntensity));
 
     this.csm = new CSM({
       mode: 'logarithmic' as CMSMode,

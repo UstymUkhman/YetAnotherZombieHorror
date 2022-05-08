@@ -11,22 +11,25 @@ export default class Enemies
 
   public constructor (private readonly envMap: Texture) {
     const enemy = new Enemy();
-    this.enemies.push(enemy);
 
-    enemy.loadCharacter(envMap).then(
-      model => this.enemyModel = model
-    );
+    enemy.loadCharacter(envMap).then(model => {
+      this.enemyModel = model;
+      this.spawnEnemy();
+    });
   }
 
-  public spawnEnemy (): void {
+  private spawnEnemy (): void {
     this.enemies.push(new Enemy(
       this.enemyModel, this.envMap,
       this.enemies.length
     ));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  public update (delta: number): void {}
+  public update (delta: number): void {
+    for (let enemy = this.enemies.length; enemy--;) {
+      this.enemies[enemy].update(delta);
+    }
+  }
 
   public dispose (): void {
     for (let enemy = this.enemies.length; enemy--;) {

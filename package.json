@@ -36,8 +36,8 @@
     "build:web": "vite build",
     "serve:web": "node ./build/web.mjs",
     "build:prod": "set prod=true&& vite build",
-    "start:app": "yarn build:app && yarn build:dev",
-    "build:app": "yarn build:web && tsc --project app",
+    "start:app": "pnpm build:app && pnpm build:dev",
+    "build:app": "pnpm build:web && tsc --project app",
     "build:dev": "set ENVIRONMENT=development&& electron build/app/main.js",
     "pack:app": "electron-builder --dir --config app/builder.yml",
     "dist:app": "electron-builder --config app/builder.yml",
@@ -45,7 +45,7 @@
     "lint:css": "stylelint **/*.{svelte,scss,css}",
     "test:run": "jest --notify --silent",
     "test:watch": "jest --watch --silent",
-    "test:cover": "yarn test:run --coverage",
+    "test:cover": "pnpm test:run --coverage",
     "test:clear": "jest --clearCache"
   },
   "dependencies": {

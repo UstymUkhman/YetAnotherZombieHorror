@@ -54,6 +54,15 @@ export default class MenuScene
     this.createEnemy();
   }
 
+  public rotateCamera (y = 0, duration = 500): void {
+    anime({
+      targets: this.camera.rotation,
+      easing: 'easeInOutQuad',
+      y: Math.PI + y,
+      duration
+    });
+  }
+
   private async loadScreamSound (): Promise<void> {
     const { scream } = Configs.Enemy.sounds;
     const sound = await Assets.Loader.loadAudio(scream);
@@ -63,13 +72,12 @@ export default class MenuScene
     this.scream.setLoop(false);
   }
 
-  public rotateCamera (y = 0, duration = 500): void {
-    anime({
-      targets: this.camera.rotation,
-      easing: 'easeInOutQuad',
-      y: Math.PI + y,
-      duration
-    });
+  private async createEnemy (): Promise<void> {
+    const character = (await this.enemy.load()).scene;
+    this.frame = requestAnimationFrame(this.onRender);
+
+    this.scene.add(character);
+    this.enemy.fade(true);
   }
 
   public playScreamAnimation (): void {
@@ -104,14 +112,6 @@ export default class MenuScene
 
     this.scene.add(directional);
     this.scene.add(ambient);
-  }
-
-  private async createEnemy (): Promise<void> {
-    const character = await this.enemy.load();
-    this.frame = requestAnimationFrame(this.onRender);
-
-    this.scene.add(character.scene);
-    this.enemy.fade(true);
   }
 
   private render (): void {
