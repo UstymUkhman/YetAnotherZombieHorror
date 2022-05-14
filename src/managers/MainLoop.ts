@@ -66,7 +66,7 @@ export default class MainLoop
 
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.enemies.colliders, this.pistol);
-      Physics.setPlayer(this.player.collider);
+      Physics.setCharacter(this.player.collider, 90);
       this.player.addRifle(this.rifle);
 
       this.createRandomCoords();
@@ -106,12 +106,12 @@ export default class MainLoop
 
   private updateCharactersLocation (delta: number): Vector3 {
     this.player.update(delta);
-    this.enemies.update(delta);
 
     const playerLocation = this.player.location;
     const playerPosition = playerLocation.position;
     const position = this.level.outOfBounds(playerPosition);
 
+    this.enemies.update(delta, playerPosition);
     position && this.player.teleport(position);
 
     GameEvents.dispatch('Characters::Location', {

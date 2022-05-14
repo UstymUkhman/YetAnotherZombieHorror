@@ -1,6 +1,5 @@
-import type { PlayerAnimations, CharacterAnimation, PlayerLocation, PlayerMovement } from '@/characters/types';
+import type { PlayerAnimations, PlayerLocation, PlayerMovement } from '@/characters/types';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
 import type { Texture } from 'three/src/textures/Texture';
@@ -28,11 +27,8 @@ import anime from 'animejs';
 export default class Player extends Character
 {
   private readonly modelRotation = new Quaternion();
+  protected override lastAnimation = 'pistolIdle';
   private readonly levelPosition = new Vector2();
-
-  private currentAnimation!: AnimationAction;
-  private lastAnimation = 'pistolIdle';
-  private animationUpdate = false;
 
   private reloadTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
@@ -76,6 +72,7 @@ export default class Player extends Character
 
     Camera.setTo(character.scene);
     this.currentAnimation.play();
+    this.rotate(-Math.PI, 0.0);
   }
 
   private getMovementAnimation (directions: Directions): PlayerAnimations {
@@ -298,20 +295,8 @@ export default class Player extends Character
     }, 2500);
   }
 
-  private updateAnimation (animation: CharacterAnimation, action: string, duration = 0.1): NodeJS.Timeout {
-    this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
-    this.animations[action].play();
-    this.animationUpdate = true;
-
-    return setTimeout(() => {
-      this.lastAnimation = action;
-      this.setAnimation(animation);
-
-      this.currentAnimation.stop();
-      this.animationUpdate = false;
-
-      this.currentAnimation = this.animations[action];
-    }, duration * 1e3);
+  protected override updateAnimation (animation: PlayerAnimations, action: string, duration = 0.1): NodeJS.Timeout {
+    return super.updateAnimation(animation, action, duration);
   }
 
   public setPistol (targets: Array<Object3D>, pistol?: Pistol): void {
@@ -495,7 +480,6 @@ export default class Player extends Character
     clearTimeout(this.reloadTimeout);
 
     this.weapon.stopReloading();
-    this.setAnimation('Idle');
     Camera.deathAnimation();
 
     this.reloading = false;
@@ -525,9 +509,5 @@ export default class Player extends Character
 
   private get spine (): Bone {
     return this.mesh.children[0].children[0].children[0] as Bone;
-  }
-
-  public get uuid (): string {
-    return this.object.uuid;
   }
 }

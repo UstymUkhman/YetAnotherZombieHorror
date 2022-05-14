@@ -15,11 +15,11 @@
 
 `cd YetAnotherZombieHorror`
 
-`pnpm`
+`pnpm i`
 
 ## Develop ##
 
-`pnpm setup`
+`pnpm run setup`
 
 `pnpm start:web`
 

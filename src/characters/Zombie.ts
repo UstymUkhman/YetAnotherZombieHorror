@@ -39,6 +39,7 @@ export default class Zombie extends Character
   private setDefaultState (): void {
     this.animations.scream.clampWhenFinished = true;
     this.animations.scream.setLoop(LoopOnce, 0);
+
     this.mesh.position.set(0.0, -0.81, 0.0);
     this.mesh.rotation.set(0.0, 2.85, 0.0);
 

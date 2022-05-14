@@ -73,8 +73,9 @@
 
   function onPlay (): void {
     visibleMenu = false;
+    const delay = +!DEBUG * 3e3;
     menuScene.playScreamAnimation();
-    setTimeout(() => dispatch('start'), 3000);
+    setTimeout(() => dispatch('start'), delay);
   }
 
   onMount(() => menuScene = new MenuScene(scene));

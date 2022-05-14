@@ -7,16 +7,12 @@ import PhysicsWorld from '@/physics/PhysicsWorld';
 import { GameEvents } from '@/events/GameEvents';
 import Ammo from 'ammo.js';
 
-const DISABLE = 5;
-const ENABLE = 1;
-
 export default class AmmoPhysics extends PhysicsWorld
 {
   private readonly colliders: Map<string, AmmoCollider> = new Map();
   private readonly linearVelocity = new Ammo.btVector3();
   private readonly transform = new Ammo.btTransform();
 
-  private player!: AmmoCollider;
   private world: AmmoWorld;
   private paused = true;
 
@@ -77,10 +73,9 @@ export default class AmmoPhysics extends PhysicsWorld
     ), 2.0, 0xFFFF);
   }
 
-  public setPlayer (player: Mesh): void {
-    this.createCharacterCollider(player, 90);
-    this.player = this.colliders.get(player.uuid) as AmmoCollider;
-    this.player.body.forceActivationState(DISABLE);
+  public setCharacter (player: Mesh, mass = 75.0): void {
+    this.createCharacterCollider(player, mass);
+    (this.colliders.get(player.uuid) as AmmoCollider).body.forceActivationState(this.DISABLE);
   }
 
   public override teleportCollider (uuid: string): void {
@@ -93,16 +88,20 @@ export default class AmmoPhysics extends PhysicsWorld
     collider.body.setWorldTransform(this.transform);
   }
 
-  public move (direction: Vector3): void {
+  public move (uuid: string, direction: Vector3): void {
+    const collider = this.colliders.get(uuid) as AmmoCollider;
     this.linearVelocity.setValue(direction.x, direction.y, direction.z);
-    this.player.body.setLinearVelocity(this.linearVelocity);
-    this.player.body.forceActivationState(ENABLE);
+
+    collider.body.setLinearVelocity(this.linearVelocity);
+    collider.body.forceActivationState(this.ENABLE);
   }
 
-  public stop (): void {
+  public stop (uuid: string): void {
+    const collider = this.colliders.get(uuid) as AmmoCollider;
     this.linearVelocity.setValue(0.0, 0.0, 0.0);
-    this.player.body.forceActivationState(DISABLE);
-    this.player.body.setLinearVelocity(this.linearVelocity);
+
+    collider.body.forceActivationState(this.DISABLE);
+    collider.body.setLinearVelocity(this.linearVelocity);
   }
 
   public update (delta: number): void {
@@ -125,6 +124,10 @@ export default class AmmoPhysics extends PhysicsWorld
     });
   }
 
+  public remove (uuid: string): void {
+    this.colliders.delete(uuid);
+  }
+
   public dispose (): void {
     this.world.__destroy__();
     this.colliders.clear();
@@ -132,7 +135,8 @@ export default class AmmoPhysics extends PhysicsWorld
   }
 
   public set pause (pause: boolean) {
-    this.player.body.forceActivationState(pause ? DISABLE : ENABLE);
     this.paused = pause;
+    const state = pause ? this.DISABLE : this.ENABLE;
+    this.colliders.forEach(collider => collider.body.forceActivationState(state));
   }
 }

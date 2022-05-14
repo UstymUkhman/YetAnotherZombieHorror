@@ -1,6 +1,6 @@
 {
+  "position": [0.0, 1.25, 25.0],
   "collider": [0.6, 1.7, -0.85],
-  "position": [0.0, 1.25, 0.0],
   "scale": [1.5, 1.5, 1.5],
   "model": "player.glb",
 

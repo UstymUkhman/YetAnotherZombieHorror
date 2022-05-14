@@ -22,10 +22,6 @@ type PlayerSounds          = typeof Configs.Player.sounds;
 type EnemySounds           = typeof Configs.Enemy.sounds;
 type CharacterSoundsConfig = PlayerSounds | EnemySounds;
 
-type CharacterAnimations<Animation> = {
-  [key in CharacterAnimation]: Animation
-};
-
 type CharacterSoundConfig = {
   sfx: WeaponSound,
   matrix: Matrix4,

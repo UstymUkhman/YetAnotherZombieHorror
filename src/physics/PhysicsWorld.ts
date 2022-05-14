@@ -11,26 +11,29 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 import { PI } from '@/utils/Number';
 
-const MIN_SIZE = 0.01;
-
 export default abstract class PhysicsWorld
 {
+  public abstract setCharacter (collider: Mesh, mass?: number): void;
+  public abstract move (uuid: string, direction: Vector3): void;
   protected abstract addStaticCollider (collider: Mesh): void;
 
   protected readonly positionVector = new Vector3();
   protected readonly rotationVector = new Euler();
   protected readonly sizeVector = new Vector3();
 
-  public abstract move (direction: Vector3): void;
-  public abstract setPlayer (player: Mesh): void;
   public teleportCollider? (uuid: string): void;
   public abstract update (delta: number): void;
+  public abstract remove (uuid: string): void;
+  public abstract stop (uuid: string): void;
 
-  protected readonly GRAVITY = -9.81;
+  protected readonly GRAVITY  = -9.81;
+  private   readonly MIN_SIZE =  0.01;
+  protected readonly DISABLE  =  5.0;
+  protected readonly ENABLE   =  1.0;
+  protected readonly SPEED    =  5.0;
 
   public abstract dispose (): void;
   public abstract pause: boolean;
-  public abstract stop (): void;
 
   private createBound (current: Coords, next: Coords, h: number, y = 0): void {
     this.rotationVector.set(0, 0, 0);
@@ -59,8 +62,8 @@ export default abstract class PhysicsWorld
       deeper ? d = length : w = length;
     }
 
-    w = w < d ? MIN_SIZE : w;
-    d = d < w ? MIN_SIZE : d;
+    w = w < d ? this.MIN_SIZE : w;
+    d = d < w ? this.MIN_SIZE : d;
 
     this.positionVector.set(x, y, z);
     this.sizeVector.set(w, h, d);
@@ -89,7 +92,7 @@ export default abstract class PhysicsWorld
   }
 
   public createGround (min: Coords, max: Coords): void {
-    this.sizeVector.set(Math.abs(min[0] - max[0]), MIN_SIZE, Math.abs(min[1] - max[1]));
+    this.sizeVector.set(Math.abs(min[0] - max[0]), this.MIN_SIZE, Math.abs(min[1] - max[1]));
     this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
     this.createStaticCollider(Transparent);
   }
@@ -114,7 +117,7 @@ export default abstract class PhysicsWorld
       this.positionVector.x -= (this.positionVector.x - borderPosition.x) / 2;
       this.positionVector.z -= (this.positionVector.z - borderPosition.z) / 2;
 
-      this.sizeVector.z === MIN_SIZE ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
+      this.sizeVector.z === this.MIN_SIZE ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
       this.positionVector.x < 0 ? this.sizeVector.z *= lengthScale : this.sizeVector.x *= lengthScale;
 
       this.createStaticCollider(StaticCollider);

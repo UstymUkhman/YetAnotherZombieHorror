@@ -130,11 +130,11 @@ export default class Rifle extends Weapon
     if (!this.spawned) return;
     this.clone.rotation.y -= 0.025;
 
+    const playerDistance = this.clone.position.distanceToSquared(player);
     const normalizedPower = Math.cos(this.spawnTime += 0.05) + 1.0;
-    const playerDistance = this.clone.position.distanceTo(player);
     this.light.power = normalizedPower * this.halfLightPower;
 
-    if (this.inStock < this.maxStock && playerDistance < 2.5) {
+    if (this.inStock < this.maxStock && playerDistance < 6.25) {
       GameEvents.dispatch('Player::PickRifle', this.clone);
       GameEvents.dispatch('Rifle::Pick', null, true);
 

@@ -1,8 +1,10 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 
 import Enemy from '@/characters/Enemy';
+import Physics from '@/physics';
 
 export default class Enemies
 {
@@ -19,15 +21,18 @@ export default class Enemies
   }
 
   private spawnEnemy (): void {
-    this.enemies.push(new Enemy(
+    const enemy = new Enemy(
       this.enemyModel, this.envMap,
       this.enemies.length
-    ));
+    );
+
+    this.enemies.push(enemy);
+    Physics.setCharacter(enemy.collider);
   }
 
-  public update (delta: number): void {
+  public update (delta: number, player: Vector3): void {
     for (let enemy = this.enemies.length; enemy--;) {
-      this.enemies[enemy].update(delta);
+      this.enemies[enemy].update(delta, player);
     }
   }
 

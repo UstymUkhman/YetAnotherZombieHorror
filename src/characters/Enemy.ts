@@ -1,11 +1,11 @@
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
-import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
 import type { EnemyAnimations } from '@/characters/types';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 
 import { GameEvents } from '@/events/GameEvents';
@@ -17,12 +17,14 @@ import Configs from '@/configs';
 
 export default class Enemy extends Character
 {
-  private lastAnimation: EnemyAnimations = 'Idle';
-  private currentAnimation!: AnimationAction;
-
+  protected override lastAnimation = 'idle';
   private hitBoxes: Array<Object3D> = [];
+
+  private readonly walkDistance = 400.0;
+  // private readonly runDistance = 100.0;
   private character!: Assets.GLTF;
 
+  // private crawling = false;
   private head?: Object3D;
   private id: number;
 
@@ -35,22 +37,36 @@ export default class Enemy extends Character
       this.character = clone(model.scene) as Assets.GLTF;
       this.mesh = this.character;
 
-      this.setMaterial(envMap);
+      this.setMaterial(envMap, 1.0);
       this.setTransform(model);
       this.setDefaultState();
     }
+  }
+
+  protected override updateAnimation (animation: EnemyAnimations, action: string, duration = 0.25): NodeJS.Timeout {
+    return super.updateAnimation(animation, action, duration);
   }
 
   public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
     return this.load(envMap);
   }
 
-  public override update (delta: number): void {
-    super.update(delta);
+  private walk (): void {
+    this.updateAnimation('Walking', 'walk', 0.5);
+    this.running = false;
+    this.moving = true;
+  }
 
-    if (this.alive && this.character) {
-      this.character.lookAt(0.0, 0.0, 0.0);
-    }
+  public override update (delta: number, player?: Vector3): void {
+    super.update(delta);
+    if (!this.alive) return;
+
+    const playerPosition = player as Vector3;
+    const distance = this.object.position.distanceToSquared(playerPosition);
+    !this.moving && !this.running && distance < this.walkDistance && this.walk();
+
+    const { x, z } = playerPosition;
+    this.character.lookAt(x, 0.0, z);
   }
 
   public override dispose (): void {
@@ -88,9 +104,8 @@ export default class Enemy extends Character
     this.animations.hit.setLoop(LoopOnce, 0);
 
     this.currentAnimation = this.animations.idle;
-    this.setAnimation(this.lastAnimation);
-
     this.currentAnimation.play();
+    this.setAnimation('Idle');
     this.createHitBoxes();
   }
 
@@ -104,12 +119,12 @@ export default class Enemy extends Character
     this.head = this.character.getObjectByName('Head') as Object3D;
 
     const headHitBox = new Mesh(
-      new BoxGeometry(18, 20, 20),
+      new BoxGeometry(15, 10, 22),
       HitBox.clone()
     );
 
-    headHitBox.position.y += 5;
-    headHitBox.position.z += 3;
+    headHitBox.position.y += 9.5;
+    headHitBox.position.z += 2.0;
 
     headHitBox.userData.enemy = this.id;
     this.hitBoxes.push(headHitBox);
@@ -120,12 +135,13 @@ export default class Enemy extends Character
     const spine = this.character.getObjectByName('Spine') as Object3D;
 
     const bodyHitBox = new Mesh(
-      new RoundedBoxGeometry(35, 80, 35, 2, 0.2),
+      new RoundedBoxGeometry(38, 95, 40, 2, 25),
       HitBox.clone()
     );
 
-    bodyHitBox.position.y += 15;
-    bodyHitBox.position.z += 5;
+    bodyHitBox.position.y += 15.0;
+    bodyHitBox.position.z += 2.5;
+    bodyHitBox.position.x -= 1.0;
 
     bodyHitBox.userData.enemy = this.id;
     this.hitBoxes.push(bodyHitBox);
@@ -151,7 +167,7 @@ export default class Enemy extends Character
     lowerLeg.userData.enemy = this.id;
     upperLeg.userData.enemy = this.id;
 
-    lowerLeg.position.y -= 27.5;
+    lowerLeg.position.y -= 22.5;
     lowerLeg.position.z -= 2.5;
     upperLeg.position.y -= 20;
 

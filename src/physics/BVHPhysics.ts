@@ -15,22 +15,21 @@ import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
 import { Vector } from '@/utils/Vector';
 
-const SPEED = 5.0;
-
 export default class BVHPhysics extends PhysicsWorld
 {
-  private readonly linearVelocity = new Vector3();
-  private readonly playerVelocity = new Vector3();
+  private readonly characterVelocity: Map<string, Vector3> = new Map();
+  private readonly characters: Map<string, Mesh> = new Map();
 
+  private readonly linearVelocity = new Vector3();
   private readonly environment = new Group();
   private readonly capsule = new Vector3();
 
   private readonly matrix = new Matrix4();
   private readonly segment = new Line3();
+
   private environmentCollider?: Mesh;
   private readonly box = new Box3();
 
-  private player!: Mesh;
   private paused = true;
   private delta = 0.0;
 
@@ -69,40 +68,46 @@ export default class BVHPhysics extends PhysicsWorld
     this.addPhysicsCollider();
   }
 
-  public setPlayer (player: Mesh): void {
-    const { height, radius } = player.userData;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public setCharacter (collider: Mesh, mass?: number): void {
+    this.characterVelocity.set(collider.uuid, new Vector3());
+    this.characters.set(collider.uuid, collider);
 
-    player.geometry.translate(0, -radius, 0);
-    player.children[0].translateY(-radius);
-    player.position.set(0, height, 0);
+    const { height, radius } = collider.userData;
+    collider.geometry.translate(0, -radius, 0);
+    collider.children[0].translateY(-radius);
 
-    this.player = player;
-    this.move(Vector.UP);
+    const { x, z } = collider.position;
+    collider.position.set(x, height, z);
+    this.move(collider.uuid, Vector.UP);
   }
 
-  public move (direction: Vector3): void {
-    const { segment, radius } = this.player.userData;
+  public move (uuid: string, direction: Vector3): void {
+    const character = this.characters.get(uuid) as Mesh;
+    const { segment, radius } = character.userData;
+
+    const characterVelocity = this.characterVelocity.get(uuid) as Vector3;
     const environmentMatrix = this.environmentCollider?.matrixWorld as Matrix4;
     const environmentGeometry = this.environmentCollider?.geometry as BVHGeometry;
 
-    this.playerVelocity.y += this.delta * this.GRAVITY;
-    this.player.position.addScaledVector(this.playerVelocity, this.delta);
+    characterVelocity.y += this.delta * this.GRAVITY;
+    character.position.addScaledVector(characterVelocity, this.delta);
 
     this.linearVelocity.set(direction.x, direction.y, direction.z);
-    this.player.position.addScaledVector(this.linearVelocity, SPEED * this.delta);
+    character.position.addScaledVector(this.linearVelocity, this.SPEED * this.delta);
 
-    this.player.updateMatrixWorld();
+    character.updateMatrixWorld();
     this.box.makeEmpty();
 
     this.matrix.copy(environmentMatrix).invert();
     this.segment.copy(segment);
 
     this.segment.start
-      .applyMatrix4(this.player.matrixWorld)
+      .applyMatrix4(character.matrixWorld)
       .applyMatrix4(this.matrix);
 
     this.segment.end
-      .applyMatrix4(this.player.matrixWorld)
+      .applyMatrix4(character.matrixWorld)
       .applyMatrix4(this.matrix);
 
     this.box.expandByPoint(this.segment.start);
@@ -135,19 +140,24 @@ export default class BVHPhysics extends PhysicsWorld
     position.copy(this.segment.start).applyMatrix4(environmentMatrix);
 
     const deltaVector = this.capsule;
-    deltaVector.subVectors(position, this.player.position);
+    deltaVector.subVectors(position, character.position);
 
-    this.player.position.copy(position);
-    this.playerVelocity.set(0, 0, 0);
+    character.position.copy(position);
+    characterVelocity.setScalar(0.0);
   }
 
-  public stop (): void {
-    this.playerVelocity.set(0, 0, 0);
+  public stop (uuid: string): void {
+    (this.characterVelocity.get(uuid) as Vector3).setScalar(0);
   }
 
   public update (delta: number): void {
     if (this.paused) return;
     this.delta = delta / 5;
+  }
+
+  public remove (uuid: string): void {
+    this.characterVelocity.delete(uuid);
+    this.characters.delete(uuid);
   }
 
   public dispose (): void {
@@ -156,9 +166,12 @@ export default class BVHPhysics extends PhysicsWorld
 
     environmentGeometry.dispose();
     disposeBVHGeometry();
-
     this.paused = true;
+
+    this.characters.clear();
     this.environment.clear();
+    this.characterVelocity.clear();
+
     delete this.environmentCollider;
   }
 

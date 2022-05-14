@@ -52,20 +52,20 @@
     "ammo.js": "^0.0.10",
     "animejs": "^3.2.1",
     "raindrop-fx": "^1.0.8",
-    "three": "^0.140.0",
+    "three": "^0.140.2",
     "three-mesh-bvh": "^0.5.10"
   },
   "devDependencies": {
-    "@babel/core": ">=7.10.2 <8.0.0",
+    "@babel/core": "^7.17.10",
     "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.17.9",
-    "@sveltejs/vite-plugin-svelte": "1.0.0-next.42",
+    "@sveltejs/vite-plugin-svelte": "1.0.0-next.43",
     "@types/animejs": "^3.1.4",
     "@types/jest": "^27.5.0",
     "@types/node": "^17.0.31",
     "@types/three": "^0.140.0",
-    "@typescript-eslint/eslint-plugin": "^5.22.0",
-    "@typescript-eslint/parser": "^5.22.0",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
     "babel-jest": "^27.5.1",
     "electron": "^18.2.0",
     "electron-builder": "^23.0.3",
@@ -86,7 +86,7 @@
     "ts-jest": "^27.1.4",
     "typescript": "^4.6.4",
     "vite": "^2.9.8",
-    "vite-plugin-glsl": "^0.1.2"
+    "vite-plugin-glsl": "0.1.1"
   },
   "engines": {
     "node": ">= 14.17.0",

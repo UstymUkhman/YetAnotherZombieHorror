@@ -24,21 +24,25 @@ export default class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
   private step: CharacterMove = this.config.moves.Idle;
+  protected currentAnimation!: AnimationAction;
 
   protected readonly direction = new Vector3();
   protected readonly position  = new Vector3();
   protected readonly rotation  = new Vector3();
 
+  protected animationUpdate = false;
   private mixer?: AnimationMixer;
+  private readonly uuid: string;
+
+  protected lastAnimation = '';
   private model?: Assets.GLTF;
   protected object: Mesh;
 
   protected hitting = false;
   protected running = false;
-
   protected moving = false;
-  protected dead = false;
 
+  protected dead = false;
   private still = false;
   private health = 100;
 
@@ -54,6 +58,24 @@ export default class Character
       segment: new Line3(new Vector3(), Vector.DOWN),
       height: y, radius: 0.5
     };
+
+    this.uuid = this.object.uuid;
+  }
+
+  protected updateAnimation (animation: CharacterAnimation, action: string, duration: number): NodeJS.Timeout {
+    this.currentAnimation.crossFadeTo(this.animations[action], duration, true);
+    this.animations[action].play();
+    this.animationUpdate = true;
+
+    return setTimeout(() => {
+      this.lastAnimation = action;
+      this.setAnimation(animation);
+
+      this.currentAnimation.stop();
+      this.animationUpdate = false;
+
+      this.currentAnimation = this.animations[action];
+    }, duration * 1e3);
   }
 
   protected async load (envMap?: Texture): Promise<Assets.GLTFModel> {
@@ -138,12 +160,12 @@ export default class Character
 
     if (this.moving) {
       this.still = false;
-      Physics.move(this.direction);
+      Physics.move(this.uuid, this.direction);
     }
 
     else if (!this.still) {
       this.still = true;
-      Physics.stop();
+      Physics.stop(this.uuid);
     }
   }
 
@@ -152,6 +174,9 @@ export default class Character
       matrix: this.object.matrixWorld,
       sfx: 'death', player
     }, true);
+
+    Physics.remove(this.uuid);
+    this.setAnimation('Idle');
 
     this.hitting = false;
     this.running = false;
@@ -183,7 +208,7 @@ export default class Character
   protected checkIfAlive (): void {
     if (this.dead) return;
     this.dead = this.dead || !this.health;
-    // this.dead && this.death();
+    // this.dead && this.die();
   }
 
   public dispose (): void {
@@ -203,6 +228,7 @@ export default class Character
       delete this.model;
     }
 
+    Physics.remove(this.uuid);
     this.animations = {};
     delete this.mixer;
     this.reset();
