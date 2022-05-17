@@ -305,6 +305,7 @@ export default class Player extends Character
     if (pistol) {
       this.pistol = pistol;
       this.weapon = this.pistol;
+      this.weapon.visible = true;
       this.pistol.targets = targets;
       this.hand?.add(this.pistol.object);
     }

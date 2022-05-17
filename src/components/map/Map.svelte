@@ -163,10 +163,12 @@
       @include mixin.size(20vw);
 
       transform-origin: 50% 50%;
+      transform: rotate(180deg);
       box-sizing: content-box;
-      border-radius: 50%;
 
+      border-radius: 50%;
       position: absolute;
+
       overflow: hidden;
       display: block;
 

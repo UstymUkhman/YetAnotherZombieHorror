@@ -4,7 +4,7 @@
   "scale": [13.0, 13.0, 13.0],
   "emissiveIntensity": 0.025,
 
-  "spread": [0.001, 0.001],
+  "spread": [0.002, 0.002],
   "recoil": [0.01, -0.02],
   "emissive": 12632256,
   "model": "1911.glb",
@@ -30,6 +30,7 @@
   },
 
   "sounds": {
+    "bullet": "weapons/shell.mp3",
     "shoot": "weapons/1911.mp3"
   }
 }

@@ -2,6 +2,7 @@ import type { WeaponConfig, FireConfig, WeaponSound, Recoil } from '@/weapons/ty
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
+import type { Intersection } from 'three/src/core/Raycaster';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import { Raycaster } from 'three/src/core/Raycaster';
@@ -26,11 +27,14 @@ import anime from 'animejs';
 
 export default class Weapon
 {
-  private readonly onUpdate = this.updateBullets.bind(this);
+  private readonly onUpdate = this.updateAimSign.bind(this);
+  private readonly onShoot = this.updateBullets.bind(this);
+
   private readonly bullet = new Bullet(this.config.bullet);
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
+  private readonly offset = new Vector3();
   private readonly origin = new Vector3();
 
   public targets: Array<Object3D> = [];
@@ -42,6 +46,7 @@ export default class Weapon
   protected totalAmmo: number;
 
   public aiming = false;
+  private aimed = false;
   private fire!: Fire;
 
   public constructor (private readonly config: WeaponConfig) {
@@ -89,18 +94,12 @@ export default class Weapon
     return clone;
   }
 
-  /* private getEvent (index: number): string {
-    const hitBox = index % 6;
-    return !hitBox ? 'Hit:head' :
-      hitBox === 1 ? 'Hit:body' : 'Hit:leg';
-  } */
-
-  protected playSound (sfx: WeaponSound, stop: boolean): void {
+  protected playSound (sfx: WeaponSound, stop: boolean, delay?: number): void {
     stop && this.stopSound(sfx);
 
     GameEvents.dispatch('SFX::Weapon', {
       matrix: this.object.matrixWorld,
-      play: true, sfx
+      play: true, sfx, delay
     }, true);
   }
 
@@ -116,8 +115,36 @@ export default class Weapon
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected toggleVisibility (hideDelay: number, showDelay: number): void { return; }
 
+  private updateRaycaster (shoot = false): Array<Intersection<Mesh>> {
+    this.camera.setFromMatrixPosition(CameraObject.matrixWorld);
+
+    this.raycaster.ray.origin.copy(shoot
+      ? this.camera.clone().add(this.spread)
+      : this.camera
+    );
+
+    this.raycaster.ray.direction.copy(Vector.FORWARD)
+      .unproject(CameraObject)
+      .sub(this.camera)
+      .normalize();
+
+    return this.raycaster.intersectObjects(this.targets);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public cancelAim (duration?: number): void { return; }
+
+  private toggleAimSign (visible = false): void {
+    GameEvents.dispatch('Weapon::Aim', visible, true);
+    this.aimed = visible;
+  }
+
+  private updateAimSign (): boolean | void {
+    if (!this.aiming) return this.aimed && this.toggleAimSign(false);
+
+    const aimed = !!this.updateRaycaster().length;
+    this.aimed !== aimed && this.toggleAimSign(aimed);
+  }
 
   public shoot (): Recoil | null {
     if (this.empty) this.playSound('empty', false);
@@ -130,19 +157,26 @@ export default class Weapon
 
       const bullet = this.bullet.shoot(ray, this.aiming);
       GameEvents.dispatch('Player::Shoot', true, true);
-      !this.bullets.length && RAF.add(this.onUpdate);
+      !this.bullets.length && RAF.add(this.onShoot);
 
+      this.playSound('bullet', false, 0.5);
       this.playSound('shoot', true);
+
       this.bullets.push(bullet);
       this.fire.addParticles();
 
       this.loadedAmmo--;
       this.totalAmmo--;
 
-      target > -1 && console.log(hitBox.position.distanceToSquared(bullet.position)); /* setTimeout(() =>
-        GameEvents.dispatch(this.getEvent(target), hitBox.userData.enemy),
-        Math.round(hitBox.position.distanceToSquared(bullet.position) / this.config.bullet.speed)
-      ); */
+      if (target > -1) {
+        const event = this.getEvent(target);
+        const distance = hitBox.position.distanceToSquared(bullet.position);
+
+        setTimeout(() =>
+          GameEvents.dispatch(event, hitBox.userData.enemy),
+          distance / this.bullet.speed
+        );
+      }
 
       return recoil;
     }
@@ -175,7 +209,7 @@ export default class Weapon
   }
 
   private updateBullets (): void {
-    const visible = this.fire.update();
+    !this.fire.update() && RAF.remove(this.onShoot);
 
     for (let b = this.bullets.length; b--;) {
       const bullet = this.bullets[b];
@@ -186,10 +220,15 @@ export default class Weapon
 
       else {
         this.bullets.splice(b, 1);
-        !visible && RAF.remove(this.onUpdate);
         GameEvents.dispatch('Level::RemoveObject', bullet);
       }
     }
+  }
+
+  private getEvent (index: number): string {
+    const hitBox = index % 6;
+    return !hitBox ? 'Hit::Head' :
+      hitBox === 1 ? 'Hit::Body' : 'Hit::Leg';
   }
 
   public startReloading (): void { return; }
@@ -220,6 +259,8 @@ export default class Weapon
     }
 
     RAF.remove(this.onUpdate);
+    RAF.remove(this.onShoot);
+
     this.targets.splice(0);
     this.bullets.splice(0);
 
@@ -228,47 +269,46 @@ export default class Weapon
     this.weapon.clear();
   }
 
+  public set visible (visible: boolean) {
+    RAF[visible ? 'add' : 'remove'](this.onUpdate);
+    this.weapon.children[0].visible = visible;
+  }
+
   private get originOffset (): number {
     const { x, y } = this.config.bullet.position;
     return this.aiming ? y : x;
-  }
-
-  public set visible (visible: boolean) {
-    this.weapon.children[0].visible = visible;
   }
 
   public get object (): Assets.GLTF {
     return this.weapon as Assets.GLTF;
   }
 
+  private get spread (): Vector3 {
+    let { x, y } = this.config.spread;
+    const spread = +!this.aiming * 0.5 + 0.5;
+
+    x = random(-x, x) * spread;
+    y = random(-y, y) * spread;
+
+    return this.offset.set(x, y - 0.003, 0.0);
+  }
+
   private get recoil (): Recoil {
     const { x, y } = this.config.recoil;
-    const energy = +this.aiming + 1;
+    const energy = +!this.aiming * 0.5 + 0.5;
 
     return {
-      x: random(-x, x) / energy,
-      y: y / energy
+      x: random(-x, x) * energy,
+      y: y * energy
     };
   }
 
   private get target (): number {
-    // const { x, y } = this.config.spread;
-
-    // this.origin.x = random(-x, x);
-    // this.origin.y = random(-y, y);
-
+    const hitBoxes = this.updateRaycaster(true);
     this.weapon.getWorldPosition(this.origin);
+
     this.origin.y += this.originOffset;
-
     this.raycaster.ray.origin.copy(this.origin);
-    this.camera.setFromMatrixPosition(CameraObject.matrixWorld);
-
-    this.raycaster.ray.direction.copy(Vector.FORWARD)
-      .unproject(CameraObject)
-      .sub(this.camera)
-      .normalize();
-
-    const hitBoxes = this.raycaster.intersectObjects(this.targets);
     return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
   }
 

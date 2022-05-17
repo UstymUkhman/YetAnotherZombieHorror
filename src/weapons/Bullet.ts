@@ -28,7 +28,7 @@ export default class Bullet
   private readonly segments = 8.0;
 
   private readonly rotation = new Quaternion();
-  private readonly speed = this.config.speed / 60.0;
+  public readonly speed = this.config.speed / 60.0;
 
   private readonly pivot = new Matrix4().makeTranslation(
     0.0, this.width / -2.0, 0.0

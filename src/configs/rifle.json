@@ -6,7 +6,7 @@
   "position": [-26.0, 1.0, -5.75],
   "scale": [0.29, 0.29, 0.29],
 
-  "spread": [0.0025, 0.0025],
+  "spread": [0.005, 0.005],
   "recoil": [0.025, -0.03],
   "model": "AK47.glb",
   "textures": "AK47",
@@ -33,6 +33,7 @@
 
   "sounds": {
     "reload": "weapons/reload.mp3",
+    "bullet": "weapons/case.mp3",
     "empty": "weapons/empty.mp3",
     "shoot": "weapons/AK47.mp3",
     "pick": "weapons/pick.mp3"

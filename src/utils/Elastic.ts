@@ -1,5 +1,6 @@
 import { Vector2 as TVector2 } from 'three/src/math/Vector2';
 import { Vector3 as TVector3 } from 'three/src/math/Vector3';
+import { DELTA_FRAME } from '@/utils/Number';
 
 export namespace Elastic
 {
@@ -13,7 +14,7 @@ export namespace Elastic
       this.target = this.current = value;
     }
 
-    public update (delta: number = 1 / 60): void {
+    public update (delta: number = DELTA_FRAME): void {
       const dist = this.target - this.current;
       this.current += dist * (this.speed * delta);
     }
@@ -46,7 +47,7 @@ export namespace Elastic
       this.target.copy(target);
     }
 
-    public update (delta: number = 1 / 60): void {
+    public update (delta: number = DELTA_FRAME): void {
       const x = this.target.x - this.current.x;
       const y = this.target.y - this.current.y;
 
@@ -86,7 +87,7 @@ export namespace Elastic
       this.target.copy(target);
     }
 
-    public update (delta: number = 1 / 60): void {
+    public update (delta: number = DELTA_FRAME): void {
       const x = this.target.x - this.current.x;
       const y = this.target.y - this.current.y;
       const z = this.target.z - this.current.z;

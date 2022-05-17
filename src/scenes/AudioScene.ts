@@ -101,7 +101,8 @@ export default class AudioScene
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
-      const volume = names[s] === 'shoot' ? 10 : 5;
+      let volume = names[s] === 'bullet' ? 0.25 : 2.5;
+      volume = names[s] === 'shoot' ? 5.0 : volume;
 
       audio.setBuffer(sound);
       audio.setVolume(volume);
@@ -205,7 +206,7 @@ export default class AudioScene
   }
 
   private playWeapon (event: GameEvent): void {
-    const { matrix, sfx, play } = event.data as WeaponSoundConfig;
+    const { sfx, matrix, play, delay } = event.data as WeaponSoundConfig;
     const sound = this.weaponSounds.get(sfx) as PositionalAudio;
 
     this.weapon.matrixWorld.copy(matrix);
@@ -213,7 +214,7 @@ export default class AudioScene
     this.weapon.updateMatrixWorld();
 
     play
-      ? !sound.isPlaying && sound.play()
+      ? !sound.isPlaying && sound.play(delay)
       : sound.isPlaying && sound.stop();
   }
 

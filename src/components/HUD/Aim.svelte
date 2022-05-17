@@ -1,5 +1,5 @@
-<div class="container" >
-  <div class="aim" bind:this={aim} class:hide class:shooting />
+<div class="container">
+  <div class="aim" bind:this={aim} class:hide class:shooting class:red />
 </div>
 
 <script lang="ts">
@@ -9,6 +9,7 @@
   export let hide: boolean;
   let aim: HTMLDivElement;
   let shooting = false;
+  let red = false;
 
   function onShoot (): void {
     setTimeout(() => {
@@ -20,13 +21,18 @@
     shooting = false;
   }
 
-  onMount(() =>
-    GameEvents.add('Player::Shoot', onShoot, true)
-  );
+  onMount(() => {
+    GameEvents.add('Player::Shoot', onShoot, true);
 
-  onDestroy(() =>
-    GameEvents.remove('Player::Shoot', true)
-  );
+    GameEvents.add('Weapon::Aim', event =>
+      red = event.data
+    , true);
+  });
+
+  onDestroy(() => {
+    GameEvents.remove('Player::Shoot', true);
+    GameEvents.remove('Weapon::Aim', true);
+  });
 </script>
 
 <style lang="scss">
@@ -56,14 +62,18 @@
       padding: 0;
       margin: 0;
 
-      &.shooting {
-        animation: 150ms ease-out shoot;
-      }
-
       &.hide {
         transition-timing-function: ease-in;
         transform: scale(1.5);
         opacity: 0;
+      }
+
+      &.shooting {
+        animation: 150ms ease-out shoot;
+      }
+
+      &.red {
+        border-color: var.$red;
       }
     }
   }

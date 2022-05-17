@@ -4,12 +4,12 @@ import type { FireConfig, FireParticle, SmokeParticle } from '@/weapons/types';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
+import { PI, DELTA_FRAME, randomInt } from '@/utils/Number';
 import { PointLight } from 'three/src/lights/PointLight';
 
 import { Points } from 'three/src/objects/Points';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
-import { PI, randomInt } from '@/utils/Number';
 
 import { Color } from '@/utils/Color';
 import Spline from '@/utils/Spline';
@@ -182,7 +182,7 @@ export default class Fire
     return !!(length || this.smokeParticles.length);
   }
 
-  private updateParticles (delta = 1 / 60): void {
+  private updateParticles (delta = DELTA_FRAME): void {
     for (let p = this.fireParticles.length; p--;) {
       const particle = this.fireParticles[p];
       if ((particle.life -= 0.05) <= 0.0) continue;

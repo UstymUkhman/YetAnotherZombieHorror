@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PI, easeOutSine } from '@/utils/Number';
+  import { PI, DELTA_FRAME, easeOutSine } from '@/utils/Number';
 
   export let context: CanvasRenderingContext2D;
   import { onDestroy } from 'svelte';
@@ -9,7 +9,6 @@
   export let visible: boolean;
 
   const RADIUS = 5.0;
-  const FRAME = 1.0 / 60.0;
   const MAX_RADIUS = RADIUS * 2.0;
 
   const RIFLE_RGB = '255, 255, 255';
@@ -34,7 +33,7 @@
     context.lineWidth = 1.0;
     context.beginPath();
 
-    circ = start += FRAME;
+    circ = start += DELTA_FRAME;
     circ = easeOutSine(circ - (circ | 0));
 
     context.strokeStyle = `rgba(${RIFLE_RGB}, ${1.0 - circ})`;

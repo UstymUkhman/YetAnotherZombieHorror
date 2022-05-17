@@ -1,4 +1,4 @@
-import { smoothstep, near, mix, map, randomInt, clamp, random, easeOutSine, lerp, PI } from '@/utils/Number';
+import { smoothstep, near, mix, map, randomInt, clamp, random, easeOutSine, lerp, DELTA_FRAME, PI } from '@/utils/Number';
 import { Vector3 } from 'three/src/math/Vector3';
 
 describe('Number', () => {
@@ -61,6 +61,10 @@ describe('Number', () => {
     expect(lerp(1, 2, 0)).toStrictEqual(1);
     expect(lerp(1, 2, 0.5)).toStrictEqual(1.5);
     expect(lerp(1, 2, 1)).toStrictEqual(2);
+  });
+
+  test('DELTA_FRAME', () => {
+    expect(DELTA_FRAME).toStrictEqual(1 / 60);
   });
 
   test('PI', () => {

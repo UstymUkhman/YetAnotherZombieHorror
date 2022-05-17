@@ -71,10 +71,10 @@ export default class Rifle extends Weapon
   }
 
   public override toggleVisibility (hideDelay: number, showDelay: number): void {
-    const mesh = this.object.children[0] as Mesh;
+    const material = (this.object.children[0] as Mesh).material;
 
     anime({
-      targets: mesh.material,
+      targets: material,
       delay: hideDelay,
       easing: 'linear',
       duration: 100,
@@ -82,7 +82,7 @@ export default class Rifle extends Weapon
     });
 
     setTimeout(() => anime({
-      targets: mesh.material,
+      targets: material,
       easing: 'linear',
       duration: 100,
       opacity: 1.0
@@ -179,6 +179,12 @@ export default class Rifle extends Weapon
     this.appended = false;
   }
 
+  public override dispose (): void {
+    this.light.dispose();
+    this.clone.clear();
+    super.dispose();
+  }
+
   public set toggle (equip: boolean) {
     this.spine.visible = !equip;
     this.visible = equip;
@@ -186,12 +192,6 @@ export default class Rifle extends Weapon
 
   public get dummy (): Assets.GLTF {
     return this.spine;
-  }
-
-  public override dispose (): void {
-    this.light.dispose();
-    this.clone.clear();
-    super.dispose();
   }
 
   public get onStage (): boolean {

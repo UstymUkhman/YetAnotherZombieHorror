@@ -5,8 +5,6 @@ import Configs from '@/configs';
 
 type BulletConfig       = typeof Configs.Pistol.bullet | typeof Configs.Rifle.bullet;
 type FireConfig         = typeof Configs.Pistol.fire   | typeof Configs.Rifle.fire;
-
-type WeaponSoundConfig  = { matrix: Matrix4, sfx: WeaponSound, play: boolean };
 type WeaponConfig       = typeof Configs.Pistol & typeof Configs.Rifle;
 
 type WeaponSound        = keyof PistolSounds | keyof RifleSounds;
@@ -25,6 +23,13 @@ type SmokeParticle = Particle & {
 
 type FireParticle = Particle & {
   size: number
+};
+
+type WeaponSoundConfig = {
+  sfx: WeaponSound,
+  matrix: Matrix4,
+  delay?: number,
+  play: boolean
 };
 
 type Particle = {
