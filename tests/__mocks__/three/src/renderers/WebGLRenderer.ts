@@ -15,6 +15,7 @@ export const WebGLRenderer = jest.fn().mockImplementation(() => {
     compile: jest.fn(),
     setSize: jest.fn(),
     dispose: jest.fn(),
-    render: jest.fn()
+    render: jest.fn(),
+    debug: { }
   };
 });

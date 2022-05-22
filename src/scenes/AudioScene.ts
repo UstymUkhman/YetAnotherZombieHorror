@@ -26,7 +26,11 @@ export default class AudioScene
   private readonly isRaining = Settings.getEnvironmentValue('raining');
 
   private readonly characterSounds: CharacterSounds = new Map();
+  private readonly enemies: Map<string, Object3D> = new Map();
   private readonly weaponSounds: WeaponSounds = new Map();
+
+  private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
+  private readonly onCreateEnemy = this.createEnemy.bind(this);
 
   private readonly onCharacter = this.playCharacter.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
@@ -134,7 +138,33 @@ export default class AudioScene
     this.ambient.setLoop(true);
   }
 
+  private disposeEnemy (event: GameEvent): void {
+    const uuid = event.data as string;
+    const enemy = this.enemies.get(uuid);
+
+    this.scene.remove(enemy as Object3D);
+    this.enemies.delete(uuid);
+  }
+
+  private createEnemy (event: GameEvent): void {
+    const uuid = event.data as string;
+    const enemy = new Object3D();
+
+    this.scene.add(enemy);
+    this.enemies.set(uuid, enemy);
+  }
+
+  private removeEventListeners (): void {
+    GameEvents.remove('SFX::Character', true);
+    GameEvents.remove('Enemy::Dispose', true);
+    GameEvents.remove('Enemy::Create', true);
+    GameEvents.remove('SFX::Thunder', true);
+    GameEvents.remove('SFX::Weapon', true);
+  }
+
   private addEventListeners (): void {
+    GameEvents.add('Enemy::Dispose', this.onDisposeEnemy, true);
+    GameEvents.add('Enemy::Create', this.onCreateEnemy, true);
     GameEvents.add('SFX::Character', this.onCharacter, true);
     GameEvents.add('SFX::Thunder', this.onThunder, true);
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
@@ -187,22 +217,20 @@ export default class AudioScene
   }
 
   private playCharacter (event: GameEvent): void {
-    const { matrix, player, sfx } = event.data as CharacterSoundConfig;
+    const { matrix, uuid, sfx } = event.data as CharacterSoundConfig;
     const sound = this.characterSounds.get(sfx) as PositionalAudio;
-    const character = player ? this.player : new Object3D();
+    const character = this.enemies.get(uuid) ?? this.player;
 
-    !player && this.playEnemy(character, sound);
+    if (this.enemies.has(uuid)) {
+      character.add(sound);
+      sound.onEnded = () => character.remove(sound);
+    }
+
     character.matrixWorld.copy(matrix);
 
     character.updateMatrix();
     character.updateMatrixWorld();
     !sound.isPlaying && sound.play();
-  }
-
-  private playEnemy (enemy: Object3D, sound: PositionalAudio) {
-    enemy.add(sound);
-    this.scene.add(enemy);
-    sound.onEnded = () => this.scene.remove(enemy);
   }
 
   private playWeapon (event: GameEvent): void {
@@ -232,7 +260,6 @@ export default class AudioScene
 
     this.camera.aspect = aspect;
     this.camera.near = near;
-
     this.camera.far = far;
     this.camera.fov = fov;
   }
@@ -246,15 +273,13 @@ export default class AudioScene
     while (this.scene.children.length > 0)
       this.scene.remove(this.scene.children[0]);
 
-    GameEvents.remove('SFX::Character', true);
-    GameEvents.remove('SFX::Thunder', true);
-    GameEvents.remove('SFX::Weapon', true);
-
     this.characterSounds.clear();
+    this.removeEventListeners();
     this.weaponSounds.clear();
 
     RAF.remove(this.onUpdate);
     this.renderer.dispose();
+    this.enemies.clear();
     this.pause = true;
   }
 }

@@ -33,6 +33,7 @@ export default class Enemy extends Character
     this.id = id;
 
     if (model && envMap) {
+      GameEvents.dispatch('Enemy::Create', this.uuid, true);
       GameEvents.dispatch('Level::AddObject', this.object);
       this.character = clone(model.scene) as Assets.GLTF;
       this.mesh = this.character;
@@ -43,7 +44,7 @@ export default class Enemy extends Character
     }
   }
 
-  protected override updateAnimation (animation: EnemyAnimations, action: string, duration = 0.25): NodeJS.Timeout {
+  protected override updateAnimation (animation: EnemyAnimations, action: string, duration = 0.5): NodeJS.Timeout {
     return super.updateAnimation(animation, action, duration);
   }
 
@@ -51,9 +52,26 @@ export default class Enemy extends Character
     return this.load(envMap);
   }
 
+  private toggleAnimation (player: Vector3): void {
+    const distance = this.object.position.distanceToSquared(player);
+
+    if (this.moving && distance > this.walkDistance) {
+      this.idle();
+    }
+
+    else if (!this.moving && distance < this.walkDistance) {
+      this.walk();
+    }
+  }
+
+  private idle (): void {
+    this.updateAnimation('Idle', 'idle');
+    this.moving = false;
+  }
+
   private walk (): void {
-    this.updateAnimation('Walking', 'walk', 0.5);
-    this.running = false;
+    if (this.running) return;
+    this.updateAnimation('Walking', 'walk');
     this.moving = true;
   }
 
@@ -62,14 +80,14 @@ export default class Enemy extends Character
     if (!this.alive) return;
 
     const playerPosition = player as Vector3;
-    const distance = this.object.position.distanceToSquared(playerPosition);
-    !this.moving && !this.running && distance < this.walkDistance && this.walk();
+    this.toggleAnimation(playerPosition);
 
     const { x, z } = playerPosition;
     this.character.lookAt(x, 0.0, z);
   }
 
   public override dispose (): void {
+    GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
     this.head?.remove(this.hitBoxes[0]);
 
     for (let box = this.hitBoxes.length; box--;)
@@ -103,10 +121,8 @@ export default class Enemy extends Character
     this.animations.scream.setLoop(LoopOnce, 0);
     this.animations.hit.setLoop(LoopOnce, 0);
 
-    this.currentAnimation = this.animations.idle;
-    this.currentAnimation.play();
-    this.setAnimation('Idle');
     this.createHitBoxes();
+    this.idle();
   }
 
   private createHitBoxes (): void {

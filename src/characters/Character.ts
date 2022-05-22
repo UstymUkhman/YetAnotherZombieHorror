@@ -31,8 +31,8 @@ export default class Character
   protected readonly rotation  = new Vector3();
 
   protected animationUpdate = false;
+  protected readonly uuid: string;
   private mixer?: AnimationMixer;
-  private readonly uuid: string;
 
   protected lastAnimation = '';
   private model?: Assets.GLTF;
@@ -87,10 +87,6 @@ export default class Character
     return character;
   }
 
-  protected setAnimation (animation: CharacterAnimation): void {
-    this.step = this.config.moves[animation];
-  }
-
   protected setMaterial (envMap?: Texture, opacity = 0): void {
     this.mesh.traverse(child => {
       const childMesh = child as Mesh;
@@ -115,6 +111,10 @@ export default class Character
     return this.animations[animation].getClip().duration;
   }
 
+  private setAnimation (animation: CharacterAnimation): void {
+    this.step = this.config.moves[animation];
+  }
+
   private setAnimations (character: Assets.GLTFModel): void {
     const animations = character.animations as Assets.Animations;
     this.mixer = new AnimationMixer(this.mesh);
@@ -123,6 +123,8 @@ export default class Character
       const clip = camelCase(animations[a].name);
       this.animations[clip] = this.mixer.clipAction(animations[a]);
     }
+
+    this.currentAnimation = this.animations.idle;
   }
 
   protected setTransform (model: Assets.GLTFModel): void {
@@ -169,10 +171,10 @@ export default class Character
     }
   }
 
-  protected die (player = false): void {
+  protected die (): void {
     GameEvents.dispatch('SFX::Character', {
       matrix: this.object.matrixWorld,
-      sfx: 'death', player
+      sfx: 'death', uuid: this.uuid
     }, true);
 
     Physics.remove(this.uuid);

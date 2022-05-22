@@ -59,13 +59,13 @@ export default class LevelScene
       canvas
     });
 
+    GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
+    GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
+    this.pmrem = new PMREMGenerator(this.renderer);
+
     this.createColliders();
     this.createEnvironment(worker);
     this.createRenderer(pixelRatio);
-
-    this.pmrem = new PMREMGenerator(this.renderer);
-    GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
-    GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
   }
 
   private createColliders (): void {

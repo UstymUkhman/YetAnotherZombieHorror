@@ -43,7 +43,6 @@ export default class Zombie extends Character
     this.mesh.position.set(0.0, -0.81, 0.0);
     this.mesh.rotation.set(0.0, 2.85, 0.0);
 
-    this.setAnimation('Idle');
     this.setMixerTimeScale(0.5);
     this.animations.idle.play();
 

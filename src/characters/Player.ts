@@ -148,8 +148,9 @@ export default class Player extends Character
   }
 
   public move (directions: Directions, now = Date.now()): void {
-    if (this.blockingAnimation()) return;
+    const force = isFinite(now);
     if (now - this.moveTime < 350) return;
+    if (force && this.blockingAnimation()) return;
 
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
@@ -164,8 +165,8 @@ export default class Player extends Character
     this.moving && Camera.runAnimation(false);
     this.hasRifle && this.rifle.updatePosition(1);
 
+    this.moveTime = Date.now();
     this.running = false;
-    this.moveTime = now;
   }
 
   public run (directions: Directions, running: boolean): void {
@@ -207,6 +208,7 @@ export default class Player extends Character
     this.aimTime = this.equipRifle ? Date.now() : 0.0;
     const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
 
+    clearTimeout(this.animTimeout);
     this.weapon.setAim();
 
     if (this.lastAnimation !== next) {
@@ -228,6 +230,7 @@ export default class Player extends Character
   }
 
   public stopAiming (running: boolean): void {
+    if (this.reloading) return;
     this.equipRifle && clearTimeout(this.aimTimeout);
     const duration = Math.min(Date.now() - this.aimTime, 400);
 
@@ -280,14 +283,14 @@ export default class Player extends Character
     this.reloading = true;
     this.toggleMesh(true);
 
-    this.reloadTimeout = setTimeout(
-      this.weapon.addAmmo.bind(this.weapon, 0)
-    , 2000);
+    this.reloadTimeout = setTimeout(() => {
+      this.weapon.addAmmo(0.0);
+      this.reloading = false;
+    }, 2000);
 
-    setTimeout(() => {
+    this.animTimeout = setTimeout(() => {
       if (this.dead) return;
       this.toggleMesh(false);
-      this.reloading = false;
       Camera.setNearPlane(0.5, 100);
 
       const { directions, running } = getMovement();
@@ -487,7 +490,7 @@ export default class Player extends Character
     this.shooting = false;
     this.aiming = false;
 
-    super.die(true);
+    super.die();
   }
 
   private get meshes (): Array<SkinnedMesh> {

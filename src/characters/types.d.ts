@@ -25,8 +25,8 @@ type CharacterSoundsConfig = PlayerSounds | EnemySounds;
 type CharacterSoundConfig = {
   sfx: WeaponSound,
   matrix: Matrix4,
-  player: boolean,
-  play: boolean
+  play: boolean,
+  uuid: string
 };
 
 // Temporary hack for @types/three v0.140.0:

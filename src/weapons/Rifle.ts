@@ -67,7 +67,7 @@ export default class Rifle extends Weapon
   }
 
   public override cancelAim (): void {
-    this.reset();
+    setTimeout(this.reset.bind(this), 50);
   }
 
   public override toggleVisibility (hideDelay: number, showDelay: number): void {
@@ -122,8 +122,8 @@ export default class Rifle extends Weapon
 
   public override stopReloading (): void {
     this.reloading && this.stopSound('reload');
+    !this.aiming && this.reset();
     this.reloading = false;
-    this.reset();
   }
 
   public update (player: Vector3): void {
