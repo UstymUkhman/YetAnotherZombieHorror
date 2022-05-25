@@ -1,4 +1,4 @@
-import type { CharacterConfig, CharacterAnimation, CharacterMove } from '@/characters/types';
+import type { CharacterConfig, CharacterAnimation, CharacterSound, CharacterMove } from '@/characters/types';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
@@ -87,6 +87,15 @@ export default class Character
     return character;
   }
 
+  protected playSound (sfx: CharacterSound, stop: boolean): void {
+    stop && this.stopSound(sfx);
+
+    GameEvents.dispatch('SFX::Character', {
+      uuid: this.uuid, play: true, sfx,
+      matrix: this.object.matrixWorld
+    }, true);
+  }
+
   protected setMaterial (envMap?: Texture, opacity = 0): void {
     this.mesh.traverse(child => {
       const childMesh = child as Mesh;
@@ -108,7 +117,7 @@ export default class Character
   }
 
   protected getAnimationDuration (animation: string): number {
-    return this.animations[animation].getClip().duration;
+    return this.animations[animation].getClip().duration * 1e3;
   }
 
   private setAnimation (animation: CharacterAnimation): void {
@@ -141,6 +150,13 @@ export default class Character
 
   protected setMixerTimeScale (time: number): void {
     if (this.mixer) this.mixer.timeScale = time;
+  }
+
+  private stopSound (sfx: CharacterSound): void {
+    GameEvents.dispatch('SFX::Character', {
+      uuid: this.uuid, play: false, sfx,
+      matrix: this.object.matrixWorld
+    }, true);
   }
 
   protected setMixerTime (time: number): void {

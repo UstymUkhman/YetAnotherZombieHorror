@@ -19,13 +19,21 @@ export default class Enemy extends Character
 {
   protected override lastAnimation = 'idle';
   private hitBoxes: Array<Object3D> = [];
+  private previousAnimation = 'idle';
 
   private readonly walkDistance = 400.0;
   // private readonly runDistance = 100.0;
-  private character!: Assets.GLTF;
 
-  // private crawling = false;
+  private animTimeout!: NodeJS.Timeout;
+  private hitFadeOut!: NodeJS.Timeout;
+  private hitTimeout!: NodeJS.Timeout;
+
+  private character!: Assets.GLTF;
+  // private screaming = false;
+  private crawling = false;
+
   private head?: Object3D;
+  private hitTime = 0.0;
   private id: number;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, id = 0) {
@@ -63,6 +71,53 @@ export default class Enemy extends Character
       this.walk();
     }
   }
+
+  private cancelHit (): void {
+    this.animations.hit.stopFading();
+    clearTimeout(this.animTimeout);
+    clearTimeout(this.hitFadeOut);
+    clearTimeout(this.hitTimeout);
+    this.animations.hit.stop();
+  }
+
+  // public headHit (): void { }
+
+  public bodyHit (now = Date.now()): void {
+    if (this.crawling) return;
+    const delay = now - this.hitTime;
+    const duration = this.getAnimationDuration('hit');
+
+    if (delay < duration / 2.0) return;
+    this.playSound('hit', true);
+
+    if (!this.hitting)
+      this.previousAnimation = this.lastAnimation;
+
+    else {
+      this.currentAnimation = this.animations.idle;
+      this.currentAnimation.play();
+      this.cancelHit();
+    }
+
+    this.updateAnimation('Idle', 'hit', 0.1);
+    const animation = this.animation;
+
+    this.hitFadeOut = setTimeout(() => {
+      this.animTimeout = this.updateAnimation(
+        animation, this.previousAnimation, 0.25
+      );
+    }, duration - 250);
+
+    this.hitTimeout = setTimeout(() => {
+      this.hitting = false;
+    }, duration);
+
+    // this.screaming = false;
+    this.hitting = true;
+    this.hitTime = now;
+  }
+
+  // public legHit (): void { }
 
   private idle (): void {
     this.updateAnimation('Idle', 'idle');
@@ -204,6 +259,11 @@ export default class Enemy extends Character
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
+  }
+
+  private get animation (): EnemyAnimations {
+    const direction = this.running ? 'Running' : this.moving ? 'Walking' : 'Idle';
+    return this.crawling ? this.hitting ? 'Idle' : 'Crawling' : direction;
   }
 
   public get hitBox (): Array<Object3D> {

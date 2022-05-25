@@ -92,9 +92,10 @@ export default class AudioScene
       const audio = new PositionalAudio(this.listener);
 
       audio.setBuffer(sound);
-      audio.setVolume(10.0);
+      audio.setVolume(0.5);
 
       this.characterSounds.set(names[s], audio);
+      audio.userData = { name: names[s] };
       player && this.player.add(audio);
     });
   }
@@ -140,15 +141,19 @@ export default class AudioScene
 
   private disposeEnemy (event: GameEvent): void {
     const uuid = event.data as string;
-    const enemy = this.enemies.get(uuid);
+    const enemy = this.enemies.get(uuid) as Object3D;
 
-    this.scene.remove(enemy as Object3D);
+    this.scene.remove(enemy.clear());
     this.enemies.delete(uuid);
   }
 
   private createEnemy (event: GameEvent): void {
-    const uuid = event.data as string;
     const enemy = new Object3D();
+    const uuid = event.data as string;
+
+    this.characterSounds.forEach(
+      audio => enemy.add(audio)
+    );
 
     this.scene.add(enemy);
     this.enemies.set(uuid, enemy);
@@ -217,20 +222,25 @@ export default class AudioScene
   }
 
   private playCharacter (event: GameEvent): void {
-    const { matrix, uuid, sfx } = event.data as CharacterSoundConfig;
-    const sound = this.characterSounds.get(sfx) as PositionalAudio;
-    const character = this.enemies.get(uuid) ?? this.player;
+    const { sfx, uuid, matrix, play } = event.data as CharacterSoundConfig;
+    let sound = this.characterSounds.get(sfx) as PositionalAudio;
+    let character = this.player;
 
     if (this.enemies.has(uuid)) {
-      character.add(sound);
-      sound.onEnded = () => character.remove(sound);
+      character = this.enemies.get(uuid) as Object3D;
+
+      sound = character.children.find(audio =>
+        audio.userData.name === sfx
+      ) as PositionalAudio;
     }
 
     character.matrixWorld.copy(matrix);
-
     character.updateMatrix();
     character.updateMatrixWorld();
-    !sound.isPlaying && sound.play();
+
+    play
+      ? !sound.isPlaying && sound.play()
+      : sound.isPlaying && sound.stop();
   }
 
   private playWeapon (event: GameEvent): void {

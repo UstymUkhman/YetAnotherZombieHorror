@@ -2,15 +2,16 @@ import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
+import type { Directions } from '@/controls';
 import Configs from '@/configs';
 
+type CharacterMove         = { speed: number, direction: PlayerDirection };
 type PlayerMovement        = { directions: Directions, running: boolean };
 type CharacterConfig       = typeof Configs.Player | typeof Configs.Enemy;
-type CharacterSound        = keyof PlayerSounds | keyof EnemySounds;
 
-type CharacterMove         = { speed: number, direction: Direction };
 type PlayerLocation        = { position: Vector3, rotation: number };
 type PlayerDirection       = { z0: number, x0: number, x1: number };
+type CharacterSound        = keyof PlayerSounds | keyof EnemySounds;
 
 type PlayerAnimations      = keyof typeof Configs.Player.animations;
 type EnemyAnimations       = keyof typeof Configs.Enemy.animations;
@@ -23,7 +24,7 @@ type EnemySounds           = typeof Configs.Enemy.sounds;
 type CharacterSoundsConfig = PlayerSounds | EnemySounds;
 
 type CharacterSoundConfig = {
-  sfx: WeaponSound,
+  sfx: CharacterSound,
   matrix: Matrix4,
   play: boolean,
   uuid: string

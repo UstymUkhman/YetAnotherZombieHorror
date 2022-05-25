@@ -31,6 +31,7 @@ export default class Weapon
   private readonly onShoot = this.updateBullets.bind(this);
 
   private readonly bullet = new Bullet(this.config.bullet);
+  private readonly bullets: Map<string, Mesh> = new Map();
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
@@ -39,7 +40,6 @@ export default class Weapon
 
   public targets: Array<Object3D> = [];
   protected readonly magazine: number;
-  private bullets: Array<Mesh> = [];
 
   private weapon!: Assets.GLTF;
   protected loadedAmmo: number;
@@ -139,49 +139,26 @@ export default class Weapon
     this.aimed = visible;
   }
 
+  private removeBullet (uuid: string): void {
+    const bullet = this.bullets.get(uuid);
+    if (!bullet) return;
+
+    bullet.clear();
+    this.bullets.delete(uuid);
+    GameEvents.dispatch('Level::RemoveObject', bullet);
+  }
+
+  private getEvent (index: number): string {
+    const hitBox = index % 6;
+    return !hitBox ? 'Hit::Head' :
+      hitBox === 1 ? 'Hit::Body' : 'Hit::Leg';
+  }
+
   private updateAimSign (): boolean | void {
     if (!this.aiming) return this.aimed && this.toggleAimSign(false);
 
     const aimed = !!this.updateRaycaster().length;
     this.aimed !== aimed && this.toggleAimSign(aimed);
-  }
-
-  public shoot (): Recoil | null {
-    if (this.empty) this.playSound('empty', false);
-
-    else {
-      const target = this.target;
-      const { ray } = this.raycaster;
-      const hitBox = this.targets[target];
-      const recoil = this.animateRecoil();
-
-      const bullet = this.bullet.shoot(ray, this.aiming);
-      GameEvents.dispatch('Player::Shoot', true, true);
-      !this.bullets.length && RAF.add(this.onShoot);
-
-      this.playSound('bullet', false, 0.5);
-      this.playSound('shoot', true);
-
-      this.bullets.push(bullet);
-      this.fire.addParticles();
-
-      this.loadedAmmo--;
-      this.totalAmmo--;
-
-      if (target > -1) {
-        const event = this.getEvent(target);
-        const distance = hitBox.position.distanceToSquared(bullet.position);
-
-        setTimeout(() =>
-          GameEvents.dispatch(event, hitBox.userData.enemy),
-          distance / this.bullet.speed
-        );
-      }
-
-      return recoil;
-    }
-
-    return null;
   }
 
   private animateRecoil (): Recoil {
@@ -211,24 +188,52 @@ export default class Weapon
   private updateBullets (): void {
     !this.fire.update() && RAF.remove(this.onShoot);
 
-    for (let b = this.bullets.length; b--;) {
-      const bullet = this.bullets[b];
-
+    this.bullets.forEach((bullet, uuid) => {
       if (Date.now() < bullet.userData.lifeTime) {
         this.bullet.update(bullet);
       }
 
-      else {
-        this.bullets.splice(b, 1);
-        GameEvents.dispatch('Level::RemoveObject', bullet);
-      }
-    }
+      else this.removeBullet(uuid);
+    });
   }
 
-  private getEvent (index: number): string {
-    const hitBox = index % 6;
-    return !hitBox ? 'Hit::Head' :
-      hitBox === 1 ? 'Hit::Body' : 'Hit::Leg';
+  public shoot (): Recoil | null {
+    if (this.empty) this.playSound('empty', false);
+
+    else {
+      const target = this.target;
+      const { ray } = this.raycaster;
+      const hitBox = this.targets[target];
+      const recoil = this.animateRecoil();
+
+      const bullet = this.bullet.shoot(ray, this.aiming);
+      GameEvents.dispatch('Player::Shoot', true, true);
+
+      !this.bullets.size && RAF.add(this.onShoot);
+      this.bullets.set(bullet.uuid, bullet);
+
+      this.playSound('bullet', false, 0.5);
+      this.playSound('shoot', true);
+      this.fire.addParticles();
+
+      this.loadedAmmo--;
+      this.totalAmmo--;
+
+      if (target > -1) {
+        const event = this.getEvent(target);
+        const distance = hitBox.position.distanceToSquared(bullet.position);
+
+        setTimeout(() => {
+          this.removeBullet(bullet.uuid);
+          const { enemy } = hitBox.userData;
+          GameEvents.dispatch(event, enemy);
+        }, distance / this.bullet.speed);
+      }
+
+      return recoil;
+    }
+
+    return null;
   }
 
   public startReloading (): void { return; }
@@ -242,31 +247,26 @@ export default class Weapon
   }
 
   protected dispose (): void {
-    for (let b = this.bullets.length; b--;) {
-      const bullet = this.bullets[b];
+    this.bullets.forEach((bullet, uuid) => {
       const path = bullet.children[0] as Mesh;
       const bulletMaterial = bullet.material as MeshStandardMaterial;
 
-      GameEvents.dispatch('Level::RemoveObject', bullet);
       (path.material as ShaderMaterial).dispose();
-
       bulletMaterial.map?.dispose();
       bullet.geometry.dispose();
 
       bulletMaterial.dispose();
       path.geometry.dispose();
-      bullet.clear();
-    }
+      this.removeBullet(uuid);
+    });
 
     RAF.remove(this.onUpdate);
     RAF.remove(this.onShoot);
 
     this.targets.splice(0);
-    this.bullets.splice(0);
-
     this.bullet.dispose();
-    this.fire.dispose();
     this.weapon.clear();
+    this.fire.dispose();
   }
 
   public set visible (visible: boolean) {

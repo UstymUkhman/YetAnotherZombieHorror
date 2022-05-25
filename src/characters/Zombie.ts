@@ -72,7 +72,7 @@ export default class Zombie extends Character
 
       this.animations.scream.crossFadeTo(this.animations.idle, 0.1, true);
       setTimeout(this.animations.scream.stop.bind(this.animations.scream), 100);
-    }, this.getAnimationDuration('scream') * 1e3 - 100);
+    }, this.getAnimationDuration('scream') - 100);
   }
 
   private get skinnedMesh (): SkinnedMesh {
