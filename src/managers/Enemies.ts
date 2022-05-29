@@ -12,7 +12,7 @@ export default class Enemies
 {
   // private readonly onHeadHit = this.headHit.bind(this);
   private readonly onBodyHit = this.bodyHit.bind(this);
-  // private readonly onLegHit = this.legHit.bind(this);
+  private readonly onLegHit = this.legHit.bind(this);
 
   private enemyModel!: Assets.GLTFModel;
   private readonly enemies: Array<Enemy> = [];
@@ -22,7 +22,7 @@ export default class Enemies
 
     // GameEvents.add('Hit::Head', this.onHeadHit);
     GameEvents.add('Hit::Body', this.onBodyHit);
-    // GameEvents.add('Hit::Leg', this.onLegHit);
+    GameEvents.add('Hit::Leg', this.onLegHit);
 
     enemy.loadCharacter(envMap).then(model => {
       this.enemyModel = model;
@@ -37,7 +37,10 @@ export default class Enemies
     this.enemies[enemy].bodyHit();
   }
 
-  // private legHit (event: GameEvent): void { }
+  private legHit (event: GameEvent): void {
+    const enemy = event.data as number;
+    this.enemies[enemy].legHit();
+  }
 
   private spawnEnemy (): void {
     const enemy = new Enemy(
