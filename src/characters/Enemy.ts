@@ -13,7 +13,9 @@ import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
 import { HitBox } from '@/utils/Material';
+
 import Configs from '@/configs';
+import anime from 'animejs';
 
 export default class Enemy extends Character
 {
@@ -34,6 +36,7 @@ export default class Enemy extends Character
   private screaming = false;
   private attacking = false;
   private crawling = false;
+  private falling = false;
 
   private head?: Object3D;
   private hitTime = 0.0;
@@ -63,10 +66,21 @@ export default class Enemy extends Character
     return this.load(envMap);
   }
 
+  private updateCrawlingPosition (animate = false): void {
+    const z = this.rotation.z * -0.3;
+
+    !animate ? this.character.position.z = z : anime({
+      targets: this.character.position,
+      easing: 'linear',
+      duration: 3e3,
+      z
+    });
+  }
+
   private toggleAnimation (player: Vector3): void {
     const distance = this.object.position.distanceToSquared(player);
 
-    if (this.screaming || this.attacking || this.crawling) return;
+    if (this.screaming || this.attacking || this.crawling || this.falling) return;
 
     else if (this.moving && distance > this.walkDistance) {
       this.idle();
@@ -94,7 +108,7 @@ export default class Enemy extends Character
     this.playSound('hit', true);
     this.hitTime = now;
 
-    if (this.crawling) return;
+    if (this.crawling || this.falling) return;
 
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
@@ -123,7 +137,7 @@ export default class Enemy extends Character
   }
 
   public legHit (): void {
-    if (this.crawling) return this.bodyHit();
+    if (this.crawling || this.falling) return this.bodyHit();
     this.updateAnimation('Falling', 'falling', 0.1);
 
     setTimeout(this.onLegHit, 2800);
@@ -132,8 +146,9 @@ export default class Enemy extends Character
     this.screaming = false;
     this.attacking = false;
 
-    this.crawling = true;
+    this.crawling = false;
     this.running = false;
+    this.falling = true;
 
     this.hitting = true;
     this.moving = false;
@@ -143,11 +158,12 @@ export default class Enemy extends Character
 
   private crawl (): void {
     this.updateAnimation('Crawling', 'crawling', 3.0);
+    this.updateCrawlingPosition(true);
 
-    setTimeout(() => {
-      this.hitting = false;
-      this.moving = true;
-    }, 3e3);
+    this.crawling = true;
+    this.falling = false;
+    this.hitting = false;
+    this.moving = true;
   }
 
   private idle (): void {
@@ -168,6 +184,7 @@ export default class Enemy extends Character
     super.update(delta);
     if (!this.alive) return;
 
+    this.crawling && this.updateCrawlingPosition();
     const playerPosition = player as Vector3;
     this.toggleAnimation(playerPosition);
 
@@ -299,7 +316,7 @@ export default class Enemy extends Character
 
   private get animation (): EnemyAnimations {
     const direction = this.running ? 'Running' : this.moving ? 'Walking' : 'Idle';
-    return this.crawling ? this.hitting ? 'Falling' : 'Crawling' : direction;
+    return this.falling ? 'Falling' : this.crawling ? 'Crawling' : direction;
   }
 
   public get hitBox (): Array<Object3D> {
