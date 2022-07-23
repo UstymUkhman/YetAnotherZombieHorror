@@ -174,7 +174,7 @@ export default class Character
 
   protected update (delta: number): void {
     this.mixer?.update(delta);
-    this.updateLocation();
+    this.updateDirection();
 
     if (this.moving) {
       this.still = false;
@@ -187,24 +187,7 @@ export default class Character
     }
   }
 
-  protected die (): void {
-    GameEvents.dispatch('SFX::Character', {
-      matrix: this.object.matrixWorld,
-      sfx: 'death', uuid: this.uuid
-    }, true);
-
-    Physics.remove(this.uuid);
-    this.setAnimation('Idle');
-
-    this.hitting = false;
-    this.running = false;
-    this.moving = false;
-
-    this.still = false;
-    this.dead = true;
-  }
-
-  private updateLocation (): void {
+  private updateDirection (): void {
     const { speed, direction } = this.step;
 
     this.mesh.getWorldDirection(this.rotation);
@@ -250,6 +233,23 @@ export default class Character
     this.animations = {};
     delete this.mixer;
     this.reset();
+  }
+
+  protected die (): void {
+    GameEvents.dispatch('SFX::Character', {
+      matrix: this.object.matrixWorld,
+      sfx: 'death', uuid: this.uuid
+    }, true);
+
+    Physics.remove(this.uuid);
+    this.setAnimation('Idle');
+
+    this.hitting = false;
+    this.running = false;
+    this.moving = false;
+
+    this.still = false;
+    this.dead = true;
   }
 
   public reset (): void {

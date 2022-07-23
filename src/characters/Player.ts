@@ -30,6 +30,7 @@ export default class Player extends Character
   protected override lastAnimation = 'pistolIdle';
   private readonly levelPosition = new Vector2();
 
+  // private static location: PlayerLocation;
   private reloadTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
   private aimTimeout!: NodeJS.Timeout;
@@ -53,6 +54,7 @@ export default class Player extends Character
 
   public constructor () {
     super(Configs.Player);
+    // this.updateLocation();
   }
 
   public async loadCharacter (envMap: Texture): Promise<void> {
@@ -460,6 +462,7 @@ export default class Player extends Character
 
   public override update (delta: number): void {
     super.update(delta);
+    // this.updateLocation();
     this.shooting && this.startShooting();
   }
 
@@ -478,6 +481,15 @@ export default class Player extends Character
     super.dispose();
   }
 
+  /* private updateLocation (): void {
+    Player.location = {
+      position: this.position,
+      rotation: radToDeg(
+        Math.atan2(-this.rotation.x, this.rotation.z)
+      )
+    };
+  } */
+
   public override die (): void {
     this.updateAnimation('Idle', 'death', 0.5);
     GameEvents.dispatch('Player::Death');
@@ -492,6 +504,10 @@ export default class Player extends Character
 
     super.die();
   }
+
+  /* public static get position (): PlayerLocation {
+    return Player.location;
+  } */
 
   private get meshes (): Array<SkinnedMesh> {
     return this.mesh.children[0].children[1].children as Array<SkinnedMesh>;

@@ -108,17 +108,16 @@ export default class MainLoop
     this.player.update(delta);
 
     const playerLocation = this.player.location;
-    const playerPosition = playerLocation.position;
-    const position = this.level.outOfBounds(playerPosition);
+    const position = this.level.outOfBounds(playerLocation.position);
 
-    this.enemies.update(delta, playerPosition);
+    this.enemies.update(delta, playerLocation.position);
     position && this.player.teleport(position);
 
     GameEvents.dispatch('Characters::Location', {
       player: playerLocation
     }, true);
 
-    return position ?? playerPosition;
+    return position ?? playerLocation.position;
   }
 
   public resize (width: number, height: number): void {

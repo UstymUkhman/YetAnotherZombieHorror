@@ -23,6 +23,7 @@
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import BorderRifle from '@components/map/BorderRifle.svelte';
   import type { PlayerLocation } from '@/characters/types';
+  import type { Vector3 } from 'three/src/math/Vector3';
 
   import { GameEvents } from '@/events/GameEvents';
   import Aim from '@components/HUD/Aim.svelte';
@@ -36,7 +37,7 @@
   import RAF from '@/managers/RAF';
 
   type LocationEvent = {
-    enemies: Array<unknown>,
+    enemies: Array<Vector3>,
     player: PlayerLocation
   };
 

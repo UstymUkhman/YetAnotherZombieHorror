@@ -169,9 +169,20 @@ module.exports = {
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
-    '<rootDir>/tests/worker/WorkerManager.spec.ts',
+    '/node_modules/',
     '<rootDir>/tests/__mocks__/',
-    '/node_modules/'
+    '<rootDir>/tests/characters/',
+    '<rootDir>/tests/components/',
+    '<rootDir>/tests/configs/',
+    '<rootDir>/tests/controls/',
+    '<rootDir>/tests/environment/',
+    '<rootDir>/tests/loaders/',
+    '<rootDir>/tests/managers/',
+    '<rootDir>/tests/physics/',
+    '<rootDir>/tests/scenes/',
+    '<rootDir>/tests/settings/',
+    '<rootDir>/tests/weapons/',
+    '<rootDir>/tests/worker/WorkerManager.spec.ts'
   ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files

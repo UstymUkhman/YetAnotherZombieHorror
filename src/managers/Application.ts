@@ -26,11 +26,10 @@ export default class Application
   private manager!: ApplicationManager;
 
   private readonly music = new Music();
-  private readonly audioScene: AudioScene;
-
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
 
+  private readonly audioScene = new AudioScene();
   private readonly onResize = this.resize.bind(this);
 
   public constructor (private readonly scene: HTMLCanvasElement) {
@@ -38,7 +37,6 @@ export default class Application
 
     GameEvents.createWorkerEvents(this.worker);
     Viewport.addResizeCallback(this.onResize);
-    this.audioScene = new AudioScene();
 
     import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/Onscreen').then(Manager =>
       this.manager = new Manager.default(this.scene, this.worker, pixelRatio)

@@ -25,4 +25,4 @@ public/**/*.glb
 
 public/assets/shaders/*
 !public/assets/sounds/YAZH.mp3
-!public/assets/shaders/.gitkeep
+.github/workflows/check-commit-message.yml
