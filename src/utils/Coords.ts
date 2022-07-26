@@ -1,4 +1,5 @@
 import { getRandomCoord } from '@/worker/getRandomCoord';
+import type { LevelCoords } from '@/scenes/types';
 import { Vector2 } from 'three/src/math/Vector2';
 
 import LevelScene from '@/scenes/LevelScene';

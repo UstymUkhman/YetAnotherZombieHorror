@@ -13,6 +13,7 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
     STAGING: !!process.env.prod,
     BUILD: JSON.stringify(version),
     PRODUCTION: mode === 'production',
+    TEST: true && mode !== 'production',
     DEBUG: false && mode !== 'production'
   },
 

@@ -41,7 +41,8 @@ export class CameraManager
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
-    this.camera = new PerspectiveCamera(45, Viewport.ratio, +this.fps * 0.215 + 0.1);
+    const ratio = TEST ? innerWidth / innerHeight : Viewport.ratio;
+    this.camera = new PerspectiveCamera(45, ratio, +this.fps * 0.215 + 0.1);
     this.camera.far = Configs.Level.depth;
 
     this.setCamera();

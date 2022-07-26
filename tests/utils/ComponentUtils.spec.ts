@@ -1,4 +1,5 @@
 import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/map/utils';
+import type { LevelCoords } from '@/scenes/types';
 import LevelScene from '@/scenes/LevelScene';
 
 describe('ComponentUtils', () => {

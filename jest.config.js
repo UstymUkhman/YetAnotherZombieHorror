@@ -65,7 +65,8 @@ module.exports = {
     PRODUCTION: false,
     STAGING: false,
     BUILD: version,
-    DEBUG: false
+    DEBUG: false,
+    TEST: false
   },
 
   // The maximum amount of workers used to run your tests. Can be specified as % or a number.
@@ -170,6 +171,7 @@ module.exports = {
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
     '/node_modules/',
+    '<rootDir>/tests/main.spec.ts',
     '<rootDir>/tests/__mocks__/',
     '<rootDir>/tests/characters/',
     '<rootDir>/tests/components/',

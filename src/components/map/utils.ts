@@ -1,3 +1,5 @@
+import type { LevelCoords } from '@/scenes/types';
+
 export const getScaledCoords = (coords: LevelCoords, minCoords: LevelCoords, scale: number): LevelCoords =>
   [coords[0] * scale + scale * minCoords[0], coords[1] * scale + scale * minCoords[1]];
 

@@ -63,7 +63,7 @@ export default class BVHPhysics extends PhysicsWorld
     this.environment.attach(collider);
   }
 
-  public override createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+  public override createBounds (bounds: BoundsOptions, sidewalk?: BoundsOptions): void {
     super.createBounds(bounds, sidewalk);
     this.addPhysicsCollider();
   }

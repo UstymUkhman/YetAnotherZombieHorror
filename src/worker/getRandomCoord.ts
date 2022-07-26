@@ -1,3 +1,4 @@
+import type { LevelParams, LevelCoords } from '@/scenes/types';
 import { cloneBounds, min, max } from '@/utils/Array';
 import { random } from '@/utils/Number';
 import Configs from '@/configs';

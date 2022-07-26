@@ -1,6 +1,7 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { LevelCoords } from '@/scenes/types';
 import type WebWorker from '@/worker/WebWorker';
 
 import LevelScene from '@/scenes/LevelScene';

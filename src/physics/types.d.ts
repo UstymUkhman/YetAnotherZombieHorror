@@ -1,10 +1,10 @@
 import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 import type { Quaternion } from 'three/src/math/Quaternion';
-export type { Coords, Bounds } from '@/scenes/LevelScene';
-
 import type { Triangle } from 'three/src/math/Triangle';
 import type { Vector3 } from 'three/src/math/Vector3';
+
 import type MeshBVH from 'three-mesh-bvh/src/MeshBVH';
+import type { LevelBounds } from '@/scenes/types';
 import type { Line3 } from 'three/src/math/Line3';
 
 export type BVHGeometry = BufferGeometry & { boundsTree?: typeof MeshBVH };
@@ -45,7 +45,7 @@ interface AmmoTransform {
 }
 
 export type BoundsOptions = {
-  borders: Bounds
+  borders: LevelBounds
   height: number
   y: number
 };

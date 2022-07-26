@@ -3,10 +3,10 @@ import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 
 import type { BoundsOptions } from '@/physics/types';
+import type { LevelCoords } from '@/scenes/types';
 import { GameEvents } from '@/events/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
 
-import type { Coords } from '@/physics/types';
+import { Vector3 } from 'three/src/math/Vector3';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
 import { PI } from '@/utils/Number';
@@ -35,7 +35,7 @@ export default abstract class PhysicsWorld
   public abstract dispose (): void;
   public abstract pause: boolean;
 
-  private createBound (current: Coords, next: Coords, h: number, y = 0): void {
+  private createBound (current: LevelCoords, next: LevelCoords, h: number, y = 0): void {
     this.rotationVector.set(0, 0, 0);
 
     const x0 = current[0];
@@ -91,24 +91,24 @@ export default abstract class PhysicsWorld
     this.addStaticCollider(collider);
   }
 
-  public createGround (min: Coords, max: Coords): void {
+  public createGround (min: LevelCoords, max: LevelCoords): void {
     this.sizeVector.set(Math.abs(min[0] - max[0]), this.MIN_SIZE, Math.abs(min[1] - max[1]));
     this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
     this.createStaticCollider(Transparent);
   }
 
-  public createBounds (bounds: BoundsOptions, sidewalk: BoundsOptions): void {
+  public createBounds (bounds: BoundsOptions, sidewalk?: BoundsOptions): void {
     const borderPosition = new Vector3();
 
     const border = bounds.borders.concat([bounds.borders[0]]);
-    const walk = sidewalk.borders.concat([sidewalk.borders[0]]);
+    const walk = sidewalk?.borders.concat([sidewalk?.borders[0]]);
 
     for (let b = 0; b < bounds.borders.length; b++) {
       this.createBound(border[b], border[b + 1], bounds.height, bounds.y);
       this.createStaticCollider(StaticCollider);
 
       borderPosition.copy(this.positionVector);
-      this.createBound(walk[b], walk[b + 1], sidewalk.height, sidewalk.y);
+      walk && this.createBound(walk[b], walk[b + 1], sidewalk?.height as number, sidewalk?.y);
 
       if (this.borderOverflow(borderPosition)) continue;
       const lengthScale = this.rotationVector.y ? 1.1 : 1;

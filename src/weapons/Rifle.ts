@@ -5,6 +5,7 @@ import type { Assets } from '@/loaders/AssetsLoader';
 import type { WeaponConfig } from '@/weapons/types';
 
 import type { Mesh } from 'three/src/objects/Mesh';
+import type { LevelCoords } from '@/scenes/types';
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
@@ -152,6 +153,7 @@ export default class Rifle extends Weapon
 
     this.clone.visible = true;
     this.light.visible = true;
+
     this.spawnTime = 0.0;
     this.spawned = true;
   }

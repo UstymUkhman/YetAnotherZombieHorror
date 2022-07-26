@@ -20,4 +20,9 @@ describe('globals', () => {
     expect(typeof BUILD).toStrictEqual('string');
     expect(BUILD).toStrictEqual(version);
   });
+
+  test('TEST', () => {
+    expect(typeof TEST).toStrictEqual('boolean');
+    expect(TEST).toStrictEqual(false);
+  });
 });
