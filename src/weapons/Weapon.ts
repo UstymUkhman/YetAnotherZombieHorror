@@ -1,4 +1,4 @@
-import type { WeaponConfig, FireConfig, WeaponSound, Recoil } from '@/weapons/types';
+import type { WeaponConfig, FireConfig, WeaponSound, SoundOptions, Recoil } from '@/weapons/types';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 
@@ -6,12 +6,11 @@ import type { Intersection } from 'three/src/core/Raycaster';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import { Raycaster } from 'three/src/core/Raycaster';
-
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
+
 import { CameraObject } from '@/managers/Camera';
 import { GameEvents } from '@/events/GameEvents';
-
 import { Vector3 } from 'three/src/math/Vector3';
 import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
@@ -94,19 +93,20 @@ export default class Weapon
     return clone;
   }
 
-  protected playSound (sfx: WeaponSound, stop: boolean, delay?: number): void {
-    stop && this.stopSound(sfx);
+  protected playSound (sfx: WeaponSound, options: SoundOptions): void {
+    const { stop, pistol, delay } = options;
+    stop && this.stopSound(sfx, pistol);
 
     GameEvents.dispatch('SFX::Weapon', {
       matrix: this.object.matrixWorld,
-      play: true, sfx, delay
+      play: true, sfx, delay, pistol
     }, true);
   }
 
-  protected stopSound (sfx: WeaponSound): void {
+  protected stopSound (sfx: WeaponSound, pistol?: boolean): void {
     GameEvents.dispatch('SFX::Weapon', {
       matrix: this.object.matrixWorld,
-      play: false, sfx
+      play: false, sfx, pistol
     }, true);
   }
 
@@ -198,7 +198,7 @@ export default class Weapon
   }
 
   public shoot (): Recoil | null {
-    if (this.empty) this.playSound('empty', false);
+    if (this.empty) this.playSound('empty', { stop: false });
 
     else {
       const target = this.target;
@@ -212,12 +212,12 @@ export default class Weapon
       !this.bullets.size && RAF.add(this.onShoot);
       this.bullets.set(bullet.uuid, bullet);
 
-      this.playSound('bullet', false, 0.5);
-      this.playSound('shoot', true);
       this.fire.addParticles();
-
       this.loadedAmmo--;
       this.totalAmmo--;
+
+      this.playSound('shoot', { stop: true });
+      this.playSound('bullet', { stop: false, delay: 0.5 });
 
       if (target > -1) {
         const event = this.getEvent(target);

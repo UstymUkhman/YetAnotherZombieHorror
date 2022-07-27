@@ -1,5 +1,5 @@
 import type { CharacterSoundsConfig, CharacterSoundConfig, CharacterSounds, CharacterSound } from '@/characters/types';
-import type { WeaponSoundsConfig, WeaponSoundConfig, WeaponSounds, WeaponSound } from '@/weapons/types';
+import type { WeaponSoundsConfig, WeaponSoundConfig, PistolSounds, RifleSounds, WeaponSound } from '@/weapons/types';
 
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
@@ -23,11 +23,13 @@ import anime from 'animejs';
 
 export default class AudioScene
 {
+  private readonly pistolSounds: Map<keyof PistolSounds, PositionalAudio> = new Map();
+  private readonly rifleSounds: Map<keyof RifleSounds, PositionalAudio> = new Map();
+
   private readonly isRaining = Settings.getEnvironmentValue('raining');
 
   private readonly characterSounds: CharacterSounds = new Map();
   private readonly enemies: Map<string, Object3D> = new Map();
-  private readonly weaponSounds: WeaponSounds = new Map();
 
   private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
   private readonly onCreateEnemy = this.createEnemy.bind(this);
@@ -71,8 +73,8 @@ export default class AudioScene
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
 
-    this.createWeaponSounds(Configs.Pistol.sounds);
-    this.createWeaponSounds(Configs.Rifle.sounds);
+    this.createWeaponSounds(Configs.Pistol.sounds, true);
+    this.createWeaponSounds(Configs.Rifle.sounds, false);
 
     this.addEventListeners();
     RAF.add(this.onUpdate);
@@ -100,7 +102,8 @@ export default class AudioScene
     });
   }
 
-  private async createWeaponSounds (sfx: WeaponSoundsConfig): Promise<void> {
+  private async createWeaponSounds (sfx: WeaponSoundsConfig, pistol: boolean): Promise<void> {
+    const soundsMap = pistol ? this.pistolSounds : this.rifleSounds;
     const names = Object.keys(sfx) as unknown as Array<WeaponSound>;
     const sounds = await this.loadSounds(Object.values(sfx));
 
@@ -112,7 +115,7 @@ export default class AudioScene
       audio.setBuffer(sound);
       audio.setVolume(volume);
 
-      this.weaponSounds.set(names[s], audio);
+      soundsMap.set(names[s], audio);
       this.weapon.add(audio);
     });
   }
@@ -244,8 +247,9 @@ export default class AudioScene
   }
 
   private playWeapon (event: GameEvent): void {
-    const { sfx, matrix, play, delay } = event.data as WeaponSoundConfig;
-    const sound = this.weaponSounds.get(sfx) as PositionalAudio;
+    const { sfx, pistol, matrix, play, delay } = event.data as WeaponSoundConfig;
+    const soundsMap = pistol ? this.pistolSounds : this.rifleSounds;
+    const sound = soundsMap.get(sfx) as PositionalAudio;
 
     this.weapon.matrixWorld.copy(matrix);
     this.weapon.updateMatrix();
@@ -285,7 +289,8 @@ export default class AudioScene
 
     this.characterSounds.clear();
     this.removeEventListeners();
-    this.weaponSounds.clear();
+    this.pistolSounds.clear();
+    this.rifleSounds.clear();
 
     RAF.remove(this.onUpdate);
     this.renderer.dispose();

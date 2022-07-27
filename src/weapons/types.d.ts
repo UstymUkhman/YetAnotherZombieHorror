@@ -26,10 +26,17 @@ type FireParticle = Particle & {
 };
 
 type WeaponSoundConfig = {
+  pistol?: boolean,
   sfx: WeaponSound,
   matrix: Matrix4,
   delay?: number,
   play: boolean
+};
+
+type SoundOptions = {
+  pistol?: boolean,
+  delay?: number,
+  stop: boolean
 };
 
 type Particle = {

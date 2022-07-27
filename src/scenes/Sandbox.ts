@@ -1,28 +1,35 @@
+import type { CharacterSoundConfig, CharacterSound } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
 import { PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
+import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
-import type { Material } from 'three/src/materials/Material';
 
+import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
+import { AudioListener } from 'three/src/audio/AudioListener';
+import type { Material } from 'three/src/materials/Material';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import { GridHelper } from 'three/src/helpers/GridHelper';
-import Camera, { CameraObject } from '@/managers/Camera';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
+import type Character from '@/characters/Character';
 
+import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Clock } from 'three/src/core/Clock';
+import type Weapon from '@/weapons/Weapon';
 import { Fog } from 'three/src/scenes/Fog';
 import Pointer from '@/managers/Pointer';
 import Player from '@/characters/Player';
 import Viewport from '@/utils/Viewport';
+import Camera from '@/managers/Camera';
 import { Color } from '@/utils/Color';
 import Pistol from '@/weapons/Pistol';
 
@@ -51,10 +58,12 @@ export default class Sandbox
   private readonly envMap = new Texture();
   private readonly pointer = new Pointer();
 
+  private readonly listener = new AudioListener();
   // private readonly enemy = new Enemy(this.envMap);
   private readonly update = this.render.bind(this);
   private readonly pistol = new Pistol(this.envMap);
   private readonly onResize = this.resize.bind(this);
+
   private readonly onPointerLock = this.requestPointerLock.bind(this);
   private readonly renderer = new WebGLRenderer({ antialias: true, alpha: false });
 
@@ -64,6 +73,7 @@ export default class Sandbox
     this.createLights();
     this.createGround();
     this.createPlayer();
+    // this.createEnemy();
 
     this.createRenderer();
     this.createControls();
@@ -81,6 +91,7 @@ export default class Sandbox
     const ratio = innerWidth / innerHeight;
     this.camera = new PerspectiveCamera(45, ratio, 0.1, 500);
     this.camera.position.set(2.5, 1.7, 30);
+    Camera.object.add(this.listener);
   }
 
   private createLights (): void {
@@ -128,6 +139,9 @@ export default class Sandbox
     this.player.loadCharacter(this.envMap).then(() => {
       this.player.setPistol([]/* this.enemy.hitBox */, this.pistol);
       Physics.setCharacter(this.player.collider, 90);
+
+      this.addCharacterSounds(this.player);
+      this.addWeaponSounds(this.pistol);
 
       Physics.pause = false;
       RAF.add(this.update);
@@ -186,9 +200,83 @@ export default class Sandbox
   private addEvents (): void {
     Viewport.addResizeCallback(this.onResize);
     document.body.addEventListener('click', this.onPointerLock);
+
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
+
     GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
+    GameEvents.add('SFX::Character', this.playCharacter.bind(this));
+    GameEvents.add('SFX::Weapon', this.playWeapon.bind(this));
+  }
+
+  private async loadSounds (sounds: ReadonlyArray<string>): Promise<Array<AudioBuffer>> {
+    return Promise.all(sounds.map(Assets.Loader.loadAudio.bind(Assets.Loader)));
+  }
+
+  private async addCharacterSounds (character: Character): Promise<void> {
+    const sfx = character instanceof Player ? Configs.Player.sounds : Configs.Enemy.sounds;
+    const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
+    const sounds = await this.loadSounds(Object.values(sfx));
+
+    sounds.forEach((sound, s) => {
+      const audio = new PositionalAudio(this.listener);
+
+      audio.userData = { name: names[s] };
+      character.collider.add(audio);
+
+      audio.setBuffer(sound);
+      audio.setVolume(0.5);
+    });
+  }
+
+  private async addWeaponSounds (weapon: Weapon): Promise<void> {
+    const sfx = weapon instanceof Pistol ? Configs.Pistol.sounds : Configs.Rifle.sounds;
+    const names = Object.keys(sfx) as unknown as Array<WeaponSound>;
+    const sounds = await this.loadSounds(Object.values(sfx));
+
+    sounds.forEach((sound, s) => {
+      const audio = new PositionalAudio(this.listener);
+      let volume = names[s] === 'bullet' ? 0.25 : 2.5;
+      volume = names[s] === 'shoot' ? 5.0 : volume;
+
+      audio.userData = { name: names[s] };
+      weapon.object.add(audio);
+
+      audio.setVolume(volume);
+      audio.setBuffer(sound);
+    });
+  }
+
+  private playCharacter (event: GameEvent): void {
+    const { sfx, /* uuid, */ play } = event.data as CharacterSoundConfig;
+
+    // const character = this.player.collider.uuid === uuid
+    //   ? this.player.collider : this.enemy.collider;
+
+    const character = this.player.collider;
+
+    const sound = character.children.find(audio =>
+      audio.userData.name === sfx
+    ) as PositionalAudio;
+
+    play
+      ? !sound.isPlaying && sound.play()
+      : sound.isPlaying && sound.stop();
+  }
+
+  private playWeapon (event: GameEvent): void {
+    const { sfx, /* pistol, */ play, delay } = event.data as WeaponSoundConfig;
+    // const weapon = pistol ? this.pistol.object : this.rifle.object;
+
+    const weapon = this.pistol.object;
+
+    const sound = weapon.children.find(audio =>
+      audio.userData.name === sfx
+    ) as PositionalAudio;
+
+    play
+      ? !sound.isPlaying && sound.play(delay)
+      : sound.isPlaying && sound.stop();
   }
 
   private requestPointerLock (): void {
@@ -227,8 +315,12 @@ export default class Sandbox
   private removeEvents (): void {
     document.body.removeEventListener('click', this.onPointerLock);
     Viewport.removeResizeCallback(this.onResize);
+
     GameEvents.remove('Level::RemoveObject');
     GameEvents.remove('Level::AddObject');
+
+    GameEvents.remove('SFX::Character');
+    GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
   }
 
@@ -236,7 +328,7 @@ export default class Sandbox
     this.stats?.begin();
 
     this.updateGameObjects(this.player.location.position);
-    if (!this.orbit) this.renderer.render(this.scene, CameraObject);
+    if (!this.orbit) this.renderer.render(this.scene, Camera.object);
 
     else {
       this.orbit.update();
@@ -263,8 +355,11 @@ export default class Sandbox
     this.renderer.dispose();
     this.pointer.dispose();
     this.orbit?.dispose();
+
     this.player.dispose();
+    this.pistol.dispose();
     // this.enemy.dispose();
+    // this.rifle.dispose();
 
     this.removeEvents();
     this.scene.clear();
@@ -274,5 +369,9 @@ export default class Sandbox
 
     this.stats?.domElement.remove();
     this.renderer.domElement.remove();
+    Camera.object.remove(this.listener);
+
+    while (this.scene.children.length > 0)
+      this.scene.remove(this.scene.children[0]);
   }
 }

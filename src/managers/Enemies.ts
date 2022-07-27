@@ -26,7 +26,7 @@ export default class Enemies
 
     enemy.loadCharacter(envMap).then(model => {
       this.enemyModel = model;
-      this.spawnEnemy();
+      // this.spawnEnemy();
     });
   }
 

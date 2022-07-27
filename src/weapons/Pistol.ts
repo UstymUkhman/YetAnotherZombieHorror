@@ -1,7 +1,6 @@
+import type { WeaponConfig, WeaponSound, SoundOptions } from '@/weapons/types';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
-
-import type { WeaponConfig } from '@/weapons/types';
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
 
@@ -17,6 +16,14 @@ export default class Pistol extends Weapon
   public constructor (envMap: Texture) {
     super(Configs.Pistol as WeaponConfig);
     this.load(envMap);
+  }
+
+  protected override playSound (sfx: WeaponSound, options: SoundOptions): void {
+    super.playSound(sfx, { ...options, pistol: true });
+  }
+
+  protected override stopSound (sfx: WeaponSound): void {
+    super.stopSound(sfx, true);
   }
 
   public override setAim (): void {

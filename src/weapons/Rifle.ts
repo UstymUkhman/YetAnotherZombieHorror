@@ -92,7 +92,7 @@ export default class Rifle extends Weapon
 
   public override addAmmo (ammo = Configs.Rifle.magazine): void {
     if (ammo) {
-      this.playSound('pick', false);
+      this.playSound('pick', { stop: false });
       const totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
       this.totalAmmo = this.empty ? totalAmmo : totalAmmo + this.loadedAmmo;
     }
@@ -117,7 +117,7 @@ export default class Rifle extends Weapon
     this.object.position.set(this.position.x, this.position.y, 0.0);
     this.object.rotation.set(this.rotation.x, this.rotation.y, 0.0);
 
-    this.playSound('reload', true);
+    this.playSound('reload', { stop: true });
     this.reloading = true;
   }
 
