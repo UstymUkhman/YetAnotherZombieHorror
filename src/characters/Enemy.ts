@@ -40,11 +40,9 @@ export default class Enemy extends Character
 
   private head?: Object3D;
   private hitTime = 0.0;
-  private id: number;
 
-  public constructor (model?: Assets.GLTFModel, envMap?: Texture, id = 0) {
+  public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
-    this.id = id;
 
     if (model && envMap) {
       GameEvents.dispatch('Enemy::Create', this.uuid, true);

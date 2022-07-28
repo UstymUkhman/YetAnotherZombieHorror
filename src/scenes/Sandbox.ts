@@ -7,10 +7,10 @@ import { PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { AudioListener } from 'three/src/audio/AudioListener';
 import type { Material } from 'three/src/materials/Material';
+
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import { GridHelper } from 'three/src/helpers/GridHelper';
@@ -19,20 +19,21 @@ import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
 import type Character from '@/characters/Character';
-
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Clock } from 'three/src/core/Clock';
+
 import type Weapon from '@/weapons/Weapon';
 import { Fog } from 'three/src/scenes/Fog';
 import Pointer from '@/managers/Pointer';
 import Player from '@/characters/Player';
 import Viewport from '@/utils/Viewport';
+import Enemy from '@/characters/Enemy';
 import Camera from '@/managers/Camera';
 import { Color } from '@/utils/Color';
 import Pistol from '@/weapons/Pistol';
-
+import Rifle from '@/weapons/Rifle';
 import Controls from '@/controls';
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
@@ -43,10 +44,12 @@ interface GridMaterial extends Material {
   opacity: number
 }
 
+const SCENE_SIZE = 500.0;
 const ORBIT_CONTROLS = false;
 
 export default class Sandbox
 {
+  private enemy!: Enemy;
   private stats?: Stats;
   private controls?: Controls;
   private orbit?: OrbitControls;
@@ -59,7 +62,7 @@ export default class Sandbox
   private readonly pointer = new Pointer();
 
   private readonly listener = new AudioListener();
-  // private readonly enemy = new Enemy(this.envMap);
+  private readonly rifle = new Rifle(this.envMap);
   private readonly update = this.render.bind(this);
   private readonly pistol = new Pistol(this.envMap);
   private readonly onResize = this.resize.bind(this);
@@ -72,12 +75,12 @@ export default class Sandbox
     this.createCamera();
     this.createLights();
     this.createGround();
-    this.createPlayer();
-    // this.createEnemy();
 
+    this.createCharacters();
+    this.createColliders();
     this.createRenderer();
+
     this.createControls();
-    this.addColliders();
     this.createStats();
     this.addEvents();
   }
@@ -88,8 +91,10 @@ export default class Sandbox
   }
 
   private createCamera (): void {
-    const ratio = innerWidth / innerHeight;
-    this.camera = new PerspectiveCamera(45, ratio, 0.1, 500);
+    this.camera = new PerspectiveCamera(
+      45, innerWidth / innerHeight, 0.1, SCENE_SIZE
+    );
+
     this.camera.position.set(2.5, 1.7, 30);
     Camera.object.add(this.listener);
   }
@@ -118,7 +123,7 @@ export default class Sandbox
 
   private createGround (): void {
     const ground = new Mesh(
-      new BoxGeometry(500, 500, 1),
+      new BoxGeometry(SCENE_SIZE, SCENE_SIZE, 1.0),
       new MeshPhongMaterial({
         color: Color.WHITE,
         depthWrite: false
@@ -129,23 +134,53 @@ export default class Sandbox
     ground.receiveShadow = true;
     this.scene.add(ground);
 
-    const grid = new GridHelper(500, 250, 0, 0);
+    const grid = new GridHelper(SCENE_SIZE, SCENE_SIZE * 0.5, 0.0, 0.0);
     (grid.material as GridMaterial).transparent = true;
     (grid.material as GridMaterial).opacity = 0.25;
     this.scene.add(grid);
   }
 
-  private createPlayer (): void {
-    this.player.loadCharacter(this.envMap).then(() => {
-      this.player.setPistol([]/* this.enemy.hitBox */, this.pistol);
-      Physics.setCharacter(this.player.collider, 90);
+  private async createCharacters (): Promise<void> {
+    const model = await (new Enemy).loadCharacter(this.envMap);
+    this.enemy = new Enemy(model, this.envMap);
+    await this.player.loadCharacter(this.envMap);
 
-      this.addCharacterSounds(this.player);
-      this.addWeaponSounds(this.pistol);
+    this.player.setPistol(this.enemy.hitBox, this.pistol);
+    Physics.setCharacter(this.player.collider, 90);
+    Physics.setCharacter(this.enemy.collider);
 
-      Physics.pause = false;
-      RAF.add(this.update);
-      RAF.pause = false;
+    await this.addWeaponSounds(this.pistol);
+    await this.addWeaponSounds(this.rifle);
+
+    this.addCharacterSounds(this.player);
+    this.addCharacterSounds(this.enemy);
+
+    this.player.addRifle(this.rifle);
+    this.player.pickRifle();
+
+    Physics.pause = false;
+    RAF.add(this.update);
+    RAF.pause = false;
+  }
+
+  private createColliders (): void {
+    const halfSize = SCENE_SIZE * 0.5;
+    const { position, height } = Configs.Level;
+
+    Physics.createGround(
+      [-halfSize, -halfSize],
+      [ halfSize,  halfSize]
+    );
+
+    Physics.createBounds({
+      height,
+      y: position.y,
+      borders: [
+        [-halfSize,  halfSize],
+        [ halfSize,  halfSize],
+        [ halfSize, -halfSize],
+        [-halfSize, -halfSize]
+      ]
     });
   }
 
@@ -168,22 +203,6 @@ export default class Sandbox
       this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
       this.orbit.update();
     }
-  }
-
-  private addColliders (): void {
-    const { position, height } = Configs.Level;
-    Physics.createGround([-250.0, -250.0], [250.0, 250.0]);
-
-    Physics.createBounds({
-      height,
-      y: position.y,
-      borders: [
-        [-250.0,  250.0],
-        [ 250.0,  250.0],
-        [ 250.0, -250.0],
-        [-250.0, -250.0]
-      ]
-    });
   }
 
   private createStats (): void {
@@ -248,12 +267,10 @@ export default class Sandbox
   }
 
   private playCharacter (event: GameEvent): void {
-    const { sfx, /* uuid, */ play } = event.data as CharacterSoundConfig;
+    const { sfx, uuid, play } = event.data as CharacterSoundConfig;
 
-    // const character = this.player.collider.uuid === uuid
-    //   ? this.player.collider : this.enemy.collider;
-
-    const character = this.player.collider;
+    const character = this.player.collider.uuid === uuid
+      ? this.player.collider : this.enemy.collider;
 
     const sound = character.children.find(audio =>
       audio.userData.name === sfx
@@ -265,10 +282,8 @@ export default class Sandbox
   }
 
   private playWeapon (event: GameEvent): void {
-    const { sfx, /* pistol, */ play, delay } = event.data as WeaponSoundConfig;
-    // const weapon = pistol ? this.pistol.object : this.rifle.object;
-
-    const weapon = this.pistol.object;
+    const { sfx, pistol, play, delay } = event.data as WeaponSoundConfig;
+    const weapon = pistol ? this.pistol.object : this.rifle.object;
 
     const sound = weapon.children.find(audio =>
       audio.userData.name === sfx
@@ -297,7 +312,7 @@ export default class Sandbox
 
   private updateCharacters (player: Vector3, delta: number): void {
     this.player.update(delta);
-    // this.enemy.update(delta, player);
+    this.enemy.update(delta, player);
   }
 
   private updateGameObjects (player: Vector3): void {
@@ -339,6 +354,9 @@ export default class Sandbox
   }
 
   private resize (): void {
+    this.rifle.resize(innerHeight);
+    this.pistol.resize(innerHeight);
+
     if (!this.orbit) Camera.resize();
 
     else {
@@ -358,8 +376,8 @@ export default class Sandbox
 
     this.player.dispose();
     this.pistol.dispose();
-    // this.enemy.dispose();
-    // this.rifle.dispose();
+    this.enemy.dispose();
+    this.rifle.dispose();
 
     this.removeEvents();
     this.scene.clear();

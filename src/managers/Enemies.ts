@@ -18,16 +18,14 @@ export default class Enemies
   private readonly enemies: Array<Enemy> = [];
 
   public constructor (private readonly envMap: Texture) {
-    const enemy = new Enemy();
+    (new Enemy).loadCharacter(envMap).then(model => {
+      this.enemyModel = model;
+      // this.spawnEnemy();
+    });
 
     // GameEvents.add('Hit::Head', this.onHeadHit);
     GameEvents.add('Hit::Body', this.onBodyHit);
     GameEvents.add('Hit::Leg', this.onLegHit);
-
-    enemy.loadCharacter(envMap).then(model => {
-      this.enemyModel = model;
-      // this.spawnEnemy();
-    });
   }
 
   // private headHit (event: GameEvent): void { }
