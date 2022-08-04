@@ -68,7 +68,25 @@ export default class Rifle extends Weapon
   }
 
   public override cancelAim (): void {
-    setTimeout(this.reset.bind(this), 50);
+    anime({
+      targets: this.object.rotation,
+      easing: 'easeInOutSine',
+      x: this.rotation.x,
+      y: this.rotation.y,
+      z: this.rotation.z,
+      duration: 50.0,
+      delay: 50.0
+    });
+
+    anime({
+      targets: this.object.position,
+      easing: 'easeInOutSine',
+      x: this.position.x,
+      y: this.position.y,
+      z: this.position.z,
+      duration: 50.0,
+      delay: 50.0
+    });
   }
 
   public override toggleVisibility (hideDelay: number, showDelay: number): void {

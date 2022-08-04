@@ -16,6 +16,7 @@
 <script lang="ts">
   import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/map/utils';
   import { createEventDispatcher, tick, onMount, onDestroy } from 'svelte';
+  import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import MapRifle from '@components/map/MapRifle.svelte';

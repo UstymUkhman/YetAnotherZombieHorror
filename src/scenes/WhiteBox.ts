@@ -47,7 +47,7 @@ interface GridMaterial extends Material {
 const SCENE_SIZE = 500.0;
 const ORBIT_CONTROLS = false;
 
-export default class Sandbox
+export default class WhiteBox
 {
   private enemy!: Enemy;
   private stats?: Stats;

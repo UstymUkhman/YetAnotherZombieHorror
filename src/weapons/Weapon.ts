@@ -98,14 +98,14 @@ export default class Weapon
     stop && this.stopSound(sfx, pistol);
 
     GameEvents.dispatch('SFX::Weapon', {
-      matrix: this.object.matrixWorld,
+      matrix: this.weapon.matrixWorld,
       play: true, sfx, delay, pistol
     }, true);
   }
 
   protected stopSound (sfx: WeaponSound, pistol?: boolean): void {
     GameEvents.dispatch('SFX::Weapon', {
-      matrix: this.object.matrixWorld,
+      matrix: this.weapon.matrixWorld,
       play: false, sfx, pistol
     }, true);
   }
