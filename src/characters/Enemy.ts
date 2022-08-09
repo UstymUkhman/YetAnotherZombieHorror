@@ -25,21 +25,23 @@ export default class Enemy extends Character
 
   private readonly walkDistance = 400.0;
   // private readonly runDistance = 100.0;
-  private readonly hitDuration = 500.0;
-  private previousAnimation = 'idle';
 
   private animTimeout!: NodeJS.Timeout;
   private hitFadeOut!: NodeJS.Timeout;
   private hitTimeout!: NodeJS.Timeout;
 
+  private previousAnimation = 'idle';
   private character!: Assets.GLTF;
+
+  private hitDuration!: number;
+  private hitStart!: number;
+
   private screaming = false;
   private attacking = false;
   private crawling = false;
   private falling = false;
 
   private head?: Object3D;
-  private hitTime = 0.0;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
@@ -99,12 +101,8 @@ export default class Enemy extends Character
 
   // public headHit (): void { }
 
-  public bodyHit (now = Date.now()): void {
-    const delay = now - this.hitTime;
-    if (delay < this.hitDuration) return;
-
+  public bodyHit (): void {
     this.playSound('hit', true);
-    this.hitTime = now;
 
     if (this.crawling || this.falling) return;
 
@@ -117,18 +115,18 @@ export default class Enemy extends Character
       this.cancelHit();
     }
 
-    const duration = this.getAnimationDuration('hit');
+    this.animations.hit.time = this.hitStart;
     this.updateAnimation('Idle', 'hit', 0.1);
 
     this.hitFadeOut = setTimeout(() => {
       this.animTimeout = this.updateAnimation(
-        animation, this.previousAnimation, 0.25
+        animation, this.previousAnimation, 0.2
       );
-    }, duration - 250);
+    }, this.hitDuration - 200);
 
     this.hitTimeout = setTimeout(() => {
       this.hitting = false;
-    }, duration);
+    }, this.hitDuration);
 
     const animation = this.animation;
     this.hitting = true;
@@ -203,6 +201,10 @@ export default class Enemy extends Character
   }
 
   private setDefaultState (): void {
+    const hitDuration = this.getAnimationDuration('hit');
+    this.hitDuration = hitDuration - 233.3333015441895 | 0;
+    this.hitStart = (hitDuration - this.hitDuration) / 1000;
+
     this.animations.softAttack.clampWhenFinished = true;
     this.animations.hardAttack.clampWhenFinished = true;
 

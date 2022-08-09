@@ -226,6 +226,10 @@ export default class WhiteBox
     GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('SFX::Character', this.playCharacter.bind(this));
     GameEvents.add('SFX::Weapon', this.playWeapon.bind(this));
+
+    GameEvents.add('Hit::Head', this.enemyHeadHit.bind(this));
+    GameEvents.add('Hit::Body', this.enemyBodyHit.bind(this));
+    GameEvents.add('Hit::Leg', this.enemyLegHit.bind(this));
   }
 
   private async loadSounds (sounds: ReadonlyArray<string>): Promise<Array<AudioBuffer>> {
@@ -294,6 +298,18 @@ export default class WhiteBox
       : sound.isPlaying && sound.stop();
   }
 
+  private enemyHeadHit (): void {
+    // this.enemy.headHit();
+  }
+
+  private enemyBodyHit (): void {
+    this.enemy.bodyHit();
+  }
+
+  private enemyLegHit (): void {
+    this.enemy.legHit();
+  }
+
   private requestPointerLock (): void {
     if (!this.controls) return;
     this.pointer.requestPointerLock();
@@ -337,6 +353,10 @@ export default class WhiteBox
     GameEvents.remove('SFX::Character');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
+
+    GameEvents.remove('Hit::Head');
+    GameEvents.remove('Hit::Body');
+    GameEvents.remove('Hit::Leg');
   }
 
   private render (): void {

@@ -1,12 +1,20 @@
 <div class="container">
-  <div class="aim" bind:this={aim} class:hide class:shooting class:red />
+  <div
+    bind:this={aim}
+    class:shooting
+    class:black
+    class:hide
+    class:red
+  />
 </div>
 
 <script lang="ts">
   import { GameEvents } from '@/events/GameEvents';
-  import { onMount, onDestroy } from 'svelte';
+  import { onDestroy } from 'svelte';
 
+  export let black = false;
   export let hide: boolean;
+
   let aim: HTMLDivElement;
   let shooting = false;
   let red = false;
@@ -21,13 +29,11 @@
     shooting = false;
   }
 
-  onMount(() => {
-    GameEvents.add('Player::Shoot', onShoot, true);
+  GameEvents.add('Player::Shoot', onShoot, !black);
 
-    GameEvents.add('Weapon::Aim', event =>
-      red = event.data
-    , true);
-  });
+  GameEvents.add('Weapon::Aim', event =>
+    red = event.data
+  , !black);
 
   onDestroy(() => {
     GameEvents.remove('Player::Shoot', true);
@@ -44,7 +50,7 @@
     @include mixin.center-size(15px);
     padding: 0;
 
-    div.aim {
+    > div:first-child {
       @include mixin.absolute-size;
 
       transition-property: transform, opacity;
@@ -70,6 +76,10 @@
 
       &.shooting {
         animation: 150ms ease-out shoot;
+      }
+
+      &.black {
+        border-color: var.$black;
       }
 
       &.red {
