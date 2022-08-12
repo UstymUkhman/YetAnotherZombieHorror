@@ -152,6 +152,14 @@ export default class Character
     if (this.mixer) this.mixer.timeScale = time;
   }
 
+  protected updateHealth (damage: number): boolean {
+    if (this.dead) return true;
+    this.health = Math.max(this.health - damage, 0.0);
+
+    !this.health && this.die();
+    return this.dead;
+  }
+
   private stopSound (sfx: CharacterSound): void {
     GameEvents.dispatch('SFX::Character', {
       uuid: this.uuid, play: false, sfx,
@@ -206,12 +214,6 @@ export default class Character
     );
   }
 
-  protected checkIfAlive (): void {
-    if (this.dead) return;
-    this.dead = this.dead || !this.health;
-    // this.dead && this.die();
-  }
-
   public dispose (): void {
     this.object.userData = {};
     this.object.geometry.dispose();
@@ -236,12 +238,7 @@ export default class Character
   }
 
   protected die (): void {
-    GameEvents.dispatch('SFX::Character', {
-      matrix: this.object.matrixWorld,
-      sfx: 'death', uuid: this.uuid
-    }, true);
-
-    Physics.remove(this.uuid);
+    this.playSound('death', true);
     this.setAnimation('Idle');
 
     this.hitting = false;

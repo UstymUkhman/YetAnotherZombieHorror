@@ -41,8 +41,6 @@ export default class Enemy extends Character
   private crawling = false;
   private falling = false;
 
-  private head?: Object3D;
-
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
 
@@ -64,17 +62,6 @@ export default class Enemy extends Character
 
   public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
     return this.load(envMap);
-  }
-
-  private updateCrawlingPosition (animate = false): void {
-    const z = this.rotation.z * -0.3;
-
-    !animate ? this.character.position.z = z : anime({
-      targets: this.character.position,
-      easing: 'linear',
-      duration: 3e3,
-      z
-    });
   }
 
   private toggleAnimation (player: Vector3): void {
@@ -99,12 +86,33 @@ export default class Enemy extends Character
     this.animations.hit.stop();
   }
 
-  // public headHit (): void { }
+  public headHit (): void {
+    if (this.dead) return;
+    this.hitting && this.cancelHit();
+    // if (!HEADSHOT_KILL) return this.bodyHit();
+
+    !this.updateHitDamage(100.0) &&
+      this.updateAnimation('Idle', 'headshot');
+
+    this.screaming = false;
+    this.attacking = false;
+
+    this.crawling = false;
+    this.falling = false;
+  }
 
   public bodyHit (): void {
-    this.playSound('hit', true);
+    if (this.dead) return;
 
-    if (this.crawling || this.falling) return;
+    if (this.updateHitDamage(100.0)) {
+      this.dead && this.falling &&
+        this.updateAnimation('Idle', 'death');
+
+      return;
+    }
+
+    if (this.dead)
+      return this.updateAnimation('Idle', 'death') as unknown as void;
 
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
@@ -133,10 +141,12 @@ export default class Enemy extends Character
   }
 
   public legHit (): void {
-    if (this.crawling || this.falling) return this.bodyHit();
-    this.updateAnimation('Falling', 'falling', 0.1);
+    if (this.dead) return;
+    this.hitting && this.cancelHit();
+    if (this.updateHitDamage(100.0)) return;
 
-    setTimeout(this.onLegHit, 2800);
+    this.updateAnimation('Falling', 'falling', 0.1);
+    setTimeout(this.onLegHit, 2500);
     this.playSound('hit', true);
 
     this.screaming = false;
@@ -148,13 +158,18 @@ export default class Enemy extends Character
 
     this.hitting = true;
     this.moving = false;
-
-    this.cancelHit();
   }
 
   private crawl (): void {
+    if (this.dead) return;
     this.updateAnimation('Crawling', 'crawling', 3.0);
-    this.updateCrawlingPosition(true);
+
+    anime({
+      targets: this.character.position,
+      z: this.rotation.z * -0.3,
+      easing: 'linear',
+      duration: 3e3
+    });
 
     this.crawling = true;
     this.falling = false;
@@ -169,7 +184,7 @@ export default class Enemy extends Character
   }
 
   private walk (): void {
-    if (this.running) return;
+    // if (this.running) return;
     this.updateAnimation('Walking', 'walk');
 
     this.hitting = false;
@@ -178,9 +193,8 @@ export default class Enemy extends Character
 
   public override update (delta: number, player?: Vector3): void {
     super.update(delta);
-    if (!this.alive) return;
+    if (this.dead) return;
 
-    this.crawling && this.updateCrawlingPosition();
     const playerPosition = player as Vector3;
     this.toggleAnimation(playerPosition);
 
@@ -188,15 +202,22 @@ export default class Enemy extends Character
     this.character.lookAt(x, 0.0, z);
   }
 
+  private updateHitDamage (damage: number): boolean {
+    const lyingDown = this.crawling || this.falling;
+    const dead = this.updateHealth(damage);
+    dead && this.removeHitBoxes();
+
+    if (lyingDown) dead
+      ? this.crawling && this.updateAnimation('Idle', 'crawlDeath')
+      : this.playSound('hit', true);
+
+    return lyingDown;
+  }
+
   public override dispose (): void {
     GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
-    this.head?.remove(this.hitBoxes[0]);
-
-    for (let box = this.hitBoxes.length; box--;)
-      delete this.hitBoxes[box];
-
     this.character?.clear();
-    this.hitBoxes.splice(0);
+    this.removeHitBoxes();
     super.dispose();
   }
 
@@ -239,8 +260,15 @@ export default class Enemy extends Character
     this.addLegsHitBox();
   }
 
+  private removeHitBoxes (): void {
+    for (let box = this.hitBoxes.length; box--;)
+      delete this.hitBoxes[box];
+
+    this.hitBoxes.splice(0);
+  }
+
   private addHeadHitBox (): void {
-    this.head = this.character.getObjectByName('Head') as Object3D;
+    const head = this.character.getObjectByName('Head') as Object3D;
 
     const headHitBox = new Mesh(
       new BoxGeometry(15, 10, 22),
@@ -252,7 +280,7 @@ export default class Enemy extends Character
 
     headHitBox.userData.enemy = this.id;
     this.hitBoxes.push(headHitBox);
-    this.head.add(headHitBox);
+    head.add(headHitBox);
   }
 
   private addBodyHitBox (): void {

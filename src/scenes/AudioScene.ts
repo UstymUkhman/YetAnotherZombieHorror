@@ -92,9 +92,10 @@ export default class AudioScene
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
+      const volume = names[s] === 'death' ? 2.5 : 0.5;
 
+      audio.setVolume(volume);
       audio.setBuffer(sound);
-      audio.setVolume(0.5);
 
       this.characterSounds.set(names[s], audio);
       audio.userData = { name: names[s] };

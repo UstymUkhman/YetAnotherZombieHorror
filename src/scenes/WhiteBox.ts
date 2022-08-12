@@ -243,12 +243,13 @@ export default class WhiteBox
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
+      const volume = names[s] === 'death' ? 2.5 : 0.5;
 
       audio.userData = { name: names[s] };
       character.collider.add(audio);
 
+      audio.setVolume(volume);
       audio.setBuffer(sound);
-      audio.setVolume(0.5);
     });
   }
 
@@ -299,7 +300,7 @@ export default class WhiteBox
   }
 
   private enemyHeadHit (): void {
-    // this.enemy.headHit();
+    this.enemy.headHit();
   }
 
   private enemyBodyHit (): void {

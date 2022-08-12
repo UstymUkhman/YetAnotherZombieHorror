@@ -10,7 +10,7 @@ import Physics from '@/physics';
 
 export default class Enemies
 {
-  // private readonly onHeadHit = this.headHit.bind(this);
+  private readonly onHeadHit = this.headHit.bind(this);
   private readonly onBodyHit = this.bodyHit.bind(this);
   private readonly onLegHit = this.legHit.bind(this);
 
@@ -23,12 +23,15 @@ export default class Enemies
       // this.spawnEnemy();
     });
 
-    // GameEvents.add('Hit::Head', this.onHeadHit);
+    GameEvents.add('Hit::Head', this.onHeadHit);
     GameEvents.add('Hit::Body', this.onBodyHit);
     GameEvents.add('Hit::Leg', this.onLegHit);
   }
 
-  // private headHit (event: GameEvent): void { }
+  private headHit (event: GameEvent): void {
+    const enemy = event.data as number;
+    this.enemies[enemy].headHit();
+  }
 
   private bodyHit (event: GameEvent): void {
     const enemy = event.data as number;
