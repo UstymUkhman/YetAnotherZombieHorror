@@ -273,6 +273,10 @@ export default class Character
     return this.model as Assets.GLTF;
   }
 
+  /* protected get life (): number {
+    return this.health;
+  } */
+
   public get collider (): Mesh {
     return this.object;
   }

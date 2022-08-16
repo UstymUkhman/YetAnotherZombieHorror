@@ -1,8 +1,11 @@
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
+import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { EnemyAnimations, EnemyDeathAnimation } from '@/characters/types';
+
+import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
-import type { EnemyAnimations } from '@/characters/types';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
@@ -42,6 +45,7 @@ export default class Enemy extends Character
   private attacking = false;
   private crawling = false;
   private falling = false;
+  private visible = false;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
@@ -50,11 +54,14 @@ export default class Enemy extends Character
       GameEvents.dispatch('Enemy::Create', this.uuid, true);
       GameEvents.dispatch('Level::AddObject', this.object);
       this.character = clone(model.scene) as Assets.GLTF;
-      this.mesh = this.character;
 
-      this.setMaterial(envMap, 1.0);
+      const opacity = +!this.id;
+      this.mesh = this.character;
+      this.setMaterial(envMap, opacity);
+
       this.setTransform(model);
       this.setDefaultState();
+      this.toggleVisibility(true);
     }
   }
 
@@ -62,19 +69,42 @@ export default class Enemy extends Character
     return super.updateAnimation(animation, action, duration);
   }
 
+  private toggleVisibility (show: boolean, death?: EnemyDeathAnimation): void {
+    const delay = death && this.getAnimationDuration(death) + 500 || 0;
+    const easing = show ? 'easeInQuad' : 'easeOutQuad';
+    const duration = 1000.0 + +!show * 1500.0;
+
+    if (show) this.visible = true;
+
+    else {
+      this.removeHitBoxes();
+      const timeout = delay + duration;
+      setTimeout(this.dispose.bind(this), timeout);
+    }
+
+    anime({
+      targets: this.material,
+      opacity: +show,
+      duration,
+      easing,
+      delay
+    });
+  }
+
   public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
     return this.load(envMap);
   }
 
   private toggleAnimation (player: Vector3): void {
+    const lyingDown = this.crawling || this.falling;
+    if (this.screaming || this.attacking || lyingDown) return;
     const distance = this.object.position.distanceToSquared(player);
 
     const idleAnimation = distance > this.walkDistance;
     const screamAnimation = distance < this.runDistance;
     const walkAnimation = !idleAnimation && !screamAnimation;
 
-    if (this.screaming || this.attacking || this.crawling || this.falling) return;
-    else if (this.moving && idleAnimation) this.idle();
+    /**/ if (this.moving && idleAnimation) this.idle();
     else if (!this.moving && walkAnimation) this.walk();
     else if (!this.running && screamAnimation) this.scream();
   }
@@ -121,8 +151,10 @@ export default class Enemy extends Character
     this.hitting && this.cancelHit();
     // if (!HEADSHOT_KILL) return this.bodyHit();
 
-    !this.updateHitDamage(100.0) &&
+    if (!this.updateHitDamage(100.0)) {
+      this.toggleVisibility(false, 'headshot');
       this.updateAnimation('Idle', 'headshot');
+    }
 
     this.screaming = false;
     this.attacking = false;
@@ -133,14 +165,19 @@ export default class Enemy extends Character
     this.cancelScream();
 
     if (this.updateHitDamage(100.0)) {
-      this.dead && this.falling &&
+      if (this.dead && this.falling) {
+        this.toggleVisibility(false, 'death');
         this.updateAnimation('Idle', 'death');
+      }
 
       return;
     }
 
-    if (this.dead)
-      return this.updateAnimation('Idle', 'death') as unknown as void;
+    if (this.dead) {
+      this.toggleVisibility(false, 'death');
+      this.updateAnimation('Idle', 'death');
+      return;
+    }
 
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
@@ -176,6 +213,7 @@ export default class Enemy extends Character
 
     this.hitting && this.cancelHit();
     if (this.updateHitDamage(100.0)) return;
+    else if (this.dead) this.toggleVisibility(false, 'falling');
 
     this.updateAnimation('Falling', 'falling', 0.1);
     setTimeout(this.onLegHit, 2500);
@@ -238,6 +276,7 @@ export default class Enemy extends Character
   }
 
   public override update (delta: number, player?: Vector3): void {
+    if (!this.visible) return;
     super.update(delta);
     if (this.dead) return;
 
@@ -251,17 +290,23 @@ export default class Enemy extends Character
   private updateHitDamage (damage: number): boolean {
     const lyingDown = this.crawling || this.falling;
     const dead = this.updateHealth(damage);
-    dead && this.removeHitBoxes();
+    if (!lyingDown) return false;
 
-    if (lyingDown) dead
-      ? this.crawling && this.updateAnimation('Idle', 'crawlDeath')
-      : this.playSound('hit', true);
+    if (!dead) this.playSound('hit', true);
 
-    return lyingDown;
+    else if (this.crawling) {
+      this.toggleVisibility(false, 'crawlDeath');
+      this.updateAnimation('Idle', 'crawlDeath');
+    }
+
+    return true;
   }
 
   public override dispose (): void {
+    GameEvents.dispatch('Level::RemoveObject', this.object);
     GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
+    GameEvents.dispatch('Enemy::Death', this.id, true);
+
     this.character?.clear();
     this.removeHitBoxes();
     super.dispose();
@@ -390,6 +435,10 @@ export default class Enemy extends Character
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
+  }
+
+  private get material (): MeshStandardMaterial {
+    return (this.mesh.children[0].children[1] as SkinnedMesh).material as MeshStandardMaterial;
   }
 
   private get animation (): EnemyAnimations {

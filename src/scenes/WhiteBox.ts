@@ -49,7 +49,7 @@ const ORBIT_CONTROLS = false;
 
 export default class WhiteBox
 {
-  private enemy!: Enemy;
+  private enemy?: Enemy;
   private stats?: Stats;
   private controls?: Controls;
   private orbit?: OrbitControls;
@@ -221,10 +221,11 @@ export default class WhiteBox
     document.body.addEventListener('click', this.onPointerLock);
 
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
+    GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
 
-    GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('SFX::Character', this.playCharacter.bind(this));
+    GameEvents.add('Enemy::Death', this.enemyDeath.bind(this));
     GameEvents.add('SFX::Weapon', this.playWeapon.bind(this));
 
     GameEvents.add('Hit::Head', this.enemyHeadHit.bind(this));
@@ -275,7 +276,7 @@ export default class WhiteBox
     const { sfx, uuid, play } = event.data as CharacterSoundConfig;
 
     const character = this.player.collider.uuid === uuid
-      ? this.player.collider : this.enemy.collider;
+      ? this.player.collider : (this.enemy as Enemy).collider;
 
     const sound = character.children.find(audio =>
       audio.userData.name === sfx
@@ -300,15 +301,19 @@ export default class WhiteBox
   }
 
   private enemyHeadHit (): void {
-    this.enemy.headHit();
+    this.enemy?.headHit();
   }
 
   private enemyBodyHit (): void {
-    this.enemy.bodyHit();
+    this.enemy?.bodyHit();
   }
 
   private enemyLegHit (): void {
-    this.enemy.legHit();
+    this.enemy?.legHit();
+  }
+
+  private enemyDeath (): void {
+    delete this.enemy;
   }
 
   private requestPointerLock (): void {
@@ -329,7 +334,7 @@ export default class WhiteBox
 
   private updateCharacters (player: Vector3, delta: number): void {
     this.player.update(delta);
-    this.enemy.update(delta, player);
+    this.enemy?.update(delta, player);
   }
 
   private updateGameObjects (player: Vector3): void {
@@ -350,8 +355,9 @@ export default class WhiteBox
 
     GameEvents.remove('Level::RemoveObject');
     GameEvents.remove('Level::AddObject');
-
     GameEvents.remove('SFX::Character');
+
+    GameEvents.remove('Enemy::Death');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
 
@@ -396,8 +402,8 @@ export default class WhiteBox
     this.orbit?.dispose();
 
     this.player.dispose();
+    this.enemy?.dispose();
     this.pistol.dispose();
-    this.enemy.dispose();
     this.rifle.dispose();
 
     this.removeEvents();

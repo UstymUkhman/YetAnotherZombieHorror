@@ -5,6 +5,7 @@ import type { Matrix4 } from 'three/src/math/Matrix4';
 import type { Directions } from '@/controls';
 import Configs from '@/configs';
 
+type EnemyDeathAnimation   = 'crawlDeath' | 'death' | 'falling' | 'headshot';
 type CharacterMove         = { speed: number, direction: PlayerDirection };
 type PlayerMovement        = { directions: Directions, running: boolean };
 type CharacterConfig       = typeof Configs.Player | typeof Configs.Enemy;

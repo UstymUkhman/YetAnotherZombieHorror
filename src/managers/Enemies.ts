@@ -13,6 +13,7 @@ export default class Enemies
   private readonly onHeadHit = this.headHit.bind(this);
   private readonly onBodyHit = this.bodyHit.bind(this);
   private readonly onLegHit = this.legHit.bind(this);
+  private readonly onDeath = this.death.bind(this);
 
   private enemyModel!: Assets.GLTFModel;
   private readonly enemies: Array<Enemy> = [];
@@ -23,9 +24,24 @@ export default class Enemies
       // this.spawnEnemy();
     });
 
+    this.addEvents();
+  }
+
+  private addEvents (): void {
+    GameEvents.add('Enemy::Death', this.onDeath);
     GameEvents.add('Hit::Head', this.onHeadHit);
     GameEvents.add('Hit::Body', this.onBodyHit);
     GameEvents.add('Hit::Leg', this.onLegHit);
+  }
+
+  private spawnEnemy (): void {
+    const enemy = new Enemy(
+      this.enemyModel, this.envMap,
+      this.enemies.length
+    );
+
+    this.enemies.push(enemy);
+    Physics.setCharacter(enemy.collider);
   }
 
   private headHit (event: GameEvent): void {
@@ -43,20 +59,22 @@ export default class Enemies
     this.enemies[enemy].legHit();
   }
 
-  private spawnEnemy (): void {
-    const enemy = new Enemy(
-      this.enemyModel, this.envMap,
-      this.enemies.length
-    );
-
-    this.enemies.push(enemy);
-    Physics.setCharacter(enemy.collider);
+  private death (event: GameEvent): void {
+    const id = event.data as number;
+    this.enemies.splice(id, 1);
   }
 
   public update (delta: number, player: Vector3): void {
     for (let enemy = this.enemies.length; enemy--;) {
       this.enemies[enemy].update(delta, player);
     }
+  }
+
+  private removeEvents (): void {
+    GameEvents.remove('Enemy::Death');
+    GameEvents.remove('Hit::Head');
+    GameEvents.remove('Hit::Body');
+    GameEvents.remove('Hit::Leg');
   }
 
   public dispose (): void {
@@ -67,6 +85,7 @@ export default class Enemies
 
     this.enemyModel.scene.clear();
     this.enemies.splice(0);
+    this.removeEvents();
   }
 
   public get colliders (): Array<Object3D> {
