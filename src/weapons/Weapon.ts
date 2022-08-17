@@ -149,9 +149,12 @@ export default class Weapon
   }
 
   private getEvent (index: number): string {
-    const hitBox = index % 6;
-    return !hitBox ? 'Hit::Head' :
-      hitBox === 1 ? 'Hit::Body' : 'Hit::Leg';
+    return !index ? 'Hit::Head' : index === 1 ? 'Hit::Body' : 'Hit::Leg';
+  }
+
+  public getDamage (index: number): number {
+    const { head, body, leg } = this.config.damage;
+    return !index ? head : index === 1 ? body : leg;
   }
 
   private updateAimSign (): boolean | void {
@@ -220,13 +223,20 @@ export default class Weapon
       this.playSound('bullet', { stop: false, delay: 0.5 });
 
       if (target > -1) {
-        const event = this.getEvent(target);
+        const index = target % 6;
+        const event = this.getEvent(index);
+        const damage = this.getDamage(index);
+
+        const headshot = !index && Math.random() < this.config.headshot;
         const distance = hitBox.position.distanceToSquared(bullet.position);
 
         setTimeout(() => {
           this.removeBullet(bullet.uuid);
           const { enemy } = hitBox.userData;
-          GameEvents.dispatch(event, enemy);
+
+          GameEvents.dispatch(event, {
+            enemy, damage, headshot
+          });
         }, distance / this.bullet.speed);
       }
 
@@ -314,10 +324,6 @@ export default class Weapon
 
   public get inStock (): number {
     return this.totalAmmo - this.loadedAmmo;
-  }
-
-  public get damage (): number {
-    return this.config.damage;
   }
 
   public get empty (): boolean {

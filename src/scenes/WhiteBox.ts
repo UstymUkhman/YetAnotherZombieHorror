@@ -20,6 +20,7 @@ import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
 import type Character from '@/characters/Character';
 import { Assets } from '@/loaders/AssetsLoader';
+import type { HitData } from '@/weapons/types';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Clock } from 'three/src/core/Clock';
@@ -287,6 +288,25 @@ export default class WhiteBox
       : sound.isPlaying && sound.stop();
   }
 
+  private enemyHeadHit (event: GameEvent): void {
+    const { damage, headshot } = event.data as HitData;
+    const kill = headshot ? 'Headshot!' : `Damage: ${damage}`;
+    console.info(`Enemy::Hit::Head | ${kill}`);
+    this.enemy?.headHit(damage, headshot);
+  }
+
+  private enemyBodyHit (event: GameEvent): void {
+    const { damage } = event.data as HitData;
+    console.info(`Enemy::Hit::Body | Damage: ${damage}`);
+    this.enemy?.bodyHit(damage);
+  }
+
+  private enemyLegHit (event: GameEvent): void {
+    const { damage } = event.data as HitData;
+    console.info(`Enemy::Hit::Leg  | Damage: ${damage}`);
+    this.enemy?.legHit(damage);
+  }
+
   private playWeapon (event: GameEvent): void {
     const { sfx, pistol, play, delay } = event.data as WeaponSoundConfig;
     const weapon = pistol ? this.pistol.object : this.rifle.object;
@@ -298,18 +318,6 @@ export default class WhiteBox
     play
       ? !sound.isPlaying && sound.play(delay)
       : sound.isPlaying && sound.stop();
-  }
-
-  private enemyHeadHit (): void {
-    this.enemy?.headHit();
-  }
-
-  private enemyBodyHit (): void {
-    this.enemy?.bodyHit();
-  }
-
-  private enemyLegHit (): void {
-    this.enemy?.legHit();
   }
 
   private enemyDeath (): void {

@@ -18,5 +18,10 @@
     "Running": [3.5, 1, 0, 0],
     "Falling": [0.75, 1, 0, 0],
     "Crawling": [0.5, 1, 0, 0]
+  },
+
+  "damage": {
+    "hardAttack": 25,
+    "softAttack": 10
   }
 }

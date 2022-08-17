@@ -39,6 +39,12 @@ type SoundOptions = {
   stop: boolean
 };
 
+type HitDamage = {
+  head: number,
+  body: number,
+  leg: number
+};
+
 type Particle = {
   currentSize: number,
   rotation: number,
@@ -47,4 +53,10 @@ type Particle = {
   alpha: number,
   blend: number,
   life: number
+};
+
+type HitData = {
+  headshot: boolean,
+  damage: number,
+  enemy: number
 };

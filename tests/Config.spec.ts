@@ -175,6 +175,22 @@ describe('Configs', () => {
       Configs.Pistol.model.slice(0, Configs.Pistol.model.indexOf('.'))
     );
 
+    expect(typeof Configs.Pistol.damage.head).toStrictEqual('number');
+    expect(Configs.Pistol.damage.head).toBeLessThanOrEqual(100);
+    expect(Configs.Pistol.damage.head).toBeGreaterThan(0);
+
+    expect(typeof Configs.Pistol.damage.body).toStrictEqual('number');
+    expect(Configs.Pistol.damage.body).toBeLessThanOrEqual(100);
+    expect(Configs.Pistol.damage.body).toBeGreaterThan(0);
+
+    expect(typeof Configs.Pistol.damage.leg).toStrictEqual('number');
+    expect(Configs.Pistol.damage.leg).toBeLessThanOrEqual(100);
+    expect(Configs.Pistol.damage.leg).toBeGreaterThan(0);
+
+    expect(typeof Configs.Pistol.headshot).toStrictEqual('number');
+    expect(Configs.Pistol.headshot).toBeLessThanOrEqual(1.0);
+    expect(Configs.Pistol.headshot).toBeGreaterThan(0.0);
+
     expect(Configs.Pistol.position).toStrictEqual(pistolPosition);
     expect(Configs.Pistol.position).toBeInstanceOf(Vector3);
 
@@ -193,7 +209,6 @@ describe('Configs', () => {
     expect(Configs.Pistol.magazine).toStrictEqual(Infinity);
     expect(Configs.Pistol.model).toStrictEqual('1911.glb');
     expect(Configs.Pistol.ammo).toStrictEqual(Infinity);
-    expect(Configs.Pistol.damage).toBeGreaterThan(0);
   });
 
   test('Pistol.bullet', () => {
@@ -239,6 +254,22 @@ describe('Configs', () => {
       Configs.Rifle.model.slice(0, Configs.Rifle.model.indexOf('.'))
     );
 
+    expect(typeof Configs.Rifle.damage.head).toStrictEqual('number');
+    expect(Configs.Rifle.damage.head).toBeLessThanOrEqual(100);
+    expect(Configs.Rifle.damage.head).toBeGreaterThan(0);
+
+    expect(typeof Configs.Rifle.damage.body).toStrictEqual('number');
+    expect(Configs.Rifle.damage.body).toBeLessThanOrEqual(100);
+    expect(Configs.Rifle.damage.body).toBeGreaterThan(0);
+
+    expect(typeof Configs.Rifle.damage.leg).toStrictEqual('number');
+    expect(Configs.Rifle.damage.leg).toBeLessThanOrEqual(100);
+    expect(Configs.Rifle.damage.leg).toBeGreaterThan(0);
+
+    expect(typeof Configs.Rifle.headshot).toStrictEqual('number');
+    expect(Configs.Rifle.headshot).toBeLessThanOrEqual(1.0);
+    expect(Configs.Rifle.headshot).toBeGreaterThan(0.0);
+
     expect(typeof Configs.Rifle.maxStock).toStrictEqual('number');
     expect(typeof Configs.Rifle.ammo).toStrictEqual('number');
 
@@ -266,7 +297,6 @@ describe('Configs', () => {
     expect(Configs.Rifle.model).toStrictEqual('AK47.glb');
     expect(Configs.Rifle.spread).toBeInstanceOf(Vector2);
     expect(Configs.Rifle.magazine).toBeGreaterThan(0);
-    expect(Configs.Rifle.damage).toBeGreaterThan(0);
   });
 
   test('Rifle.bullet', () => {

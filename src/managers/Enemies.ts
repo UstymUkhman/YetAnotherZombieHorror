@@ -5,6 +5,7 @@ import type { GameEvent } from '@/events/GameEvents';
 import type { Assets } from '@/loaders/AssetsLoader';
 
 import { GameEvents } from '@/events/GameEvents';
+import type { HitData } from '@/weapons/types';
 import Enemy from '@/characters/Enemy';
 import Physics from '@/physics';
 
@@ -15,8 +16,8 @@ export default class Enemies
   private readonly onLegHit = this.legHit.bind(this);
   private readonly onDeath = this.death.bind(this);
 
-  private enemyModel!: Assets.GLTFModel;
   private readonly enemies: Array<Enemy> = [];
+  private enemyModel!: Assets.GLTFModel;
 
   public constructor (private readonly envMap: Texture) {
     (new Enemy).loadCharacter(envMap).then(model => {
@@ -45,18 +46,18 @@ export default class Enemies
   }
 
   private headHit (event: GameEvent): void {
-    const enemy = event.data as number;
-    this.enemies[enemy].headHit();
+    const { enemy, damage, headshot } = event.data as HitData;
+    this.enemies[enemy].headHit(damage, headshot);
   }
 
   private bodyHit (event: GameEvent): void {
-    const enemy = event.data as number;
-    this.enemies[enemy].bodyHit();
+    const { enemy, damage } = event.data as HitData;
+    this.enemies[enemy].bodyHit(damage);
   }
 
   private legHit (event: GameEvent): void {
-    const enemy = event.data as number;
-    this.enemies[enemy].legHit();
+    const { enemy, damage } = event.data as HitData;
+    this.enemies[enemy].legHit(damage);
   }
 
   private death (event: GameEvent): void {

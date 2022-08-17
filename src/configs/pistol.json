@@ -3,15 +3,15 @@
   "position": [-10.0, -4.0, 0.25],
   "scale": [13.0, 13.0, 13.0],
   "emissiveIntensity": 0.025,
-
   "spread": [0.002, 0.002],
   "recoil": [0.01, -0.02],
+
   "emissive": 12632256,
   "model": "1911.glb",
   "textures": "1911",
 
+  "headshot": 0.8,
   "magazine": -1,
-  "damage": 10,
   "ammo": -1,
 
   "bullet": {
@@ -32,5 +32,11 @@
   "sounds": {
     "bullet": "weapons/shell.mp3",
     "shoot": "weapons/1911.mp3"
+  },
+
+  "damage": {
+    "head": 100,
+    "body": 10,
+    "leg": 5
   }
 }

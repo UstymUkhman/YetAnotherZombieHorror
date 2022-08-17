@@ -139,6 +139,7 @@ namespace Configs
 
     magazine: getAmmo(PistolData.magazine),
     ammo: getAmmo(PistolData.ammo),
+    headshot: PistolData.headshot,
 
     textures: PistolData.textures,
     emissive: PistolData.emissive,
@@ -177,6 +178,7 @@ namespace Configs
 
     magazine: getAmmo(RifleData.magazine),
     ammo: getAmmo(RifleData.ammo),
+    headshot: RifleData.headshot,
 
     textures: RifleData.textures,
     maxStock: RifleData.maxStock,

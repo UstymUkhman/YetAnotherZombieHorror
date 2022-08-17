@@ -95,6 +95,21 @@ export default class Enemy extends Character
     return this.load(envMap);
   }
 
+  private updateHitDamage (damage: number): boolean {
+    const lyingDown = this.crawling || this.falling;
+    const dead = this.updateHealth(damage);
+    if (!lyingDown) return false;
+
+    if (!dead) this.playSound('hit', true);
+
+    else if (this.crawling) {
+      this.toggleVisibility(false, 'crawlDeath');
+      this.updateAnimation('Idle', 'crawlDeath');
+    }
+
+    return true;
+  }
+
   private toggleAnimation (player: Vector3): void {
     const lyingDown = this.crawling || this.falling;
     if (this.screaming || this.attacking || lyingDown) return;
@@ -109,49 +124,18 @@ export default class Enemy extends Character
     else if (!this.running && screamAnimation) this.scream();
   }
 
-  private cancelScream (): void {
-    if (!this.screaming) return;
-
-    this.animations.scream.stopFading();
-    clearTimeout(this.animTimeout);
-    clearTimeout(this.runTimeout);
-    this.animations.scream.stop();
-  }
-
-  private cancelHit (): void {
-    this.animations.hit.stopFading();
-    clearTimeout(this.animTimeout);
-    clearTimeout(this.hitTimeout);
-    this.animations.hit.stop();
-  }
-
-  private scream (): void {
-    if (this.dead) return;
-    this.cancelHit();
-
-    this.moving = false;
-    this.hitting = false;
-
-    this.screaming = true;
-    this.attacking = false;
-
-    this.runTimeout = setTimeout(() => {
-      this.playSound('scream', true);
-      const delay = this.screamDuration - 250;
-      this.runTimeout = setTimeout(this.run.bind(this), delay);
-    }, this.screamStart * 1e3);
-
-    this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
-  }
-
-  public headHit (): void {
+  public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
     this.cancelScream();
 
     this.hitting && this.cancelHit();
-    // if (!HEADSHOT_KILL) return this.bodyHit();
+    const wontKill = this.life > damage;
 
-    if (!this.updateHitDamage(100.0)) {
+    if (!kill || wontKill) {
+      return this.bodyHit(damage);
+    }
+
+    if (!this.updateHitDamage(damage)) {
       this.toggleVisibility(false, 'headshot');
       this.updateAnimation('Idle', 'headshot');
     }
@@ -160,11 +144,11 @@ export default class Enemy extends Character
     this.attacking = false;
   }
 
-  public bodyHit (): void {
+  public bodyHit (damage: number): void {
     if (this.dead) return;
     this.cancelScream();
 
-    if (this.updateHitDamage(100.0)) {
+    if (this.updateHitDamage(damage)) {
       if (this.dead && this.falling) {
         this.toggleVisibility(false, 'death');
         this.updateAnimation('Idle', 'death');
@@ -207,16 +191,16 @@ export default class Enemy extends Character
     this.hitting = true;
   }
 
-  public legHit (): void {
+  public legHit (damage: number): void {
     if (this.dead) return;
     this.cancelScream();
 
     this.hitting && this.cancelHit();
-    if (this.updateHitDamage(100.0)) return;
+    if (this.updateHitDamage(damage)) return;
     else if (this.dead) this.toggleVisibility(false, 'falling');
 
     this.updateAnimation('Falling', 'falling', 0.1);
-    setTimeout(this.onLegHit, 2500);
+    setTimeout(this.onLegHit, 2500.0);
     this.playSound('hit', true);
 
     this.screaming = false;
@@ -227,6 +211,41 @@ export default class Enemy extends Character
 
     this.hitting = true;
     this.moving = false;
+  }
+
+  private cancelScream (): void {
+    if (!this.screaming) return;
+
+    this.animations.scream.stopFading();
+    clearTimeout(this.animTimeout);
+    clearTimeout(this.runTimeout);
+    this.animations.scream.stop();
+  }
+
+  private cancelHit (): void {
+    this.animations.hit.stopFading();
+    clearTimeout(this.animTimeout);
+    clearTimeout(this.hitTimeout);
+    this.animations.hit.stop();
+  }
+
+  private scream (): void {
+    if (this.dead) return;
+    this.cancelHit();
+
+    this.moving = false;
+    this.hitting = false;
+
+    this.screaming = true;
+    this.attacking = false;
+
+    this.runTimeout = setTimeout(() => {
+      this.playSound('scream', true);
+      const delay = this.screamDuration - 250;
+      this.runTimeout = setTimeout(this.run.bind(this), delay);
+    }, this.screamStart * 1e3);
+
+    this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
   }
 
   private crawl (): void {
@@ -285,21 +304,6 @@ export default class Enemy extends Character
 
     const { x, z } = playerPosition;
     this.character.lookAt(x, 0.0, z);
-  }
-
-  private updateHitDamage (damage: number): boolean {
-    const lyingDown = this.crawling || this.falling;
-    const dead = this.updateHealth(damage);
-    if (!lyingDown) return false;
-
-    if (!dead) this.playSound('hit', true);
-
-    else if (this.crawling) {
-      this.toggleVisibility(false, 'crawlDeath');
-      this.updateAnimation('Idle', 'crawlDeath');
-    }
-
-    return true;
   }
 
   public override dispose (): void {
