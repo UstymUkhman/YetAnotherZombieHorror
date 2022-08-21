@@ -29,6 +29,7 @@ export default class Enemy extends Character
   private readonly walkDistance = 400.0;
   private readonly runDistance = 100.0;
 
+  private crawlTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
   private hitTimeout!: NodeJS.Timeout;
@@ -46,6 +47,9 @@ export default class Enemy extends Character
   private crawling = false;
   private falling = false;
   private visible = false;
+
+  private crawlTime = 0.0;
+  private fallTime = 0.0;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
@@ -70,16 +74,34 @@ export default class Enemy extends Character
   }
 
   private toggleVisibility (show: boolean, death?: EnemyDeathAnimation): void {
-    const delay = death && this.getAnimationDuration(death) + 500 || 0;
-    const easing = show ? 'easeInQuad' : 'easeOutQuad';
+    if (!this.hitBoxes.length) return;
+
     const duration = 1000.0 + +!show * 1500.0;
+    const easing = show ? 'easeInQuad' : 'easeOutQuad';
+    const delay = death && this.getAnimationDuration(death) + 500 || 0;
 
     if (show) this.visible = true;
 
     else {
+      this.cancelHit();
       this.removeHitBoxes();
+
+      clearTimeout(this.crawlTimeout);
       const timeout = delay + duration;
+
+      const crawling = death === 'crawlDeath';
       setTimeout(this.dispose.bind(this), timeout);
+
+      const inPlace = Date.now() - this.crawlTime < 3e3;
+      crawling && inPlace && this.animations.crawling.stop();
+
+      this.animations.idle.stopFading();
+      this.animations.walk.stopFading();
+      this.animations.run.stopFading();
+
+      this.animations.idle.stop();
+      this.animations.walk.stop();
+      this.animations.run.stop();
     }
 
     anime({
@@ -95,8 +117,16 @@ export default class Enemy extends Character
     return this.load(envMap);
   }
 
+  private fallDeadAnimation (animation: EnemyDeathAnimation): void {
+    const fallBack = Date.now() - this.fallTime < 1500;
+    const deathAnimation = this.falling && fallBack;
+
+    deathAnimation && this.updateAnimation('Idle', animation);
+    this.toggleVisibility(false, animation);
+  }
+
   private updateHitDamage (damage: number): boolean {
-    const lyingDown = this.crawling || this.falling;
+    const lyingDown = this.falling || this.crawling;
     const dead = this.updateHealth(damage);
     if (!lyingDown) return false;
 
@@ -111,7 +141,7 @@ export default class Enemy extends Character
   }
 
   private toggleAnimation (player: Vector3): void {
-    const lyingDown = this.crawling || this.falling;
+    const lyingDown = this.falling || this.crawling;
     if (this.screaming || this.attacking || lyingDown) return;
     const distance = this.object.position.distanceToSquared(player);
 
@@ -129,9 +159,8 @@ export default class Enemy extends Character
     this.cancelScream();
 
     this.hitting && this.cancelHit();
-    const wontKill = this.life > damage;
 
-    if (!kill || wontKill) {
+    if (!kill && this.life > damage) {
       return this.bodyHit(damage);
     }
 
@@ -139,6 +168,8 @@ export default class Enemy extends Character
       this.toggleVisibility(false, 'headshot');
       this.updateAnimation('Idle', 'headshot');
     }
+
+    else this.fallDeadAnimation('headshot');
 
     this.screaming = false;
     this.attacking = false;
@@ -149,11 +180,7 @@ export default class Enemy extends Character
     this.cancelScream();
 
     if (this.updateHitDamage(damage)) {
-      if (this.dead && this.falling) {
-        this.toggleVisibility(false, 'death');
-        this.updateAnimation('Idle', 'death');
-      }
-
+      this.dead && this.fallDeadAnimation('death');
       return;
     }
 
@@ -176,6 +203,8 @@ export default class Enemy extends Character
     this.updateAnimation('Idle', 'hit', 0.1);
 
     this.hitTimeout = setTimeout(() => {
+      if (this.dead) return;
+
       this.animTimeout = this.updateAnimation(
         animation, this.previousAnimation, 0.2
       );
@@ -196,12 +225,18 @@ export default class Enemy extends Character
     this.cancelScream();
 
     this.hitting && this.cancelHit();
-    if (this.updateHitDamage(damage)) return;
-    else if (this.dead) this.toggleVisibility(false, 'falling');
 
+    if (this.updateHitDamage(damage)) {
+      this.dead && this.falling &&
+        this.toggleVisibility(false, 'crawlDeath');
+
+      return;
+    }
+
+    this.crawlTimeout = setTimeout(this.onLegHit, 2500.0);
     this.updateAnimation('Falling', 'falling', 0.1);
-    setTimeout(this.onLegHit, 2500.0);
     this.playSound('hit', true);
+    this.fallTime = Date.now();
 
     this.screaming = false;
     this.attacking = false;
@@ -250,7 +285,8 @@ export default class Enemy extends Character
 
   private crawl (): void {
     if (this.dead) return;
-    this.updateAnimation('Crawling', 'crawling', 3.0);
+    this.crawlTime = Date.now();
+    this.crawlTimeout = this.updateAnimation('Crawling', 'crawling', 3.0);
 
     anime({
       targets: this.character.position,
@@ -266,13 +302,16 @@ export default class Enemy extends Character
   }
 
   private idle (): void {
+    if (this.dead) return;
     this.updateAnimation('Idle', 'idle');
+
     this.hitting = false;
     this.running = false;
     this.moving = false;
   }
 
   private walk (): void {
+    if (this.dead) return;
     // if (this.running) return;
     this.updateAnimation('Walking', 'walk');
 
@@ -307,13 +346,13 @@ export default class Enemy extends Character
   }
 
   public override dispose (): void {
-    GameEvents.dispatch('Level::RemoveObject', this.object);
-    GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
-    GameEvents.dispatch('Enemy::Death', this.id, true);
-
-    this.character?.clear();
-    this.removeHitBoxes();
     super.dispose();
+    this.removeHitBoxes();
+    this.character?.clear();
+
+    GameEvents.dispatch('Enemy::Death', this.id, true);
+    GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
+    GameEvents.dispatch('Level::RemoveObject', this.object);
   }
 
   private setDefaultState (): void {

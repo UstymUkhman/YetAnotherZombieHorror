@@ -120,8 +120,8 @@ export default class Rifle extends Weapon
         this.magazine - this.loadedAmmo, this.magazine
       ), this.totalAmmo);
 
-      setTimeout(this.stopReloading.bind(this), 500);
       this.loadedAmmo += toLoad;
+      this.stopReloading();
 
       GameEvents.dispatch('Weapon::Reload', {
         loaded: this.loadedAmmo,
@@ -140,9 +140,12 @@ export default class Rifle extends Weapon
   }
 
   public override stopReloading (): void {
-    this.reloading && this.stopSound('reload');
-    !this.aiming && this.reset();
-    this.reloading = false;
+    setTimeout(() => !this.aiming && this.reset(), 250.0);
+
+    setTimeout(() => {
+      this.reloading && this.stopSound('reload');
+      this.reloading = false;
+    }, 500.0);
   }
 
   public update (player: Vector3): void {

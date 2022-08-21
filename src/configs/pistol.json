@@ -35,7 +35,7 @@
   },
 
   "damage": {
-    "head": 100,
+    "head": 75,
     "body": 10,
     "leg": 5
   }

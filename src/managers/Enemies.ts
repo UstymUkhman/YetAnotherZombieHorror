@@ -22,7 +22,7 @@ export default class Enemies
   public constructor (private readonly envMap: Texture) {
     (new Enemy).loadCharacter(envMap).then(model => {
       this.enemyModel = model;
-      // this.spawnEnemy();
+      this.spawnEnemy();
     });
 
     this.addEvents();
@@ -43,6 +43,7 @@ export default class Enemies
 
     this.enemies.push(enemy);
     Physics.setCharacter(enemy.collider);
+    GameEvents.dispatch('Enemy::Spawn', enemy);
   }
 
   private headHit (event: GameEvent): void {
@@ -63,12 +64,17 @@ export default class Enemies
   private death (event: GameEvent): void {
     const id = event.data as number;
     this.enemies.splice(id, 1);
+    this.spawnEnemy();
   }
 
   public update (delta: number, player: Vector3): void {
     for (let enemy = this.enemies.length; enemy--;) {
       this.enemies[enemy].update(delta, player);
     }
+  }
+
+  public getEnemy (uuid: string): Enemy | undefined {
+    return this.enemies.find(enemy => enemy.collider.uuid === uuid);
   }
 
   private removeEvents (): void {

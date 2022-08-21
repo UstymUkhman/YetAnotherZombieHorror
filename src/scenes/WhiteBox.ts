@@ -10,7 +10,6 @@ import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { AudioListener } from 'three/src/audio/AudioListener';
 import type { Material } from 'three/src/materials/Material';
-
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import { GridHelper } from 'three/src/helpers/GridHelper';
@@ -20,17 +19,16 @@ import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
 import type Character from '@/characters/Character';
 import { Assets } from '@/loaders/AssetsLoader';
-import type { HitData } from '@/weapons/types';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Clock } from 'three/src/core/Clock';
-
+import type Enemy from '@/characters/Enemy';
 import type Weapon from '@/weapons/Weapon';
 import { Fog } from 'three/src/scenes/Fog';
 import Pointer from '@/managers/Pointer';
+import Enemies from '@/managers/Enemies';
 import Player from '@/characters/Player';
 import Viewport from '@/utils/Viewport';
-import Enemy from '@/characters/Enemy';
 import Camera from '@/managers/Camera';
 import { Color } from '@/utils/Color';
 import Pistol from '@/weapons/Pistol';
@@ -50,8 +48,8 @@ const ORBIT_CONTROLS = false;
 
 export default class WhiteBox
 {
-  private enemy?: Enemy;
   private stats?: Stats;
+  private enemies!: Enemies;
   private controls?: Controls;
   private orbit?: OrbitControls;
   private camera!: PerspectiveCamera;
@@ -142,19 +140,15 @@ export default class WhiteBox
   }
 
   private async createCharacters (): Promise<void> {
-    const model = await (new Enemy).loadCharacter(this.envMap);
-    this.enemy = new Enemy(model, this.envMap);
+    this.enemies = new Enemies(this.envMap);
     await this.player.loadCharacter(this.envMap);
 
-    this.player.setPistol(this.enemy.hitBox, this.pistol);
+    this.player.setPistol(this.enemies.colliders, this.pistol);
     Physics.setCharacter(this.player.collider, 90);
-    Physics.setCharacter(this.enemy.collider);
 
     await this.addWeaponSounds(this.pistol);
     await this.addWeaponSounds(this.rifle);
-
     this.addCharacterSounds(this.player);
-    this.addCharacterSounds(this.enemy);
 
     this.player.addRifle(this.rifle);
     this.player.pickRifle();
@@ -226,12 +220,8 @@ export default class WhiteBox
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
 
     GameEvents.add('SFX::Character', this.playCharacter.bind(this));
-    GameEvents.add('Enemy::Death', this.enemyDeath.bind(this));
+    GameEvents.add('Enemy::Spawn', this.onEnemySpawn.bind(this));
     GameEvents.add('SFX::Weapon', this.playWeapon.bind(this));
-
-    GameEvents.add('Hit::Head', this.enemyHeadHit.bind(this));
-    GameEvents.add('Hit::Body', this.enemyBodyHit.bind(this));
-    GameEvents.add('Hit::Leg', this.enemyLegHit.bind(this));
   }
 
   private async loadSounds (sounds: ReadonlyArray<string>): Promise<Array<AudioBuffer>> {
@@ -276,8 +266,9 @@ export default class WhiteBox
   private playCharacter (event: GameEvent): void {
     const { sfx, uuid, play } = event.data as CharacterSoundConfig;
 
-    const character = this.player.collider.uuid === uuid
-      ? this.player.collider : (this.enemy as Enemy).collider;
+    const character = this.player.collider.uuid !== uuid
+      ? (this.enemies.getEnemy(uuid) as Enemy).collider
+      : this.player.collider;
 
     const sound = character.children.find(audio =>
       audio.userData.name === sfx
@@ -288,23 +279,10 @@ export default class WhiteBox
       : sound.isPlaying && sound.stop();
   }
 
-  private enemyHeadHit (event: GameEvent): void {
-    const { damage, headshot } = event.data as HitData;
-    const kill = headshot ? 'Headshot!' : `Damage: ${damage}`;
-    console.info(`Enemy::Hit::Head | ${kill}`);
-    this.enemy?.headHit(damage, headshot);
-  }
-
-  private enemyBodyHit (event: GameEvent): void {
-    const { damage } = event.data as HitData;
-    console.info(`Enemy::Hit::Body | Damage: ${damage}`);
-    this.enemy?.bodyHit(damage);
-  }
-
-  private enemyLegHit (event: GameEvent): void {
-    const { damage } = event.data as HitData;
-    console.info(`Enemy::Hit::Leg  | Damage: ${damage}`);
-    this.enemy?.legHit(damage);
+  private onEnemySpawn (event: GameEvent): void {
+    this.player.setPistol(this.enemies.colliders, this.pistol);
+    const enemy = event.data as Enemy;
+    this.addCharacterSounds(enemy);
   }
 
   private playWeapon (event: GameEvent): void {
@@ -318,10 +296,6 @@ export default class WhiteBox
     play
       ? !sound.isPlaying && sound.play(delay)
       : sound.isPlaying && sound.stop();
-  }
-
-  private enemyDeath (): void {
-    delete this.enemy;
   }
 
   private requestPointerLock (): void {
@@ -342,7 +316,7 @@ export default class WhiteBox
 
   private updateCharacters (player: Vector3, delta: number): void {
     this.player.update(delta);
-    this.enemy?.update(delta, player);
+    this.enemies.update(delta, player);
   }
 
   private updateGameObjects (player: Vector3): void {
@@ -365,13 +339,9 @@ export default class WhiteBox
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('SFX::Character');
 
-    GameEvents.remove('Enemy::Death');
+    GameEvents.remove('Enemy::Spawn');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
-
-    GameEvents.remove('Hit::Head');
-    GameEvents.remove('Hit::Body');
-    GameEvents.remove('Hit::Leg');
   }
 
   private render (): void {
@@ -407,10 +377,10 @@ export default class WhiteBox
     this.controls?.dispose();
     this.renderer.dispose();
     this.pointer.dispose();
+    this.enemies.dispose();
     this.orbit?.dispose();
 
     this.player.dispose();
-    this.enemy?.dispose();
     this.pistol.dispose();
     this.rifle.dispose();
 
