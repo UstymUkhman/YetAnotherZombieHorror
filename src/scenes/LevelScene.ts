@@ -36,6 +36,7 @@ import Configs from '@/configs';
 
 export default class LevelScene
 {
+  private readonly objects: Array<Mesh> = [];
   private readonly physicalLights: boolean;
   private readonly renderer: WebGLRenderer;
 
@@ -121,8 +122,9 @@ export default class LevelScene
 
         material.side = FrontSide;
         material.envMap = skyboxMap;
-
         childMesh.renderOrder = 1.0;
+
+        this.objects.push(childMesh);
         childMesh.receiveShadow = true;
         this.csm?.setupMaterial(material);
 
@@ -302,5 +304,9 @@ export default class LevelScene
 
   public set pause (pause: boolean) {
     this.clouds.pause = pause;
+  }
+
+  public get walls (): Array<Mesh> {
+    return this.objects;
   }
 }

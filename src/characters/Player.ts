@@ -302,12 +302,14 @@ export default class Player extends Character
     return super.updateAnimation(animation, action, duration);
   }
 
-  public setPistol (targets: Array<Object3D>, pistol?: Pistol): void {
+  public setPistol (targets = this.weapon.targets, walls = this.weapon.walls, pistol?: Pistol): void {
     this.setWeapon(false);
 
     if (pistol) {
       this.pistol = pistol;
       this.weapon = this.pistol;
+      this.pistol.walls = walls;
+
       this.weapon.visible = true;
       this.pistol.targets = targets;
       this.hand?.add(this.pistol.object);
@@ -317,15 +319,20 @@ export default class Player extends Character
       this.weapon = (this.pistol as Pistol);
       this.updateRiflePosition(true);
       this.weapon.targets = targets;
+
       this.weapon.visible = true;
+      this.weapon.walls = walls;
       this.rifle.toggle = false;
     }
   }
 
-  private setRifle (targets: Array<Object3D>): void {
-    this.rifle.targets = targets;
+  private setRifle (): void {
+    this.rifle.targets = this.weapon.targets;
+    this.rifle.walls = this.weapon.walls;
+
     this.weapon.visible = false;
     this.rifle.toggle = true;
+
     this.weapon = this.rifle;
     this.setWeapon(true);
   }
@@ -426,10 +433,9 @@ export default class Player extends Character
     const aim = !this.moving && this.equipRifle;
 
     GameEvents.dispatch('Player::Aim', aim, true);
-    const targets = this.weapon.targets;
     this.toggleMesh(true);
 
-    !this.equipRifle ? this.setRifle(targets) : this.setPistol(targets);
+    !this.equipRifle ? this.setRifle() : this.setPistol();
     Camera.updateNearPlane(this.aiming, this.equipRifle, this.running);
   }
 

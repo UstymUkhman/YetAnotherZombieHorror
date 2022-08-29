@@ -21,6 +21,7 @@ import { Color } from '@/utils/Color';
 import Bullet from '@/weapons/Bullet';
 
 import Fire from '@/weapons/Fire';
+import Hole from '@/weapons/Hole';
 import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
@@ -31,28 +32,29 @@ export default class Weapon
 
   private readonly bullet = new Bullet(this.config.bullet);
   private readonly bullets: Map<string, Mesh> = new Map();
+  private readonly hits: Array<Intersection<Mesh>> = [];
+
+  protected readonly magazine = this.config.magazine;
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
   private readonly offset = new Vector3();
   private readonly origin = new Vector3();
 
+  protected loadedAmmo = this.config.ammo;
+  protected totalAmmo = this.config.ammo;
+
   public targets: Array<Object3D> = [];
-  protected readonly magazine: number;
-
+  public walls: Array<Object3D> = [];
   private weapon!: Assets.GLTF;
-  protected loadedAmmo: number;
-  protected totalAmmo: number;
 
-  public aiming = false;
   private aimed = false;
-  private fire!: Fire;
+  public aiming = false;
 
-  public constructor (private readonly config: WeaponConfig) {
-    this.magazine = config.magazine;
-    this.loadedAmmo = config.ammo;
-    this.totalAmmo = config.ammo;
-  }
+  private fire!: Fire;
+  private hole!: Hole;
+
+  public constructor (private readonly config: WeaponConfig) { }
 
   protected async load (envMap: Texture): Promise<Assets.GLTF> {
     const { emissive = Color.BLACK, emissiveIntensity = 1.0 } = this.config;
@@ -90,6 +92,11 @@ export default class Weapon
       this.weapon, this.config.textures
     );
 
+    this.hole = new Hole(
+      this.config.textures,
+      this.config.bullet.scale
+    );
+
     return clone;
   }
 
@@ -115,12 +122,11 @@ export default class Weapon
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected toggleVisibility (hideDelay: number, showDelay: number): void { return; }
 
-  private updateRaycaster (shoot = false): Array<Intersection<Mesh>> {
+  private updateRaycaster (spread = true, targets = this.targets): void {
     this.camera.setFromMatrixPosition(CameraObject.matrixWorld);
 
-    this.raycaster.ray.origin.copy(shoot
-      ? this.camera.clone().add(this.spread)
-      : this.camera
+    this.raycaster.ray.origin.copy(
+      spread ? this.camera.clone().add(this.spread) : this.camera
     );
 
     this.raycaster.ray.direction.copy(Vector.FORWARD)
@@ -128,7 +134,8 @@ export default class Weapon
       .sub(this.camera)
       .normalize();
 
-    return this.raycaster.intersectObjects(this.targets);
+    this.hits.splice(0) &&
+      this.raycaster.intersectObjects(targets, false, this.hits);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -160,7 +167,8 @@ export default class Weapon
   private updateAimSign (): boolean | void {
     if (!this.aiming) return this.aimed && this.toggleAimSign(false);
 
-    const aimed = !!this.updateRaycaster().length;
+    this.updateRaycaster(false);
+    const aimed = !!this.hits.length;
     this.aimed !== aimed && this.toggleAimSign(aimed);
   }
 
@@ -192,58 +200,60 @@ export default class Weapon
     !this.fire.update() && RAF.remove(this.onShoot);
 
     this.bullets.forEach((bullet, uuid) => {
-      if (Date.now() < bullet.userData.lifeTime) {
+      if (Date.now() < bullet.userData.lifeTime)
         this.bullet.update(bullet);
-      }
 
       else this.removeBullet(uuid);
     });
   }
 
   public shoot (): Recoil | null {
-    if (this.empty) this.playSound('empty', { stop: false });
+    if (this.empty) {
+      this.playSound('empty', { stop: false });
+      return null;
+    }
 
-    else {
-      const target = this.target;
-      const { ray } = this.raycaster;
-      const hitBox = this.targets[target];
-      const recoil = this.animateRecoil();
+    const target = this.target;
+    const { ray } = this.raycaster;
+    const hitBox = this.targets[target];
+    const recoil = this.animateRecoil();
 
-      const bullet = this.bullet.shoot(ray, this.aiming);
-      GameEvents.dispatch('Player::Shoot', true, true);
+    const bullet = this.bullet.shoot(ray, this.aiming);
+    GameEvents.dispatch('Player::Shoot', true, true);
 
-      !this.bullets.size && RAF.add(this.onShoot);
-      this.bullets.set(bullet.uuid, bullet);
+    !this.bullets.size && RAF.add(this.onShoot);
+    this.bullets.set(bullet.uuid, bullet);
 
-      this.fire.addParticles();
-      this.loadedAmmo--;
-      this.totalAmmo--;
+    this.fire.addParticles();
+    this.loadedAmmo--;
+    this.totalAmmo--;
 
-      this.playSound('shoot', { stop: true });
-      this.playSound('bullet', { stop: false, delay: 0.5 });
+    this.playSound('shoot', { stop: true });
+    this.playSound('bullet', { stop: false, delay: 0.5 });
 
-      if (target > -1) {
-        const index = target % 6;
-        const event = this.getEvent(index);
-        const damage = this.getDamage(index);
-
-        const headshot = !index && Math.random() < this.config.headshot;
-        const distance = hitBox.position.distanceToSquared(bullet.position);
-
-        setTimeout(() => {
-          this.removeBullet(bullet.uuid);
-          const { enemy } = hitBox.userData;
-
-          GameEvents.dispatch(event, {
-            enemy, damage, headshot
-          });
-        }, distance / this.bullet.speed);
-      }
-
+    if (target < 0) {
+      this.updateRaycaster(false, this.walls);
+      this.hits.length && this.hole.show(this.hits[0]);
       return recoil;
     }
 
-    return null;
+    const index = target % 6;
+    const event = this.getEvent(index);
+    const damage = this.getDamage(index);
+
+    const headshot = !index && Math.random() < this.config.headshot;
+    // const distance = hitBox.position.distanceToSquared(bullet.position);
+
+    // setTimeout(() => {
+    this.removeBullet(bullet.uuid);
+    const { enemy } = hitBox.userData;
+
+    GameEvents.dispatch(event, {
+      enemy, damage, headshot
+    });
+    // }, distance / this.bullet.speed);
+
+    return recoil;
   }
 
   public startReloading (): void { return; }
@@ -275,8 +285,11 @@ export default class Weapon
 
     this.targets.splice(0);
     this.bullet.dispose();
+    this.walls.splice(0);
+
     this.weapon.clear();
     this.fire.dispose();
+    this.hole.dispose();
   }
 
   public set visible (visible: boolean) {
@@ -314,12 +327,13 @@ export default class Weapon
   }
 
   private get target (): number {
-    const hitBoxes = this.updateRaycaster(true);
+    this.updateRaycaster();
     this.weapon.getWorldPosition(this.origin);
 
     this.origin.y += this.originOffset;
     this.raycaster.ray.origin.copy(this.origin);
-    return hitBoxes.length ? this.targets.indexOf(hitBoxes[0].object) : -1;
+
+    return this.hits.length ? this.targets.indexOf(this.hits[0].object) : -1;
   }
 
   public get inStock (): number {

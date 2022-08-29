@@ -141,4 +141,4 @@
   - *Effects:*
 
     - [SardineFish](https://github.com/SardineFish) - [Screen Raindrops](https://cdn-lab.sardinefish.com/rain/)
-    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8) | [Custom Blending](https://www.youtube.com/watch?v=AxopC4yW4uY)
+    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8) | [Custom Blending](https://www.youtube.com/watch?v=AxopC4yW4uY) | [Decals](https://www.youtube.com/watch?v=ZSTgk7JT668)

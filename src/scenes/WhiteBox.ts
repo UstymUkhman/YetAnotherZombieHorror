@@ -143,7 +143,7 @@ export default class WhiteBox
     this.enemies = new Enemies(this.envMap);
     await this.player.loadCharacter(this.envMap);
 
-    this.player.setPistol(this.enemies.colliders, this.pistol);
+    this.player.setPistol(this.enemies.colliders, [], this.pistol);
     Physics.setCharacter(this.player.collider, 90);
 
     await this.addWeaponSounds(this.pistol);
@@ -280,7 +280,7 @@ export default class WhiteBox
   }
 
   private onEnemySpawn (event: GameEvent): void {
-    this.player.setPistol(this.enemies.colliders, this.pistol);
+    this.player.setPistol(this.enemies.colliders, [], this.pistol);
     const enemy = event.data as Enemy;
     this.addCharacterSounds(enemy);
   }
@@ -378,8 +378,8 @@ export default class WhiteBox
     this.renderer.dispose();
     this.pointer.dispose();
     this.enemies.dispose();
-    this.orbit?.dispose();
 
+    this.orbit?.dispose();
     this.player.dispose();
     this.pistol.dispose();
     this.rifle.dispose();
