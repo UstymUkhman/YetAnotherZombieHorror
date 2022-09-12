@@ -18,6 +18,7 @@ export default class Enemies
 
   private readonly enemies: Array<Enemy> = [];
   private enemyModel!: Assets.GLTFModel;
+  private spawnedEnemies = 0.0;
 
   public constructor (private readonly envMap: Texture) {
     (new Enemy).loadCharacter(envMap).then(model => {
@@ -38,7 +39,7 @@ export default class Enemies
   private spawnEnemy (): void {
     const enemy = new Enemy(
       this.enemyModel, this.envMap,
-      this.enemies.length
+      this.spawnedEnemies++
     );
 
     this.enemies.push(enemy);
@@ -48,22 +49,25 @@ export default class Enemies
 
   private headHit (event: GameEvent): void {
     const { enemy, damage, headshot } = event.data as HitData;
-    this.enemies[enemy].headHit(damage, headshot);
+    const index = this.getEnemyIndex(enemy);
+    this.enemies[index].headHit(damage, headshot);
   }
 
   private bodyHit (event: GameEvent): void {
     const { enemy, damage } = event.data as HitData;
-    this.enemies[enemy].bodyHit(damage);
+    const index = this.getEnemyIndex(enemy);
+    this.enemies[index].bodyHit(damage);
   }
 
   private legHit (event: GameEvent): void {
     const { enemy, damage } = event.data as HitData;
-    this.enemies[enemy].legHit(damage);
+    const index = this.getEnemyIndex(enemy);
+    this.enemies[index].legHit(damage);
   }
 
   private death (event: GameEvent): void {
-    const id = event.data as number;
-    this.enemies.splice(id, 1);
+    const index = this.getEnemyIndex(event.data as number);
+    this.enemies.splice(index, 1);
     this.spawnEnemy();
   }
 
@@ -75,6 +79,10 @@ export default class Enemies
 
   public getEnemy (uuid: string): Enemy | undefined {
     return this.enemies.find(enemy => enemy.collider.uuid === uuid);
+  }
+
+  public getEnemyIndex (id: number): number {
+    return this.enemies.findIndex(enemy => enemy.index === id);
   }
 
   private removeEvents (): void {

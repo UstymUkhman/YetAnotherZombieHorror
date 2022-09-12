@@ -148,9 +148,10 @@ export default class Player extends Character
   }
 
   public move (directions: Directions, now = Date.now()): void {
-    const force = isFinite(now);
     if (now - this.moveTime < 350) return;
-    if (force && this.blockingAnimation()) return;
+    this.rifle.resetDelay = this.reloading;
+
+    if (isFinite(now) && this.blockingAnimation()) return;
 
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
@@ -171,6 +172,7 @@ export default class Player extends Character
 
   public run (directions: Directions, running: boolean): void {
     if (this.running === running) return;
+    this.rifle.resetDelay = this.reloading;
     if (this.blockingAnimation()) return;
 
     const run = this.getWeaponAnimation('Run');
@@ -302,38 +304,39 @@ export default class Player extends Character
     return super.updateAnimation(animation, action, duration);
   }
 
-  public setPistol (targets = this.weapon.targets, walls = this.weapon.walls, pistol?: Pistol): void {
+  public setPistol (walls = this.weapon.walls, pistol?: Pistol): void {
     this.setWeapon(false);
 
     if (pistol) {
       this.pistol = pistol;
       this.weapon = this.pistol;
-      this.pistol.walls = walls;
+      this.weapon.walls = walls;
 
       this.weapon.visible = true;
-      this.pistol.targets = targets;
-      this.hand?.add(this.pistol.object);
+      this.hand?.add(this.weapon.object);
     }
 
     else {
+      const targets = this.weapon.targets;
       this.weapon = (this.pistol as Pistol);
       this.updateRiflePosition(true);
-      this.weapon.targets = targets;
 
       this.weapon.visible = true;
       this.weapon.walls = walls;
       this.rifle.toggle = false;
+      this.setTargets(targets);
     }
   }
 
   private setRifle (): void {
-    this.rifle.targets = this.weapon.targets;
     this.rifle.walls = this.weapon.walls;
+    const targets = this.weapon.targets;
 
     this.weapon.visible = false;
     this.rifle.toggle = true;
-
     this.weapon = this.rifle;
+
+    this.setTargets(targets);
     this.setWeapon(true);
   }
 
@@ -355,6 +358,10 @@ export default class Player extends Character
 
     this.hasRifle = this.equipRifle || rifle;
     this.equipRifle = rifle;
+  }
+
+  public setTargets (targets: Array<Object3D>): void {
+    this.weapon.targets = targets;
   }
 
   public changeCamera (view: boolean): void {

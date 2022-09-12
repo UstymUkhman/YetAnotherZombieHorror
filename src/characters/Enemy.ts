@@ -104,6 +104,10 @@ export default class Enemy extends Character
       this.animations.run.stop();
     }
 
+    setTimeout(() =>
+      GameEvents.dispatch('Enemy::Active', show, true)
+    , +show * duration);
+
     anime({
       targets: this.material,
       opacity: +show,
@@ -491,5 +495,9 @@ export default class Enemy extends Character
 
   public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
+  }
+
+  public get index (): number {
+    return this.id;
   }
 }

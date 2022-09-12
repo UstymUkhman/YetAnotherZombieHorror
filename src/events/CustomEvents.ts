@@ -30,7 +30,11 @@ export default class CustomEvents
   }
 
   protected dispose (): void {
-    for (const [name] of this.events)
+    for (const [name] of this.events) {
       this.remove(name);
+    }
+
+    this.callbacks.clear();
+    this.events.clear();
   }
 }

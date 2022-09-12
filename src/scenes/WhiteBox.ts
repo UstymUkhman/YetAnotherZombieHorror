@@ -142,12 +142,12 @@ export default class WhiteBox
   private async createCharacters (): Promise<void> {
     this.enemies = new Enemies(this.envMap);
     await this.player.loadCharacter(this.envMap);
-
-    this.player.setPistol(this.enemies.colliders, [], this.pistol);
     Physics.setCharacter(this.player.collider, 90);
 
     await this.addWeaponSounds(this.pistol);
     await this.addWeaponSounds(this.rifle);
+
+    this.player.setPistol([], this.pistol);
     this.addCharacterSounds(this.player);
 
     this.player.addRifle(this.rifle);
@@ -220,6 +220,7 @@ export default class WhiteBox
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
 
     GameEvents.add('SFX::Character', this.playCharacter.bind(this));
+    GameEvents.add('Enemy::Active', this.onEnemyActive.bind(this));
     GameEvents.add('Enemy::Spawn', this.onEnemySpawn.bind(this));
     GameEvents.add('SFX::Weapon', this.playWeapon.bind(this));
   }
@@ -263,6 +264,10 @@ export default class WhiteBox
     });
   }
 
+  private onEnemyActive (): void {
+    this.player.setTargets(this.enemies.colliders);
+  }
+
   private playCharacter (event: GameEvent): void {
     const { sfx, uuid, play } = event.data as CharacterSoundConfig;
 
@@ -280,7 +285,6 @@ export default class WhiteBox
   }
 
   private onEnemySpawn (event: GameEvent): void {
-    this.player.setPistol(this.enemies.colliders, [], this.pistol);
     const enemy = event.data as Enemy;
     this.addCharacterSounds(enemy);
   }
@@ -339,6 +343,7 @@ export default class WhiteBox
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('SFX::Character');
 
+    GameEvents.remove('Enemy::Active');
     GameEvents.remove('Enemy::Spawn');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');

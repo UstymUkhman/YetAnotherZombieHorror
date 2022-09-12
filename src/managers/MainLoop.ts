@@ -60,13 +60,17 @@ export default class MainLoop
       setTimeout(this.spawnRifle.bind(this), 1e4);
       this.player.pickRifle();
     });
+
+    GameEvents.add('Enemy::Active', () =>
+      this.player.setTargets(this.enemies.colliders)
+    );
   }
 
   private async onLoad (event: GameEvent): Promise<void> {
     const envMap = event.data as Texture;
 
     this.player.loadCharacter(envMap).then(() => {
-      this.player.setPistol(this.enemies.colliders, this.level.walls, this.pistol);
+      this.player.setPistol(this.level.walls, this.pistol);
       Physics.setCharacter(this.player.collider, 90);
       this.player.addRifle(this.rifle);
 
@@ -132,6 +136,7 @@ export default class MainLoop
     this.worker?.remove('Level::GetRandomCoord');
     GameEvents.remove('Player::PickRifle');
     GameEvents.remove('Level::EnvMap');
+    GameEvents.remove('Enemy::Active');
   }
 
   public dispose (): void {

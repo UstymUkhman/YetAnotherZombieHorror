@@ -34,6 +34,7 @@ export default class Rifle extends Weapon
   private clone!: Assets.GLTF;
   private spine!: Assets.GLTF;
 
+  private reloadReset = false;
   private reloading = false;
   private appended = false;
 
@@ -112,7 +113,7 @@ export default class Rifle extends Weapon
     if (ammo) {
       this.playSound('pick', { stop: false });
       const totalAmmo = Math.min(this.inStock + ammo, this.maxStock);
-      this.totalAmmo = this.empty ? totalAmmo : totalAmmo + this.loadedAmmo;
+      this.totalAmmo = totalAmmo + +!this.empty * this.loadedAmmo;
     }
 
     else {
@@ -140,10 +141,13 @@ export default class Rifle extends Weapon
   }
 
   public override stopReloading (): void {
-    setTimeout(() => !this.aiming && this.reset(), 250.0);
+    this.reloadReset && !this.aiming && this.reset();
 
     setTimeout(() => {
+      !this.reloadReset && !this.aiming && this.reset();
       this.reloading && this.stopSound('reload');
+
+      this.reloadReset = false;
       this.reloading = false;
     }, 500.0);
   }
@@ -174,7 +178,6 @@ export default class Rifle extends Weapon
 
     this.clone.visible = true;
     this.light.visible = true;
-
     this.spawnTime = 0.0;
     this.spawned = true;
   }
@@ -206,6 +209,10 @@ export default class Rifle extends Weapon
     this.light.dispose();
     this.clone.clear();
     super.dispose();
+  }
+
+  public set resetDelay (delay: boolean) {
+    this.reloadReset = delay;
   }
 
   public set toggle (equip: boolean) {
