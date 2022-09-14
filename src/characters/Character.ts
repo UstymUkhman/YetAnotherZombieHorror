@@ -2,20 +2,18 @@ import type { CharacterConfig, CharacterAnimation, CharacterSound, CharacterMove
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
-
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
 import type { Texture } from 'three/src/textures/Texture';
 
-import { DynamicCollider } from '@/utils/Material';
 import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
-
 import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
-
 import { Line3 } from 'three/src/math/Line3';
+
+import { Material } from '@/utils/Material';
 import { camelCase } from '@/utils/String';
 import { Vector } from '@/utils/Vector';
 import Physics from '@/physics';
@@ -51,7 +49,7 @@ export default class Character
 
     this.object = new Mesh(
       new RoundedBoxGeometry(x, y, x, 2, 0.5),
-      DynamicCollider
+      Material.DynamicCollider
     );
 
     this.object.userData = {

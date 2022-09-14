@@ -83,8 +83,8 @@ export default class Fire
 
   private async createParticles (weapon: Assets.GLTF, textures: string): Promise<void> {
     // Development imports:
-    /* const vertFire = await (await import('../shaders/shot/fire.vert')).default;
-    const fragFire = await (await import('../shaders/shot/fire.frag')).default; */
+    /* const vertFire = (await import('../shaders/shot/fire.vert')).default;
+    const fragFire = (await import('../shaders/shot/fire.frag')).default; */
 
     const smoke = await Assets.Loader.loadTexture(`${textures}/smoke.png`);
     const fire = await Assets.Loader.loadTexture(`${textures}/fire.png`);

@@ -32,10 +32,10 @@ export default class Fog extends FogExp2
 
   private async loadShaders (): Promise<void> {
     // Development imports:
-    /* const parsFrag = await (await import('../shaders/fog/pars.frag')).default;
-    const parsVert = await (await import('../shaders/fog/pars.vert')).default;
-    const fogFrag = await (await import('../shaders/fog/main.frag')).default;
-    const fogVert = await (await import('../shaders/fog/main.vert')).default; */
+    /* const parsFrag = (await import('../shaders/fog/pars.frag')).default;
+    const parsVert = (await import('../shaders/fog/pars.vert')).default;
+    const fogFrag = (await import('../shaders/fog/main.frag')).default;
+    const fogVert = (await import('../shaders/fog/main.vert')).default; */
 
     // Production imports:
     const parsFrag = await Assets.Loader.loadShader('fog/pars.frag');

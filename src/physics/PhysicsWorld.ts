@@ -1,7 +1,5 @@
 import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
-import { StaticCollider, Transparent } from '@/utils/Material';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
-
 import type { BoundsOptions } from '@/physics/types';
 import type { LevelCoords } from '@/scenes/types';
 import { GameEvents } from '@/events/GameEvents';
@@ -9,6 +7,7 @@ import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Euler } from 'three/src/math/Euler';
+import { Material } from '@/utils/Material';
 import { PI } from '@/utils/Number';
 
 export default abstract class PhysicsWorld
@@ -94,7 +93,7 @@ export default abstract class PhysicsWorld
   public createGround (min: LevelCoords, max: LevelCoords): void {
     this.sizeVector.set(Math.abs(min[0] - max[0]), this.MIN_SIZE, Math.abs(min[1] - max[1]));
     this.positionVector.set((min[0] + max[0]) / 2, 0, (min[1] + max[1]) / 2);
-    this.createStaticCollider(Transparent);
+    this.createStaticCollider(Material.Transparent);
   }
 
   public createBounds (bounds: BoundsOptions, sidewalk?: BoundsOptions): void {
@@ -105,7 +104,7 @@ export default abstract class PhysicsWorld
 
     for (let b = 0; b < bounds.borders.length; b++) {
       this.createBound(border[b], border[b + 1], bounds.height, bounds.y);
-      this.createStaticCollider(StaticCollider);
+      this.createStaticCollider(Material.StaticCollider);
 
       borderPosition.copy(this.positionVector);
       walk && this.createBound(walk[b], walk[b + 1], sidewalk?.height as number, sidewalk?.y);
@@ -120,7 +119,7 @@ export default abstract class PhysicsWorld
       this.sizeVector.z === this.MIN_SIZE ? this.sizeVector.setZ(distance) : this.sizeVector.setX(distance);
       this.positionVector.x < 0 ? this.sizeVector.z *= lengthScale : this.sizeVector.x *= lengthScale;
 
-      this.createStaticCollider(StaticCollider);
+      this.createStaticCollider(Material.StaticCollider);
     }
   }
 }

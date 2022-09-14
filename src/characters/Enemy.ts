@@ -15,7 +15,7 @@ import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
-import { HitBox } from '@/utils/Material';
+import { Material } from '@/utils/Material';
 
 import Configs from '@/configs';
 import anime from 'animejs';
@@ -414,7 +414,7 @@ export default class Enemy extends Character
 
     const headHitBox = new Mesh(
       new BoxGeometry(15, 10, 22),
-      HitBox.clone()
+      Material.HitBox.clone()
     );
 
     headHitBox.position.y += 9.5;
@@ -430,7 +430,7 @@ export default class Enemy extends Character
 
     const bodyHitBox = new Mesh(
       new RoundedBoxGeometry(38, 95, 40, 2, 25),
-      HitBox.clone()
+      Material.HitBox.clone()
     );
 
     bodyHitBox.position.y += 15.0;
@@ -450,12 +450,12 @@ export default class Enemy extends Character
 
     const upperLeg = new Mesh(
       new BoxGeometry(16, 50, 15),
-      HitBox.clone()
+      Material.HitBox.clone()
     );
 
     const lowerLeg = new Mesh(
       new BoxGeometry(10, 50, 10),
-      HitBox.clone()
+      Material.HitBox.clone()
     );
 
     lowerLeg.userData.enemy = this.id;

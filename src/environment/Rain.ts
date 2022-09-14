@@ -84,8 +84,8 @@ export default class Rain
     const { width, height } = this.renderer.domElement;
 
     // Development imports:
-    /* const vertRain = await (await import('../shaders/rain/main.vert')).default;
-    const fragRain = await (await import('../shaders/rain/main.frag')).default; */
+    /* const vertRain = (await import('../shaders/rain/main.vert')).default;
+    const fragRain = (await import('../shaders/rain/main.frag')).default; */
 
     // Production imports:
     const vertRain = await Assets.Loader.loadShader('rain/main.vert');

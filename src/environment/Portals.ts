@@ -66,8 +66,8 @@ export default class Portals
 
   private async createMaterial (): Promise<ShaderMaterial> {
     // Development imports:
-    /* const vertPortal = await (await import('../shaders/portal/main.vert')).default;
-    const fragPortal = await (await import('../shaders/portal/main.frag')).default; */
+    /* const vertPortal = (await import('../shaders/portal/main.vert')).default;
+    const fragPortal = (await import('../shaders/portal/main.frag')).default; */
 
     // Production imports:
     const vertPortal = await Assets.Loader.loadShader('portal/main.vert');

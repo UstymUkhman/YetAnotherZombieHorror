@@ -1,18 +1,15 @@
 import type { CharacterSoundConfig, CharacterSound } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
 import { PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
+import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { AudioListener } from 'three/src/audio/AudioListener';
-import type { Material } from 'three/src/materials/Material';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
-import { GridHelper } from 'three/src/helpers/GridHelper';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
@@ -22,6 +19,7 @@ import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Clock } from 'three/src/core/Clock';
+import { Material } from '@/utils/Material';
 import type Enemy from '@/characters/Enemy';
 import type Weapon from '@/weapons/Weapon';
 import { Fog } from 'three/src/scenes/Fog';
@@ -33,18 +31,14 @@ import Camera from '@/managers/Camera';
 import { Color } from '@/utils/Color';
 import Pistol from '@/weapons/Pistol';
 import Rifle from '@/weapons/Rifle';
+import { PI } from '@/utils/Number';
 import Controls from '@/controls';
 import RAF from '@/managers/RAF';
 import Physics from '@/physics';
 import Configs from '@/configs';
 
-interface GridMaterial extends Material {
-  transparent: boolean
-  opacity: number
-}
-
-const SCENE_SIZE = 500.0;
 const ORBIT_CONTROLS = false;
+const SCENE_SIZE = 500.0;
 
 export default class WhiteBox
 {
@@ -99,44 +93,36 @@ export default class WhiteBox
   }
 
   private createLights (): void {
-    const directional = new DirectionalLight(Color.WHITE, 1);
-    const ambient = new AmbientLight(Color.WHITE);
+    const directional = new DirectionalLight(Color.WHITE);
+    const ambient = new AmbientLight(Color.WHITE, 0.25);
 
-    directional.position.set(-5, 10, 15);
+    directional.position.set(-2.5, 12.5, 20.0);
+
+    directional.shadow.camera.bottom = -25.0;
+    directional.shadow.camera.right = 25.0;
+    directional.shadow.camera.left = -25.0;
+    directional.shadow.camera.top = 25.0;
+
+    directional.shadow.camera.near = 1.0;
+    directional.shadow.camera.far = 25.0;
+
+    directional.shadow.mapSize.x = 2048;
+    directional.shadow.mapSize.y = 2048;
+
     directional.castShadow = true;
-
-    directional.shadow.camera.bottom = -25;
-    directional.shadow.camera.right = 25;
-    directional.shadow.camera.left = -25;
-    directional.shadow.camera.top = 15;
-
-    directional.shadow.mapSize.x = 1024;
-    directional.shadow.mapSize.y = 1024;
-
-    directional.shadow.camera.near = 1;
-    directional.shadow.camera.far = 50;
-
     this.scene.add(directional);
     this.scene.add(ambient);
   }
 
   private createGround (): void {
     const ground = new Mesh(
-      new BoxGeometry(SCENE_SIZE, SCENE_SIZE, 1.0),
-      new MeshPhongMaterial({
-        color: Color.WHITE,
-        depthWrite: false
-      })
+      new PlaneGeometry(SCENE_SIZE, SCENE_SIZE),
+      new Material.Ground({ color: Color.WHITE })
     );
 
-    ground.rotateX(-Math.PI / 2);
     ground.receiveShadow = true;
+    ground.rotateX(-PI.d2);
     this.scene.add(ground);
-
-    const grid = new GridHelper(SCENE_SIZE, SCENE_SIZE * 0.5, 0.0, 0.0);
-    (grid.material as GridMaterial).transparent = true;
-    (grid.material as GridMaterial).opacity = 0.25;
-    this.scene.add(grid);
   }
 
   private async createCharacters (): Promise<void> {

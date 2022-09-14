@@ -52,8 +52,8 @@ export default class Bullet
 
   private async createPath (): Promise<Mesh> {
     // Development imports:
-    /* const vertPath = await (await import('../shaders/main.vert')).default;
-    const fragPath = await (await import('../shaders/shot/bullet.frag')).default; */
+    /* const vertPath = (await import('../shaders/main.vert')).default;
+    const fragPath = (await import('../shaders/shot/bullet.frag')).default; */
 
     // Production imports:
     const vertPath = await Assets.Loader.loadShader('main.vert');
