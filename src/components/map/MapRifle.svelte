@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PI, DELTA_FRAME, easeOutSine } from '@/utils/Number';
+  import type { LevelCoords } from '@/scenes/types';
 
   export let context: CanvasRenderingContext2D;
   import { onDestroy } from 'svelte';

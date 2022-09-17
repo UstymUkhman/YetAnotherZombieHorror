@@ -20,15 +20,21 @@ import { Material } from '@/utils/Material';
 import Configs from '@/configs';
 import anime from 'animejs';
 
+// Can lose player (pass to walk/idle animation after screaming):
+// Useful when setting game difficulty:
+const CAN_LOSE = true;
+
 export default class Enemy extends Character
 {
   private readonly onLegHit = this.crawl.bind(this);
   protected override lastAnimation = 'idle';
   private hitBoxes: Array<Object3D> = [];
 
-  private readonly walkDistance = 400.0;
-  private readonly runDistance = 100.0;
+  private readonly attackDistance = 2.5;
+  private readonly walkDistance = 500.0;
+  private readonly runDistance = 250.0;
 
+  // private attackTimeout!: NodeJS.Timeout;
   private crawlTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
@@ -146,20 +152,26 @@ export default class Enemy extends Character
 
   private toggleAnimation (player: Vector3): void {
     const lyingDown = this.falling || this.crawling;
-    if (this.screaming || this.attacking || lyingDown) return;
+    const aggressive = this.screaming || this.attacking;
+
+    if (this.animationUpdate || aggressive || lyingDown) return;
     const distance = this.object.position.distanceToSquared(player);
+
+    distance < this.attackDistance && this.attack();
+    if (this.attacking || (!CAN_LOSE && this.running)) return;
 
     const idleAnimation = distance > this.walkDistance;
     const screamAnimation = distance < this.runDistance;
     const walkAnimation = !idleAnimation && !screamAnimation;
 
-    /**/ if (this.moving && idleAnimation) this.idle();
-    else if (!this.moving && walkAnimation) this.walk();
-    else if (!this.running && screamAnimation) this.scream();
+    /**/ if (!this.moving && walkAnimation) this.walk();
+    else if (CAN_LOSE && this.moving && idleAnimation) this.idle();
+    else if (!(CAN_LOSE && this.running) && screamAnimation) this.scream();
   }
 
   public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
+    // this.cancelAttack();
     this.cancelScream();
 
     this.hitting && this.cancelHit();
@@ -181,6 +193,7 @@ export default class Enemy extends Character
 
   public bodyHit (damage: number): void {
     if (this.dead) return;
+    // this.cancelAttack();
     this.cancelScream();
 
     if (this.updateHitDamage(damage)) {
@@ -194,6 +207,9 @@ export default class Enemy extends Character
       return;
     }
 
+    // Immune while attacking:
+    else if (this.attacking) return;
+
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
 
@@ -204,7 +220,7 @@ export default class Enemy extends Character
     }
 
     this.animations.hit.time = this.hitStart;
-    this.updateAnimation('Idle', 'hit', 0.1);
+    this.updateAnimation('Idle', 'hit', 0.15);
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead) return;
@@ -214,6 +230,7 @@ export default class Enemy extends Character
       );
 
       this.hitTimeout = setTimeout(() => {
+        // this.attacking && this.attack();
         this.screaming && this.run();
         this.hitting = false;
       }, 200);
@@ -226,6 +243,7 @@ export default class Enemy extends Character
 
   public legHit (damage: number): void {
     if (this.dead) return;
+    // this.cancelAttack();
     this.cancelScream();
 
     this.hitting && this.cancelHit();
@@ -251,6 +269,19 @@ export default class Enemy extends Character
     this.hitting = true;
     this.moving = false;
   }
+
+  /* private cancelAttack (): void {
+    if (!this.attacking) return;
+
+    this.animations.softAttack.stopFading();
+    this.animations.hardAttack.stopFading();
+
+    this.animations.softAttack.stop();
+    this.animations.hardAttack.stop();
+
+    clearTimeout(this.attackTimeout);
+    clearTimeout(this.animTimeout);
+  } */
 
   private cancelScream (): void {
     if (!this.screaming) return;
@@ -315,8 +346,7 @@ export default class Enemy extends Character
   }
 
   private walk (): void {
-    if (this.dead) return;
-    // if (this.running) return;
+    if (this.dead /* || this.running */) return;
     this.updateAnimation('Walking', 'walk');
 
     this.hitting = false;
@@ -335,6 +365,33 @@ export default class Enemy extends Character
     this.attacking = false;
 
     this.updateAnimation('Running', 'run', 0.25);
+  }
+
+  private attack (): void {
+    if (this.dead) return;
+
+    const duration = this.crawling ? 0.5 : 0.166;
+    const hard = this.life > 50 && Math.random() < 0.5;
+    const delay = this.crawling ? 2200 : hard ? 3000 : 2500;
+
+    // const hitDelay = this.crawling ? 250 : hard ? 750 : 1000;
+    // const previousAnimation = this.crawling ? 'crawl' : this.lastAnimation;
+    const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
+
+    // if (!this.crawling) {
+    //   this.stopSounds();
+    //   this.sfx[attack].play();
+    // }
+
+    this.updateAnimation('Idle', attack, duration);
+
+    /* this.attackTimeout = */ setTimeout(() => {
+      !this.dead && this.run();
+    }, duration * 1e3 + delay);
+
+    this.attacking = true;
+    this.hitting = false;
+    this.moving = false;
   }
 
   public override update (delta: number, player?: Vector3): void {
