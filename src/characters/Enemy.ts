@@ -20,9 +20,9 @@ import { Material } from '@/utils/Material';
 import Configs from '@/configs';
 import anime from 'animejs';
 
-// Can lose player (pass to walk/idle animation after screaming):
-// Useful when setting game difficulty:
-const CAN_LOSE = true;
+// Game Difficulty Settings:
+const ATTACK_IMMUNE = false; // Immune while attacking
+const CAN_LOSE = true; // Pass to walk/idle animation after screaming
 
 export default class Enemy extends Character
 {
@@ -34,7 +34,7 @@ export default class Enemy extends Character
   private readonly walkDistance = 500.0;
   private readonly runDistance = 250.0;
 
-  // private attackTimeout!: NodeJS.Timeout;
+  private attackTimeout!: NodeJS.Timeout;
   private crawlTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
@@ -46,10 +46,13 @@ export default class Enemy extends Character
   private screamDuration!: number;
   private screamStart!: number;
   private hitDuration!: number;
+  private distance = Infinity;
   private hitStart!: number;
 
-  private screaming = false;
   private attacking = false;
+  private screaming = false;
+  private screamed = false;
+
   private crawling = false;
   private falling = false;
   private visible = false;
@@ -151,18 +154,16 @@ export default class Enemy extends Character
     return true;
   }
 
-  private toggleAnimation (player: Vector3): void {
+  private toggleAnimation (): void {
     const lyingDown = this.falling || this.crawling;
     const aggressive = this.screaming || this.attacking;
-
     if (this.animationUpdate || aggressive || lyingDown) return;
-    const distance = this.object.position.distanceToSquared(player);
 
-    distance < this.attackDistance && this.attack();
+    this.distance < this.attackDistance && this.attack();
     if (this.attacking || (!CAN_LOSE && this.running)) return;
 
-    const idleAnimation = distance > this.walkDistance;
-    const screamAnimation = distance < this.runDistance;
+    const idleAnimation = this.distance > this.walkDistance;
+    const screamAnimation = this.distance < this.runDistance;
     const walkAnimation = !idleAnimation && !screamAnimation;
 
     /**/ if (!this.moving && walkAnimation) this.walk();
@@ -172,7 +173,7 @@ export default class Enemy extends Character
 
   public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
-    // this.cancelAttack();
+    this.cancelAttack();
     this.cancelScream();
 
     this.hitting && this.cancelHit();
@@ -191,11 +192,12 @@ export default class Enemy extends Character
     this.hitTime = Date.now();
     this.screaming = false;
     this.attacking = false;
+    this.running = false;
   }
 
   public bodyHit (damage: number): void {
     if (this.dead) return;
-    // this.cancelAttack();
+    this.cancelAttack();
     this.cancelScream();
 
     if (this.updateHitDamage(damage)) {
@@ -209,8 +211,7 @@ export default class Enemy extends Character
       return;
     }
 
-    // Immune while attacking:
-    else if (this.attacking) return;
+    else if (ATTACK_IMMUNE && this.attacking) return;
 
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
@@ -225,16 +226,18 @@ export default class Enemy extends Character
     this.updateAnimation('Idle', 'hit', 0.15);
 
     this.hitTimeout = setTimeout(() => {
-      if (this.dead) return;
+      if (this.dead || this.attacking) return;
 
       this.animTimeout = this.updateAnimation(
         animation, this.previousAnimation, 0.2
       );
 
       this.hitTimeout = setTimeout(() => {
-        // this.attacking && this.attack();
-        this.screaming && this.run();
+        if (this.dead) return;
         this.hitting = false;
+
+        if (this.distance < this.attackDistance) this.idle();
+        else if (!this.running) this.run();
       }, 200);
     }, this.hitDuration - 200);
 
@@ -246,7 +249,7 @@ export default class Enemy extends Character
 
   public legHit (damage: number): NodeJS.Timeout | void {
     if (this.dead) return;
-    // this.cancelAttack();
+    this.cancelAttack();
     this.cancelScream();
 
     const now = Date.now();
@@ -281,7 +284,7 @@ export default class Enemy extends Character
     this.moving = false;
   }
 
-  /* private cancelAttack (): void {
+  private cancelAttack (): void {
     if (!this.attacking) return;
 
     this.animations.softAttack.stopFading();
@@ -292,7 +295,7 @@ export default class Enemy extends Character
 
     clearTimeout(this.attackTimeout);
     clearTimeout(this.animTimeout);
-  } */
+  }
 
   private cancelScream (): void {
     if (!this.screaming) return;
@@ -316,7 +319,7 @@ export default class Enemy extends Character
 
     this.moving = false;
     this.hitting = false;
-
+    this.screamed = true;
     this.screaming = true;
     this.attacking = false;
 
@@ -349,8 +352,11 @@ export default class Enemy extends Character
 
   private idle (): void {
     if (this.dead) return;
-    this.updateAnimation('Idle', 'idle');
 
+    const duration = +!this.attacking * 0.4 + 0.1;
+    this.updateAnimation('Idle', 'idle', duration);
+
+    this.attacking = false;
     this.hitting = false;
     this.running = false;
     this.moving = false;
@@ -396,25 +402,31 @@ export default class Enemy extends Character
 
     this.updateAnimation('Idle', attack, duration);
 
-    /* this.attackTimeout = */ setTimeout(() => {
-      !this.dead && this.run();
+    this.attackTimeout = setTimeout(() => {
+      if (this.dead) return;
+
+      this.distance < this.attackDistance
+        ? this.idle() : this.run();
     }, duration * 1e3 + delay);
 
+    this.screaming = false;
     this.attacking = true;
     this.hitting = false;
+
+    this.running = false;
     this.moving = false;
   }
 
   public override update (delta: number, player?: Vector3): void {
+    const playerPosition = player as Vector3;
     if (!this.visible) return;
+
     super.update(delta);
     if (this.dead) return;
 
-    const playerPosition = player as Vector3;
-    this.toggleAnimation(playerPosition);
-
-    const { x, z } = playerPosition;
-    this.character.lookAt(x, 0.0, z);
+    this.distance = this.object.position.distanceToSquared(playerPosition);
+    this.character.lookAt(playerPosition.x, 0.0, playerPosition.z);
+    this.toggleAnimation();
   }
 
   public override dispose (): void {
