@@ -125,6 +125,7 @@ export default class Player extends Character
 
   public idle (): void {
     const now = Date.now();
+    this.rifle.resetDelay = this.reloading;
     const idleDelay = Math.max(350 - (now - this.idleTime), 0);
 
     if (this.blockingAnimation() || idleDelay)

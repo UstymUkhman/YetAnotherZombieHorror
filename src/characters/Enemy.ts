@@ -56,6 +56,7 @@ export default class Enemy extends Character
 
   private crawlTime = 0.0;
   private fallTime = 0.0;
+  private hitTime = 0.0;
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
@@ -187,6 +188,7 @@ export default class Enemy extends Character
 
     else this.fallDeadAnimation('headshot');
 
+    this.hitTime = Date.now();
     this.screaming = false;
     this.attacking = false;
   }
@@ -237,18 +239,27 @@ export default class Enemy extends Character
     }, this.hitDuration - 200);
 
     const animation = this.animation;
+    this.hitTime = Date.now();
     this.attacking = false;
     this.hitting = true;
   }
 
-  public legHit (damage: number): void {
+  public legHit (damage: number): NodeJS.Timeout | void {
     if (this.dead) return;
     // this.cancelAttack();
     this.cancelScream();
 
+    const now = Date.now();
+    const delay = now - this.hitTime;
+    const lyingDown = this.updateHitDamage(damage);
+
+    if (delay < 825 && delay > 600) return setTimeout(
+      this.legHit.bind(this, damage), 825 - delay
+    );
+
     this.hitting && this.cancelHit();
 
-    if (this.updateHitDamage(damage)) {
+    if (lyingDown) {
       this.dead && this.falling &&
         this.toggleVisibility(false, 'crawlDeath');
 
@@ -257,8 +268,8 @@ export default class Enemy extends Character
 
     this.crawlTimeout = setTimeout(this.onLegHit, 2500.0);
     this.updateAnimation('Falling', 'falling', 0.1);
+    this.hitTime = this.fallTime = now;
     this.playSound('hit', true);
-    this.fallTime = Date.now();
 
     this.screaming = false;
     this.attacking = false;
