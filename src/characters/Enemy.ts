@@ -168,13 +168,15 @@ export default class Enemy extends Character
 
     /**/ if (!this.moving && walkAnimation) this.walk();
     else if (CAN_LOSE && this.moving && idleAnimation) this.idle();
-    else if (!(CAN_LOSE && this.running) && screamAnimation) this.scream();
+
+    else if (!(CAN_LOSE && this.running) && screamAnimation)
+      /**/ if (!this.screamed) this.scream();
+      else if (!this.running) this.run();
   }
 
   public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
-    this.cancelAttack();
-    this.cancelScream();
+    this.cancelAnimation();
 
     this.hitting && this.cancelHit();
 
@@ -190,15 +192,12 @@ export default class Enemy extends Character
     else this.fallDeadAnimation('headshot');
 
     this.hitTime = Date.now();
-    this.screaming = false;
-    this.attacking = false;
     this.running = false;
   }
 
   public bodyHit (damage: number): void {
     if (this.dead) return;
-    this.cancelAttack();
-    this.cancelScream();
+    this.cancelAnimation();
 
     if (this.updateHitDamage(damage)) {
       this.dead && this.fallDeadAnimation('death');
@@ -227,8 +226,9 @@ export default class Enemy extends Character
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;
+      const attacking = this.previousAnimation.includes('Attack');
 
-      this.animTimeout = this.updateAnimation(
+      if (!attacking) this.animTimeout = this.updateAnimation(
         animation, this.previousAnimation, 0.2
       );
 
@@ -236,21 +236,21 @@ export default class Enemy extends Character
         if (this.dead) return;
         this.hitting = false;
 
-        if (this.distance < this.attackDistance) this.idle();
+        if (this.distance < this.attackDistance) this.attack();
         else if (!this.running) this.run();
       }, 200);
     }, this.hitDuration - 200);
 
     const animation = this.animation;
     this.hitTime = Date.now();
-    this.attacking = false;
+
+    this.running = false;
     this.hitting = true;
   }
 
   public legHit (damage: number): NodeJS.Timeout | void {
     if (this.dead) return;
-    this.cancelAttack();
-    this.cancelScream();
+    this.cancelAnimation();
 
     const now = Date.now();
     const delay = now - this.hitTime;
@@ -274,36 +274,32 @@ export default class Enemy extends Character
     this.hitTime = this.fallTime = now;
     this.playSound('hit', true);
 
-    this.screaming = false;
-    this.attacking = false;
-
     this.running = false;
     this.falling = true;
-
     this.hitting = true;
     this.moving = false;
   }
 
-  private cancelAttack (): void {
-    if (!this.attacking) return;
+  private cancelAnimation (): void {
+    if (this.attacking) {
+      this.animations.softAttack.stopFading();
+      this.animations.hardAttack.stopFading();
+      this.animations.softAttack.stop();
+      this.animations.hardAttack.stop();
 
-    this.animations.softAttack.stopFading();
-    this.animations.hardAttack.stopFading();
+      clearTimeout(this.attackTimeout);
+      clearTimeout(this.animTimeout);
+      this.attacking = false;
+    }
 
-    this.animations.softAttack.stop();
-    this.animations.hardAttack.stop();
+    if (this.screaming) {
+      this.animations.scream.stopFading();
+      clearTimeout(this.animTimeout);
+      clearTimeout(this.runTimeout);
 
-    clearTimeout(this.attackTimeout);
-    clearTimeout(this.animTimeout);
-  }
-
-  private cancelScream (): void {
-    if (!this.screaming) return;
-
-    this.animations.scream.stopFading();
-    clearTimeout(this.animTimeout);
-    clearTimeout(this.runTimeout);
-    this.animations.scream.stop();
+      this.animations.scream.stop();
+      this.screaming = false;
+    }
   }
 
   private cancelHit (): void {
@@ -326,7 +322,11 @@ export default class Enemy extends Character
     this.runTimeout = setTimeout(() => {
       this.playSound('scream', true);
       const delay = this.screamDuration - 250;
-      this.runTimeout = setTimeout(this.run.bind(this), delay);
+
+      this.runTimeout = setTimeout(() =>
+        this.distance < this.attackDistance
+          ? this.attack() : this.run()
+      , delay);
     }, this.screamStart * 1e3);
 
     this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
@@ -358,12 +358,13 @@ export default class Enemy extends Character
 
     this.attacking = false;
     this.hitting = false;
+
     this.running = false;
     this.moving = false;
   }
 
   private walk (): void {
-    if (this.dead /* || this.running */) return;
+    if (this.dead) return;
     this.updateAnimation('Walking', 'walk');
 
     this.hitting = false;
@@ -373,15 +374,14 @@ export default class Enemy extends Character
 
   private run (): void {
     if (this.dead) return;
-
-    this.moving = true;
-    this.running = true;
-    this.hitting = false;
-
-    this.screaming = false;
-    this.attacking = false;
-
     this.updateAnimation('Running', 'run', 0.25);
+
+    this.attacking = false;
+    this.screaming = false;
+
+    this.hitting = false;
+    this.running = true;
+    this.moving = true;
   }
 
   private attack (): void {
@@ -411,6 +411,8 @@ export default class Enemy extends Character
 
     this.screaming = false;
     this.attacking = true;
+
+    this.screamed = true;
     this.hitting = false;
 
     this.running = false;
