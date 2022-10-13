@@ -155,23 +155,21 @@ export default class Enemy extends Character
   }
 
   private toggleAnimation (): void {
-    const lyingDown = this.falling || this.crawling;
+    const lyingDown  = this.falling   || this.crawling;
     const aggressive = this.screaming || this.attacking;
     if (this.animationUpdate || aggressive || lyingDown) return;
 
     this.distance < this.attackDistance && this.attack();
     if (this.attacking || (!CAN_LOSE && this.running)) return;
 
-    const idleAnimation = this.distance > this.walkDistance;
-    const screamAnimation = this.distance < this.runDistance;
-    const walkAnimation = !idleAnimation && !screamAnimation;
+    const idleAnimation   = this.distance   > this.walkDistance;
+    const screamAnimation = this.distance   < this.runDistance;
+    const walkAnimation   = !idleAnimation && !screamAnimation;
+    const scream          = !this.screamed && screamAnimation;
 
-    /**/ if (!this.moving && walkAnimation) this.walk();
-    else if (CAN_LOSE && this.moving && idleAnimation) this.idle();
-
-    else if (!(CAN_LOSE && this.running) && screamAnimation)
-      /**/ if (!this.screamed) this.scream();
-      else if (!this.running) this.run();
+    /**/ if (CAN_LOSE && this.moving && idleAnimation) this.idle();
+    else if (!this.moving && walkAnimation)            this.walk();
+    else if (!(CAN_LOSE && this.running) && scream)    this.scream();
   }
 
   public headHit (damage: number, kill: boolean): void {
@@ -236,15 +234,16 @@ export default class Enemy extends Character
         if (this.dead) return;
         this.hitting = false;
 
-        if (this.distance < this.attackDistance) this.attack();
-        else if (!this.running) this.run();
+        const attack = this.distance < this.attackDistance;
+        const run    = this.distance < this.runDistance;
+
+        /**/ if (attack)               this.attack();
+        else if (run && !this.running) this.run();
       }, 200);
     }, this.hitDuration - 200);
 
     const animation = this.animation;
     this.hitTime = Date.now();
-
-    this.running = false;
     this.hitting = true;
   }
 
@@ -374,7 +373,9 @@ export default class Enemy extends Character
 
   private run (): void {
     if (this.dead) return;
-    this.updateAnimation('Running', 'run', 0.25);
+
+    const slow = +(this.attacking || this.screaming) * 0.1;
+    this.updateAnimation('Running', 'run', slow + 0.1);
 
     this.attacking = false;
     this.screaming = false;
