@@ -2,31 +2,25 @@
 <html lang="en-us" class="no-js" amp>
   <head>
     <base href="./" />
-
-    <!-- Meta Tags: -->
     <meta charset="utf-8" />
-    <meta http-equiv="cleartype" content="on" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Yet Another Zombie Horror</title>
 
     <meta name="fragment" content="!" />
     <meta name="author" content="Ustym Ukhman" />
-    <meta name="theme-color" content="#8A0707" />
+    <meta name="theme-color" content="#000000" />
+
     <meta name="MobileOptimized" content="320" />
     <meta name="HandheldFriendly" content="True" />
-
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="Yet Another Zombie Horror" />
-    <meta name="keywords" content="FPS,TPS,Game,Zombies,Survival,Shooter" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-
-    <title itemprop="name">Yet Another Zombie Horror</title>
 
     <!-- Apple: -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="#8A0707" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#000000" />
     <meta name="apple-mobile-web-app-title" content="Yet Another Zombie Horror" />
 
     <!-- Microsoft: -->
+    <meta http-equiv="cleartype" content="on" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="msapplication-TileColor" content="#8A0707" />
     <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png" />
@@ -34,22 +28,28 @@
     <!-- Facebook: -->
     <meta property="og:url" content="/" />
     <meta property="og:type" content="game" />
+    <meta property="og:image" content="/assets/images/share.jpg" />
     <meta property="og:title" content="Yet Another Zombie Horror" />
     <meta property="og:description" content="Yet Another Zombie Horror" />
-    <meta property="og:image" content="/assets/images/share.jpg" />
 
     <!-- Twitter: -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/assets/images/share.jpg" />
     <meta name="twitter:title" content="Yet Another Zombie Horror" />
     <meta name="twitter:description" content="Yet Another Zombie Horror" />
-    <meta name="twitter:image" content="/assets/images/share.jpg" />
+
+    <!-- Generic: -->
+    <meta name="description" content="Yet Another Zombie Horror" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="keywords" content="fps,tps,game,horror,zombies,shooter,survival,first person,third person" />
 
     <!-- Favicons: -->
-    <link rel="icon" type="image/png" sizes="16x16"   href="/favicon/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32"   href="/favicon/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="96x96"   href="/favicon/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/favicon-512x512.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png" />
+    <link rel="icon"      type="image/png" sizes="16x16"   href="/favicon/favicon-16x16.png" />
+    <link rel="icon"      type="image/png" sizes="32x32"   href="/favicon/favicon-32x32.png" />
+    <link rel="icon"      type="image/png" sizes="96x96"   href="/favicon/favicon-96x96.png" />
+    <link rel="mask-icon" color="#8A0707"  sizes="512x512" href="/favicon/favicon-512x512.png" />
+    <link rel="icon"      type="image/png" sizes="512x512" href="/favicon/favicon-512x512.png" />
+    <link rel="icon"      type="image/png" sizes="192x192" href="/favicon/favicon-192x192.png" />
 
     <link rel="apple-touch-icon" type="image/png" sizes="57x57" href="/favicon/apple-icon-57x57.png" />
     <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="/favicon/apple-icon-60x60.png" />
@@ -66,14 +66,14 @@
     <link rel="stylesheet" type="text/css" href="/styles/fonts.css" />
 
     <!-- Disabled JavaScript and unsupported browser styling: -->
-    <link rel="stylesheet" type="text/css" href="/styles/index.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/initial.css" />
 
     <!-- Manifest: -->
     <link rel="manifest" href="/manifest.json" />
   </head>
 
   <body>
-    <!-- Unsupported browser: -->
+    <!-- Unsupported browser message: -->
     <div class="not-supported">
       <div class="not-supported-copy">
         <strong>Sorry, this browser is not supported</strong>
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <!-- Disabled JavaScript: -->
+    <!-- Disabled JavaScript message: -->
     <noscript>
       <div class="disabled-js">
         <div class="disabled-js-copy">
@@ -91,10 +91,10 @@
       </div>
     </noscript>
 
-    <!-- JavaScript browser support check: -->
+    <!-- Unsupported browser check: -->
     <script type="text/javascript" src="/scripts/initial.js"></script>
 
-    <!-- Application entry: -->
+    <!-- Application entry script: -->
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

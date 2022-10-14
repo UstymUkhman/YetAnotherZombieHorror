@@ -21,6 +21,7 @@ const MAX_PATH_LENGTH = 10.0;
 export default class Bullet
 {
   private bullet!: Mesh;
+  public readonly speed: number;
 
   private readonly width    = 1.0;
   private readonly height   = 0.3;
@@ -28,13 +29,12 @@ export default class Bullet
   private readonly segments = 8.0;
 
   private readonly rotation = new Quaternion();
-  public readonly speed = this.config.speed / 60.0;
-
   private readonly pivot = new Matrix4().makeTranslation(
     0.0, this.width / -2.0, 0.0
   );
 
   public constructor (private readonly config: BulletConfig) {
+    this.speed = config.speed / 60.0;
     this.createBullet();
   }
 

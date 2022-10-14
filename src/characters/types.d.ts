@@ -31,7 +31,7 @@ type CharacterSoundConfig = {
   uuid: string
 };
 
-// Temporary hack for @types/three v0.142.0:
+// Temporary hack for @types/three v0.145.0:
 declare module 'three/examples/jsm/utils/SkeletonUtils' {
   export function clone (source: Object3D): Object3D;
 }

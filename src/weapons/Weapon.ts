@@ -30,23 +30,22 @@ export default class Weapon
   private readonly onUpdate = this.updateAimSign.bind(this);
   private readonly onShoot = this.updateBullets.bind(this);
 
-  private readonly bullet = new Bullet(this.config.bullet);
   private readonly bullets: Map<string, Mesh> = new Map();
   private readonly hits: Array<Intersection<Mesh>> = [];
-
-  protected readonly magazine = this.config.magazine;
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
   private readonly offset = new Vector3();
   private readonly origin = new Vector3();
 
-  protected loadedAmmo = this.config.ammo;
-  protected totalAmmo = this.config.ammo;
-
   public targets: Array<Object3D> = [];
+  protected readonly magazine: number;
   public walls: Array<Object3D> = [];
+  private readonly bullet: Bullet;
+
   private weapon!: Assets.GLTF;
+  protected loadedAmmo: number;
+  protected totalAmmo: number;
 
   private aimed = false;
   public aiming = false;
@@ -54,7 +53,13 @@ export default class Weapon
   private fire!: Fire;
   private hole!: Hole;
 
-  public constructor (private readonly config: WeaponConfig) { }
+  public constructor (private readonly config: WeaponConfig) {
+    this.bullet = new Bullet(config.bullet);
+    this.magazine = config.magazine;
+
+    this.loadedAmmo = config.ammo;
+    this.totalAmmo = config.ammo;
+  }
 
   protected async load (envMap: Texture): Promise<Assets.GLTF> {
     const { emissive = Color.BLACK, emissiveIntensity = 1.0 } = this.config;

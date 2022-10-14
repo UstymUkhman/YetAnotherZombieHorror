@@ -1,5 +1,5 @@
 # [Yet Another Zombie Horror](http://35.158.218.205/experiments/YetAnotherZombieHorror/) #
-> or simply ***YAZH*** [[jɑːʒ](http://35.158.218.205/experiments/YetAnotherZombieHorror/assets/sounds/YAZH.mp3)], is a first / third person zombie survival shooter.
+*or simply ***YAZH*** [[jɑːʒ](http://35.158.218.205/experiments/YetAnotherZombieHorror/assets/sounds/YAZH.mp3)], is a first / third person zombie survival shooter.*
 
 <br />
 
@@ -81,7 +81,7 @@
 
 ## Controls ##
 
-| Action          | Desktop PC              |
+| Action          | Desktop                 |
 | --------------- | ----------------------- |
 | Move Forward    | W                       |
 | Move Left       | A                       |
@@ -96,7 +96,7 @@
 | Change Camera   | C                       |
 | Change Shoulder | V                       |
 
-## Credits ##
+<!-- ## Credits ##
 
   - *Dependencies:*
 
@@ -141,4 +141,4 @@
   - *Effects:*
 
     - [SardineFish](https://github.com/SardineFish) - [Screen Raindrops](https://cdn-lab.sardinefish.com/rain/)
-    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8) | [Custom Blending](https://www.youtube.com/watch?v=AxopC4yW4uY) | [Decals](https://www.youtube.com/watch?v=ZSTgk7JT668)
+    - [simondev](https://github.com/simondevyoutube) - [Volumetric Fog](https://www.youtube.com/watch?v=k1zGz55EqfU) | [Soft Particles](https://www.youtube.com/watch?v=arn_3WzCJQ8) | [Custom Blending](https://www.youtube.com/watch?v=AxopC4yW4uY) | [Decals](https://www.youtube.com/watch?v=ZSTgk7JT668) -->

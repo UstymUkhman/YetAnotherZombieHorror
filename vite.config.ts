@@ -1,26 +1,45 @@
-import path from 'path';
+/// <reference types="vitest" />
+
+import { resolve } from 'path';
 import glsl from 'vite-plugin-glsl';
 import { version } from './package.json';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { UserConfigExport, defineConfig } from 'vite';
+import { type UserConfigExport, defineConfig } from 'vite';
 
 export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
-  plugins: [svelte(), mode !== 'production' && glsl()],
-  assetsInclude: ['fbx', 'glb', 'gltf', 'wat'],
+  plugins: [svelte(), glsl()],
   base: './',
 
-  define: {
-    STAGING: !!process.env.prod,
-    BUILD: JSON.stringify(version),
-    PRODUCTION: mode === 'production',
-    TEST: true && mode !== 'production',
-    DEBUG: false && mode !== 'production'
+  resolve: {
+    alias: {
+      '@components': resolve(__dirname, 'src/components'),
+      '@': resolve(__dirname, 'src')
+    }
   },
 
-  resolve: { alias: {
-    '@components': path.resolve(__dirname, 'src/components'),
-    '@': path.resolve(__dirname, 'src')
-  }},
+  define: {
+    DEBUG: mode !== 'production' && false,
+    TEST: mode !== 'production' && true,
+    PRODUCTION: mode === 'production',
+    BUILD: JSON.stringify(version),
+    STAGING: !!process.env.prod
+  },
+
+  test: {
+    setupFiles: ['vitest-canvas.ts'],
+    environment: 'jsdom',
+    isolate: false
+  },
+
+  assetsInclude: [
+    'wat', 'fbx', 'glb', 'gltf'
+    // 'vert', 'frag', 'glsl'
+  ],
+
+  /* build: {
+    assetsInlineLimit: 0,
+    target: 'esnext'
+  }, */
 
   server: {
     host: '0.0.0.0',

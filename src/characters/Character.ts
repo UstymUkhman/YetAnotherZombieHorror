@@ -21,7 +21,6 @@ import Physics from '@/physics';
 export default class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
-  private step: CharacterMove = this.config.moves.Idle;
   protected currentAnimation!: AnimationAction;
 
   protected readonly direction = new Vector3();
@@ -34,12 +33,13 @@ export default class Character
 
   protected lastAnimation = '';
   private model?: Assets.GLTF;
-  protected object: Mesh;
+  private step: CharacterMove;
 
   protected hitting = false;
   protected running = false;
   protected moving = false;
 
+  protected object: Mesh;
   protected dead = false;
   private still = false;
   private health = 100;
@@ -57,6 +57,7 @@ export default class Character
       height: y, radius: 0.5
     };
 
+    this.step = this.config.moves.Idle;
     this.uuid = this.object.uuid;
   }
 

@@ -1,30 +1,30 @@
-/* stylelint-disable value-keyword-case */
-
 html,
 body {
   -webkit-tap-highlight-color: transparent;
   -webkit-text-rendering: optimizeSpeed;
+  font-family: DrawingBlood, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-overflow-scrolling: none;
-  -webkit-touch-callout: none;
 
-  font-family: DrawingBlood, sans-serif;
   text-rendering: optimizeSpeed;
   font-variant-ligatures: none;
+  -webkit-touch-callout: none;
   backface-visibility: hidden;
   background-color: #000000;
-  text-size-adjust: 100%;
 
+  text-size-adjust: 100%;
   letter-spacing: normal;
   line-height: normal;
-  user-select: none;
-  appearance: none;
-  overflow: hidden;
 
   font-weight: normal;
   font-kerning: none;
   font-style: normal;
+
+  user-select: none;
+  appearance: none;
+  overflow: hidden;
+
   font-size: 1rem;
   color: #8a0707;
 
@@ -82,9 +82,10 @@ body {
 .not-supported .not-supported-copy strong {
   font-family: FaceYourFears, monospace;
   text-transform: uppercase;
-  letter-spacing: 5px;
 
+  letter-spacing: 5px;
   margin-bottom: 30px;
+
   line-height: 25px;
   font-size: 20px;
   display: block;
@@ -173,7 +174,6 @@ body {
   }
 }
 
-/* stylelint-disable-next-line selector-no-vendor-prefix */
 ::-moz-selection {
   background-color: #8a0707;
   color: #000000;

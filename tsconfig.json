@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
+    "types": ["vite/client", "svelte", "node"],
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
+    "typeRoots": ["node_modules/@types"],
     "importsNotUsedAsValues": "error",
+
     "noUnusedParameters": false,
     "noImplicitOverride": true,
     "moduleResolution": "node",
     "noImplicitReturns": true,
     "resolveJsonModule": true,
     "strictNullChecks": true,
+
+    "lib": ["esnext", "dom"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
@@ -20,32 +25,23 @@
     "target": "ES2020",
     "sourceMap": true,
     "jsx": "preserve",
-    "checkJs": true,
+
     "allowJs": true,
+    "checkJs": true,
     "baseUrl": ".",
     "strict": true,
-
-    "typeRoots": ["node_modules/@types"],
-    "types": ["svelte", "jest", "node"],
+    "noEmit": true,
 
     "paths": {
       "@components/*": ["src/components/*"],
       "@/*": ["src/*"]
-    },
-
-    "lib": [
-      "esnext",
-      "dom"
-    ]
+    }
   },
 
   "include": [
-    "src/**/*",
     "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.svelte",
-    "tests/**/*.tsx",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "src/**/*.svelte"
   ],
 
   "exclude": [
@@ -53,6 +49,7 @@
     "typings",
     "public",
     "build",
+    "dist",
     "app"
   ]
 }
