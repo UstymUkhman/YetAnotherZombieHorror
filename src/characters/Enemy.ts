@@ -21,7 +21,7 @@ import Configs from '@/configs';
 import anime from 'animejs';
 
 // Game Difficulty Settings:
-const ATTACK_IMMUNE = false; // Immune while attacking
+// const ATTACK_IMMUNE = false; // Immune while attacking
 const CAN_LOSE = true; // Pass to walk/idle animation after screaming
 
 export default class Enemy extends Character
@@ -208,39 +208,55 @@ export default class Enemy extends Character
       return;
     }
 
-    else if (ATTACK_IMMUNE && this.attacking) return;
-
     else if (!this.hitting)
       this.previousAnimation = this.lastAnimation;
 
     else {
-      this.currentAnimation = this.animations.idle;
-      this.currentAnimation.play();
       this.cancelHit();
+      this.animations.idle.play();
+      this.currentAnimation = this.animations.idle;
+
+      const prevRun = this.previousAnimation === 'run';
+      const lastRun = this.lastAnimation === 'run';
+
+      if (this.hitting && this.running && prevRun && lastRun) {
+        if (this.updateHitDamage(this.life)) {
+          return this.fallDeadAnimation('death');
+        }
+
+        this.toggleVisibility(false, 'death');
+        this.updateAnimation('Idle', 'death');
+
+        return;
+      }
     }
 
-    this.animations.hit.time = this.hitStart;
-    this.updateAnimation('Idle', 'hit', 0.15);
+    if (!this.hitting) {
+      this.animations.hit.time = this.hitStart;
+      this.updateAnimation('Idle', 'hit', 0.15);
+    }
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;
       const attacking = this.previousAnimation.includes('Attack');
 
       if (!attacking) this.animTimeout = this.updateAnimation(
-        animation, this.previousAnimation, 0.2
+        animation, this.previousAnimation, 0.15
       );
 
       this.hitTimeout = setTimeout(() => {
         if (this.dead) return;
         this.hitting = false;
 
-        const attack = this.distance < this.attackDistance;
-        const run    = this.distance < this.runDistance;
+        const attack  = this.distance < this.attackDistance;
+        const running = this.distance < this.runDistance;
+        const hit     = this.previousAnimation === 'hit';
+        const run     = running && !this.running;
 
-        /**/ if (attack)               this.attack();
-        else if (run && !this.running) this.run();
-      }, 200);
-    }, this.hitDuration - 200);
+        /**/ if (attack)     this.attack();
+        else if (hit || run) this.run();
+      }, +!attacking * 150);
+    }, this.hitDuration - 150);
 
     const animation = this.animation;
     this.hitTime = Date.now();
