@@ -1,13 +1,10 @@
-/// <reference types="vitest" />
-
 import { resolve } from 'path';
+import { defineConfig } from 'vite';
 import glsl from 'vite-plugin-glsl';
 import { version } from './package.json';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { type UserConfigExport, defineConfig } from 'vite';
 
-export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
-  plugins: [svelte(), glsl()],
+export default ({ mode }: { mode: string }) => defineConfig({
   base: './',
 
   resolve: {
@@ -25,12 +22,6 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
     STAGING: !!process.env.prod
   },
 
-  test: {
-    setupFiles: ['vitest-canvas.ts'],
-    environment: 'jsdom',
-    isolate: false
-  },
-
   assetsInclude: [
     'wat', 'fbx', 'glb', 'gltf'
     // 'vert', 'frag', 'glsl'
@@ -45,5 +36,10 @@ export default ({ mode }: { mode: string }): UserConfigExport => defineConfig({
     host: '0.0.0.0',
     port: 8080,
     open: true
-  }
+  },
+
+  plugins: [
+    svelte(),
+    glsl()
+  ]
 });
