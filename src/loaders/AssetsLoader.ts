@@ -33,10 +33,10 @@ export namespace Assets
 
   class LoadingManager extends ThreeLoadingManager
   {
-    private readonly audioBasePath   = `${BASE_PATH}/sounds/`;
+    private readonly imageBasePath   = `${BASE_PATH}/images/`;
     private readonly modelBasePath   = `${BASE_PATH}/models/`;
+    private readonly soundBasePath   = `${BASE_PATH}/sounds/`;
     private readonly shaderBasePath  = `${BASE_PATH}/shaders/`;
-    private readonly textureBasePath = `${BASE_PATH}/textures/`;
 
     private readonly cubeTexture = new CubeTextureLoader(this);
     private readonly texture = new TextureLoader(this);
@@ -73,7 +73,7 @@ export namespace Assets
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-        this.cubeTexture.setPath(`${this.textureBasePath + folder}/`);
+        this.cubeTexture.setPath(`${this.imageBasePath + folder}/`);
         this.cubeTexture.load(this.cubeTextures, promise.onLoad, promise.onProgress, promise.onError);
       });
     }
@@ -82,7 +82,7 @@ export namespace Assets
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-        this.texture.setPath(this.textureBasePath);
+        this.texture.setPath(this.imageBasePath);
         this.texture.load(file, promise.onLoad, promise.onProgress, promise.onError);
       });
     }
@@ -91,7 +91,7 @@ export namespace Assets
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
-        this.audio.setPath(this.audioBasePath);
+        this.audio.setPath(this.soundBasePath);
         this.audio.load(file, promise.onLoad, promise.onProgress, promise.onError);
       });
     }

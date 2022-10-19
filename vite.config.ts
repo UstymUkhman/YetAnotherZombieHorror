@@ -6,11 +6,12 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default ({ mode }: { mode: string }) => defineConfig({
   base: './',
+  // build: { target: 'esnext' },
 
   resolve: {
     alias: {
-      '@components': resolve(__dirname, 'src/components'),
-      '@': resolve(__dirname, 'src')
+      '@components': resolve('src/components'),
+      '@': resolve('src')
     }
   },
 
@@ -22,24 +23,28 @@ export default ({ mode }: { mode: string }) => defineConfig({
     STAGING: !!process.env.prod
   },
 
-  assetsInclude: [
-    'wat', 'fbx', 'glb', 'gltf'
-    // 'vert', 'frag', 'glsl'
+  plugins: [
+    svelte(),
+    mode !== 'production' && glsl({
+      root: '/src/shaders/',
+
+      include: [
+        '**/*.vert',
+        '**/*.frag',
+        '**/*.glsl'
+      ]
+    })
   ],
 
-  /* build: {
-    assetsInlineLimit: 0,
-    target: 'esnext'
-  }, */
+  assetsInclude: [
+    '**/*.fbx',
+    '**/*.glb',
+    '**/*.gltf'
+  ],
 
   server: {
     host: '0.0.0.0',
     port: 8080,
     open: true
-  },
-
-  plugins: [
-    svelte(),
-    glsl()
-  ]
+  }
 });

@@ -84,8 +84,8 @@
     const assetsPath = getAssetsPath();
     const { style } = document.documentElement;
 
-    const defaultCursor = `${assetsPath}/cursor/default.png`;
-    const pointerCursor = `${assetsPath}/cursor/pointer.png`;
+    const defaultCursor = `${assetsPath}/images/cursor/default.png`;
+    const pointerCursor = `${assetsPath}/images/cursor/pointer.png`;
 
     style.setProperty('--default-cursor', `url("${defaultCursor}")`);
     style.setProperty('--pointer-cursor', `url("${pointerCursor}")`);
