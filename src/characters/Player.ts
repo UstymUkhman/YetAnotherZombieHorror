@@ -48,7 +48,7 @@ export default class Player extends Character
 
   private shootTime = 0.0;
   private idleTime = 0.0;
-  private moveTime = 0.0;
+  // private moveTime = 0.0;
   private aimTime = 0.0;
 
   public constructor () {
@@ -148,11 +148,11 @@ export default class Player extends Character
     );
   }
 
-  public move (directions: Directions, now = Date.now()): void {
-    if (now - this.moveTime < 350) return;
+  public move (directions: Directions /*, now = Date.now() */): void {
+    // if (now - this.moveTime < 350) return;
     this.rifle.resetDelay = this.reloading;
 
-    if (isFinite(now) && this.blockingAnimation()) return;
+    if (/* isFinite(now) && */ this.blockingAnimation()) return;
 
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
@@ -167,7 +167,7 @@ export default class Player extends Character
     this.moving && Camera.runAnimation(false);
     this.hasRifle && this.rifle.updatePosition(1);
 
-    this.moveTime = Date.now();
+    // this.moveTime = now;
     this.running = false;
   }
 

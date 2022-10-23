@@ -353,13 +353,11 @@ export default class WhiteBox
     this.rifle.resize(innerHeight);
     this.pistol.resize(innerHeight);
 
-    if (!this.orbit) Camera.resize();
+    this.renderer.setSize(innerWidth, innerHeight);
+    this.camera.aspect = innerWidth / innerHeight;
 
-    else {
-      this.camera.aspect = innerWidth / innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(innerWidth, innerHeight);
-    }
+    this.camera.updateProjectionMatrix();
+    !this.orbit && Camera.resize();
   }
 
   public dispose (): void {
