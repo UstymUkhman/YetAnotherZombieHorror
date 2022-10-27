@@ -60,6 +60,7 @@ export default class WhiteBox
   private readonly pistol = new Pistol(this.envMap);
   private readonly onResize = this.resize.bind(this);
 
+  private readonly onKeyRelease = this.onKeyUp.bind(this);
   private readonly onPointerLock = this.requestPointerLock.bind(this);
   private readonly renderer = new WebGLRenderer({ antialias: true, alpha: false });
 
@@ -199,6 +200,7 @@ export default class WhiteBox
 
   private addEvents (): void {
     Viewport.addResizeCallback(this.onResize);
+    document.body.addEventListener('keyup', this.onKeyRelease);
     document.body.addEventListener('click', this.onPointerLock);
 
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
@@ -288,6 +290,10 @@ export default class WhiteBox
       : sound.isPlaying && sound.stop();
   }
 
+  private onKeyUp (event: KeyboardEvent): void {
+    event.key === 'f' && this.rifle.addAmmo();
+  }
+
   private requestPointerLock (): void {
     if (!this.controls) return;
     this.pointer.requestPointerLock();
@@ -323,6 +329,7 @@ export default class WhiteBox
 
   private removeEvents (): void {
     document.body.removeEventListener('click', this.onPointerLock);
+    document.body.removeEventListener('keyup', this.onKeyRelease);
     Viewport.removeResizeCallback(this.onResize);
 
     GameEvents.remove('Level::RemoveObject');

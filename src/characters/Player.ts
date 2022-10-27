@@ -125,7 +125,6 @@ export default class Player extends Character
 
   public idle (): void {
     const now = Date.now();
-    this.rifle.resetDelay = this.reloading;
     const idleDelay = Math.max(350 - (now - this.idleTime), 0);
 
     if (this.blockingAnimation() || idleDelay)
@@ -150,8 +149,6 @@ export default class Player extends Character
 
   public move (directions: Directions /*, now = Date.now() */): void {
     // if (now - this.moveTime < 350) return;
-    this.rifle.resetDelay = this.reloading;
-
     if (/* isFinite(now) && */ this.blockingAnimation()) return;
 
     const direction = this.getMovementAnimation(directions);
@@ -173,7 +170,6 @@ export default class Player extends Character
 
   public run (directions: Directions, running: boolean): void {
     if (this.running === running) return;
-    this.rifle.resetDelay = this.reloading;
     if (this.blockingAnimation()) return;
 
     const run = this.getWeaponAnimation('Run');
@@ -270,6 +266,7 @@ export default class Player extends Character
   }
 
   public reload (getMovement: () => PlayerMovement): void {
+    const moving = this.moving;
     if (this.blockingAnimation()) return;
     if (this.weapon.full || !this.weapon.inStock) return;
 
@@ -287,6 +284,9 @@ export default class Player extends Character
     this.toggleMesh(true);
 
     this.reloadTimeout = setTimeout(() => {
+      const directions = getMovement().directions as unknown as Array<number>;
+      moving && !directions.includes(1) && this.weapon.stopReloading();
+
       this.weapon.addAmmo(0.0);
       this.reloading = false;
     }, 2000);
@@ -294,6 +294,7 @@ export default class Player extends Character
     this.animTimeout = setTimeout(() => {
       if (this.dead) return;
       this.toggleMesh(false);
+      this.weapon.stopReloading();
       Camera.setNearPlane(0.5, 100);
 
       const { directions, running } = getMovement();

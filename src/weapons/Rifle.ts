@@ -34,10 +34,8 @@ export default class Rifle extends Weapon
   private clone!: Assets.GLTF;
   private spine!: Assets.GLTF;
 
-  private reloadReset = false;
-  private reloading = false;
+  // private reloading = false;
   private appended = false;
-
   private spawnTime = 0.0;
   private spawned = false;
 
@@ -122,7 +120,6 @@ export default class Rifle extends Weapon
       ), this.totalAmmo);
 
       this.loadedAmmo += toLoad;
-      this.stopReloading();
 
       GameEvents.dispatch('Weapon::Reload', {
         loaded: this.loadedAmmo,
@@ -135,21 +132,14 @@ export default class Rifle extends Weapon
   public override startReloading (): void {
     this.object.position.set(this.position.x, this.position.y, 0.0);
     this.object.rotation.set(this.rotation.x, this.rotation.y, 0.0);
-
     this.playSound('reload', { stop: true });
-    this.reloading = true;
+    // this.reloading = true;
   }
 
   public override stopReloading (): void {
-    this.reloadReset && !this.aiming && this.reset();
-
-    setTimeout(() => {
-      !this.reloadReset && !this.aiming && this.reset();
-      this.reloading && this.stopSound('reload');
-
-      this.reloadReset = false;
-      this.reloading = false;
-    }, 500.0);
+    // this.reloading && this.stopSound('reload');
+    !this.aiming && this.reset();
+    // this.reloading = false;
   }
 
   public update (player: Vector3): void {
@@ -185,7 +175,7 @@ export default class Rifle extends Weapon
   public updatePosition (factor: number): void {
     this.appended && anime({
       targets: this.spine.position,
-      duration: +!factor * 100,
+      duration: +!factor * 100.0,
       x: factor * 10.0 - 10.0,
       easing: 'linear'
     });
@@ -209,10 +199,6 @@ export default class Rifle extends Weapon
     this.light.dispose();
     this.clone.clear();
     super.dispose();
-  }
-
-  public set resetDelay (delay: boolean) {
-    this.reloadReset = delay;
   }
 
   public set toggle (equip: boolean) {
