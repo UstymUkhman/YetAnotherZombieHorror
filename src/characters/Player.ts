@@ -93,6 +93,10 @@ export default class Player extends Character
     return direction as PlayerAnimations || 'Idle';
   }
 
+  private hasMovingDirection (directions: Directions): boolean {
+    return (directions as unknown as Array<number>).includes(1);
+  }
+
   private getWeaponAnimation (movement: string): string {
     return `${this.equipRifle ? 'rifle' : 'pistol'}${movement}`;
   }
@@ -123,12 +127,12 @@ export default class Player extends Character
     }
   }
 
-  public idle (): void {
+  public idle (): NodeJS.Timeout | void {
     const now = Date.now();
     const idleDelay = Math.max(350 - (now - this.idleTime), 0);
 
     if (this.blockingAnimation() || idleDelay)
-      return setTimeout(this.idle.bind(this), idleDelay) as unknown as void;
+      return setTimeout(this.idle.bind(this), idleDelay);
 
     GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
     GameEvents.dispatch('Player::Run', false, true);
@@ -149,7 +153,13 @@ export default class Player extends Character
 
   public move (directions: Directions /*, now = Date.now() */): void {
     // if (now - this.moveTime < 350) return;
-    if (/* isFinite(now) && */ this.blockingAnimation()) return;
+    // if (isFinite(now) && this.blockingAnimation()) return;
+
+    if (this.blockingAnimation()) {
+      if (this.reloading)
+        this.moving = this.hasMovingDirection(directions);
+      return;
+    }
 
     const direction = this.getMovementAnimation(directions);
     const animation = this.getWeaponAnimation(direction);
@@ -168,7 +178,7 @@ export default class Player extends Character
     this.running = false;
   }
 
-  public run (directions: Directions, running: boolean): void {
+  public run (directions: Directions, running: boolean): NodeJS.Timeout | void {
     if (this.running === running) return;
     if (this.blockingAnimation()) return;
 
@@ -177,8 +187,8 @@ export default class Player extends Character
     if (!running || this.lastAnimation === run) {
       this.running = false;
 
-      return !(directions as unknown as Array<number>).includes(1)
-        ? setTimeout(this.idle.bind(this), 150) as unknown as void
+      return !this.hasMovingDirection(directions)
+        ? setTimeout(this.idle.bind(this), 150)
         : this.move(directions);
     }
 
@@ -284,8 +294,9 @@ export default class Player extends Character
     this.toggleMesh(true);
 
     this.reloadTimeout = setTimeout(() => {
-      const directions = getMovement().directions as unknown as Array<number>;
-      moving && !directions.includes(1) && this.weapon.stopReloading();
+      const { directions } = getMovement();
+      const moved = !this.hasMovingDirection(directions);
+      (moving || this.moving) && moved && this.weapon.stopReloading();
 
       this.weapon.addAmmo(0.0);
       this.reloading = false;

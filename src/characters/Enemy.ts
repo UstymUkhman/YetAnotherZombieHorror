@@ -15,6 +15,7 @@ import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
+import type { AnimeInstance } from 'animejs';
 import { Material } from '@/utils/Material';
 
 import Configs from '@/configs';
@@ -29,6 +30,7 @@ export default class Enemy extends Character
   private readonly onLegHit = this.crawl.bind(this);
   protected override animationUpdate = true;
   protected override lastAnimation = 'idle';
+  private crawlAnimation?: AnimeInstance;
   private hitBoxes: Array<Object3D> = [];
 
   private readonly attackDistance = 2.5;
@@ -149,8 +151,23 @@ export default class Enemy extends Character
     if (!dead) this.playSound('hit', true);
 
     else if (this.crawling) {
+      let duration = undefined;
+
+      if (!this.crawlAnimation?.completed) {
+        this.character.position.z = this.rotation.z;
+        this.crawlAnimation?.pause();
+
+        this.animations.falling
+          .setEffectiveTimeScale(1.0)
+          .setEffectiveWeight(1.0)
+          .stopWarping()
+          .stopFading();
+
+        duration = 0.0;
+      }
+
       this.toggleVisibility(false, 'crawlDeath');
-      this.updateAnimation('Idle', 'crawlDeath');
+      this.updateAnimation('Idle', 'crawlDeath', duration);
     }
 
     return true;
@@ -305,7 +322,7 @@ export default class Enemy extends Character
     this.crawlTime = Date.now();
     this.crawlTimeout = this.updateAnimation('Crawling', 'crawling', duration);
 
-    !this.crawling && anime({
+    if (!this.crawling) this.crawlAnimation = anime({
       z: this.rotation.z * (duration * -0.1),
       targets: this.character.position,
       duration: duration * 1e3,
