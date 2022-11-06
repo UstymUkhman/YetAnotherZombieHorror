@@ -244,10 +244,10 @@ export default class Weapon
 
     const index = target % 6;
     const event = this.getEvent(index);
-    const damage = this.getDamage(index);
 
-    const headshot = !index && Math.random() < this.config.headshot;
     // const distance = hitBox.position.distanceToSquared(bullet.position);
+    const headshot = !index && Math.random() < this.config.headshot;
+    const damage = headshot && 100.0 || this.getDamage(index);
 
     // setTimeout(() => {
     this.removeBullet(bullet.uuid);

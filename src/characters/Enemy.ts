@@ -209,7 +209,8 @@ export default class Enemy extends Character
       this.updateAnimation('Idle', 'headshot');
     }
 
-    else this.fallDeadAnimation('headshot');
+    else if (this.falling)
+      this.fallDeadAnimation('headshot');
 
     this.hitTime = Date.now();
     this.running = false;
@@ -260,9 +261,12 @@ export default class Enemy extends Character
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;
-      const attacking = this.previousAnimation.includes('Attack');
 
-      if (!attacking) this.animTimeout = this.updateAnimation(
+      const attacking = this.previousAnimation.includes('Attack');
+      const screaming = this.previousAnimation === 'scream';
+      const blockingAnimation = attacking || screaming;
+
+      if (!blockingAnimation) this.animTimeout = this.updateAnimation(
         animation, this.previousAnimation, 0.15
       );
 
@@ -277,7 +281,7 @@ export default class Enemy extends Character
 
              if (attack)     this.attack();
         else if (hit || run) this.run();
-      }, +!attacking * 150);
+      }, +!blockingAnimation * 150);
     }, this.hitDuration - 150);
 
     const animation = this.animation;

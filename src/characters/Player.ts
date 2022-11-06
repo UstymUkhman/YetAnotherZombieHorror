@@ -261,7 +261,7 @@ export default class Player extends Character
   public startShooting (now = Date.now()): void {
     if (this.equipRifle && !this.aiming) return;
     if (this.moving || this.hitting || this.reloading) return;
-    if (now - this.aimTime < 500 || now - this.shootTime < 150) return;
+    if (now - this.aimTime < 500 || now - this.shootTime < 165) return;
 
     this.shooting = true;
     this.shootTime = now;
