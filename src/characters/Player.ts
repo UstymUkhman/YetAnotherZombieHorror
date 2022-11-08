@@ -212,10 +212,10 @@ export default class Player extends Character
     Camera.runAnimation(false);
     Camera.aimAnimation(true, this.equipRifle);
     Camera.updateNearPlane(true, this.equipRifle);
-    setTimeout(this.toggleMesh.bind(this, true), 300);
 
-    this.aimTime = this.equipRifle ? Date.now() : 0.0;
     const next = this.equipRifle ? 'rifleAim' : 'pistolIdle';
+    setTimeout(this.toggleMesh.bind(this, true), 300);
+    this.aimTime = +this.equipRifle * Date.now();
 
     clearTimeout(this.animTimeout);
     this.weapon.setAim();
@@ -247,8 +247,12 @@ export default class Player extends Character
     !running && Camera.aimAnimation(false, this.equipRifle, duration);
 
     Camera.isFPS && running
-      ? Camera.setNearPlane(this.equipRifle ? 0.5 : 0.315, 0)
+      ? Camera.setNearPlane(+this.equipRifle * 0.185 + 0.315, 0)
       : Camera.updateNearPlane(false, this.equipRifle);
+
+    setTimeout(() =>
+      this.weapon.aiming = this.aiming = false
+    , 100);
 
     this.weapon.aiming = this.aiming = false;
     this.currentAnimation.paused = false;

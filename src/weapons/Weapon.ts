@@ -212,11 +212,10 @@ export default class Weapon
     });
   }
 
-  public shoot (): Recoil | null {
-    if (this.empty) {
-      this.playSound('empty', { stop: false });
-      return null;
-    }
+  public shoot (): Recoil | void {
+    if (this.empty) return this.playSound(
+      'empty', { stop: false }
+    );
 
     const target = this.target;
     const { ray } = this.raycaster;

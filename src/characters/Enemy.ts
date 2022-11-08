@@ -254,10 +254,10 @@ export default class Enemy extends Character
       }
     }
 
-    // if (!this.hitting) {
-    this.animations.hit.time = this.hitStart;
-    this.updateAnimation('Idle', 'hit', 0.15);
-    // }
+    if (this.previousAnimation !== 'hit') {
+      this.animations.hit.time = this.hitStart;
+      this.updateAnimation('Idle', 'hit', 0.15);
+    }
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;

@@ -34,7 +34,6 @@ export default class Rifle extends Weapon
   private clone!: Assets.GLTF;
   private spine!: Assets.GLTF;
 
-  // private reloading = false;
   private appended = false;
   private spawnTime = 0.0;
   private spawned = false;
@@ -133,13 +132,10 @@ export default class Rifle extends Weapon
     this.object.position.set(this.position.x, this.position.y, 0.0);
     this.object.rotation.set(this.rotation.x, this.rotation.y, 0.0);
     this.playSound('reload', { stop: true });
-    // this.reloading = true;
   }
 
   public override stopReloading (): void {
-    // this.reloading && this.stopSound('reload');
     !this.aiming && this.reset();
-    // this.reloading = false;
   }
 
   public update (player: Vector3): void {
