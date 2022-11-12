@@ -8,10 +8,10 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
-import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
-
 import { GameEvents } from '@/events/GameEvents';
+import { Vector3 } from 'three/src/math/Vector3';
+
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -28,17 +28,21 @@ const CAN_LOSE = true; // Pass to walk/idle animation after screaming
 export default class Enemy extends Character
 {
   private readonly onLegHit = this.crawl.bind(this);
+  private readonly worldPosition = new Vector3();
+
   protected override animationUpdate = true;
   protected override lastAnimation = 'idle';
   private crawlAnimation?: AnimeInstance;
   private hitBoxes: Array<Object3D> = [];
 
+  private hittingTimeout!: NodeJS.Timeout;
+  private attackTimeout!: NodeJS.Timeout;
+  private crawlTimeout!: NodeJS.Timeout;
+
   private readonly attackDistance = 2.5;
   private readonly walkDistance = 500.0;
   private readonly runDistance = 250.0;
 
-  private attackTimeout!: NodeJS.Timeout;
-  private crawlTimeout!: NodeJS.Timeout;
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
   private hitTimeout!: NodeJS.Timeout;
@@ -141,57 +145,6 @@ export default class Enemy extends Character
 
     deathAnimation && this.updateAnimation('Idle', animation);
     this.toggleVisibility(false, animation);
-  }
-
-  private updateHitDamage (damage: number): boolean {
-    const lyingDown = this.falling || this.crawling;
-    const dead = this.updateHealth(damage);
-    if (!lyingDown) return false;
-
-    if (!dead) this.playSound('hit', true);
-
-    else if (this.crawling) {
-      let duration = undefined;
-
-      if (!this.crawlAnimation?.completed) {
-        this.character.position.z = this.rotation.z;
-        this.crawlAnimation?.pause();
-
-        this.animations.falling
-          .setEffectiveTimeScale(1.0)
-          .setEffectiveWeight(1.0)
-          .stopWarping()
-          .stopFading();
-
-        duration = 0.0;
-      }
-
-      this.toggleVisibility(false, 'crawlDeath');
-      this.updateAnimation('Idle', 'crawlDeath', duration);
-    }
-
-    return true;
-  }
-
-  private blockingAnimation (): boolean {
-    return this.attacking || this.falling || this.screaming || this.animationUpdate;
-  }
-
-  private toggleAnimation (): void {
-    if (this.blockingAnimation()) return;
-
-    const attackDistance = this.crawling ? 1.5 : this.attackDistance;
-    if (this.distance < attackDistance) { this.attack(); return; }
-    if (this.crawling || (!CAN_LOSE && this.running)) return;
-
-    const idleAnimation   = this.distance   > this.walkDistance;
-    const screamAnimation = this.distance   < this.runDistance;
-    const walkAnimation   = !idleAnimation && !screamAnimation;
-    const scream          = !this.screamed && screamAnimation;
-
-         if (CAN_LOSE && this.moving && idleAnimation) this.idle();
-    else if (!this.moving && walkAnimation)            this.walk();
-    else if (!(CAN_LOSE && this.running) && scream)    this.scream();
   }
 
   public headHit (damage: number, kill: boolean): void {
@@ -348,6 +301,7 @@ export default class Enemy extends Character
       this.animations.softAttack.stop();
       this.animations.hardAttack.stop();
 
+      clearTimeout(this.hittingTimeout);
       clearTimeout(this.attackTimeout);
       clearTimeout(this.animTimeout);
       this.attacking = false;
@@ -368,6 +322,28 @@ export default class Enemy extends Character
     clearTimeout(this.animTimeout);
     clearTimeout(this.hitTimeout);
     this.animations.hit.stop();
+  }
+
+  private idle (): void {
+    if (this.dead) return;
+
+    const duration = +!this.attacking * 0.4 + 0.1;
+    this.updateAnimation('Idle', 'idle', duration);
+
+    this.attacking = false;
+    this.hitting = false;
+
+    this.running = false;
+    this.moving = false;
+  }
+
+  private walk (): void {
+    if (this.dead) return;
+    this.updateAnimation('Walking', 'walk');
+
+    this.hitting = false;
+    this.running = false;
+    this.moving = true;
   }
 
   private scream (): void {
@@ -393,28 +369,6 @@ export default class Enemy extends Character
     this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
   }
 
-  private idle (): void {
-    if (this.dead) return;
-
-    const duration = +!this.attacking * 0.4 + 0.1;
-    this.updateAnimation('Idle', 'idle', duration);
-
-    this.attacking = false;
-    this.hitting = false;
-
-    this.running = false;
-    this.moving = false;
-  }
-
-  private walk (): void {
-    if (this.dead) return;
-    this.updateAnimation('Walking', 'walk');
-
-    this.hitting = false;
-    this.running = false;
-    this.moving = true;
-  }
-
   private run (): void {
     if (this.dead) return;
 
@@ -429,8 +383,8 @@ export default class Enemy extends Character
     this.moving = true;
   }
 
-  private attack (): number {
-    if (this.dead) return 0.0;
+  private attack (): void {
+    if (this.dead) return;
 
     const hard = this.life > 50.0 && Math.random() < 0.5;
     let attack = 'crawlAttack', duration = 0.5,
@@ -449,6 +403,14 @@ export default class Enemy extends Character
     }
 
     this.updateAnimation('Idle', attack, duration);
+
+    this.hittingTimeout = setTimeout(() =>
+      this.canAttack && GameEvents.dispatch('Enemy::Attack',
+        this.worldPosition.setFromMatrixPosition(
+          this.character.matrixWorld
+        )
+      )
+    , hitDelay);
 
     this.attackTimeout = setTimeout(() => {
       if (this.dead) return;
@@ -469,8 +431,6 @@ export default class Enemy extends Character
 
     this.running = false;
     this.moving = false;
-
-    return hitDelay;
   }
 
   public override update (delta: number, player?: Vector3): void {
@@ -483,6 +443,55 @@ export default class Enemy extends Character
     this.distance = this.object.position.distanceToSquared(playerPosition);
     this.character.lookAt(playerPosition.x, 0.0, playerPosition.z);
     this.toggleAnimation();
+  }
+
+  private updateHitDamage (damage: number): boolean {
+    const lyingDown = this.falling || this.crawling;
+    const dead = this.updateHealth(damage);
+    if (!lyingDown) return false;
+
+    if (!dead) this.playSound('hit', true);
+
+    else if (this.crawling) {
+      let duration = undefined;
+
+      if (!this.crawlAnimation?.completed) {
+        this.character.position.z = this.rotation.z;
+        this.crawlAnimation?.pause();
+
+        this.animations.falling
+          .setEffectiveTimeScale(1.0)
+          .setEffectiveWeight(1.0)
+          .stopWarping()
+          .stopFading();
+
+        duration = 0.0;
+      }
+
+      this.toggleVisibility(false, 'crawlDeath');
+      this.updateAnimation('Idle', 'crawlDeath', duration);
+    }
+
+    return true;
+  }
+
+  private blockingAnimation (): boolean {
+    return this.attacking || this.falling || this.screaming || this.animationUpdate;
+  }
+
+  private toggleAnimation (): void {
+    if (this.blockingAnimation()) return;
+    if (this.canAttack) return this.attack();
+    if (this.crawling || (!CAN_LOSE && this.running)) return;
+
+    const idleAnimation   = this.distance   > this.walkDistance;
+    const screamAnimation = this.distance   < this.runDistance;
+    const walkAnimation   = !idleAnimation && !screamAnimation;
+    const scream          = !this.screamed && screamAnimation;
+
+         if (CAN_LOSE && this.moving && idleAnimation) this.idle();
+    else if (!this.moving && walkAnimation)            this.walk();
+    else if (!(CAN_LOSE && this.running) && scream)    this.scream();
   }
 
   public override dispose (): void {
@@ -631,6 +640,10 @@ export default class Enemy extends Character
 
   public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
+  }
+
+  private get canAttack (): boolean {
+    return this.distance < (this.crawling ? 1.5 : this.attackDistance);
   }
 
   public get index (): number {

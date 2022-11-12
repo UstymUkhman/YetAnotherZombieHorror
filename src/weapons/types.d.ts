@@ -39,6 +39,11 @@ type SoundOptions = {
   stop: boolean
 };
 
+export enum Weapon {
+  Pistol = 'pistol',
+  Rifle = 'rifle'
+}
+
 type HitDamage = {
   head: number,
   body: number,
