@@ -1,4 +1,4 @@
-import type { CharacterSoundConfig, CharacterSound } from '@/characters/types';
+import type { CharacterSoundConfig, CharacterSound, HitDirection } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
@@ -15,6 +15,7 @@ import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
 import type Character from '@/characters/Character';
+import { degToRad } from 'three/src/math/MathUtils';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -126,25 +127,6 @@ export default class WhiteBox
     this.scene.add(ground);
   }
 
-  private async createCharacters (): Promise<void> {
-    this.enemies = new Enemies(this.envMap);
-    await this.player.loadCharacter(this.envMap);
-    Physics.setCharacter(this.player.collider, 90);
-
-    await this.addWeaponSounds(this.pistol);
-    await this.addWeaponSounds(this.rifle);
-
-    this.player.setPistol([], this.pistol);
-    this.addCharacterSounds(this.player);
-
-    this.player.addRifle(this.rifle);
-    this.player.pickRifle();
-
-    Physics.pause = false;
-    RAF.add(this.update);
-    RAF.pause = false;
-  }
-
   private createColliders (): void {
     const halfSize = SCENE_SIZE * 0.5;
     const { position, height } = Configs.Level;
@@ -203,6 +185,7 @@ export default class WhiteBox
     document.body.addEventListener('keyup', this.onKeyRelease);
     document.body.addEventListener('click', this.onPointerLock);
 
+    GameEvents.add('Enemy::Attack', this.onPlayerHit.bind(this));
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
     GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
@@ -252,8 +235,23 @@ export default class WhiteBox
     });
   }
 
-  private onEnemyActive (): void {
-    this.player.setTargets(this.enemies.colliders);
+  private async createCharacters (): Promise<void> {
+    this.enemies = new Enemies(this.envMap);
+    await this.player.loadCharacter(this.envMap);
+    Physics.setCharacter(this.player.collider, 90);
+
+    await this.addWeaponSounds(this.pistol);
+    await this.addWeaponSounds(this.rifle);
+
+    this.player.setPistol([], this.pistol);
+    this.addCharacterSounds(this.player);
+
+    this.player.addRifle(this.rifle);
+    this.player.pickRifle();
+
+    Physics.pause = false;
+    RAF.add(this.update);
+    RAF.pause = false;
   }
 
   private playCharacter (event: GameEvent): void {
@@ -294,12 +292,6 @@ export default class WhiteBox
     event.key === 'f' && this.rifle.addAmmo();
   }
 
-  private requestPointerLock (): void {
-    if (!this.controls) return;
-    this.pointer.requestPointerLock();
-    this.toggleControls(true);
-  }
-
   private addGameObject (event: GameEvent): void {
     const object = event.data as Object3D;
     this.scene.add(object);
@@ -322,9 +314,60 @@ export default class WhiteBox
     Camera.updateState();
   }
 
+  private onPlayerHit (event: GameEvent): void {
+    let angle = Math.atan2(
+      (event.data as Vector3).z - this.player.location.position.z,
+      (event.data as Vector3).x - this.player.location.position.x
+    );
+
+    const orientation = degToRad(this.player.location.rotation);
+
+    let direction: HitDirection = 'Front';
+
+    if (Math.abs(orientation) > PI.m075) {
+      angle = Math.abs(angle);
+
+      direction = angle < PI.d4 ? 'Right'
+        : angle > PI.m075 ? 'Left' : 'Front';
+    }
+
+    else if (orientation < -PI.d4 && orientation > -PI.m075) {
+      angle *= -1.0;
+
+      direction = angle < -PI.d4 && angle > -PI.m075 ? 'Right'
+        : angle < PI.m075 && angle > PI.d4 ? 'Left' : 'Front';
+    }
+
+    else if (Math.abs(orientation) < PI.d4) {
+      angle = Math.abs(angle);
+
+      direction = angle > PI.m075 ? 'Right'
+      : angle < PI.d4 ? 'Left' : 'Front';
+    }
+
+    else if (orientation < PI.m075 && orientation > PI.d4) {
+      angle *= -1.0;
+
+      direction = angle < PI.m075 && angle > PI.d4 ? 'Right'
+        : angle < -PI.d4 && angle > -PI.m075 ? 'Left' : 'Front';
+    }
+
+    this.player.hit(direction);
+  }
+
   private toggleControls (enable: boolean) {
     if (!this.controls) return;
     this.controls.pause = !enable;
+  }
+
+  private requestPointerLock (): void {
+    if (!this.controls) return;
+    this.pointer.requestPointerLock();
+    this.toggleControls(true);
+  }
+
+  private onEnemyActive (): void {
+    this.player.setTargets(this.enemies.colliders);
   }
 
   private removeEvents (): void {
@@ -335,6 +378,7 @@ export default class WhiteBox
     GameEvents.remove('Level::RemoveObject');
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('SFX::Character');
+    GameEvents.remove('Enemy::Attack');
 
     GameEvents.remove('Enemy::Active');
     GameEvents.remove('Enemy::Spawn');

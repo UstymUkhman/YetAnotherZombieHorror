@@ -264,6 +264,10 @@ export default class Character
     this.dead = false;
   }
 
+  protected get blockingAnimation (): boolean {
+    return this.animationUpdate;
+  }
+
   protected set mesh (mesh: Assets.GLTF) {
     this.model = mesh;
   }

@@ -1,5 +1,6 @@
-import type { PlayerAnimations, PlayerLocation, PlayerMovement } from '@/characters/types';
+import type { PlayerAnimations, PlayerHitAnimation, HitDirection } from '@/characters/types';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { PlayerMovement, PlayerLocation } from '@/characters/types';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
 import type { Texture } from 'three/src/textures/Texture';
@@ -14,6 +15,7 @@ import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 
 import type { Directions } from '@/controls';
+import { Weapon } from '@/weapons/types.d';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
 
@@ -46,9 +48,9 @@ export default class Player extends Character
   private pistol?: Pistol;
   private rifle!: Rifle;
 
+  // private moveTime = 0.0;
   private shootTime = 0.0;
   private idleTime = 0.0;
-  // private moveTime = 0.0;
   private aimTime = 0.0;
 
   public constructor () {
@@ -93,21 +95,16 @@ export default class Player extends Character
     return direction as PlayerAnimations || 'Idle';
   }
 
+  private getHitAnimation (direction: HitDirection): PlayerHitAnimation {
+    return `${this.currentWeapon}${direction}Hit`;
+  }
+
   private hasMovingDirection (directions: Directions): boolean {
     return (directions as unknown as Array<number>).includes(1);
   }
 
   private getWeaponAnimation (movement: string): string {
-    return `${this.equipRifle ? 'rifle' : 'pistol'}${movement}`;
-  }
-
-  private getPlayerAnimation (): PlayerAnimations {
-    const weapon = this.equipRifle ? 'rifle' : 'pistol';
-    return this.lastAnimation.replace(weapon, '') as PlayerAnimations;
-  }
-
-  private blockingAnimation (): boolean {
-    return this.aiming || this.hitting || this.reloading || this.animationUpdate;
+    return `${this.currentWeapon}${movement}`;
   }
 
   public rotate (x: number, y: number, maxTilt = 0.25): void {
@@ -131,7 +128,7 @@ export default class Player extends Character
     const now = Date.now();
     const idleDelay = Math.max(350 - (now - this.idleTime), 0);
 
-    if (this.blockingAnimation() || idleDelay)
+    if (this.blockingAnimation || idleDelay)
       return setTimeout(this.idle.bind(this), idleDelay);
 
     GameEvents.dispatch('Player::Aim', !this.equipRifle, true);
@@ -153,9 +150,9 @@ export default class Player extends Character
 
   public move (directions: Directions /*, now = Date.now() */): void {
     // if (now - this.moveTime < 350) return;
-    // if (isFinite(now) && this.blockingAnimation()) return;
+    // if (isFinite(now) && this.blockingAnimation) return;
 
-    if (this.blockingAnimation()) {
+    if (this.blockingAnimation) {
       if (this.reloading)
         this.moving = this.hasMovingDirection(directions);
       return;
@@ -167,20 +164,19 @@ export default class Player extends Character
     if (this.lastAnimation === animation) return;
     this.updateAnimation(direction, animation);
 
-    GameEvents.dispatch('Player::Run', false, true);
-    GameEvents.dispatch('Player::Aim', false, true);
-
+    this.running = false;
+    // this.moveTime = now;
     this.moving = direction !== 'Idle';
     this.moving && Camera.runAnimation(false);
     this.hasRifle && this.rifle.updatePosition(1);
 
-    // this.moveTime = now;
-    this.running = false;
+    GameEvents.dispatch('Player::Run', false, true);
+    GameEvents.dispatch('Player::Aim', false, true);
   }
 
   public run (directions: Directions, running: boolean): NodeJS.Timeout | void {
+    if (this.blockingAnimation) return;
     if (this.running === running) return;
-    if (this.blockingAnimation()) return;
 
     const run = this.getWeaponAnimation('Run');
 
@@ -204,8 +200,38 @@ export default class Player extends Character
     }
   }
 
+  public hit (direction: HitDirection): void {
+    if (this.dead) return;
+
+    if (this.updateHealth(1.0)) {
+      return this.die();
+    }
+
+    const hitAnimation = this.getHitAnimation(direction);
+    if (this.aiming) this.stopAiming(this.running);
+
+    this.updateAnimation('Idle', hitAnimation);
+    clearTimeout(this.reloadTimeout);
+    this.playSound('hit', true);
+
+    // this.toggleMesh(false);
+    this.weapon.stopReloading();
+    // Camera.setNearPlane(0.5, 100);
+
+    /* this.hitTimeout = */ setTimeout(() => {
+      if (this.dead) return;
+      this.hitting = false;
+      this.idle();
+    }, +!this.equipRifle * 500 + 1e3);
+
+    this.reloading = false;
+    this.running = false;
+    this.hitting = true;
+    this.moving = false;
+  }
+
   public startAiming (animation: boolean): void {
-    if (this.blockingAnimation()) return;
+    if (this.blockingAnimation) return;
     this.weapon.aiming = this.aiming = true;
     GameEvents.dispatch('Player::Run', false, true);
 
@@ -281,7 +307,7 @@ export default class Player extends Character
 
   public reload (getMovement: () => PlayerMovement): void {
     const moving = this.moving;
-    if (this.blockingAnimation()) return;
+    if (this.blockingAnimation) return;
     if (this.weapon.full || !this.weapon.inStock) return;
 
     GameEvents.dispatch('Player::Run', false, true);
@@ -361,8 +387,8 @@ export default class Player extends Character
     GameEvents.dispatch('Weapon::Change', rifle);
 
     let animation = rifle ?
-      this.lastAnimation.replace('pistol', 'rifle') :
-      this.lastAnimation.replace('rifle', 'pistol');
+      this.lastAnimation.replace(Weapon.Pistol, Weapon.Rifle) :
+      this.lastAnimation.replace(Weapon.Rifle, Weapon.Pistol);
 
     if (!rifle && !this.animations[animation]) {
       animation = animation.replace(/BackwardLeft|BackwardRight/gm, 'Backward');
@@ -370,7 +396,7 @@ export default class Player extends Character
     }
 
     this.lastAnimation !== animation && this.updateAnimation(
-      this.getPlayerAnimation(), animation
+      this.playerAnimation, animation
     );
 
     this.hasRifle = this.equipRifle || rifle;
@@ -453,13 +479,13 @@ export default class Player extends Character
   }
 
   public changeWeapon (): void {
-    if (!this.hasRifle || this.blockingAnimation()) return;
+    if (!this.hasRifle || this.blockingAnimation) return;
     const aim = !this.moving && this.equipRifle;
 
     GameEvents.dispatch('Player::Aim', aim, true);
     this.toggleMesh(true);
 
-    !this.equipRifle ? this.setRifle() : this.setPistol();
+    this.equipRifle ? this.setPistol() : this.setRifle();
     Camera.updateNearPlane(this.aiming, this.equipRifle, this.running);
   }
 
@@ -508,7 +534,7 @@ export default class Player extends Character
     super.dispose();
   }
 
-  public override die (): void {
+  protected override die (): void {
     this.updateAnimation('Idle', 'death', 0.5);
     GameEvents.dispatch('Player::Death');
     clearTimeout(this.reloadTimeout);
@@ -523,6 +549,14 @@ export default class Player extends Character
     super.die();
   }
 
+  protected override get blockingAnimation (): boolean {
+    return this.aiming || this.hitting || this.reloading || super.blockingAnimation;
+  }
+
+  private get playerAnimation (): PlayerAnimations {
+    return this.lastAnimation.replace(this.currentWeapon, '') as PlayerAnimations;
+  }
+
   private get meshes (): Array<SkinnedMesh> {
     return this.mesh.children[0].children[1].children as Array<SkinnedMesh>;
   }
@@ -534,6 +568,10 @@ export default class Player extends Character
         Math.atan2(-this.rotation.x, this.rotation.z)
       )
     };
+  }
+
+  private get currentWeapon (): Weapon {
+    return this.equipRifle ? Weapon.Rifle : Weapon.Pistol;
   }
 
   public get coords (): Vector2 {

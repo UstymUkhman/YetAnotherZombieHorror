@@ -8,9 +8,9 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 import { GameEvents } from '@/events/GameEvents';
-import { Vector3 } from 'three/src/math/Vector3';
 
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
@@ -28,7 +28,6 @@ const CAN_LOSE = true; // Pass to walk/idle animation after screaming
 export default class Enemy extends Character
 {
   private readonly onLegHit = this.crawl.bind(this);
-  private readonly worldPosition = new Vector3();
 
   protected override animationUpdate = true;
   protected override lastAnimation = 'idle';
@@ -392,7 +391,7 @@ export default class Enemy extends Character
 
     if (!this.crawling) {
       attack = hard ? 'hardAttack' : 'softAttack';
-      hitDelay = hard ? 750.0 : 1000.0;
+      hitDelay = hard ? 1300.0 : 1000.0;
       delay = hard ? 3000.0 : 2500.0;
 
       setTimeout(this.playSound.bind(
@@ -405,10 +404,8 @@ export default class Enemy extends Character
     this.updateAnimation('Idle', attack, duration);
 
     this.hittingTimeout = setTimeout(() =>
-      this.canAttack && GameEvents.dispatch('Enemy::Attack',
-        this.worldPosition.setFromMatrixPosition(
-          this.character.matrixWorld
-        )
+      this.canAttack && GameEvents.dispatch(
+        'Enemy::Attack', this.position
       )
     , hitDelay);
 
@@ -475,12 +472,8 @@ export default class Enemy extends Character
     return true;
   }
 
-  private blockingAnimation (): boolean {
-    return this.attacking || this.falling || this.screaming || this.animationUpdate;
-  }
-
   private toggleAnimation (): void {
-    if (this.blockingAnimation()) return;
+    if (this.blockingAnimation) return;
     if (this.canAttack) return this.attack();
     if (this.crawling || (!CAN_LOSE && this.running)) return;
 
@@ -627,6 +620,10 @@ export default class Enemy extends Character
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
+  }
+
+  protected override get blockingAnimation (): boolean {
+    return this.attacking || this.falling || this.screaming || super.blockingAnimation;
   }
 
   private get material (): MeshStandardMaterial {
