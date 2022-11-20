@@ -403,11 +403,14 @@ export default class Enemy extends Character
 
     this.updateAnimation('Idle', attack, duration);
 
-    this.hittingTimeout = setTimeout(() =>
-      this.canAttack && GameEvents.dispatch(
-        'Enemy::Attack', this.position
-      )
-    , hitDelay);
+    this.hittingTimeout = setTimeout(() => {
+      const { hardAttack, softAttack } = Configs.Enemy.damage;
+      const damage = hard ? hardAttack : softAttack;
+
+      this.canAttack && GameEvents.dispatch('Enemy::Attack', {
+        position: this.position, damage
+      });
+    }, hitDelay);
 
     this.attackTimeout = setTimeout(() => {
       if (this.dead) return;

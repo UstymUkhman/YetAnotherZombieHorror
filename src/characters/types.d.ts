@@ -3,7 +3,7 @@ import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 import type { Weapon } from '@/weapons/types';
-import Configs from '@/configs';
+import type Configs from '@/configs';
 
 type CharacterMove         = { speed: number, direction: PlayerDirection };
 type CharacterConfig       = typeof Configs.Player | typeof Configs.Enemy;
@@ -14,6 +14,7 @@ type CharacterSound        = keyof PlayerSounds | keyof EnemySounds;
 
 type PlayerAnimations      = keyof typeof Configs.Player.animations;
 type EnemyAnimations       = keyof typeof Configs.Enemy.animations;
+type EnemyAttackData       = { position: Vector3, damage: number };
 
 type CharacterSounds       = Map<CharacterSound, PositionalAudio>;
 type EnemyDeathAnimation   = 'crawlDeath' | 'death' | 'headshot';

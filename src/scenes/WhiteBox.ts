@@ -1,4 +1,4 @@
-import type { CharacterSoundConfig, CharacterSound, HitDirection } from '@/characters/types';
+import type { CharacterSoundConfig, CharacterSound, EnemyAttackData, HitDirection } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
@@ -315,12 +315,13 @@ export default class WhiteBox
   }
 
   private onPlayerHit (event: GameEvent): void {
-    let angle = Math.atan2(
-      (event.data as Vector3).z - this.player.location.position.z,
-      (event.data as Vector3).x - this.player.location.position.x
-    );
-
     const orientation = degToRad(this.player.location.rotation);
+    const { position, damage } = event.data as EnemyAttackData;
+
+    let angle = Math.atan2(
+      position.z - this.player.location.position.z,
+      position.x - this.player.location.position.x
+    );
 
     let direction: HitDirection = 'Front';
 
@@ -352,7 +353,7 @@ export default class WhiteBox
         : angle < -PI.d4 && angle > -PI.m075 ? 'Left' : 'Front';
     }
 
-    this.player.hit(direction);
+    this.player.hit(direction, damage);
   }
 
   private toggleControls (enable: boolean) {

@@ -164,29 +164,33 @@ export default class Player extends Character
     }
   }
 
-  public hit (direction: HitDirection): void {
+  public hit (direction: HitDirection, damage: number): void {
     if (this.dead) return;
 
-    if (this.updateHealth(1.0)) {
+    if (this.updateHealth(damage)) {
       return this.die();
     }
 
     this.aiming && this.stopAiming(this.running);
+    const duration = +!this.equipRifle * 100.0 + 1200.0;
     const hitAnimation = this.getHitAnimation(direction);
 
-    const duration = this.getAnimationDuration(hitAnimation);
     this.updateAnimation('Idle', hitAnimation);
+    Camera.isFPS && Camera.headAnimation(
+      direction, duration * 0.5
+    );
 
     clearTimeout(this.reloadTimeout);
-    Camera.headAnimation(duration);
-
     this.playSound('hit', true);
     this.weapon.stopReloading();
 
     setTimeout(() => {
       if (this.dead) return;
       this.hitting = false;
-      this.idle();
+
+      Controls.runs
+        ? this.run(true)
+        : this.move();
     }, duration);
 
     this.reloading = false;
@@ -369,7 +373,7 @@ export default class Player extends Character
   public changeCamera (view: boolean): void {
     if (!view) Camera.changeShoulder(this.aiming, this.equipRifle);
 
-    else {
+    else if (!this.hitting) {
       const aiming = this.equipRifle && !this.aiming || !Camera.isFPS && this.aiming;
       Camera.changeView(this.running, this.aiming, this.equipRifle);
 

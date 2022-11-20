@@ -1,5 +1,6 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { HitDirection } from '@/characters/types';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Vector3 } from 'three/src/math/Vector3';
@@ -156,6 +157,35 @@ export class CameraManager
     });
   }
 
+  public headAnimation (direction: HitDirection, duration: number): void {
+    const { x: px, y: py, z: pz } = this.camera.position;
+    const { x: rx, y: ry, z: rz } = this.camera.rotation;
+
+    switch (direction) {
+      case 'Front':
+        anime({
+          targets: this.camera.position,
+          direction: 'alternate',
+          easing: 'easeOutSine',
+          duration,
+          x: px,
+          y: py + 0.2,
+          z: pz
+        });
+
+        anime({
+          targets: this.camera.rotation,
+          direction: 'alternate',
+          easing: 'easeOutSine',
+          duration,
+          x: rx - 0.2,
+          y: ry,
+          z: rz
+        });
+      break;
+    }
+  }
+
   public shakeAnimation (duration: number): void {
     this.shakeDuration = Math.max(duration, 0);
 
@@ -171,11 +201,6 @@ export class CameraManager
     else {
       this.camera.position.copy(this.getPosition());
     }
-  }
-
-  public headAnimation (duration: number): void {
-    if (!this.fps) return;
-    console.log(duration);
   }
 
   public runAnimation (running: boolean): void {

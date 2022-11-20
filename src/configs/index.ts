@@ -124,6 +124,7 @@ namespace Configs
     moves: parseCharacterMoves(enemyMoves),
     animations: EnemyData.animations,
 
+    damage: EnemyData.damage,
     sounds: EnemyData.sounds,
     model: EnemyData.model
   });
