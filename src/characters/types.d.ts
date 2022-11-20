@@ -3,11 +3,9 @@ import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 import type { Weapon } from '@/weapons/types';
-import type { Directions } from '@/controls';
 import Configs from '@/configs';
 
 type CharacterMove         = { speed: number, direction: PlayerDirection };
-type PlayerMovement        = { directions: Directions, running: boolean };
 type CharacterConfig       = typeof Configs.Player | typeof Configs.Enemy;
 
 type PlayerLocation        = { position: Vector3, rotation: number };

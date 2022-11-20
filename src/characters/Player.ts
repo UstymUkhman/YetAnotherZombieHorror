@@ -1,9 +1,9 @@
 import type { PlayerAnimations, PlayerHitAnimation, HitDirection } from '@/characters/types';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import type { PlayerMovement, PlayerLocation } from '@/characters/types';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
 import type { Texture } from 'three/src/textures/Texture';
+import type { PlayerLocation } from '@/characters/types';
 import type { Object3D } from 'three/src/core/Object3D';
 import { Quaternion } from 'three/src/math/Quaternion';
 import { radToDeg } from 'three/src/math/MathUtils';
@@ -14,15 +14,14 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 
-import type { Directions } from '@/controls';
 import { Weapon } from '@/weapons/types.d';
 import type Pistol from '@/weapons/Pistol';
 import type Rifle from '@/weapons/Rifle';
-
 import { Vector } from '@/utils/Vector';
 import { Direction } from '@/controls';
 import Camera from '@/managers/Camera';
 
+import Controls from '@/controls';
 import Configs from '@/configs';
 import anime from 'animejs';
 
@@ -48,7 +47,6 @@ export default class Player extends Character
   private pistol?: Pistol;
   private rifle!: Rifle;
 
-  // private moveTime = 0.0;
   private shootTime = 0.0;
   private idleTime = 0.0;
   private aimTime = 0.0;
@@ -75,36 +73,6 @@ export default class Player extends Character
     Camera.setTo(character.scene);
     this.currentAnimation.play();
     this.rotate(-Math.PI, 0.0);
-  }
-
-  private getMovementAnimation (directions: Directions): PlayerAnimations {
-    let direction = directions[Direction.UP]
-      ? 'Forward' : directions[Direction.DOWN]
-      ? 'Backward' : '';
-
-    if (!this.equipRifle && !direction)
-      direction = directions[Direction.LEFT]
-        ? 'Left' : directions[Direction.RIGHT]
-        ? 'Right' : direction;
-
-    else if (this.equipRifle)
-      direction += directions[Direction.LEFT]
-        ? 'Left' : directions[Direction.RIGHT]
-        ? 'Right' : '';
-
-    return direction as PlayerAnimations || 'Idle';
-  }
-
-  private getHitAnimation (direction: HitDirection): PlayerHitAnimation {
-    return `${this.currentWeapon}${direction}Hit`;
-  }
-
-  private hasMovingDirection (directions: Directions): boolean {
-    return (directions as unknown as Array<number>).includes(1);
-  }
-
-  private getWeaponAnimation (movement: string): string {
-    return `${this.currentWeapon}${movement}`;
   }
 
   public rotate (x: number, y: number, maxTilt = 0.25): void {
@@ -148,25 +116,22 @@ export default class Player extends Character
     );
   }
 
-  public move (directions: Directions /*, now = Date.now() */): void {
-    // if (now - this.moveTime < 350) return;
-    // if (isFinite(now) && this.blockingAnimation) return;
-
+  public move (): void {
     if (this.blockingAnimation) {
       if (this.reloading)
-        this.moving = this.hasMovingDirection(directions);
+        this.moving = Controls.movingDirection;
       return;
     }
 
-    const direction = this.getMovementAnimation(directions);
+    const direction = this.movementAnimation;
     const animation = this.getWeaponAnimation(direction);
 
     if (this.lastAnimation === animation) return;
     this.updateAnimation(direction, animation);
 
     this.running = false;
-    // this.moveTime = now;
     this.moving = direction !== 'Idle';
+
     this.moving && Camera.runAnimation(false);
     this.hasRifle && this.rifle.updatePosition(1);
 
@@ -174,7 +139,7 @@ export default class Player extends Character
     GameEvents.dispatch('Player::Aim', false, true);
   }
 
-  public run (directions: Directions, running: boolean): NodeJS.Timeout | void {
+  public run (running: boolean): NodeJS.Timeout | void {
     if (this.blockingAnimation) return;
     if (this.running === running) return;
 
@@ -183,12 +148,11 @@ export default class Player extends Character
     if (!running || this.lastAnimation === run) {
       this.running = false;
 
-      return !this.hasMovingDirection(directions)
-        ? setTimeout(this.idle.bind(this), 150)
-        : this.move(directions);
+      return Controls.movingDirection ? this.move()
+        : setTimeout(this.idle.bind(this), 150);
     }
 
-    if (directions[Direction.UP]) {
+    if (Controls.moves[Direction.UP]) {
       this.hasRifle && this.rifle.updatePosition(1.5);
       GameEvents.dispatch('Player::Run', true, true);
 
@@ -207,22 +171,23 @@ export default class Player extends Character
       return this.die();
     }
 
+    this.aiming && this.stopAiming(this.running);
     const hitAnimation = this.getHitAnimation(direction);
-    if (this.aiming) this.stopAiming(this.running);
 
+    const duration = this.getAnimationDuration(hitAnimation);
     this.updateAnimation('Idle', hitAnimation);
+
     clearTimeout(this.reloadTimeout);
+    Camera.headAnimation(duration);
+
     this.playSound('hit', true);
-
-    // this.toggleMesh(false);
     this.weapon.stopReloading();
-    // Camera.setNearPlane(0.5, 100);
 
-    /* this.hitTimeout = */ setTimeout(() => {
+    setTimeout(() => {
       if (this.dead) return;
       this.hitting = false;
       this.idle();
-    }, +!this.equipRifle * 500 + 1e3);
+    }, duration);
 
     this.reloading = false;
     this.running = false;
@@ -305,7 +270,7 @@ export default class Player extends Character
     this.shooting = false;
   }
 
-  public reload (getMovement: () => PlayerMovement): void {
+  public reload (): void {
     const moving = this.moving;
     if (this.blockingAnimation) return;
     if (this.weapon.full || !this.weapon.inStock) return;
@@ -316,7 +281,7 @@ export default class Player extends Character
     const near = +this.running * 0.02 + 0.13;
     this.running = this.moving = false;
 
-    Camera.setNearPlane(near, 400);
+    Camera.setNearPlane(near, 400.0);
     this.weapon.startReloading();
     Camera.runAnimation(false);
 
@@ -324,27 +289,21 @@ export default class Player extends Character
     this.toggleMesh(true);
 
     this.reloadTimeout = setTimeout(() => {
-      const { directions } = getMovement();
-      const moved = !this.hasMovingDirection(directions);
+      const moved = !Controls.movingDirection;
       (moving || this.moving) && moved && this.weapon.stopReloading();
 
       this.weapon.addAmmo(0.0);
       this.reloading = false;
-    }, 2000);
+    }, 2000.0);
 
     this.animTimeout = setTimeout(() => {
       if (this.dead) return;
       this.toggleMesh(false);
       this.weapon.stopReloading();
-      Camera.setNearPlane(0.5, 100);
 
-      const { directions, running } = getMovement();
-      running ? this.run(directions, running) : this.move(directions);
-    }, 2500);
-  }
-
-  protected override updateAnimation (animation: PlayerAnimations, action: string, duration = 0.1): NodeJS.Timeout {
-    return super.updateAnimation(animation, action, duration);
+      Camera.setNearPlane(0.5, 100.0);
+      Controls.runs ? this.run(true) : this.move();
+    }, 2500.0);
   }
 
   public setPistol (walls = this.weapon.walls, pistol?: Pistol): void {
@@ -519,6 +478,14 @@ export default class Player extends Character
     this.shooting && this.startShooting();
   }
 
+  protected override updateAnimation (
+    animation: PlayerAnimations,
+    action: string,
+    duration = 0.1
+  ): NodeJS.Timeout {
+    return super.updateAnimation(animation, action, duration);
+  }
+
   public override dispose (): void {
     clearTimeout(this.reloadTimeout);
     clearTimeout(this.animTimeout);
@@ -549,8 +516,36 @@ export default class Player extends Character
     super.die();
   }
 
+  private getHitAnimation (direction: HitDirection): PlayerHitAnimation {
+    return `${this.currentWeapon}${direction}Hit`;
+  }
+
+  private getWeaponAnimation (movement: string): string {
+    return `${this.currentWeapon}${movement}`;
+  }
+
   protected override get blockingAnimation (): boolean {
     return this.aiming || this.hitting || this.reloading || super.blockingAnimation;
+  }
+
+  private get movementAnimation (): PlayerAnimations {
+    const directions = Controls.moves;
+
+    let direction = directions[Direction.UP]
+      ? 'Forward' : directions[Direction.DOWN]
+      ? 'Backward' : '';
+
+    if (!this.equipRifle && !direction)
+      direction = directions[Direction.LEFT]
+        ? 'Left' : directions[Direction.RIGHT]
+        ? 'Right' : direction;
+
+    else if (this.equipRifle)
+      direction += directions[Direction.LEFT]
+        ? 'Left' : directions[Direction.RIGHT]
+        ? 'Right' : '';
+
+    return direction as PlayerAnimations || 'Idle';
   }
 
   private get playerAnimation (): PlayerAnimations {

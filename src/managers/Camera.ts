@@ -173,6 +173,11 @@ export class CameraManager
     }
   }
 
+  public headAnimation (duration: number): void {
+    if (!this.fps) return;
+    console.log(duration);
+  }
+
   public runAnimation (running: boolean): void {
     if (running && this.runTimeout) return;
 
