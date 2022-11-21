@@ -177,18 +177,6 @@ describe('Configs', () => {
       Configs.Pistol.model.slice(0, Configs.Pistol.model.indexOf('.'))
     );
 
-    expect(typeof Configs.Pistol.damage.head).toStrictEqual('number');
-    expect(Configs.Pistol.damage.head).toBeLessThanOrEqual(100);
-    expect(Configs.Pistol.damage.head).toBeGreaterThan(0);
-
-    expect(typeof Configs.Pistol.damage.body).toStrictEqual('number');
-    expect(Configs.Pistol.damage.body).toBeLessThanOrEqual(100);
-    expect(Configs.Pistol.damage.body).toBeGreaterThan(0);
-
-    expect(typeof Configs.Pistol.damage.leg).toStrictEqual('number');
-    expect(Configs.Pistol.damage.leg).toBeLessThanOrEqual(100);
-    expect(Configs.Pistol.damage.leg).toBeGreaterThan(0);
-
     expect(typeof Configs.Pistol.headshot).toStrictEqual('number');
     expect(Configs.Pistol.headshot).toBeLessThanOrEqual(1.0);
     expect(Configs.Pistol.headshot).toBeGreaterThan(0.0);
@@ -255,18 +243,6 @@ describe('Configs', () => {
     expect(Configs.Rifle.textures).toStrictEqual(
       Configs.Rifle.model.slice(0, Configs.Rifle.model.indexOf('.'))
     );
-
-    expect(typeof Configs.Rifle.damage.head).toStrictEqual('number');
-    expect(Configs.Rifle.damage.head).toBeLessThanOrEqual(100);
-    expect(Configs.Rifle.damage.head).toBeGreaterThan(0);
-
-    expect(typeof Configs.Rifle.damage.body).toStrictEqual('number');
-    expect(Configs.Rifle.damage.body).toBeLessThanOrEqual(100);
-    expect(Configs.Rifle.damage.body).toBeGreaterThan(0);
-
-    expect(typeof Configs.Rifle.damage.leg).toStrictEqual('number');
-    expect(Configs.Rifle.damage.leg).toBeLessThanOrEqual(100);
-    expect(Configs.Rifle.damage.leg).toBeGreaterThan(0);
 
     expect(typeof Configs.Rifle.headshot).toStrictEqual('number');
     expect(Configs.Rifle.headshot).toBeLessThanOrEqual(1.0);

@@ -165,13 +165,9 @@ export default class Player extends Character
   }
 
   public hit (direction: HitDirection, damage: number): void {
-    if (this.dead) return;
-
-    if (this.updateHealth(damage)) {
-      return this.die();
-    }
-
+    if (this.dead || this.updateHealth(damage)) return;
     this.aiming && this.stopAiming(this.running);
+
     const duration = +!this.equipRifle * 100.0 + 1200.0;
     const hitAnimation = this.getHitAnimation(direction);
 

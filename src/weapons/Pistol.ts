@@ -13,6 +13,8 @@ export default class Pistol extends Weapon
   private readonly position = Configs.Pistol.position as Vector3;
   private readonly rotation = Configs.Pistol.rotation as Euler;
 
+  private readonly damage = Configs.Gameplay.damage.pistol;
+
   public constructor (envMap: Texture) {
     super(Configs.Pistol as WeaponConfig);
     this.load(envMap);
@@ -87,6 +89,11 @@ export default class Pistol extends Weapon
         opacity: 1.0
       }), showDelay);
     });
+  }
+
+  public override getDamage (index: number): number {
+    const { head, body, leg } = this.damage;
+    return !index ? head : index === 1 ? body : leg;
   }
 
   public override dispose (): void {

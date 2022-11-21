@@ -25,13 +25,15 @@ import Hole from '@/weapons/Hole';
 import RAF from '@/managers/RAF';
 import anime from 'animejs';
 
-export default class Weapon
+export default abstract class Weapon
 {
   private readonly onUpdate = this.updateAimSign.bind(this);
   private readonly onShoot = this.updateBullets.bind(this);
 
   private readonly bullets: Map<string, Mesh> = new Map();
   private readonly hits: Array<Intersection<Mesh>> = [];
+
+  public abstract getDamage(index: number): number;
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
@@ -162,11 +164,6 @@ export default class Weapon
 
   private getEvent (index: number): string {
     return !index ? 'Hit::Head' : index === 1 ? 'Hit::Body' : 'Hit::Leg';
-  }
-
-  public getDamage (index: number): number {
-    const { head, body, leg } = this.config.damage;
-    return !index ? head : index === 1 ? body : leg;
   }
 
   private updateAimSign (): boolean | void {

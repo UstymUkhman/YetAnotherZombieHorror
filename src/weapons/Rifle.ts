@@ -29,6 +29,8 @@ export default class Rifle extends Weapon
 
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;
+
+  private readonly damage = Configs.Gameplay.damage.rifle;
   private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone!: Assets.GLTF;
@@ -126,6 +128,11 @@ export default class Rifle extends Weapon
         ammo: this.totalAmmo
       });
     }
+  }
+
+  public override getDamage (index: number): number {
+    const { head, body, leg } = this.damage;
+    return !index ? head : index === 1 ? body : leg;
   }
 
   public override startReloading (): void {
