@@ -1,0 +1,79 @@
+{
+  "easy": {
+    "enemy": {
+      "canLose": true,
+      "immune": false
+    },
+
+    "damage": {
+      "enemy": {
+        "strong": 10,
+        "soft": 5
+      },
+
+      "pistol": {
+        "head": 90,
+        "body": 25,
+        "leg": 10
+      },
+
+      "rifle": {
+        "head": 100,
+        "body": 50,
+        "leg": 20
+      }
+    }
+  },
+
+  "normal": {
+    "enemy": {
+      "canLose": false,
+      "immune": false
+    },
+
+    "damage": {
+      "enemy": {
+        "strong": 25,
+        "soft": 10
+      },
+
+      "pistol": {
+        "head": 75,
+        "body": 10,
+        "leg": 5
+      },
+
+      "rifle": {
+        "head": 80,
+        "body": 20,
+        "leg": 10
+      }
+    }
+  },
+
+  "hard": {
+    "enemy": {
+      "canLose": false,
+      "immune": true
+    },
+
+    "damage": {
+      "enemy": {
+        "strong": 50,
+        "soft": 25
+      },
+
+      "pistol": {
+        "head": 50,
+        "body": 5,
+        "leg": 1
+      },
+
+      "rifle": {
+        "head": 75,
+        "body": 10,
+        "leg": 5
+      }
+    }
+  }
+}

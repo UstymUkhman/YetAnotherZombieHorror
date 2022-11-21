@@ -21,12 +21,9 @@ import { Material } from '@/utils/Material';
 import Configs from '@/configs';
 import anime from 'animejs';
 
-// Game Difficulty Settings:
-// const ATTACK_IMMUNE = false; // Immune while attacking
-const CAN_LOSE = true; // Pass to walk/idle animation after screaming
-
 export default class Enemy extends Character
 {
+  private readonly canLose = Configs.Gameplay.enemy.canLose;
   private readonly onLegHit = this.crawl.bind(this);
 
   protected override animationUpdate = true;
@@ -404,11 +401,10 @@ export default class Enemy extends Character
     this.updateAnimation('Idle', attack, duration);
 
     this.hittingTimeout = setTimeout(() => {
-      const { hardAttack, softAttack } = Configs.Enemy.damage;
-      const damage = hard ? hardAttack : softAttack;
+      const { strong, soft } = Configs.Gameplay.damage.enemy;
 
       this.canAttack && GameEvents.dispatch('Enemy::Attack', {
-        position: this.position, damage
+        position: this.position, damage: hard ? strong : soft
       });
     }, hitDelay);
 
@@ -478,16 +474,16 @@ export default class Enemy extends Character
   private toggleAnimation (): void {
     if (this.blockingAnimation) return;
     if (this.canAttack) return this.attack();
-    if (this.crawling || (!CAN_LOSE && this.running)) return;
+    if (this.crawling || (!this.canLose && this.running)) return;
 
     const idleAnimation   = this.distance   > this.walkDistance;
     const screamAnimation = this.distance   < this.runDistance;
     const walkAnimation   = !idleAnimation && !screamAnimation;
     const scream          = !this.screamed && screamAnimation;
 
-         if (CAN_LOSE && this.moving && idleAnimation) this.idle();
-    else if (!this.moving && walkAnimation)            this.walk();
-    else if (!(CAN_LOSE && this.running) && scream)    this.scream();
+    if (this.canLose && this.moving && idleAnimation)   this.idle();
+    else if (!this.moving && walkAnimation)             this.walk();
+    else if (!(this.canLose && this.running) && scream) this.scream();
   }
 
   public override dispose (): void {
