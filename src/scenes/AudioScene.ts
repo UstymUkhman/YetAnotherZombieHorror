@@ -60,11 +60,11 @@ export default class AudioScene
     const isLighting = Settings.getEnvironmentValue('lighting');
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
 
+    this.scene.matrixWorldAutoUpdate = false;
     this.camera.matrixAutoUpdate = false;
     this.scene.matrixAutoUpdate = false;
-    this.camera.add(this.listener);
 
-    this.scene.autoUpdate = false;
+    this.camera.add(this.listener);
     this.scene.add(this.player);
 
     this.isRaining && this.createAmbientSound();

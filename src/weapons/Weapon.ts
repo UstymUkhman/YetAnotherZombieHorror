@@ -20,6 +20,7 @@ import { Vector } from '@/utils/Vector';
 import { Color } from '@/utils/Color';
 import Bullet from '@/weapons/Bullet';
 
+import Settings from '@/settings';
 import Fire from '@/weapons/Fire';
 import Hole from '@/weapons/Hole';
 import RAF from '@/managers/RAF';
@@ -53,7 +54,7 @@ export default abstract class Weapon
   public aiming = false;
 
   private fire!: Fire;
-  private hole!: Hole;
+  private hole?: Hole;
 
   public constructor (private readonly config: WeaponConfig) {
     this.bullet = new Bullet(config.bullet);
@@ -99,10 +100,12 @@ export default abstract class Weapon
       this.weapon, this.config.textures
     );
 
-    this.hole = new Hole(
-      this.config.textures,
-      this.config.bullet.scale
-    );
+    if (Settings.getEnvironmentValue('bulletHoles')) {
+      this.hole = new Hole(
+        this.config.textures,
+        this.config.bullet.scale
+      );
+    }
 
     return clone;
   }
@@ -234,7 +237,7 @@ export default abstract class Weapon
 
     if (target < 0) {
       this.updateRaycaster(false, this.walls);
-      this.hits.length && this.hole.show(this.hits[0]);
+      this.hits.length && this.hole?.show(this.hits[0]);
       return recoil;
     }
 
@@ -288,9 +291,9 @@ export default abstract class Weapon
     this.bullet.dispose();
     this.walls.splice(0);
 
+    this.hole?.dispose();
     this.weapon.clear();
     this.fire.dispose();
-    this.hole.dispose();
   }
 
   public set visible (visible: boolean) {

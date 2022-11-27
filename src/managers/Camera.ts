@@ -161,29 +161,49 @@ export class CameraManager
     const { x: px, y: py, z: pz } = this.camera.position;
     const { x: rx, y: ry, z: rz } = this.camera.rotation;
 
+    const dp = { x: 0.0, y: 0.0, z: 0.0 };
+    const dr = { x: 0.0, y: 0.0, z: 0.0 };
+
     switch (direction) {
       case 'Front':
-        anime({
-          targets: this.camera.position,
-          direction: 'alternate',
-          easing: 'easeOutSine',
-          duration,
-          x: px,
-          y: py + 0.2,
-          z: pz
-        });
+        dp.y = 0.2;
+        dr.x = -0.2;
+      break;
 
-        anime({
-          targets: this.camera.rotation,
-          direction: 'alternate',
-          easing: 'easeOutSine',
-          duration,
-          x: rx - 0.2,
-          y: ry,
-          z: rz
-        });
+      case 'Left':
+        dp.x = -0.35;
+        dp.y = -0.2;
+        dr.x = 0.5;
+        dr.y = -1.0;
+      break;
+
+      case 'Right':
+        dp.x = 0.25;
+        dp.y = -0.2;
+        dr.x = 0.5;
+        dr.y = 0.5;
       break;
     }
+
+    anime({
+      targets: this.camera.position,
+      direction: 'alternate',
+      easing: 'easeOutSine',
+      duration,
+      x: px + dp.x,
+      y: py + dp.y,
+      z: pz + dp.z
+    });
+
+    anime({
+      targets: this.camera.rotation,
+      direction: 'alternate',
+      easing: 'easeOutSine',
+      duration,
+      x: rx + dr.x,
+      y: ry + dr.y,
+      z: rz + dr.z
+    });
   }
 
   public shakeAnimation (duration: number): void {
@@ -235,7 +255,19 @@ export class CameraManager
     this.camera.rotation.y -= cos * offset / 500;
   }
 
-  public deathAnimation (): void { return; }
+  public deathAnimation (delay: number): void {
+    const { x, z } = Configs.Camera.tps.idle;
+
+    anime({
+      targets: this.camera.position,
+      easing: 'easeInOutQuad',
+      duration: 500.0,
+      z: z - 1.0,
+      y: 0.75,
+      delay,
+      x
+    });
+  }
 
   public setTo (target: Object3D): void {
     target.add(this.camera);

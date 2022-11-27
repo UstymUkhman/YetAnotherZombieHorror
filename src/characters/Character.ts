@@ -18,7 +18,7 @@ import { camelCase } from '@/utils/String';
 import { Vector } from '@/utils/Vector';
 import Physics from '@/physics';
 
-export default class Character
+export default abstract class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
   protected currentAnimation!: AnimationAction;

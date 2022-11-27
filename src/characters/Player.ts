@@ -502,18 +502,21 @@ export default class Player extends Character
   }
 
   protected override die (): void {
+    super.die();
+
     this.updateAnimation('Idle', 'death', 0.5);
+    Camera.isFPS && this.changeCamera(true);
     GameEvents.dispatch('Player::Death');
+
+    const delay = +Camera.isFPS * 500;
     clearTimeout(this.reloadTimeout);
 
+    Camera.deathAnimation(delay);
     this.weapon.stopReloading();
-    Camera.deathAnimation();
 
     this.reloading = false;
     this.shooting = false;
     this.aiming = false;
-
-    super.die();
   }
 
   private getHitAnimation (direction: HitDirection): PlayerHitAnimation {
