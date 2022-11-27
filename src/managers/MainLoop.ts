@@ -1,4 +1,5 @@
 import { GameEvents, GameEvent } from '@/events/GameEvents';
+import type { EnemyAttackData } from '@/characters/types';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { LevelCoords } from '@/scenes/types';
@@ -31,7 +32,9 @@ export default class MainLoop
 
   private readonly loop = this.update.bind(this);
   private readonly controls = new Controls(this.player);
+
   private readonly onSceneLoad = this.onLoad.bind(this);
+  private readonly onPlayerHit = this.playerHit.bind(this);
 
   public constructor (scene: HTMLCanvasElement, pixelRatio: number, private readonly worker?: WebWorker) {
     this.level = new LevelScene(scene, pixelRatio, worker);
@@ -41,6 +44,7 @@ export default class MainLoop
 
   private addEventListeners (): void {
     GameEvents.add('Level::EnvMap', this.onSceneLoad);
+    GameEvents.add('Enemy::Attack', this.onPlayerHit);
 
     this.worker?.add('Level::GetRandomCoord', event => {
       if (Coords.addLevelCoords(event.data as LevelCoords)) {
@@ -64,6 +68,10 @@ export default class MainLoop
     GameEvents.add('Enemy::Active', () =>
       this.player.setTargets(this.enemies.colliders)
     );
+
+    GameEvents.add('Player::Death', event =>
+      this.enemies.playerDead = event.data
+    );
   }
 
   private async onLoad (event: GameEvent): Promise<void> {
@@ -81,6 +89,17 @@ export default class MainLoop
     this.enemies = new Enemies(envMap);
     this.pistol = new Pistol(envMap);
     this.rifle = new Rifle(envMap);
+  }
+
+  private playerHit (event: GameEvent): void {
+    const { position: ePosition, damage } = event.data as EnemyAttackData;
+    const { position: pPosition, rotation } = this.player.location;
+
+    const direction = this.enemies.getHitDirection(
+      ePosition, pPosition, rotation
+    );
+
+    this.player.hit(direction, damage);
   }
 
   private createRandomCoords (): void {
@@ -135,8 +154,11 @@ export default class MainLoop
   private removeEventListeners (): void {
     this.worker?.remove('Level::GetRandomCoord');
     GameEvents.remove('Player::PickRifle');
+    GameEvents.remove('Player::Death');
+
     GameEvents.remove('Level::EnvMap');
     GameEvents.remove('Enemy::Active');
+    GameEvents.remove('Enemy::Attack');
   }
 
   public dispose (): void {

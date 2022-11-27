@@ -505,12 +505,16 @@ export default class Player extends Character
     super.die();
 
     this.updateAnimation('Idle', 'death', 0.5);
+    GameEvents.dispatch('Player::Death', true);
     Camera.isFPS && this.changeCamera(true);
-    GameEvents.dispatch('Player::Death');
-
     const delay = +Camera.isFPS * 500;
-    clearTimeout(this.reloadTimeout);
 
+    // Dispatch from "Game Over" menu:
+    setTimeout(() =>
+      GameEvents.dispatch('Game::Quit')
+    , delay + 1500);
+
+    clearTimeout(this.reloadTimeout);
     Camera.deathAnimation(delay);
     this.weapon.stopReloading();
 

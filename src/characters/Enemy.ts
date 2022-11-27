@@ -49,7 +49,9 @@ export default class Enemy extends Character
   private screamDuration!: number;
   private screamStart!: number;
   private hitDuration!: number;
+
   private distance = Infinity;
+  private playerDead = false;
   private hitStart!: number;
 
   private attacking = false;
@@ -634,12 +636,18 @@ export default class Enemy extends Character
     return this.falling ? 'Falling' : this.crawling ? 'Crawling' : direction;
   }
 
+  public set playerDeath (dead: boolean) {
+    this.playerDead = dead;
+  }
+
   public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
   }
 
   private get canAttack (): boolean {
-    return this.distance < (this.crawling ? 1.5 : this.attackDistance);
+    return !this.playerDead && this.distance < (
+      this.crawling ? 1.5 : this.attackDistance
+    );
   }
 
   public get index (): number {

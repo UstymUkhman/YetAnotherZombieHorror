@@ -17,7 +17,7 @@ export default ({ mode }: { mode: string }) => defineConfig({
 
   define: {
     DEBUG: mode !== 'production' && false,
-    TEST: mode !== 'production' && true,
+    TEST: mode !== 'production' && false,
     PRODUCTION: mode === 'production',
     BUILD: JSON.stringify(version),
     STAGING: !!process.env.prod

@@ -1,12 +1,17 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { HitDirection } from '@/characters/types';
+
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { GameEvent } from '@/events/GameEvents';
 import type { Assets } from '@/loaders/AssetsLoader';
 
+import { degToRad } from 'three/src/math/MathUtils';
 import { GameEvents } from '@/events/GameEvents';
 import type { HitData } from '@/weapons/types';
+
 import Enemy from '@/characters/Enemy';
+import { PI } from '@/utils/Number';
 import Physics from '@/physics';
 
 export default class Enemies
@@ -77,6 +82,43 @@ export default class Enemies
     }
   }
 
+  public getHitDirection (enemy: Vector3, player: Vector3, rotation: number): HitDirection {
+    let angle = Math.atan2(enemy.z - player.z, enemy.x - player.x);
+
+    const orientation = degToRad(rotation);
+    let direction: HitDirection = 'Front';
+
+    if (Math.abs(orientation) > PI.m075) {
+      angle = Math.abs(angle);
+
+      direction = angle < PI.d4 ? 'Right'
+        : angle > PI.m075 ? 'Left' : 'Front';
+    }
+
+    else if (orientation < -PI.d4 && orientation > -PI.m075) {
+      angle *= -1.0;
+
+      direction = angle < -PI.d4 && angle > -PI.m075 ? 'Right'
+        : angle < PI.m075 && angle > PI.d4 ? 'Left' : 'Front';
+    }
+
+    else if (Math.abs(orientation) < PI.d4) {
+      angle = Math.abs(angle);
+
+      direction = angle > PI.m075 ? 'Right'
+      : angle < PI.d4 ? 'Left' : 'Front';
+    }
+
+    else if (orientation < PI.m075 && orientation > PI.d4) {
+      angle *= -1.0;
+
+      direction = angle < PI.m075 && angle > PI.d4 ? 'Right'
+        : angle < -PI.d4 && angle > -PI.m075 ? 'Left' : 'Front';
+    }
+
+    return direction;
+  }
+
   public getEnemy (uuid: string): Enemy | undefined {
     return this.enemies.find(enemy => enemy.collider.uuid === uuid);
   }
@@ -111,5 +153,11 @@ export default class Enemies
     }
 
     return colliders;
+  }
+
+  public set playerDead (dead: boolean) {
+    for (let enemy = this.enemies.length; enemy--;) {
+      this.enemies[enemy].playerDeath = dead;
+    }
   }
 }

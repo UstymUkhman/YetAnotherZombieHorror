@@ -75,6 +75,9 @@
     updating = true;
   }
 
+  // Will be dispatched from "Game Over" menu:
+  GameEvents.add('Game::Quit', onQuit, true);
+
   $: (update => update
     ? GameEvents.remove('Game::Pause')
     : GameEvents.add('Game::Pause', () => paused = true)
@@ -91,9 +94,10 @@
     style.setProperty('--pointer-cursor', `url("${pointerCursor}")`);
   })();
 
-  !import.meta.hot && onDestroy(() =>
-    GameEvents.remove('Game::Pause')
-  );
+  !import.meta.hot && onDestroy(() => {
+    GameEvents.remove('Game::Pause');
+    GameEvents.remove('Game::Quit');
+  });
 </script>
 
 <style lang="scss" global>

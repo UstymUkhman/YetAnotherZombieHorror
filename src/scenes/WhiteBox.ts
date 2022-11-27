@@ -1,4 +1,4 @@
-import type { CharacterSoundConfig, CharacterSound, EnemyAttackData, HitDirection } from '@/characters/types';
+import type { CharacterSoundConfig, CharacterSound, EnemyAttackData } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
@@ -15,7 +15,6 @@ import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import { Texture } from 'three/src/textures/Texture';
 import type Character from '@/characters/Character';
-import { degToRad } from 'three/src/math/MathUtils';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -186,6 +185,7 @@ export default class WhiteBox
     document.body.addEventListener('click', this.onPointerLock);
 
     GameEvents.add('Enemy::Attack', this.onPlayerHit.bind(this));
+    GameEvents.add('Player::Death', this.onPlayerDeath.bind(this));
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
     GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
@@ -314,44 +314,17 @@ export default class WhiteBox
     Camera.updateState();
   }
 
+  private onPlayerDeath (event: GameEvent): void {
+    this.enemies.playerDead = event.data as boolean;
+  }
+
   private onPlayerHit (event: GameEvent): void {
-    const orientation = degToRad(this.player.location.rotation);
-    const { position, damage } = event.data as EnemyAttackData;
+    const { position: ePosition, damage } = event.data as EnemyAttackData;
+    const { position: pPosition, rotation } = this.player.location;
 
-    let angle = Math.atan2(
-      position.z - this.player.location.position.z,
-      position.x - this.player.location.position.x
+    const direction = this.enemies.getHitDirection(
+      ePosition, pPosition, rotation
     );
-
-    let direction: HitDirection = 'Front';
-
-    if (Math.abs(orientation) > PI.m075) {
-      angle = Math.abs(angle);
-
-      direction = angle < PI.d4 ? 'Right'
-        : angle > PI.m075 ? 'Left' : 'Front';
-    }
-
-    else if (orientation < -PI.d4 && orientation > -PI.m075) {
-      angle *= -1.0;
-
-      direction = angle < -PI.d4 && angle > -PI.m075 ? 'Right'
-        : angle < PI.m075 && angle > PI.d4 ? 'Left' : 'Front';
-    }
-
-    else if (Math.abs(orientation) < PI.d4) {
-      angle = Math.abs(angle);
-
-      direction = angle > PI.m075 ? 'Right'
-      : angle < PI.d4 ? 'Left' : 'Front';
-    }
-
-    else if (orientation < PI.m075 && orientation > PI.d4) {
-      angle *= -1.0;
-
-      direction = angle < PI.m075 && angle > PI.d4 ? 'Right'
-        : angle < -PI.d4 && angle > -PI.m075 ? 'Left' : 'Front';
-    }
 
     this.player.hit(direction, damage);
   }
@@ -379,9 +352,11 @@ export default class WhiteBox
     GameEvents.remove('Level::RemoveObject');
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('SFX::Character');
-    GameEvents.remove('Enemy::Attack');
 
+    GameEvents.remove('Player::Death');
+    GameEvents.remove('Enemy::Attack');
     GameEvents.remove('Enemy::Active');
+
     GameEvents.remove('Enemy::Spawn');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
