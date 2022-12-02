@@ -8,7 +8,7 @@ export default class Music
   private vol = 0.05;
 
   public constructor () {
-    const track = Configs.Level.music;
+    const track = ''; // Configs.Level.music;
     const audio = `${Configs.basePath()}/music/${track}`;
 
     this.track = new Audio(audio);

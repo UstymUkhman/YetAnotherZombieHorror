@@ -90,7 +90,6 @@ namespace Configs
 
     model: LevelData.model,
     cloud: LevelData.cloud,
-    music: LevelData.music,
     rain: LevelData.rain,
     fog: LevelData.fog
   });

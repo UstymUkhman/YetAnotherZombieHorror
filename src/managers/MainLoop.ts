@@ -49,7 +49,7 @@ export default class MainLoop
     this.worker?.add('Level::GetRandomCoord', event => {
       if (Coords.addLevelCoords(event.data as LevelCoords)) {
         GameEvents.dispatch('Loading::Complete', null, true);
-        setTimeout(this.spawnRifle.bind(this), 1e4);
+        // setTimeout(this.spawnRifle.bind(this), 1e4);
       }
 
       else this.worker?.post('Level::GetRandomCoord');
@@ -65,12 +65,12 @@ export default class MainLoop
       this.player.pickRifle();
     });
 
-    GameEvents.add('Enemy::Active', () =>
-      this.player.setTargets(this.enemies.colliders)
-    );
-
     GameEvents.add('Player::Death', event =>
       this.enemies.playerDead = event.data
+    );
+
+    GameEvents.add('Enemy::Active', () =>
+      this.player.setTargets(this.enemies.colliders)
     );
   }
 
@@ -91,6 +91,9 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public start (): void { }
+
   private playerHit (event: GameEvent): void {
     const { position: ePosition, damage } = event.data as EnemyAttackData;
     const { position: pPosition, rotation } = this.player.location;
@@ -108,7 +111,7 @@ export default class MainLoop
     }
 
     Coords.fillRandomLevelCoords();
-    setTimeout(this.spawnRifle.bind(this), 1e4);
+    // setTimeout(this.spawnRifle.bind(this), 1e4);
     GameEvents.dispatch('Loading::Complete', null, true);
   }
 

@@ -5,7 +5,7 @@ import AudioScene from '@/scenes/AudioScene';
 import WebWorker from '@/worker/WebWorker';
 import Pointer from '@/managers/Pointer';
 import Viewport from '@/utils/Viewport';
-import Music from '@/managers/Music';
+// import Music from '@/managers/Music';
 
 import Settings from '@/settings';
 import RAF from '@/managers/RAF';
@@ -13,10 +13,11 @@ import Configs from '@/configs';
 
 export interface ApplicationManager
 {
-  resize (width: number, height: number): void
-  set inputs (disabled: boolean)
-  set pause (paused: boolean)
-  dispose (): void
+  resize (width: number, height: number): void;
+  set inputs (disabled: boolean);
+  set pause (paused: boolean);
+  dispose (): void;
+  start (): void;
 }
 
 export default class Application
@@ -25,7 +26,7 @@ export default class Application
   private raindrops?: Raindrops;
   private manager!: ApplicationManager;
 
-  private readonly music = new Music();
+  // private readonly music = new Music();
   private readonly audioScene: AudioScene;
   private readonly pointer = new Pointer();
   private readonly worker = new WebWorker();
@@ -59,6 +60,8 @@ export default class Application
 
     this.toggleInputs(false);
     this.toggleAudio(false);
+
+    this.manager.start();
     this.started = true;
   }
 
@@ -71,7 +74,7 @@ export default class Application
   }
 
   private toggleAudio (paused: boolean) {
-    this.music[paused ? 'pause' : 'play']();
+    // this.music[paused ? 'pause' : 'play']();
     this.audioScene.pause = paused;
   }
 
@@ -86,9 +89,9 @@ export default class Application
     this.raindrops?.dispose();
     this.manager?.dispose();
 
+    // this.music.dispose();
     this.pointer.dispose();
     this.worker.dispose();
-    this.music.dispose();
 
     delete this.raindrops;
     GameEvents.dispose();
