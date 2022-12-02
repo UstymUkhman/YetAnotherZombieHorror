@@ -49,7 +49,6 @@ export default class Enemies
 
     this.enemies.push(enemy);
     Physics.setCharacter(enemy.collider);
-    GameEvents.dispatch('Enemy::Spawn', enemy);
   }
 
   private headHit (event: GameEvent): void {

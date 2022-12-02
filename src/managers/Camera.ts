@@ -4,6 +4,7 @@ import type { HitDirection } from '@/characters/types';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Vector3 } from 'three/src/math/Vector3';
+import { GAME_RATIO } from '@/scenes/WhiteBox';
 import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
 
@@ -42,7 +43,7 @@ export class CameraManager
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
-    const ratio = TEST ? innerWidth / innerHeight : Viewport.ratio;
+    const ratio = (TEST && !GAME_RATIO) ? innerWidth / innerHeight : Viewport.ratio;
     this.camera = new PerspectiveCamera(45, ratio, +this.fps * 0.215 + 0.1);
     this.camera.far = Configs.Level.depth;
 
@@ -95,7 +96,7 @@ export class CameraManager
 
   public updateNearPlane (aiming: boolean, rifle: boolean, running?: boolean): void {
     const fpRifle = this.camera.near === 0.5;
-    const duration = +fpRifle * -300 + 400;
+    const duration = +fpRifle * -300.0 + 400.0;
 
     const near = aiming ? 0.03 : this.fps
       ? rifle ? 0.5 : 0.315 : 0.1;
@@ -171,17 +172,17 @@ export class CameraManager
       break;
 
       case 'Left':
-        dp.x = -0.35;
-        dp.y = -0.2;
+        dp.x = -0.5;
+        dp.y = 0.5;
         dr.x = 0.5;
         dr.y = -1.0;
       break;
 
       case 'Right':
-        dp.x = 0.25;
+        dp.x = 0.36;
         dp.y = -0.2;
         dr.x = 0.5;
-        dr.y = 0.5;
+        dr.y = 0.55;
       break;
     }
 

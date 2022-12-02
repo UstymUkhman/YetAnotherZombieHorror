@@ -14,12 +14,16 @@ export default abstract class Input
 
   public constructor (protected readonly player: Player) {}
 
-  public static get movingDirection (): boolean {
+  public static get moves (): Directions {
+    return Input.directions;
+  }
+
+  public static get moving (): boolean {
     return (Input.directions as unknown as Array<number>).includes(1);
   }
 
-  public static get moves (): Directions {
-    return Input.directions;
+  public static get idle (): boolean {
+    return !Input.moving;
   }
 
   public static get runs (): boolean {

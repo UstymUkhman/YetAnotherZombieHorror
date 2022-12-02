@@ -70,9 +70,9 @@ export default class Enemy extends Character
     super(Configs.Enemy);
 
     if (model && envMap) {
-      GameEvents.dispatch('Enemy::Create', this.uuid, true);
-      GameEvents.dispatch('Level::AddObject', this.object);
       this.character = clone(model.scene) as Assets.GLTF;
+      GameEvents.dispatch('Level::AddObject', this.object);
+      GameEvents.dispatch('Enemy::Spawn', this.uuid, !TEST);
 
       const opacity = +!this.id;
       this.mesh = this.character;
@@ -120,7 +120,7 @@ export default class Enemy extends Character
     }
 
     setTimeout(() => {
-      GameEvents.dispatch('Enemy::Active', show, true);
+      GameEvents.dispatch('Enemy::Active', show);
       this.animationUpdate = false;
     }, +show * duration);
 

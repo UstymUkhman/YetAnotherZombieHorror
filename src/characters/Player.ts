@@ -119,7 +119,7 @@ export default class Player extends Character
   public move (): void {
     if (this.blockingAnimation) {
       if (this.reloading)
-        this.moving = Controls.movingDirection;
+        this.moving = Controls.moving;
       return;
     }
 
@@ -148,8 +148,8 @@ export default class Player extends Character
     if (!running || this.lastAnimation === run) {
       this.running = false;
 
-      return Controls.movingDirection ? this.move()
-        : setTimeout(this.idle.bind(this), 150);
+      return Controls.moving ? this.move() :
+        setTimeout(this.idle.bind(this), 150);
     }
 
     if (Controls.moves[Direction.UP]) {
@@ -168,25 +168,32 @@ export default class Player extends Character
     if (this.dead || this.updateHealth(damage)) return;
     this.aiming && this.stopAiming(this.running);
 
-    const duration = +!this.equipRifle * 100.0 + 1200.0;
     const hitAnimation = this.getHitAnimation(direction);
+    const duration = +!this.equipRifle * 100.0 + 1200.0;
 
+    GameEvents.dispatch('Player::Aim', false, true);
     this.updateAnimation('Idle', hitAnimation);
-    Camera.isFPS && Camera.headAnimation(
-      direction, duration * 0.5
-    );
-
     clearTimeout(this.reloadTimeout);
+
+    if (Camera.isFPS) {
+      Camera.headAnimation(direction, duration * 0.5);
+      this.equipRifle && this.weapon.toggleVisibility(0.0, duration + 100.0, 0.0);
+    }
+
     this.playSound('hit', true);
     this.weapon.stopReloading();
+    this.toggleMesh(false);
 
     setTimeout(() => {
-      if (this.dead) return;
       this.hitting = false;
 
-      Controls.runs
-        ? this.run(true)
-        : this.move();
+      if (this.dead) return this.toggleMesh(true);
+      Controls.runs ? this.run(true) : this.move();
+
+      const aim = Controls.idle && !this.equipRifle;
+      GameEvents.dispatch('Player::Aim', aim, true);
+
+      setTimeout(this.toggleMesh.bind(this, true), 100);
     }, duration);
 
     this.reloading = false;
@@ -238,7 +245,7 @@ export default class Player extends Character
     !running && Camera.aimAnimation(false, this.equipRifle, duration);
 
     Camera.isFPS && running
-      ? Camera.setNearPlane(+this.equipRifle * 0.185 + 0.315, 0)
+      ? Camera.setNearPlane(+this.equipRifle * 0.185 + 0.315, 0.0)
       : Camera.updateNearPlane(false, this.equipRifle);
 
     setTimeout(() =>
@@ -289,8 +296,9 @@ export default class Player extends Character
     this.toggleMesh(true);
 
     this.reloadTimeout = setTimeout(() => {
-      const moved = !Controls.movingDirection;
-      (moving || this.moving) && moved && this.weapon.stopReloading();
+      Controls.idle &&
+        (moving || this.moving) &&
+          this.weapon.stopReloading();
 
       this.weapon.addAmmo(0.0);
       this.reloading = false;
@@ -504,15 +512,17 @@ export default class Player extends Character
   protected override die (): void {
     super.die();
 
-    this.updateAnimation('Idle', 'death', 0.5);
-    GameEvents.dispatch('Player::Death', true);
+    const delay = +Camera.isFPS * 500.0;
     Camera.isFPS && this.changeCamera(true);
-    const delay = +Camera.isFPS * 500;
+    this.updateAnimation('Idle', 'death', 0.5);
+
+    GameEvents.dispatch('Player::Death', true);
+    GameEvents.dispatch('Player::Aim', false, true);
 
     // Dispatch from "Game Over" menu:
     setTimeout(() =>
       GameEvents.dispatch('Game::Quit')
-    , delay + 1500);
+    , delay + 5e3);
 
     clearTimeout(this.reloadTimeout);
     Camera.deathAnimation(delay);
