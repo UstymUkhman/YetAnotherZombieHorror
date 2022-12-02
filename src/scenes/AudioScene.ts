@@ -32,9 +32,9 @@ export default class AudioScene
   private readonly enemies: Map<string, Object3D> = new Map();
 
   private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
-  private readonly onCreateEnemy = this.createEnemy.bind(this);
-
   private readonly onCharacter = this.playCharacter.bind(this);
+
+  private readonly onSpawnEnemy = this.spawnEnemy.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
 
   private readonly onWeapon = this.playWeapon.bind(this);
@@ -151,7 +151,7 @@ export default class AudioScene
     this.enemies.delete(uuid);
   }
 
-  private createEnemy (event: GameEvent): void {
+  private spawnEnemy (event: GameEvent): void {
     const enemy = new Object3D();
     const uuid = event.data as string;
 
@@ -173,8 +173,8 @@ export default class AudioScene
 
   private addEventListeners (): void {
     GameEvents.add('Enemy::Dispose', this.onDisposeEnemy, true);
-    GameEvents.add('Enemy::Create', this.onCreateEnemy, true);
     GameEvents.add('SFX::Character', this.onCharacter, true);
+    GameEvents.add('Enemy::Spawn', this.onSpawnEnemy, true);
     GameEvents.add('SFX::Thunder', this.onThunder, true);
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
   }

@@ -37,6 +37,7 @@ import RAF from '@/managers/RAF';
 import Physics from '@/physics';
 import Configs from '@/configs';
 
+export const GAME_RATIO = true;
 const ORBIT_CONTROLS = false;
 const SCENE_SIZE = 500.0;
 
@@ -157,6 +158,20 @@ export default class WhiteBox
 
     this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
+
+    if (GAME_RATIO) {
+      this.renderer.domElement.style.transform = 'translate(-50%, -50%)';
+      this.renderer.domElement.style.position = 'absolute';
+      this.renderer.domElement.style.margin = 'auto';
+      this.renderer.domElement.style.left = '50%';
+      this.renderer.domElement.style.top = '50%';
+
+      const { width, height } = Viewport.size;
+      this.renderer.setSize(width, height);
+
+      Camera.object.aspect = width / height;
+      Camera.object.updateProjectionMatrix();
+    }
   }
 
   private createControls (): void {
@@ -201,19 +216,20 @@ export default class WhiteBox
   }
 
   private async addCharacterSounds (character: Character): Promise<void> {
+    const collider = character instanceof Player ? character.collider : character as unknown as Mesh;
     const sfx = character instanceof Player ? Configs.Player.sounds : Configs.Enemy.sounds;
+
     const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       const volume = names[s] === 'death' ? 2.5 : 0.5;
-
       audio.userData = { name: names[s] };
-      character.collider.add(audio);
 
       audio.setVolume(volume);
       audio.setBuffer(sound);
+      collider.add(audio);
     });
   }
 
@@ -271,8 +287,9 @@ export default class WhiteBox
   }
 
   private onEnemySpawn (event: GameEvent): void {
-    const enemy = event.data as Enemy;
-    this.addCharacterSounds(enemy);
+    const uuid = event.data as string;
+    const enemy = this.scene.getObjectByProperty('uuid', uuid);
+    this.addCharacterSounds(enemy as unknown as Enemy);
   }
 
   private playWeapon (event: GameEvent): void {
@@ -293,13 +310,11 @@ export default class WhiteBox
   }
 
   private addGameObject (event: GameEvent): void {
-    const object = event.data as Object3D;
-    this.scene.add(object);
+    this.scene.add(event.data as Object3D);
   }
 
   private removeGameObject (event: GameEvent): void {
-    const object = event.data as Object3D;
-    this.scene.remove(object);
+    this.scene.remove(event.data as Object3D);
   }
 
   private updateCharacters (player: Vector3, delta: number): void {

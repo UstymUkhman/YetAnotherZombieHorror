@@ -63,12 +63,12 @@
   }
 
   function settingsUpdated (): void {
-    setTimeout(() => changeView(false), 1000);
+    setTimeout(() => changeView(false), 3500);
 
     setTimeout(() => {
       menuScene.freeze = false;
       settingsUpdate = false;
-    }, 500);
+    }, 2500);
   }
 
   function onPlay (): void {

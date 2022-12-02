@@ -56,7 +56,8 @@ export namespace Material
   export const DynamicCollider = new MeshBasicMaterial({
     color: Color.RED,
     wireframe: true,
-    visible: DEBUG
+    visible: DEBUG,
+    opacity: 0.33
   });
 
   export const StaticCollider = new MeshBasicMaterial({
@@ -80,6 +81,6 @@ export namespace Material
     depthWrite: false,
     color: Color.RED,
     visible: DEBUG,
-    opacity: 0.33
+    opacity: 0.75
   });
 }

@@ -89,23 +89,23 @@ export default class Rifle extends Weapon
     });
   }
 
-  public override toggleVisibility (hideDelay: number, showDelay: number): void {
-    const material = (this.object.children[0] as Mesh).material;
+  public override toggleVisibility (hide: number, show: number, duration = 100.0): void {
+    const { material } = this.object.children[0] as Mesh;
 
     anime({
       targets: material,
-      delay: hideDelay,
       easing: 'linear',
-      duration: 100,
-      opacity: 0.0
+      opacity: 0.0,
+      delay: hide,
+      duration
     });
 
     setTimeout(() => anime({
       targets: material,
       easing: 'linear',
-      duration: 100,
-      opacity: 1.0
-    }), showDelay);
+      opacity: 1.0,
+      duration
+    }), show);
   }
 
   public override addAmmo (ammo = Configs.Rifle.magazine): void {

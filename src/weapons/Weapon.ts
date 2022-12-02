@@ -33,8 +33,6 @@ export default abstract class Weapon
 
   private readonly bullets: Map<string, Mesh> = new Map();
   private readonly hits: Array<Intersection<Mesh>> = [];
-
-  public abstract getDamage(index: number): number;
   private readonly raycaster = new Raycaster();
 
   private readonly camera = new Vector3();
@@ -44,9 +42,10 @@ export default abstract class Weapon
   public targets: Array<Object3D> = [];
   protected readonly magazine: number;
   public walls: Array<Object3D> = [];
-  private readonly bullet: Bullet;
 
+  private readonly bullet: Bullet;
   private weapon!: Assets.GLTF;
+
   protected loadedAmmo: number;
   protected totalAmmo: number;
 
@@ -127,11 +126,6 @@ export default abstract class Weapon
     }, true);
   }
 
-  public setAim (): void { return; }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected toggleVisibility (hideDelay: number, showDelay: number): void { return; }
-
   private updateRaycaster (spread = true, targets = this.targets): void {
     this.camera.setFromMatrixPosition(CameraObject.matrixWorld);
 
@@ -148,8 +142,11 @@ export default abstract class Weapon
       this.raycaster.intersectObjects(targets, false, this.hits);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public cancelAim (duration?: number): void { return; }
+  protected abstract toggleVisibility (hide: number, show: number, duration?: number): void;
+
+  public abstract cancelAim (duration?: number): void;
+
+  public abstract getDamage (index: number): number;
 
   private toggleAimSign (visible = false): void {
     GameEvents.dispatch('Weapon::Aim', visible, true);
@@ -176,6 +173,16 @@ export default abstract class Weapon
     const aimed = !!this.hits.length;
     this.aimed !== aimed && this.toggleAimSign(aimed);
   }
+
+  public startReloading (): void { return; }
+
+  public stopReloading (): void { return; }
+
+  public resize (height: number): void {
+    this.fire?.resize(height);
+  }
+
+  public addAmmo (): void { return; }
 
   private animateRecoil (): Recoil {
     const { x, y } = this.weapon.position;
@@ -260,15 +267,7 @@ export default abstract class Weapon
     return recoil;
   }
 
-  public startReloading (): void { return; }
-
-  public stopReloading (): void { return; }
-
-  public addAmmo (): void { return; }
-
-  public resize (height: number): void {
-    this.fire?.resize(height);
-  }
+  public abstract setAim (): void;
 
   protected dispose (): void {
     this.bullets.forEach((bullet, uuid) => {

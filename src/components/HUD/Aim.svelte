@@ -48,7 +48,9 @@
 
   div.container {
     @include mixin.center-size(15px);
+
     padding: 0;
+    z-index: 1;
 
     > div:first-child {
       @include mixin.absolute-size;
