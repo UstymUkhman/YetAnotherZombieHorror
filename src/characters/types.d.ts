@@ -1,4 +1,3 @@
-import type { PositionalAudio } from 'three/src/audio/PositionalAudio';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Matrix4 } from 'three/src/math/Matrix4';
@@ -16,13 +15,13 @@ type PlayerAnimations      = keyof typeof Configs.Player.animations;
 type EnemyAnimations       = keyof typeof Configs.Enemy.animations;
 type EnemyAttackData       = { position: Vector3, damage: number };
 
-type CharacterSounds       = Map<CharacterSound, PositionalAudio>;
 type EnemyDeathAnimation   = 'crawlDeath' | 'death' | 'headshot';
 type CharacterAnimation    = PlayerAnimations | EnemyAnimations;
-
 type PlayerHitAnimation    = `${Weapon}${HitDirection}Hit`;
+
 type PlayerSounds          = typeof Configs.Player.sounds;
 type EnemySounds           = typeof Configs.Enemy.sounds;
+
 type CharacterSoundsConfig = PlayerSounds | EnemySounds;
 type HitDirection          = 'Front' | 'Left' | 'Right';
 

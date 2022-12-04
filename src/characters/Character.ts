@@ -159,7 +159,7 @@ export default abstract class Character
     return this.dead;
   }
 
-  private stopSound (sfx: CharacterSound): void {
+  protected stopSound (sfx: CharacterSound): void {
     GameEvents.dispatch('SFX::Character', {
       uuid: this.uuid, play: false, sfx,
       matrix: this.object.matrixWorld

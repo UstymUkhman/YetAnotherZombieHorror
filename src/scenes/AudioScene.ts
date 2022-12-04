@@ -1,4 +1,4 @@
-import type { CharacterSoundsConfig, CharacterSoundConfig, CharacterSounds, CharacterSound } from '@/characters/types';
+import type { CharacterSoundsConfig, CharacterSoundConfig, PlayerSounds, EnemySounds, CharacterSound } from '@/characters/types';
 import type { WeaponSoundsConfig, WeaponSoundConfig, PistolSounds, RifleSounds, WeaponSound } from '@/weapons/types';
 
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
@@ -23,12 +23,13 @@ import anime from 'animejs';
 
 export default class AudioScene
 {
+  private readonly playerSounds: Map<keyof PlayerSounds, PositionalAudio> = new Map();
+  private readonly enemySounds: Map<keyof EnemySounds, PositionalAudio> = new Map();
+
   private readonly pistolSounds: Map<keyof PistolSounds, PositionalAudio> = new Map();
   private readonly rifleSounds: Map<keyof RifleSounds, PositionalAudio> = new Map();
 
   private readonly isRaining = Settings.getEnvironmentValue('raining');
-
-  private readonly characterSounds: CharacterSounds = new Map();
   private readonly enemies: Map<string, Object3D> = new Map();
 
   private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
@@ -88,18 +89,19 @@ export default class AudioScene
 
   private async createCharacterSounds (sfx: CharacterSoundsConfig, player: boolean): Promise<void> {
     const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
+    const soundsMap = player ? this.playerSounds : this.enemySounds;
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
-      const volume = names[s] === 'death' ? 2.5 : 0.5;
+      let volume = names[s] === 'scream' ? 1.0 : 0.5;
+      volume = names[s] === 'death' ? 2.5 : volume;
 
-      audio.setVolume(volume);
-      audio.setBuffer(sound);
-
-      this.characterSounds.set(names[s], audio);
+      audio.setVolume(volume).setBuffer(sound);
       audio.userData = { name: names[s] };
+
       player && this.player.add(audio);
+      soundsMap.set(names[s], audio);
     });
   }
 
@@ -113,9 +115,7 @@ export default class AudioScene
       let volume = names[s] === 'bullet' ? 0.25 : 2.5;
       volume = names[s] === 'shoot' ? 5.0 : volume;
 
-      audio.setBuffer(sound);
-      audio.setVolume(volume);
-
+      audio.setVolume(volume).setBuffer(sound);
       soundsMap.set(names[s], audio);
       this.weapon.add(audio);
     });
@@ -155,7 +155,7 @@ export default class AudioScene
     const enemy = new Object3D();
     const uuid = event.data as string;
 
-    this.characterSounds.forEach(
+    this.enemySounds.forEach(
       audio => enemy.add(audio)
     );
 
@@ -226,16 +226,13 @@ export default class AudioScene
   }
 
   private playCharacter (event: GameEvent): void {
-    const { sfx, uuid, matrix, play } = event.data as CharacterSoundConfig;
-    let sound = this.characterSounds.get(sfx) as PositionalAudio;
     let character = this.player;
+    const { sfx, uuid, matrix, play } = event.data as CharacterSoundConfig;
+    let sound = this.playerSounds.get(sfx as keyof PlayerSounds) as PositionalAudio;
 
     if (this.enemies.has(uuid)) {
+      sound = this.enemySounds.get(sfx) as PositionalAudio;
       character = this.enemies.get(uuid) as Object3D;
-
-      sound = character.children.find(audio =>
-        audio.userData.name === sfx
-      ) as PositionalAudio;
     }
 
     character.matrixWorld.copy(matrix);
@@ -288,9 +285,10 @@ export default class AudioScene
     while (this.scene.children.length > 0)
       this.scene.remove(this.scene.children[0]);
 
-    this.characterSounds.clear();
     this.removeEventListeners();
+    this.playerSounds.clear();
     this.pistolSounds.clear();
+    this.enemySounds.clear();
     this.rifleSounds.clear();
 
     RAF.remove(this.onUpdate);

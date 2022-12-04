@@ -147,6 +147,8 @@ export default class Enemy extends Character
 
   public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
+
+    this.stopSounds();
     this.cancelAnimation();
 
     this.hitting && this.cancelHit();
@@ -169,6 +171,8 @@ export default class Enemy extends Character
 
   public bodyHit (damage: number): void {
     if (this.dead) return;
+
+    this.playHitSound();
     this.cancelAnimation();
 
     if (this.updateHitDamage(damage)) {
@@ -242,6 +246,8 @@ export default class Enemy extends Character
 
   public legHit (damage: number): NodeJS.Timeout | void {
     if (this.dead) return;
+
+    this.playHitSound();
     this.cancelAnimation();
 
     const now = Date.now();
@@ -264,7 +270,6 @@ export default class Enemy extends Character
     this.crawlTimeout = setTimeout(this.onLegHit, 2500.0);
     this.updateAnimation('Falling', 'falling', 0.1);
     this.hitTime = this.fallTime = now;
-    this.playSound('hit', true);
 
     this.running = false;
     this.falling = true;
@@ -312,6 +317,21 @@ export default class Enemy extends Character
 
       this.animations.scream.stop();
       this.screaming = false;
+    }
+  }
+
+  private playHitSound (): void {
+    this.stopSounds();
+    this.playSound('hit', true);
+  }
+
+  private stopSounds (): void {
+    if (this.screaming)
+      this.stopSound('scream');
+
+    else if (this.attacking) {
+      this.stopSound('hardAttack');
+      this.stopSound('softAttack');
     }
   }
 
@@ -445,10 +465,9 @@ export default class Enemy extends Character
 
   private updateHitDamage (damage: number): boolean {
     const lyingDown = this.falling || this.crawling;
-    const dead = this.updateHealth(damage);
-    if (!lyingDown) return false;
 
-    if (!dead) this.playSound('hit', true);
+    this.updateHealth(damage);
+    if (!lyingDown) return false;
 
     else if (this.crawling) {
       let duration = undefined;
@@ -493,7 +512,7 @@ export default class Enemy extends Character
     this.removeHitBoxes();
     this.character?.clear();
 
-    GameEvents.dispatch('Enemy::Death', this.id, true);
+    GameEvents.dispatch('Enemy::Death', this.id);
     GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
     GameEvents.dispatch('Level::RemoveObject', this.object);
   }

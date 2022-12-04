@@ -224,7 +224,8 @@ export default class WhiteBox
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
-      const volume = names[s] === 'death' ? 2.5 : 0.5;
+      let volume = names[s] === 'scream' ? 1.0 : 0.5;
+      volume = names[s] === 'death' ? 2.5 : volume;
       audio.userData = { name: names[s] };
 
       audio.setVolume(volume);

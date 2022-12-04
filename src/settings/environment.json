@@ -9,7 +9,6 @@
   "volumetricFog": false,
 
   "clouds": 300,
-  "bulletHoles": false,
   "dynamicClouds": true,
   "physicalLights": false
 }
