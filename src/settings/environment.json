@@ -1,18 +1,18 @@
 {
   "bullet": true,
   "bulletPath": false,
-  "bulletHoles": true,
+  "bulletHoles": false,
 
   "raining": true,
   "lighting": true,
   "raindrops": false,
   "softParticles": false,
 
-  "fog": false,
+  "fog": true,
   "bakedFog": false,
   "volumetricFog": false,
 
-  "clouds": 300,
-  "dynamicClouds": true,
+  "clouds": 0.0,
+  "dynamicClouds": false,
   "physicalLights": false
 }

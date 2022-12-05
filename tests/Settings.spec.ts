@@ -6,6 +6,10 @@ import Configs from '@/configs';
 
 describe('Settings', () => {
   test('Environment', () => {
+    expect(typeof Settings.getEnvironmentValue('bullet')).toStrictEqual('boolean');
+    expect(typeof Settings.getEnvironmentValue('bulletPath')).toStrictEqual('boolean');
+    expect(typeof Settings.getEnvironmentValue('bulletHoles')).toStrictEqual('boolean');
+
     expect(typeof Settings.getEnvironmentValue('raining')).toStrictEqual('boolean');
     expect(typeof Settings.getEnvironmentValue('lighting')).toStrictEqual('boolean');
     expect(typeof Settings.getEnvironmentValue('raindrops')).toStrictEqual('boolean');
@@ -16,7 +20,7 @@ describe('Settings', () => {
     expect(typeof Settings.getEnvironmentValue('volumetricFog')).toStrictEqual('boolean');
 
     expect(Settings.getEnvironmentValue('clouds')).toBeLessThanOrEqual(300);
-    expect(Settings.getEnvironmentValue('clouds')).toBeGreaterThanOrEqual(100);
+    expect(Settings.getEnvironmentValue('clouds')).toBeGreaterThanOrEqual(0.0);
     expect(typeof Settings.getEnvironmentValue('clouds')).toStrictEqual('number');
     expect(typeof Settings.getEnvironmentValue('dynamicClouds')).toStrictEqual('boolean');
     expect(typeof Settings.getEnvironmentValue('physicalLights')).toStrictEqual('boolean');

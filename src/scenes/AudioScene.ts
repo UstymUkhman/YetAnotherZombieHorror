@@ -29,11 +29,10 @@ export default class AudioScene
   private readonly pistolSounds: Map<keyof PistolSounds, PositionalAudio> = new Map();
   private readonly rifleSounds: Map<keyof RifleSounds, PositionalAudio> = new Map();
 
-  private readonly isRaining = Settings.getEnvironmentValue('raining');
-  private readonly enemies: Map<string, Object3D> = new Map();
-
   private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
   private readonly onCharacter = this.playCharacter.bind(this);
+
+  private readonly enemies: Map<string, Object3D> = new Map();
 
   private readonly onSpawnEnemy = this.spawnEnemy.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
@@ -58,18 +57,14 @@ export default class AudioScene
   private ambient?: Audio;
 
   public constructor () {
-    const isLighting = Settings.getEnvironmentValue('lighting');
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
-
     this.scene.matrixWorldAutoUpdate = false;
+
     this.camera.matrixAutoUpdate = false;
     this.scene.matrixAutoUpdate = false;
 
     this.camera.add(this.listener);
     this.scene.add(this.player);
-
-    this.isRaining && this.createAmbientSound();
-    isLighting && this.createThunderSounds();
 
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
@@ -151,6 +146,29 @@ export default class AudioScene
     this.enemies.delete(uuid);
   }
 
+  public async updateAmbient (): Promise<void> {
+    if (Settings.getEnvironmentValue('lighting')) {
+      this.createThunderSounds();
+    }
+
+    if (Settings.getEnvironmentValue('raining')) {
+      await this.createAmbientSound();
+      this.scene.updateMatrixWorld(true);
+
+      setTimeout(() => anime({
+        begin: () => this.ambient?.play(),
+        targets: { volume: this.ambient?.getVolume() },
+        update: ({ animations }) => this.ambient?.setVolume(
+          +animations[0].currentValue
+        ),
+
+        easing: 'linear',
+        duration: 1e3,
+        volume: 0.25
+      }), 100);
+    }
+  }
+
   private spawnEnemy (event: GameEvent): void {
     const enemy = new Object3D();
     const uuid = event.data as string;
@@ -177,22 +195,6 @@ export default class AudioScene
     GameEvents.add('Enemy::Spawn', this.onSpawnEnemy, true);
     GameEvents.add('SFX::Thunder', this.onThunder, true);
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
-  }
-
-  public updateAmbient (): void {
-    if (!this.isRaining) return;
-    this.scene.updateMatrixWorld(true);
-
-    setTimeout(() => anime({
-      targets: { volume: this.ambient?.getVolume() },
-      update: ({ animations }) => this.ambient?.setVolume(
-        +animations[0].currentValue
-      ),
-
-      easing: 'linear',
-      duration: 1000,
-      volume: 0.25
-    }), 100);
   }
 
   private playThuder (event: GameEvent): void {

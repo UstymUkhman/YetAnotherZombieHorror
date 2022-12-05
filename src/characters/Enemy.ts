@@ -125,6 +125,7 @@ export default class Enemy extends Character
     }, +show * duration);
 
     anime({
+      changeBegin: this.disableShadow.bind(this),
       targets: this.material,
       opacity: +show,
       duration,
@@ -322,7 +323,7 @@ export default class Enemy extends Character
 
   private playHitSound (): void {
     this.stopSounds();
-    this.playSound('hit', true);
+    !this.falling && this.playSound('hit');
   }
 
   private stopSounds (): void {
@@ -431,7 +432,7 @@ export default class Enemy extends Character
     }, hitDelay);
 
     this.attackTimeout = setTimeout(() => {
-      if (this.dead) return;
+      if (this.dead || (this.crawling && this.playerDead)) return;
 
       const attack = this.distance < (
         this.crawling ? 1.5 : this.attackDistance
@@ -465,11 +466,11 @@ export default class Enemy extends Character
 
   private updateHitDamage (damage: number): boolean {
     const lyingDown = this.falling || this.crawling;
+    const dead = this.updateHealth(damage);
 
-    this.updateHealth(damage);
     if (!lyingDown) return false;
 
-    else if (this.crawling) {
+    else if (dead && this.crawling) {
       let duration = undefined;
 
       if (!this.crawlAnimation?.completed) {
@@ -640,6 +641,14 @@ export default class Enemy extends Character
     leftUpLeg.add(leftUpLegHitBox);
     rightLeg.add(rightLegHitBox);
     leftLeg.add(leftLegHitBox);
+  }
+
+  private disableShadow (): void {
+    this.dead &&
+      this.mesh.traverse(child => {
+        const childMesh = child as Mesh;
+        if (childMesh.isMesh) childMesh.castShadow = false;
+      });
   }
 
   protected override get blockingAnimation (): boolean {

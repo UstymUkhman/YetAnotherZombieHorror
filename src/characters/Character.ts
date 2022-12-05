@@ -86,7 +86,7 @@ export default abstract class Character
     return character;
   }
 
-  protected playSound (sfx: CharacterSound, stop: boolean): void {
+  protected playSound (sfx: CharacterSound, stop = false): void {
     stop && this.stopSound(sfx);
 
     GameEvents.dispatch('SFX::Character', {

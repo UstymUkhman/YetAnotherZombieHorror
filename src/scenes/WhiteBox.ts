@@ -37,7 +37,7 @@ import RAF from '@/managers/RAF';
 import Physics from '@/physics';
 import Configs from '@/configs';
 
-export const GAME_RATIO = true;
+export const GAME_RATIO = false;
 const ORBIT_CONTROLS = false;
 const SCENE_SIZE = 500.0;
 
