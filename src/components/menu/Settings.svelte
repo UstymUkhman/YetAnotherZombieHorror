@@ -1,9 +1,10 @@
-<div in:screenFly={{ show: true }} out:screenFly>
+<div in:screenFly={{ show: true }} out:screenFly={{ show: false }}>
   <ul>
     {#each environment as variable, v}
       <li on:mouseover={() => onListItemHover(v)}
           class:disabled={!variable.enabled}
           on:mouseout={() => selected = -1}
+          on:keydown={() => onClick()}
           on:click={onListItemClick}
           on:focus
           on:blur
@@ -33,6 +34,7 @@
 
     <li on:mouseover={() => onListItemHover(reset)}
         on:mouseout={() => selected = -1}
+        on:keydown={onResetClick}
         on:click={onResetClick}
         on:focus
         on:blur
@@ -41,6 +43,7 @@
     </li>
 
     <li on:mouseover={() => onListItemHover(back)}
+        on:keydown={onBackClick}
         on:click={onBackClick}
         on:focus
     >

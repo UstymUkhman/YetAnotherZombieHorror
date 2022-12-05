@@ -6,6 +6,7 @@
 
     {#each items as item, i}
       <li on:mouseover={() => onMouseOver(i)}
+          on:keydown={onClick}
           on:click={onClick}
           on:focus
       >

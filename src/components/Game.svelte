@@ -30,12 +30,16 @@
     app = new Application(scene);
 
     GameEvents.add('Game::LoopInit', () => {
+      GameEvents.add('Game::Quit', () => dispatch('quit'), true);
       GameEvents.remove('Game::LoopInit', true);
       dispatch('ready');
     }, true);
   });
 
-  onDestroy(() => app.dispose());
+  onDestroy(() => {
+    GameEvents.remove('Game::Quit', true);
+    app.dispose();
+  });
 
   $: (run => {
     if (app?.ready) app.pause = !run;

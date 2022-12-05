@@ -521,7 +521,7 @@ export default class Player extends Character
 
     // Dispatch from "Game Over" menu:
     setTimeout(() =>
-      GameEvents.dispatch('Game::Quit')
+      GameEvents.dispatch('Game::Quit', undefined, true)
     , delay + 5e3);
 
     clearTimeout(this.reloadTimeout);

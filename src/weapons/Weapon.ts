@@ -43,11 +43,12 @@ export default abstract class Weapon
   protected readonly magazine: number;
   public walls: Array<Object3D> = [];
 
-  private readonly bullet: Bullet;
+  private readonly bullet?: Bullet;
   private weapon!: Assets.GLTF;
 
   protected loadedAmmo: number;
   protected totalAmmo: number;
+  private bulletSpeed = 0.0;
 
   private aimed = false;
   public aiming = false;
@@ -56,9 +57,12 @@ export default abstract class Weapon
   private hole?: Hole;
 
   public constructor (private readonly config: WeaponConfig) {
-    this.bullet = new Bullet(config.bullet);
-    this.magazine = config.magazine;
+    if (Settings.getEnvironmentValue('bullet')) {
+      this.bullet = new Bullet(config.bullet);
+      this.bulletSpeed = this.bullet.speed;
+    }
 
+    this.magazine = config.magazine;
     this.loadedAmmo = config.ammo;
     this.totalAmmo = config.ammo;
   }
@@ -213,7 +217,7 @@ export default abstract class Weapon
 
     this.bullets.forEach((bullet, uuid) => {
       if (Date.now() < bullet.userData.lifeTime)
-        this.bullet.update(bullet);
+        (this.bullet as Bullet).update(bullet);
 
       else this.removeBullet(uuid);
     });
@@ -225,15 +229,18 @@ export default abstract class Weapon
     );
 
     const target = this.target;
-    const { ray } = this.raycaster;
     const hitBox = this.targets[target];
     const recoil = this.animateRecoil();
 
-    const bullet = this.bullet.shoot(ray, this.aiming);
+    let bullet: Mesh | undefined = undefined;
+    !this.bullets.size && RAF.add(this.onShoot);
     GameEvents.dispatch('Player::Shoot', true, true);
 
-    !this.bullets.size && RAF.add(this.onShoot);
-    this.bullets.set(bullet.uuid, bullet);
+    if (this.bullet) {
+      const { ray } = this.raycaster;
+      bullet = this.bullet.shoot(ray, this.aiming);
+      this.bullets.set(bullet.uuid, bullet);
+    }
 
     this.fire.addParticles();
     this.loadedAmmo--;
@@ -251,18 +258,18 @@ export default abstract class Weapon
     const index = target % 6;
     const event = this.getEvent(index);
 
-    // const distance = hitBox.position.distanceToSquared(bullet.position);
+    const distance = bullet ? hitBox.position.distanceToSquared(bullet.position) : 0.0;
     const headshot = !index && Math.random() < this.config.headshot;
     const damage = headshot && 100.0 || this.getDamage(index);
 
-    // setTimeout(() => {
-    this.removeBullet(bullet.uuid);
-    const { enemy } = hitBox.userData;
+    setTimeout(() => {
+      bullet && this.removeBullet(bullet.uuid);
+      const { enemy } = hitBox.userData;
 
-    GameEvents.dispatch(event, {
-      enemy, damage, headshot
-    });
-    // }, distance / this.bullet.speed);
+      GameEvents.dispatch(event, {
+        enemy, damage, headshot
+      });
+    }, distance * this.bulletSpeed);
 
     return recoil;
   }
@@ -286,8 +293,8 @@ export default abstract class Weapon
     RAF.remove(this.onUpdate);
     RAF.remove(this.onShoot);
 
+    this.bullet?.dispose();
     this.targets.splice(0);
-    this.bullet.dispose();
     this.walls.splice(0);
 
     this.hole?.dispose();

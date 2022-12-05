@@ -1,5 +1,6 @@
 import type { Matrix4 } from 'three/src/math/Matrix4';
 import type { Vector3 } from 'three/src/math/Vector3';
+import type { Mesh } from 'three/src/objects/Mesh';
 import Configs from '@/configs';
 
 type BulletConfig       = typeof Configs.Pistol.bullet | typeof Configs.Rifle.bullet;
@@ -13,6 +14,7 @@ type RifleSounds        = typeof Configs.Rifle.sounds;
 
 type WeaponSoundsConfig = PistolSounds | RifleSounds;
 type Recoil             = { x: number, y: number };
+type BulletPath         = Mesh | undefined;
 
 type SmokeParticle = Particle & {
   position: Vector3,

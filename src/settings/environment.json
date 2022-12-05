@@ -1,4 +1,8 @@
 {
+  "bullet": true,
+  "bulletPath": false,
+  "bulletHoles": true,
+
   "raining": true,
   "lighting": true,
   "raindrops": false,

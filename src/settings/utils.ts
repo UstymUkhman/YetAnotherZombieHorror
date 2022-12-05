@@ -5,6 +5,7 @@ import Settings from '@/settings';
 const settings = new Settings();
 
 const dependencies = new Map([
+  ['bullet', ['bulletPath', 'bulletHoles']],
   ['raining', ['raindrops', 'softParticles']],
   ['fog', ['bakedFog', 'volumetricFog']],
   ['volumetricFog', ['bakedFog']],
