@@ -53,20 +53,23 @@
 
 ## Settings ##
 
-### Environment ###
+### Performance ###
 
 | Option          | Type      | Default Value | Description |
 | --------------- | --------- | ------------- | ----------- |
-| Raining         | *Boolean* | `true`        | Whether it will be raining in the level. Setting this to `false` will lead to better performance. |
-| Lighting        | *Boolean* | `true`        | Whether there will be lightning strikes in the level. Setting this to `false` will lead to slightly better performance. **Can be `true` only if `clouds` is greater than `0`.** |
+| Bullet          | *Boolean* | `true`        | Whether there will be visible projectile meshes. Setting this to `false` may lead to slightly better performance. **There will be no delay between a shot and an enemy hit if this value is `false`.** |
+| Bullet Path     | *Boolean* | `false`       | Whether there will be visible bullet's trajectory from the barrel of the weapon to the projectile. Setting this to `true` may lead to slightly worse performance on low-end devices. |
+| Bullet Holes    | *Boolean* | `false`       | Whether there will be visible bullets holes on buildings, walls and ground. Setting this to `true` may lead to slightly worse performance on low-end devices. |
+| Raining         | *Boolean* | `true`        | Whether it will be raining on the level. Setting this to `false` will lead to better performance. |
+| Lighting        | *Boolean* | `false`       | Whether there will be lightning strikes on the level. Setting this to `true` may lead to slightly worse performance on low-end devices. **Can be `true` only if `clouds` is greater than `0`.** |
 | Raindrops       | *Boolean* | `false`       | Whether there will be an overlay of raindrops on the camera. Setting this to `true` will lead to slightly worse performance on low-end devices. **Can be `true` only if `raining` is `true`.** |
-| Soft Particles  | *Boolean* | `false`       | Whether to use [Soft Particles](https://developer.download.nvidia.com/whitepapers/2007/SDK10/SoftParticles_hi.pdf) effect on raindrops in the level. Setting this to `true` will lead to slightly worse performance on low-end devices. **Can be `true` only if `raining` is `true`.** |
-| Fog             | *Boolean* | `false`       | Whether there will be fog in the level. |
+| Soft Particles  | *Boolean* | `false`       | Whether to use [Soft Particles](https://developer.download.nvidia.com/whitepapers/2007/SDK10/SoftParticles_hi.pdf) effect on raindrops on the level. Setting this to `true` may lead to slightly worse performance on low-end devices. **Can be `true` only if `raining` is `true`.** |
+| Fog             | *Boolean* | `true`        | Whether there will be fog on the level. |
 | Baked Fog       | *Boolean* | `false`       | Whether to use noise texture instead of the [Fractional Brownian Motion](https://www.iquilezles.org/www/articles/fbm/fbm.htm) algorithm to generate Volumetric Fog effect. Setting this to `true` will lead to better performance. **Can be `true` only if `fog` and `volumetricFog` are `true`.** |
-| Volumetric Fog  | *Boolean* | `false`       | Whether to use [Volumetric Fog](https://www.gamedeveloper.com/programming/atmospheric-scattering-and-volumetric-fog-algorithm-part-1) instead of the [exponential squared](https://threejs.org/docs/#api/en/scenes/FogExp2) in the level. Setting this to `true` will lead to worse performance on low-end devices. **Can be `true` only if `fog` is `true`.** |
-| Clouds         | *Number*  | `300`          | Amount of cloud sprites that will be covering the skybox. Reducing this number may lead to slightly better performance. **Min value is `0`; max value is `300`.** |
-| Dynamic Clouds  | *Boolean* | `true`        | Whether clouds will be rotating. Setting this to `false` will lead to slightly better performance. **Can be `true` only if `clouds` is greater than `0`.** |
-| Physical Lights | *Boolean* | `false`       | Whether to use physically correct lighting mode. Setting this to `true` will lead to slightly worse performance on low-end devices. |
+| Volumetric Fog  | *Boolean* | `false`       | Whether to use [Volumetric Fog](https://www.gamedeveloper.com/programming/atmospheric-scattering-and-volumetric-fog-algorithm-part-1) instead of the [exponential squared](https://threejs.org/docs/#api/en/scenes/FogExp2) on the level. Setting this to `true` will lead to worse performance on low-end devices. **Can be `true` only if `fog` is `true`.** |
+| Clouds         | *Number*  | `0`            | Amount of cloud sprites that will be covering the skybox. Incrementing this number may lead to slightly worse performance on low-end devices. **Min value is `0`; max value is `300`.** |
+| Dynamic Clouds  | *Boolean* | `false`       | Whether clouds will be rotating. Setting this to `true` may lead to slightly worse performance on low-end devices. **Can be `true` only if `clouds` is greater than `0`.** |
+| Physical Lights | *Boolean* | `false`       | Whether to use physically correct lighting mode. Setting this to `true` will lead to worse performance on low-end devices. |
 
 ### Physics ###
 

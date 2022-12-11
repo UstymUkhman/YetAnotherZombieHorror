@@ -1,10 +1,10 @@
-import type { Environment, EnvironmentKeys, RequestSuccess } from '@/settings/types';
-import EnvironmentData from '@/settings/environment.json';
+import type { Performance, PerformanceKeys, RequestSuccess } from '@/settings/types';
+import PerformanceData from '@/settings/performance.json';
 import { GameEvents } from '@/events/GameEvents';
 
 export default class Settings
 {
-  private static readonly environment = Settings.getDefaultEnvironmentValues();
+  private static readonly performance = Settings.getDefaultPerformanceValues();
 
   public constructor () {
     this.openDBConnection(this.getEnviromentSettings.bind(this));
@@ -23,19 +23,19 @@ export default class Settings
 
   private onUpgradeNeeded (event: IDBVersionChangeEvent): void {
     const db = (event.target as IDBRequest).result;
-    db.createObjectStore('Environment');
+    db.createObjectStore('Performance');
   }
 
   private getEnviromentSettings (db: IDBDatabase, updated = false): void {
-    const transaction = db.transaction('Environment', 'readonly');
-    const environmentStore = transaction.objectStore('Environment');
+    const transaction = db.transaction('Performance', 'readonly');
+    const performanceStore = transaction.objectStore('Performance');
 
-    environmentStore.openCursor().onsuccess = (event: Event) => {
+    performanceStore.openCursor().onsuccess = (event: Event) => {
       const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
-      if (!cursor) return updated ? null : this.updateEnvironmentStore(db);
+      if (!cursor) return updated ? null : this.updatePerformanceStore(db);
 
-      const key = cursor.key as EnvironmentKeys;
-      Settings.environment.set(key, cursor.value);
+      const key = cursor.key as PerformanceKeys;
+      Settings.performance.set(key, cursor.value);
 
       cursor.continue();
       updated = true;
@@ -44,15 +44,15 @@ export default class Settings
     transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
   }
 
-  private updateEnvironmentStore (db: IDBDatabase, add = true, environment = EnvironmentData): void {
-    const transaction = db.transaction('Environment', 'readwrite');
-    const environmentStore = transaction.objectStore('Environment');
+  private updatePerformanceStore (db: IDBDatabase, add = true, performance = PerformanceData): void {
+    const transaction = db.transaction('Performance', 'readwrite');
+    const performanceStore = transaction.objectStore('Performance');
 
-    for (const setting in environment) {
-      const key = setting as EnvironmentKeys;
-      Settings.environment.set(key, environment[key]);
+    for (const setting in performance) {
+      const key = setting as PerformanceKeys;
+      Settings.performance.set(key, performance[key]);
 
-      environmentStore[add ? 'add' : 'put'](environment[key], key)
+      performanceStore[add ? 'add' : 'put'](performance[key], key)
         .onerror = this.onQueryError.bind(this);
     }
 
@@ -64,8 +64,8 @@ export default class Settings
     db.close();
   }
 
-  private resetEnvironmentStore (db: IDBDatabase): void {
-    this.updateEnvironmentStore(db, false);
+  private resetPerformanceStore (db: IDBDatabase): void {
+    this.updatePerformanceStore(db, false);
   }
 
   private onRequestError (event: Event): void {
@@ -76,25 +76,25 @@ export default class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public updateEnvironmentValues (environment: typeof EnvironmentData): void {
+  public updatePerformanceValues (performance: typeof PerformanceData): void {
     this.openDBConnection((db: IDBDatabase) =>
-      this.updateEnvironmentStore(db, false, environment)
+      this.updatePerformanceStore(db, false, performance)
     );
   }
 
-  public static getEnvironmentValue (key: EnvironmentKeys): boolean {
-    return Settings.environment.get(key) as boolean;
+  public static getPerformanceValue (key: PerformanceKeys): boolean {
+    return Settings.performance.get(key) as boolean;
   }
 
-  public static getDefaultEnvironmentValues (): Environment {
-    return new Map(Object.entries(EnvironmentData)) as Environment;
+  public static getDefaultPerformanceValues (): Performance {
+    return new Map(Object.entries(PerformanceData)) as Performance;
   }
 
-  public static getEnvironmentValues (): Environment {
-    return Settings.environment;
+  public static getPerformanceValues (): Performance {
+    return Settings.performance;
   }
 
-  public resetEnvironmentValues (): void {
-    this.openDBConnection(this.resetEnvironmentStore.bind(this));
+  public resetPerformanceValues (): void {
+    this.openDBConnection(this.resetPerformanceStore.bind(this));
   }
 }

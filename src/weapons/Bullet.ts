@@ -54,7 +54,7 @@ export default class Bullet
 
     this.bullet.scale.setScalar(this.config.scale);
 
-    Settings.getEnvironmentValue('bulletPath') &&
+    Settings.getPerformanceValue('bulletPath') &&
       this.bullet.add(await this.createPath());
   }
 

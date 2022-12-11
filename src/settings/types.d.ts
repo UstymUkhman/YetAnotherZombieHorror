@@ -1,14 +1,14 @@
-import type SettingsData from '@/settings/environment.json';
+import type SettingsData from '@/settings/performance.json';
 
-type EnvironmentValues = typeof SettingsData[EnvironmentKeys];
-type Environment = Map<EnvironmentKeys, EnvironmentValues>;
+type PerformanceValues = typeof SettingsData[PerformanceKeys];
+type Performance = Map<PerformanceKeys, PerformanceValues>;
 
-type EnvironmentKeys = keyof typeof SettingsData;
+type PerformanceKeys = keyof typeof SettingsData;
 type RequestSuccess = (db: IDBDatabase) => void;
 
-type EnvironmentSettings = Array<{
-  value: EnvironmentValues,
-  key: EnvironmentKeys,
+type PerformanceSettings = Array<{
+  value: PerformanceValues,
+  key: PerformanceKeys,
   enabled: boolean,
   name: string
 }>;

@@ -57,7 +57,7 @@ export default abstract class Weapon
   private hole?: Hole;
 
   public constructor (private readonly config: WeaponConfig) {
-    if (Settings.getEnvironmentValue('bullet')) {
+    if (Settings.getPerformanceValue('bullet')) {
       this.bullet = new Bullet(config.bullet);
       this.bulletSpeed = this.bullet.speed;
     }
@@ -103,7 +103,7 @@ export default abstract class Weapon
       this.weapon, this.config.textures
     );
 
-    if (Settings.getEnvironmentValue('bulletHoles')) {
+    if (Settings.getPerformanceValue('bulletHoles')) {
       this.hole = new Hole(
         this.config.textures,
         this.config.bullet.scale

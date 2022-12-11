@@ -1,5 +1,5 @@
-import type { Environment, EnvironmentSettings, EnvironmentKeys } from '@/settings/types';
-import type EnvironmentData from '@/settings/environment.json';
+import type { Performance, PerformanceSettings, PerformanceKeys } from '@/settings/types';
+import type PerformanceData from '@/settings/performance.json';
 import Settings from '@/settings';
 
 const settings = new Settings();
@@ -12,13 +12,13 @@ const dependencies = new Map([
   ['clouds', ['lighting', 'dynamicClouds']]
 ]);
 
-const environmentNeedsUpdate = (environment: EnvironmentSettings, values: Environment): typeof EnvironmentData | void => {
-  const settings = environment.reduce((environment, variable) => ({
-    ...environment, [variable.key]: variable.value
-  }), {}) as typeof EnvironmentData;
+const performanceNeedsUpdate = (performance: PerformanceSettings, values: Performance): typeof PerformanceData | void => {
+  const settings = performance.reduce((performance, variable) => ({
+    ...performance, [variable.key]: variable.value
+  }), {}) as typeof PerformanceData;
 
   for (const variable in settings) {
-    const key = variable as EnvironmentKeys;
+    const key = variable as PerformanceKeys;
 
     if (values.get(key) !== settings[key]) {
       return settings;
@@ -26,23 +26,25 @@ const environmentNeedsUpdate = (environment: EnvironmentSettings, values: Enviro
   }
 };
 
-export const getOptionDependencies = (key: EnvironmentKeys): Array<string> | void => {
+export const getOptionDependencies = (key: PerformanceKeys): Array<string> | void => {
   const dependency = dependencies.get(key);
   if (dependency) return dependency;
 };
 
-export const updateEnvironment = (updated: EnvironmentSettings): boolean => {
-  const current = Settings.getEnvironmentValues();
-  const values = environmentNeedsUpdate(updated, current);
+export const updatePerformance = (updated: PerformanceSettings): boolean => {
+  const current = Settings.getPerformanceValues();
+  const values = performanceNeedsUpdate(updated, current);
 
-  values && settings.updateEnvironmentValues(values);
+  values && settings.updatePerformanceValues(values);
   return !!values;
 };
 
-export const resetEnvironment = (updated: EnvironmentSettings): boolean => {
-  const initial = Settings.getDefaultEnvironmentValues();
-  const values = environmentNeedsUpdate(updated, initial);
+export const resetPerformance = (updated: PerformanceSettings): boolean => {
+  const initial = Settings.getDefaultPerformanceValues();
+  const values = performanceNeedsUpdate(updated, initial);
 
-  values && settings.resetEnvironmentValues();
+  values && settings.resetPerformanceValues();
   return !!values;
 };
+
+export const maxClouds = 300.0;

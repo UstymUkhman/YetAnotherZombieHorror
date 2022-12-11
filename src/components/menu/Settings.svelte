@@ -1,6 +1,6 @@
 <div in:screenFly={{ show: true }} out:screenFly={{ show: false }}>
   <ul>
-    {#each environment as variable, v}
+    {#each performance as variable, v}
       <li on:mouseover={() => onListItemHover(v)}
           class:disabled={!variable.enabled}
           on:mouseout={() => selected = -1}
@@ -53,23 +53,20 @@
 </div>
 
 <script lang="ts">
-  import type { EnvironmentSettings, EnvironmentKeys, EnvironmentValues } from '@/settings/types';
-  import { getOptionDependencies, updateEnvironment, resetEnvironment } from '@/settings/utils';
+  import { getOptionDependencies, updatePerformance, resetPerformance, maxClouds } from '@/settings/utils';
+  import type { PerformanceSettings, PerformanceKeys, PerformanceValues } from '@/settings/types';
 
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { getKey, screenFly } from '@components/menu/utils';
-
-  import { Checkbox, Range } from '@components/common/index';
-  import EnvironmentData from '@/settings/environment.json';
+  import { Checkbox, Range } from '@components/common';
 
   import Sounds from '@components/menu/Sounds';
   import Settings from '@/settings';
 
   const dispatch = createEventDispatcher();
-  const maxClouds = EnvironmentData.clouds;
 
-  let parseEnvironmentData: () => void;
-  let environment: EnvironmentSettings;
+  let parsePerformanceData: () => void;
+  let performance: PerformanceSettings;
 
   let selected: number;
   let reseted = false;
@@ -77,31 +74,31 @@
   let reset: number;
   let back: number;
 
-  (parseEnvironmentData = () => {
-    environment = Array.from(Settings.getEnvironmentValues()).map(([ key, value ]) => ({
+  (parsePerformanceData = () => {
+    performance = Array.from(Settings.getPerformanceValues()).map(([ key, value ]) => ({
       name: key.replace(/[A-Z]/g, char => ` ${char}`),
       enabled: true, key, value
     }));
 
-    selected = back = environment.length + 1;
-    reset = environment.length;
-    updateEnvironmentData();
+    selected = back = performance.length + 1;
+    reset = performance.length;
+    updatePerformanceData();
   })();
 
-  function updateEnvironmentData (key?: EnvironmentKeys, value?: EnvironmentValues): void {
-    if (!key && !value) return environment.forEach(({ key, value }) =>
+  function updatePerformanceData (key?: PerformanceKeys, value?: PerformanceValues): void {
+    if (!key && !value) return performance.forEach(({ key, value }) =>
       updateOptionDependencies(key, value)
     );
 
-    updateOptionDependencies(key as EnvironmentKeys, value as EnvironmentValues);
+    updateOptionDependencies(key as PerformanceKeys, value as PerformanceValues);
   }
 
-  function updateOptionDependencies (key: EnvironmentKeys, value: EnvironmentValues): void {
+  function updateOptionDependencies (key: PerformanceKeys, value: PerformanceValues): void {
     const dependencies = getOptionDependencies(key);
     if (!dependencies) return;
 
     dependencies.forEach(key => {
-      const dependency = environment.find(variable => variable.key === key);
+      const dependency = performance.find(variable => variable.key === key);
       if (!dependency) return;
 
       if (!value) dependency.value = false;
@@ -122,7 +119,7 @@
   function onKeyDown (event: KeyboardEvent, index?: number): void {
     const key = index ?? getKey(event, selected, back + 1);
 
-    if (environment[key] && !environment[key].enabled) {
+    if (performance[key] && !performance[key].enabled) {
       const direction = +(event.code === 'ArrowDown');
       return onKeyDown(event, key + direction * 2 - 1);
     }
@@ -135,12 +132,12 @@
 
   function onResetClick (): void {
     Sounds.onClick();
-    reseted = resetEnvironment(environment);
-    reseted && setTimeout(parseEnvironmentData, 100);
+    reseted = resetPerformance(performance);
+    reseted && setTimeout(parsePerformanceData, 100);
   }
 
   function onBackClick (): void {
-    const update = updateEnvironment(environment);
+    const update = updatePerformance(performance);
     dispatch('menu', update || reseted);
     Sounds.onClick();
   }
@@ -149,7 +146,7 @@
     if (selected === reset) return onResetClick();
     if (selected === back) return onBackClick();
 
-    const { key, value } = environment[selected];
+    const { key, value } = performance[selected];
 
     if (typeof value === 'number') {
       const extreme = value ? 0 : maxClouds;
@@ -158,15 +155,15 @@
     }
 
     else {
-      environment[selected].value = !value;
+      performance[selected].value = !value;
     }
 
-    updateEnvironmentData(key, environment[selected].value);
+    updatePerformanceData(key, performance[selected].value);
     Sounds.onClick();
   }
 
   function onRangeUpdate (event: CustomEvent): void {
-    environment[selected].value = event.detail;
+    performance[selected].value = event.detail;
   }
 
   onMount(() =>

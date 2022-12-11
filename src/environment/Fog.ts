@@ -24,7 +24,7 @@ export default class Fog extends FogExp2
     if (this.volumetric) {
       this.loadShaders();
 
-      Settings.getEnvironmentValue('bakedFog') &&
+      Settings.getPerformanceValue('bakedFog') &&
         Assets.Loader.loadTexture(Configs.Level.fog)
           .then(texture => this.noise = texture);
     }
@@ -43,7 +43,7 @@ export default class Fog extends FogExp2
     const fogFrag = await Assets.Loader.loadShader('fog/main.frag');
     const fogVert = await Assets.Loader.loadShader('fog/main.vert');
 
-    ShaderChunk.fog_pars_fragment = Settings.getEnvironmentValue('bakedFog')
+    ShaderChunk.fog_pars_fragment = Settings.getPerformanceValue('bakedFog')
       ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
 
     ShaderChunk.fog_pars_vertex = parsVert;

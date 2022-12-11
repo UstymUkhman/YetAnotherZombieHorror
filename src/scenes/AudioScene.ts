@@ -147,11 +147,11 @@ export default class AudioScene
   }
 
   public async updateAmbient (): Promise<void> {
-    if (Settings.getEnvironmentValue('lighting')) {
+    if (Settings.getPerformanceValue('lighting')) {
       this.createThunderSounds();
     }
 
-    if (Settings.getEnvironmentValue('raining')) {
+    if (Settings.getPerformanceValue('raining')) {
       await this.createAmbientSound();
       this.scene.updateMatrixWorld(true);
 

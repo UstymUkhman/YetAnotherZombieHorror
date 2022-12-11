@@ -5,25 +5,40 @@ import Settings from '@/settings';
 import Configs from '@/configs';
 
 describe('Settings', () => {
-  test('Environment', () => {
-    expect(typeof Settings.getEnvironmentValue('bullet')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('bulletPath')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('bulletHoles')).toStrictEqual('boolean');
+  test('Performance', () => {
+    expect(typeof Settings.getPerformanceValue('bullet')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('bulletPath')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('bulletHoles')).toStrictEqual('boolean');
 
-    expect(typeof Settings.getEnvironmentValue('raining')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('lighting')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('raindrops')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('softParticles')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('raining')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('lighting')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('raindrops')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('softParticles')).toStrictEqual('boolean');
 
-    expect(typeof Settings.getEnvironmentValue('fog')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('bakedFog')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('volumetricFog')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('fog')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('bakedFog')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('volumetricFog')).toStrictEqual('boolean');
 
-    expect(Settings.getEnvironmentValue('clouds')).toBeLessThanOrEqual(300);
-    expect(Settings.getEnvironmentValue('clouds')).toBeGreaterThanOrEqual(0.0);
-    expect(typeof Settings.getEnvironmentValue('clouds')).toStrictEqual('number');
-    expect(typeof Settings.getEnvironmentValue('dynamicClouds')).toStrictEqual('boolean');
-    expect(typeof Settings.getEnvironmentValue('physicalLights')).toStrictEqual('boolean');
+    expect(Settings.getPerformanceValue('clouds')).toBeLessThanOrEqual(300);
+    expect(Settings.getPerformanceValue('clouds')).toBeGreaterThanOrEqual(0.0);
+    expect(typeof Settings.getPerformanceValue('clouds')).toStrictEqual('number');
+    expect(typeof Settings.getPerformanceValue('dynamicClouds')).toStrictEqual('boolean');
+    expect(typeof Settings.getPerformanceValue('physicalLights')).toStrictEqual('boolean');
+  });
+
+  test('Enemy', () => {
+    expect(typeof Configs.Gameplay.enemy.canLose).toStrictEqual('boolean');
+    expect(typeof Configs.Gameplay.enemy.immune).toStrictEqual('boolean');
+  });
+
+  test('Enemy.damage', () => {
+    expect(typeof Configs.Gameplay.damage.enemy.strong).toStrictEqual('number');
+    expect(Configs.Gameplay.damage.enemy.strong).toBeLessThanOrEqual(50);
+    expect(Configs.Gameplay.damage.enemy.strong).toBeGreaterThan(0);
+
+    expect(typeof Configs.Gameplay.damage.enemy.soft).toStrictEqual('number');
+    expect(Configs.Gameplay.damage.enemy.soft).toBeLessThanOrEqual(25);
+    expect(Configs.Gameplay.damage.enemy.soft).toBeGreaterThan(0);
   });
 
   test('Pistol.damage', () => {
@@ -52,6 +67,12 @@ describe('Settings', () => {
     expect(typeof Configs.Gameplay.damage.rifle.leg).toStrictEqual('number');
     expect(Configs.Gameplay.damage.rifle.leg).toBeLessThanOrEqual(100);
     expect(Configs.Gameplay.damage.rifle.leg).toBeGreaterThan(0);
+  });
+
+  test('Rifle.spawn', () => {
+    expect(typeof Configs.Gameplay.rifleSpawn).toStrictEqual('number');
+    expect(Configs.Gameplay.rifleSpawn).toBeLessThanOrEqual(15);
+    expect(Configs.Gameplay.rifleSpawn).toBeGreaterThan(0);
   });
 
   test('Physics', () => {
