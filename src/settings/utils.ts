@@ -1,3 +1,4 @@
+import { PERFORMANCE_LENGTH } from '@/settings/constants';
 import type { Quality } from '@/settings/constants';
 
 import type {
@@ -33,23 +34,25 @@ const performanceNeedsUpdate = (performance: PerformanceSettings, values: Perfor
   }
 };
 
+export const resetPerformance = (updated: PerformanceSettings, quality: Quality): boolean => {
+  const qualityIndex = quality - PERFORMANCE_LENGTH;
+
+  const performanceValues = Settings.getDefaultPerformanceValues(qualityIndex);
+  const currentValues = performanceNeedsUpdate(updated, performanceValues);
+
+  currentValues && settings.resetPerformanceValues(qualityIndex);
+  return !!currentValues;
+};
+
 export const getOptionDependencies = (key: PerformanceKeys): Array<string> | void => {
   const dependency = dependencies.get(key);
   if (dependency) return dependency;
 };
 
 export const updatePerformance = (updated: PerformanceSettings): boolean => {
-  const current = Settings.getPerformanceValues();
-  const values = performanceNeedsUpdate(updated, current);
+  const performanceValues = Settings.getPerformanceValues();
+  const currentValues = performanceNeedsUpdate(updated, performanceValues);
 
-  values && settings.updatePerformanceValues(values);
-  return !!values;
-};
-
-export const resetPerformance = (updated: PerformanceSettings, quality: Quality): boolean => {
-  const initial = Settings.getDefaultPerformanceValues();
-  const values = performanceNeedsUpdate(updated, initial);
-
-  values && settings.resetPerformanceValues(quality);
-  return !!values;
+  currentValues && settings.updatePerformanceValues(currentValues);
+  return !!currentValues;
 };

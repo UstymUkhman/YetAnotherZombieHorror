@@ -18,7 +18,7 @@
             on:update={onRangeUpdate}
             active={selected === v}
             value={variable.value}
-            max={maxClouds + 99}
+            max={MAX_CLOUDS + 99}
             offset={99}
             min={99}
           />
@@ -84,8 +84,8 @@
   import { getOptionDependencies, updatePerformance, resetPerformance } from '@/settings/utils';
 
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { Quality, MAX_CLOUDS } from '@/settings/constants';
   import { getKey, screenFly } from '@components/menu/utils';
-  import { Quality, maxClouds } from '@/settings/constants';
   import { Checkbox, Range } from '@components/common';
 
   import Sounds from '@components/menu/Sounds';
@@ -188,7 +188,7 @@
     const { key, value } = performance[selected];
 
     if (typeof value === 'number') {
-      const extreme = value ? 0 : maxClouds;
+      const extreme = value ? 0 : MAX_CLOUDS;
       const detail = toggle ? extreme : value;
       onRangeUpdate({ detail } as CustomEvent);
     }

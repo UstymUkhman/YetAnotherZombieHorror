@@ -1,15 +1,14 @@
 import Performance from '@/settings/performance.json';
 
-export const maxClouds = 300.0;
-export const defaultQuality = 0.0;
+export const MAX_CLOUDS = 300.0;
+export const DEFAULT_QUALITY = 0.0;
 
-const DefaultSettings = Performance[defaultQuality];
-const size = Object.keys(DefaultSettings).length;
-
-export default DefaultSettings;
+export const DefaultPerformance = Performance[DEFAULT_QUALITY];
+const { length } = Object.keys(DefaultPerformance);
+export const PERFORMANCE_LENGTH = length;
 
 export enum Quality {
-  LOW = size,
-  MEDIUM = size + 1,
-  HIGH = size + 2
+  LOW    = PERFORMANCE_LENGTH + 0.0,
+  MEDIUM = PERFORMANCE_LENGTH + 1.0,
+  HIGH   = PERFORMANCE_LENGTH + 2.0
 }
