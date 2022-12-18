@@ -1,12 +1,11 @@
-import SettingsData from '@/settings/performance.json';
+import type DefaultSettings from '@/settings/constants';
 
-type PerformanceValues = typeof SettingsData[PerformanceKeys];
 type Performance = Map<PerformanceKeys, PerformanceValues>;
+type PerformanceValues = PerformanceData[PerformanceKeys];
 
-type PerformanceKeys = keyof typeof SettingsData;
 type RequestSuccess = (db: IDBDatabase) => void;
-
-const size = Object.keys(SettingsData).length;
+type PerformanceData = typeof DefaultSettings;
+type PerformanceKeys = keyof PerformanceData;
 
 type PerformanceSettings = Array<{
   value: PerformanceValues,
@@ -14,9 +13,3 @@ type PerformanceSettings = Array<{
   enabled: boolean,
   name: string
 }>;
-
-export enum Quality {
-  LOW = size,
-  MEDIUM = size + 1,
-  HIGH = size + 2
-}

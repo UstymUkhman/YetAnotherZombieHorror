@@ -80,14 +80,14 @@
 </div>
 
 <script lang="ts">
-  import { getOptionDependencies, updatePerformance, resetPerformance, maxClouds } from '@/settings/utils';
   import type { PerformanceSettings, PerformanceKeys, PerformanceValues } from '@/settings/types';
+  import { getOptionDependencies, updatePerformance, resetPerformance } from '@/settings/utils';
 
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { getKey, screenFly } from '@components/menu/utils';
+  import { Quality, maxClouds } from '@/settings/constants';
   import { Checkbox, Range } from '@components/common';
 
-  import { Quality } from '@/settings/types.d';
   import Sounds from '@components/menu/Sounds';
   import Settings from '@/settings';
 
@@ -102,7 +102,7 @@
 
   (parsePerformanceData = () => {
     performance = Array.from(Settings.getPerformanceValues()).map(([ key, value ]) => ({
-      name: key.replace(/[A-Z]/g, char => ` ${char}`),
+      name: (key as string).replace(/[A-Z]/g, char => ` ${char}`),
       enabled: true, key, value
     }));
 

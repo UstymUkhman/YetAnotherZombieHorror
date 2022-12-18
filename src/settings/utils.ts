@@ -1,5 +1,12 @@
-import type { Performance, PerformanceSettings, PerformanceKeys, Quality } from '@/settings/types';
-import type PerformanceData from '@/settings/performance.json';
+import type { Quality } from '@/settings/constants';
+
+import type {
+  Performance,
+  PerformanceKeys,
+  PerformanceData,
+  PerformanceSettings
+} from '@/settings/types';
+
 import Settings from '@/settings';
 
 const settings = new Settings();
@@ -12,10 +19,10 @@ const dependencies = new Map([
   ['clouds', ['lighting', 'dynamicClouds']]
 ]);
 
-const performanceNeedsUpdate = (performance: PerformanceSettings, values: Performance): typeof PerformanceData | void => {
+const performanceNeedsUpdate = (performance: PerformanceSettings, values: Performance): PerformanceData | void => {
   const settings = performance.reduce((performance, variable) => ({
     ...performance, [variable.key]: variable.value
-  }), {}) as typeof PerformanceData;
+  }), {}) as PerformanceData;
 
   for (const variable in settings) {
     const key = variable as PerformanceKeys;
@@ -46,5 +53,3 @@ export const resetPerformance = (updated: PerformanceSettings, quality: Quality)
   values && settings.resetPerformanceValues(quality);
   return !!values;
 };
-
-export const maxClouds = 300.0;

@@ -1,7 +1,13 @@
-import type { Performance, PerformanceKeys, RequestSuccess } from '@/settings/types';
-import PerformanceData from '@/settings/performance.json';
+import type {
+  Performance,
+  RequestSuccess,
+  PerformanceKeys,
+  PerformanceData
+} from '@/settings/types';
+
+import { Quality } from '@/settings/constants';
 import { GameEvents } from '@/events/GameEvents';
-import { Quality } from '@/settings/types.d';
+import DefaultSettings from '@/settings/constants';
 
 export default class Settings
 {
@@ -45,7 +51,7 @@ export default class Settings
     transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
   }
 
-  private updatePerformanceStore (db: IDBDatabase, add = true, performance = PerformanceData): void {
+  private updatePerformanceStore (db: IDBDatabase, add = true, performance = DefaultSettings): void {
     const transaction = db.transaction('Performance', 'readwrite');
     const performanceStore = transaction.objectStore('Performance');
 
@@ -77,7 +83,7 @@ export default class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public updatePerformanceValues (performance: typeof PerformanceData): void {
+  public updatePerformanceValues (performance: PerformanceData): void {
     this.openDBConnection((db: IDBDatabase) =>
       this.updatePerformanceStore(db, false, performance)
     );
@@ -88,7 +94,7 @@ export default class Settings
   }
 
   public static getDefaultPerformanceValues (): Performance {
-    return new Map(Object.entries(PerformanceData)) as Performance;
+    return new Map(Object.entries(DefaultSettings)) as Performance;
   }
 
   public static getPerformanceValues (): Performance {

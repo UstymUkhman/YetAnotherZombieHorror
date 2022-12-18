@@ -1,18 +1,56 @@
-{
-  "bullet": true,
-  "bulletPath": false,
-  "bulletHoles": false,
+[
+  {
+    "bullet": true,
+    "bulletPath": false,
+    "bulletHoles": false,
 
-  "raining": true,
-  "lighting": false,
-  "raindrops": false,
-  "softParticles": false,
+    "raining": true,
+    "lighting": false,
+    "raindrops": false,
+    "softParticles": false,
 
-  "fog": true,
-  "bakedFog": false,
-  "volumetricFog": false,
+    "fog": true,
+    "bakedFog": false,
+    "volumetricFog": false,
 
-  "clouds": 0.0,
-  "dynamicClouds": false,
-  "physicalLights": false
-}
+    "clouds": 0.0,
+    "dynamicClouds": false,
+    "physicalLights": false
+  },
+  {
+    "bullet": true,
+    "bulletPath": false,
+    "bulletHoles": false,
+
+    "raining": true,
+    "lighting": false,
+    "raindrops": false,
+    "softParticles": false,
+
+    "fog": true,
+    "bakedFog": false,
+    "volumetricFog": false,
+
+    "clouds": 0.0,
+    "dynamicClouds": false,
+    "physicalLights": false
+  },
+  {
+    "bullet": true,
+    "bulletPath": false,
+    "bulletHoles": false,
+
+    "raining": true,
+    "lighting": false,
+    "raindrops": false,
+    "softParticles": false,
+
+    "fog": true,
+    "bakedFog": false,
+    "volumetricFog": false,
+
+    "clouds": 0.0,
+    "dynamicClouds": false,
+    "physicalLights": false
+  }
+]
