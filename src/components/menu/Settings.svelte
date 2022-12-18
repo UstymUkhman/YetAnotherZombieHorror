@@ -32,14 +32,41 @@
       </li>
     {/each}
 
-    <li on:mouseover={() => onListItemHover(reset)}
-        on:mouseout={() => selected = -1}
-        on:keydown={onResetClick}
-        on:click={onResetClick}
-        on:focus
-        on:blur
-    >
-      <h5 class:active={selected === reset}>Reset</h5>
+    <li><h5>Reset To:</h5></li>
+
+    <li class="reset">
+      <h5 on:mouseover={() => onListItemHover(Quality.LOW)}
+          class:active={selected === Quality.LOW}
+          on:mouseout={() => selected = -1}
+          on:keydown={onResetClick}
+          on:click={onResetClick}
+          on:focus
+          on:blur
+      >
+        {Quality[Quality.LOW]}
+      </h5>
+
+      <h5 on:mouseover={() => onListItemHover(Quality.MEDIUM)}
+          class:active={selected === Quality.MEDIUM}
+          on:mouseout={() => selected = -1}
+          on:keydown={onResetClick}
+          on:click={onResetClick}
+          on:focus
+          on:blur
+      >
+        {Quality[Quality.MEDIUM]}
+      </h5>
+
+      <h5 on:mouseover={() => onListItemHover(Quality.HIGH)}
+          class:active={selected === Quality.HIGH}
+          on:mouseout={() => selected = -1}
+          on:keydown={onResetClick}
+          on:click={onResetClick}
+          on:focus
+          on:blur
+      >
+        {Quality[Quality.HIGH]}
+      </h5>
     </li>
 
     <li on:mouseover={() => onListItemHover(back)}
@@ -60,6 +87,7 @@
   import { getKey, screenFly } from '@components/menu/utils';
   import { Checkbox, Range } from '@components/common';
 
+  import { Quality } from '@/settings/types.d';
   import Sounds from '@components/menu/Sounds';
   import Settings from '@/settings';
 
@@ -70,8 +98,6 @@
 
   let selected: number;
   let reseted = false;
-
-  let reset: number;
   let back: number;
 
   (parsePerformanceData = () => {
@@ -80,8 +106,9 @@
       enabled: true, key, value
     }));
 
-    selected = back = performance.length + 1;
-    reset = performance.length;
+    const backIndex = Object.keys(Quality).length * 0.5;
+    selected = back = performance.length + backIndex;
+
     updatePerformanceData();
   })();
 
@@ -130,9 +157,21 @@
     selected = key;
   }
 
+  function resetIndex (): boolean {
+    switch (selected) {
+      case Quality.LOW:
+      case Quality.MEDIUM:
+      case Quality.HIGH:
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
   function onResetClick (): void {
     Sounds.onClick();
-    reseted = resetPerformance(performance);
+    reseted = resetPerformance(performance, selected);
     reseted && setTimeout(parsePerformanceData, 100);
   }
 
@@ -143,7 +182,7 @@
   }
 
   function onClick (toggle = true): void {
-    if (selected === reset) return onResetClick();
+    if (resetIndex()) return onResetClick();
     if (selected === back) return onBackClick();
 
     const { key, value } = performance[selected];
@@ -154,9 +193,7 @@
       onRangeUpdate({ detail } as CustomEvent);
     }
 
-    else {
-      performance[selected].value = !value;
-    }
+    else performance[selected].value = !value;
 
     updatePerformanceData(key, performance[selected].value);
     Sounds.onClick();
@@ -217,6 +254,16 @@
     &.disabled {
       pointer-events: none;
       opacity: 0.5;
+    }
+
+    &.reset {
+      margin-left: auto;
+      margin-right: 0;
+      width: 50%;
+
+      h5 {
+        pointer-events: all;
+      }
     }
 
     &:last-child {

@@ -1,4 +1,4 @@
-import type { Performance, PerformanceSettings, PerformanceKeys } from '@/settings/types';
+import type { Performance, PerformanceSettings, PerformanceKeys, Quality } from '@/settings/types';
 import type PerformanceData from '@/settings/performance.json';
 import Settings from '@/settings';
 
@@ -39,11 +39,11 @@ export const updatePerformance = (updated: PerformanceSettings): boolean => {
   return !!values;
 };
 
-export const resetPerformance = (updated: PerformanceSettings): boolean => {
+export const resetPerformance = (updated: PerformanceSettings, quality: Quality): boolean => {
   const initial = Settings.getDefaultPerformanceValues();
   const values = performanceNeedsUpdate(updated, initial);
 
-  values && settings.resetPerformanceValues();
+  values && settings.resetPerformanceValues(quality);
   return !!values;
 };
 

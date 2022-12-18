@@ -20,7 +20,9 @@
 }
 
 @mixin item ($heading) {
-  @include mixin.cursor(true);
+  &:not(.reset) {
+    @include mixin.cursor(true);
+  }
 
   backface-visibility: hidden;
   width: 100%;

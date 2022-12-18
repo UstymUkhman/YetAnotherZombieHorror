@@ -1,6 +1,7 @@
 import type { Performance, PerformanceKeys, RequestSuccess } from '@/settings/types';
 import PerformanceData from '@/settings/performance.json';
 import { GameEvents } from '@/events/GameEvents';
+import { Quality } from '@/settings/types.d';
 
 export default class Settings
 {
@@ -94,7 +95,8 @@ export default class Settings
     return Settings.performance;
   }
 
-  public resetPerformanceValues (): void {
+  public resetPerformanceValues (quality: Quality): void {
+    console.info(`Reset Performance to: ${Quality[quality]}`);
     this.openDBConnection(this.resetPerformanceStore.bind(this));
   }
 }
