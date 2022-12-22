@@ -71,7 +71,7 @@ export default class Enemies
 
   private death (event: GameEvent): void {
     const index = this.getEnemyIndex(event.data as number);
-    this.enemies.splice(index, 1);
+    this.enemies.splice(index, 1.0);
     this.spawnEnemy();
   }
 
@@ -140,7 +140,7 @@ export default class Enemies
     }
 
     this.enemyModel.scene.clear();
-    this.enemies.splice(0);
+    this.enemies.splice(0.0);
     this.removeEvents();
   }
 

@@ -7,23 +7,24 @@ import type WebWorker from '@/worker/WebWorker';
 
 import LevelScene from '@/scenes/LevelScene';
 import { Clock } from 'three/src/core/Clock';
-
 import Enemies from '@/managers/Enemies';
 import Player from '@/characters/Player';
 
 import Camera from '@/managers/Camera';
 import Pistol from '@/weapons/Pistol';
+import Coords from '@/utils/Coords';
 import Rifle from '@/weapons/Rifle';
 
-import Coords from '@/utils/Coords';
 import Controls from '@/controls';
 import RAF from '@/managers/RAF';
+import Configs from '@/configs';
 import Physics from '@/physics';
 
 export default class MainLoop
 {
   private rifle!: Rifle;
   private pistol!: Pistol;
+  private enemyKills = 0.0;
   private enemies!: Enemies;
 
   private readonly level: LevelScene;
@@ -49,7 +50,6 @@ export default class MainLoop
     this.worker?.add('Level::GetRandomCoord', event => {
       if (Coords.addLevelCoords(event.data as LevelCoords)) {
         GameEvents.dispatch('Loading::Complete', null, true);
-        // setTimeout(this.spawnRifle.bind(this), 1e4);
       }
 
       else this.worker?.post('Level::GetRandomCoord');
@@ -60,17 +60,17 @@ export default class MainLoop
       bounds: LevelScene.bounds
     });
 
-    GameEvents.add('Player::PickRifle', () => {
-      setTimeout(this.spawnRifle.bind(this), 1e4);
-      this.player.pickRifle();
+    GameEvents.add('Enemy::Active', event => {
+      !event.data && this.checkRifleSpawn();
+      this.player.setTargets(this.enemies.colliders);
     });
+
+    GameEvents.add('Player::PickRifle', () =>
+      this.player.pickRifle()
+    );
 
     GameEvents.add('Player::Death', event =>
       this.enemies.playerDead = event.data
-    );
-
-    GameEvents.add('Enemy::Active', () =>
-      this.player.setTargets(this.enemies.colliders)
     );
   }
 
@@ -111,8 +111,11 @@ export default class MainLoop
     }
 
     Coords.fillRandomLevelCoords();
-    // setTimeout(this.spawnRifle.bind(this), 1e4);
     GameEvents.dispatch('Loading::Complete', null, true);
+  }
+
+  private checkRifleSpawn (): void {
+    !(++this.enemyKills % Configs.Gameplay.rifleSpawn) && this.spawnRifle();
   }
 
   private spawnRifle (): void {
