@@ -38,6 +38,12 @@
     }
   },
 
+  // "files": [],
+
+  // "references": [
+  //   { "path": "./app", "composite": true }
+  // ],
+
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
@@ -45,6 +51,7 @@
   ],
 
   "exclude": [
+    // "app/**/*.ts",
     "node_modules",
     "typings",
     "public",
