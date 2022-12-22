@@ -265,7 +265,7 @@ export default abstract class Character
   }
 
   protected get blockingAnimation (): boolean {
-    return this.animationUpdate;
+    return this.dead || this.animationUpdate;
   }
 
   protected set mesh (mesh: Assets.GLTF) {

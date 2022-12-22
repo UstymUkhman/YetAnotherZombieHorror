@@ -1,6 +1,7 @@
 {
   "easy": {
-    "rifleSpawn": 5.0,
+    "maxEnemies": 10.0,
+    "rifleSpawn": 3.0,
 
     "enemy": {
       "canLose": true,
@@ -28,7 +29,8 @@
   },
 
   "normal": {
-    "rifleSpawn": 10.0,
+    "maxEnemies": 25.0,
+    "rifleSpawn": 5.0,
 
     "enemy": {
       "canLose": false,
@@ -56,7 +58,8 @@
   },
 
   "hard": {
-    "rifleSpawn": 15.0,
+    "maxEnemies": 50.0,
+    "rifleSpawn": 8.0,
 
     "enemy": {
       "canLose": false,

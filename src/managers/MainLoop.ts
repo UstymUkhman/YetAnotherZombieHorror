@@ -61,7 +61,7 @@ export default class MainLoop
     });
 
     GameEvents.add('Enemy::Active', event => {
-      !event.data && this.checkRifleSpawn();
+      !event.data && this.onEnemyKill();
       this.player.setTargets(this.enemies.colliders);
     });
 
@@ -114,13 +114,14 @@ export default class MainLoop
     GameEvents.dispatch('Loading::Complete', null, true);
   }
 
-  private checkRifleSpawn (): void {
-    !(++this.enemyKills % Configs.Gameplay.rifleSpawn) && this.spawnRifle();
+  private onEnemyKill (): void {
+    const { x, z } = this.player.location.position;
+    this.enemies.spawnMultiple(x, z);
+    !(++this.enemyKills % Configs.Gameplay.rifleSpawn) && this.spawnRifle(x, z);
   }
 
-  private spawnRifle (): void {
-    if (this.rifle.onStage) return;
-    this.rifle.spawn(Coords.getRandomLevelCoords(this.player.coords));
+  private spawnRifle (x: number, z: number): void {
+    !this.rifle.onStage && this.rifle.spawn(Coords.getRandomLevelCoords(x, z));
   }
 
   private update (): void {

@@ -2,16 +2,19 @@ import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { HitDirection } from '@/characters/types';
 
-import type { Vector3 } from 'three/src/math/Vector3';
 import type { GameEvent } from '@/events/GameEvents';
 import type { Assets } from '@/loaders/AssetsLoader';
-
 import { degToRad } from 'three/src/math/MathUtils';
+
+import type { LevelCoords } from '@/scenes/types';
 import { GameEvents } from '@/events/GameEvents';
+import { Vector3 } from 'three/src/math/Vector3';
 import type { HitData } from '@/weapons/types';
 
 import Enemy from '@/characters/Enemy';
 import { PI } from '@/utils/Number';
+import Coords from '@/utils/Coords';
+import Configs from '@/configs';
 import Physics from '@/physics';
 
 export default class Enemies
@@ -21,14 +24,16 @@ export default class Enemies
   private readonly onLegHit = this.legHit.bind(this);
   private readonly onDeath = this.death.bind(this);
 
+  private readonly enemyPosition = new Vector3();
   private readonly enemies: Array<Enemy> = [];
+
   private enemyModel!: Assets.GLTFModel;
-  private spawnedEnemies = 0.0;
+  private spawnedEnemies = 0;
 
   public constructor (private readonly envMap: Texture) {
     (new Enemy).loadCharacter(envMap).then(model => {
       this.enemyModel = model;
-      this.spawnEnemy();
+      this.spawnEnemy([0.0, 0.0]);
     });
 
     this.addEvents();
@@ -41,11 +46,14 @@ export default class Enemies
     GameEvents.add('Hit::Leg', this.onLegHit);
   }
 
-  private spawnEnemy (): void {
+  private spawnEnemy (coords: LevelCoords): void {
     const enemy = new Enemy(
       this.enemyModel, this.envMap,
       this.spawnedEnemies++
     );
+
+    this.enemyPosition.set(coords[0], enemy.collider.position.y, coords[1]);
+    enemy.teleport(this.enemyPosition);
 
     this.enemies.push(enemy);
     Physics.setCharacter(enemy.collider);
@@ -71,14 +79,19 @@ export default class Enemies
 
   private death (event: GameEvent): void {
     const index = this.getEnemyIndex(event.data as number);
-    this.enemies.splice(index, 1.0);
-    this.spawnEnemy();
+    this.enemies.splice(index, 1);
   }
 
   public update (delta: number, player: Vector3): void {
     for (let enemy = this.enemies.length; enemy--;) {
       this.enemies[enemy].update(delta, player);
     }
+  }
+
+  public spawnMultiple (x: number, z: number, enemies = 2): void {
+    const spawned = this.enemies.length - 1;
+    enemies = Math.min(Configs.Gameplay.maxEnemies - spawned, enemies);
+    for (let e = enemies; e--;) this.spawnEnemy(Coords.getRandomLevelCoords(x, z));
   }
 
   public getHitDirection (enemy: Vector3, player: Vector3, rotation: number): HitDirection {
@@ -140,7 +153,7 @@ export default class Enemies
     }
 
     this.enemyModel.scene.clear();
-    this.enemies.splice(0.0);
+    this.enemies.splice(0);
     this.removeEvents();
   }
 

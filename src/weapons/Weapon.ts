@@ -48,7 +48,7 @@ export default abstract class Weapon
 
   protected loadedAmmo: number;
   protected totalAmmo: number;
-  private bulletSpeed = 0.0;
+  // private bulletSpeed = 0.0;
 
   private aimed = false;
   public aiming = false;
@@ -59,7 +59,7 @@ export default abstract class Weapon
   public constructor (private readonly config: WeaponConfig) {
     if (Settings.getPerformanceValue('bullet')) {
       this.bullet = new Bullet(config.bullet);
-      this.bulletSpeed = this.bullet.speed;
+      // this.bulletSpeed = this.bullet.speed;
     }
 
     this.magazine = config.magazine;
@@ -258,18 +258,18 @@ export default abstract class Weapon
     const index = target % 6;
     const event = this.getEvent(index);
 
-    const distance = bullet ? hitBox.position.distanceToSquared(bullet.position) : 0.0;
+    // const distance = bullet ? hitBox.position.distanceToSquared(bullet.position) : 0.0;
     const headshot = !index && Math.random() < this.config.headshot;
     const damage = headshot && 100.0 || this.getDamage(index);
 
-    setTimeout(() => {
-      bullet && this.removeBullet(bullet.uuid);
-      const { enemy } = hitBox.userData;
+    // setTimeout(() => {
+    bullet && this.removeBullet(bullet.uuid);
+    const { enemy } = hitBox.userData;
 
-      GameEvents.dispatch(event, {
-        enemy, damage, headshot
-      });
-    }, distance * this.bulletSpeed);
+    GameEvents.dispatch(event, {
+      enemy, damage, headshot
+    });
+    // }, distance * this.bulletSpeed);
 
     return recoil;
   }

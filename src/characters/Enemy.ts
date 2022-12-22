@@ -377,6 +377,7 @@ export default class Enemy extends Character
 
     this.runTimeout = setTimeout(() => {
       this.playSound('scream', true);
+
       const delay = this.screamDuration - 250;
 
       this.runTimeout = setTimeout(() =>

@@ -57,7 +57,7 @@
 
 | Option          | Type      | Default Value | Description |
 | --------------- | --------- | ------------- | ----------- |
-| Bullet          | *Boolean* | `true`        | Whether there will be visible projectile meshes. Setting this to `false` may lead to slightly better performance. **There will be no delay between a shot and an enemy hit if this value is `false`.** |
+| Bullet          | *Boolean* | `true`        | Whether there will be visible projectile meshes. Setting this to `false` may lead to slightly better performance. |
 | Bullet Path     | *Boolean* | `false`       | Whether there will be visible bullet's trajectory from the barrel of the weapon to the projectile. Setting this to `true` may lead to slightly worse performance on low-end devices. |
 | Bullet Holes    | *Boolean* | `false`       | Whether there will be visible bullets holes on buildings, walls and ground. Setting this to `true` may lead to slightly worse performance on low-end devices. |
 | Raining         | *Boolean* | `true`        | Whether it will be raining on the level. Setting this to `false` will lead to better performance. |
