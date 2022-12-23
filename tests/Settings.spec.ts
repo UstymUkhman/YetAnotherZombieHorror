@@ -105,9 +105,23 @@ describe('Settings', () => {
     expect(Performance[2].physicalLights).toStrictEqual(true);
   });
 
+  test('Enemies.max', () => {
+    expect(typeof Configs.Gameplay.maxEnemies).toStrictEqual('number');
+    expect(Configs.Gameplay.maxEnemies).toBeLessThanOrEqual(50);
+    expect(Configs.Gameplay.maxEnemies).toBeGreaterThan(0);
+  });
+
+  test('Rifle.spawn', () => {
+    expect(typeof Configs.Gameplay.rifleSpawn).toStrictEqual('number');
+    expect(Configs.Gameplay.rifleSpawn).toBeLessThanOrEqual(10);
+    expect(Configs.Gameplay.rifleSpawn).toBeGreaterThan(0);
+  });
+
   test('Enemy', () => {
-    expect(typeof Configs.Gameplay.enemy.canLose).toStrictEqual('boolean');
     expect(typeof Configs.Gameplay.enemy.immune).toStrictEqual('boolean');
+    expect(typeof Configs.Gameplay.enemy.lose).toStrictEqual('boolean');
+    expect(typeof Configs.Gameplay.enemy.walk).toStrictEqual('number');
+    expect(typeof Configs.Gameplay.enemy.run).toStrictEqual('number');
   });
 
   test('Enemy.damage', () => {
@@ -146,12 +160,6 @@ describe('Settings', () => {
     expect(typeof Configs.Gameplay.damage.rifle.leg).toStrictEqual('number');
     expect(Configs.Gameplay.damage.rifle.leg).toBeLessThanOrEqual(100);
     expect(Configs.Gameplay.damage.rifle.leg).toBeGreaterThan(0);
-  });
-
-  test('Rifle.spawn', () => {
-    expect(typeof Configs.Gameplay.rifleSpawn).toStrictEqual('number');
-    expect(Configs.Gameplay.rifleSpawn).toBeLessThanOrEqual(15);
-    expect(Configs.Gameplay.rifleSpawn).toBeGreaterThan(0);
   });
 
   test('Physics', () => {

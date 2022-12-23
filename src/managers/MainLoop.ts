@@ -91,8 +91,7 @@ export default class MainLoop
     this.rifle = new Rifle(envMap);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public start (): void { }
+  public start (): void { return; }
 
   private playerHit (event: GameEvent): void {
     const { position: ePosition, damage } = event.data as EnemyAttackData;

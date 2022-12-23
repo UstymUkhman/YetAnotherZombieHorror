@@ -74,6 +74,7 @@
 
     menuScreen = true;
     updating = true;
+    paused = true;
   }
 
   $: (update => update

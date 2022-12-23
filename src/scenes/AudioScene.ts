@@ -90,13 +90,13 @@ export default class AudioScene
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'scream' ? 1.0 : 0.5;
-      volume = names[s] === 'death' ? 2.5 : volume;
 
+      volume = names[s] === 'death' ? 2.5 : volume;
       audio.setVolume(volume).setBuffer(sound);
-      audio.userData = { name: names[s] };
 
       player && this.player.add(audio);
       soundsMap.set(names[s], audio);
+      audio.name = names[s];
     });
   }
 
@@ -108,9 +108,10 @@ export default class AudioScene
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'bullet' ? 0.25 : 2.5;
-      volume = names[s] === 'shoot' ? 5.0 : volume;
 
+      volume = names[s] === 'shoot' ? 5.0 : volume;
       audio.setVolume(volume).setBuffer(sound);
+
       soundsMap.set(names[s], audio);
       this.weapon.add(audio);
     });
@@ -173,18 +174,24 @@ export default class AudioScene
     const enemy = new Object3D();
     const uuid = event.data as string;
 
-    this.enemySounds.forEach(
-      audio => enemy.add(audio)
-    );
+    this.enemySounds.forEach((audio, name) => {
+      const clone = new PositionalAudio(this.listener);
+
+      clone.setBuffer(audio.buffer as AudioBuffer)
+        .setVolume(audio.getVolume())
+        .name = name;
+
+      enemy.add(clone);
+    });
 
     this.scene.add(enemy);
     this.enemies.set(uuid, enemy);
   }
 
   private removeEventListeners (): void {
-    GameEvents.remove('SFX::Character', true);
     GameEvents.remove('Enemy::Dispose', true);
-    GameEvents.remove('Enemy::Create', true);
+    GameEvents.remove('SFX::Character', true);
+    GameEvents.remove('Enemy::Spawn', true);
     GameEvents.remove('SFX::Thunder', true);
     GameEvents.remove('SFX::Weapon', true);
   }
@@ -233,8 +240,8 @@ export default class AudioScene
     let sound = this.playerSounds.get(sfx as keyof PlayerSounds) as PositionalAudio;
 
     if (this.enemies.has(uuid)) {
-      sound = this.enemySounds.get(sfx) as PositionalAudio;
       character = this.enemies.get(uuid) as Object3D;
+      sound = character.getObjectByName(sfx) as PositionalAudio;
     }
 
     character.matrixWorld.copy(matrix);

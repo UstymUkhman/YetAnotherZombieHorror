@@ -225,6 +225,7 @@ export default class WhiteBox
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'scream' ? 1.0 : 0.5;
+
       volume = names[s] === 'death' ? 2.5 : volume;
       audio.userData = { name: names[s] };
 
@@ -242,11 +243,11 @@ export default class WhiteBox
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'bullet' ? 0.25 : 2.5;
+
       volume = names[s] === 'shoot' ? 5.0 : volume;
-
       audio.userData = { name: names[s] };
-      weapon.object.add(audio);
 
+      weapon.object.add(audio);
       audio.setVolume(volume);
       audio.setBuffer(sound);
     });

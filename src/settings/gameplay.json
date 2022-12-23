@@ -1,11 +1,13 @@
 {
   "easy": {
-    "maxEnemies": 10.0,
-    "rifleSpawn": 3.0,
+    "maxEnemies": 10,
+    "rifleSpawn": 3,
 
     "enemy": {
-      "canLose": true,
-      "immune": false
+      "immune": false,
+      "lose": true,
+      "walk": 500,
+      "run": 250
     },
 
     "damage": {
@@ -29,12 +31,14 @@
   },
 
   "normal": {
-    "maxEnemies": 25.0,
-    "rifleSpawn": 5.0,
+    "maxEnemies": 25,
+    "rifleSpawn": 5,
 
     "enemy": {
-      "canLose": false,
-      "immune": false
+      "immune": false,
+      "lose": false,
+      "walk": 1e3,
+      "run": 500
     },
 
     "damage": {
@@ -58,12 +62,14 @@
   },
 
   "hard": {
-    "maxEnemies": 50.0,
-    "rifleSpawn": 8.0,
+    "maxEnemies": 50,
+    "rifleSpawn": 8,
 
     "enemy": {
-      "canLose": false,
-      "immune": true
+      "immune": true,
+      "lose": false,
+      "walk": -1.0,
+      "run": 1e4
     },
 
     "damage": {

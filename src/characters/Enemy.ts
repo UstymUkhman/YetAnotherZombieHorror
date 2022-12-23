@@ -23,21 +23,20 @@ import anime from 'animejs';
 
 export default class Enemy extends Character
 {
-  private readonly canLose = Configs.Gameplay.enemy.canLose;
-  private readonly onLegHit = this.crawl.bind(this);
+  private readonly walkDistance = Configs.Gameplay.enemy.walk;
+  private readonly runDistance = Configs.Gameplay.enemy.run;
+  private readonly lose = Configs.Gameplay.enemy.lose;
 
   protected override animationUpdate = true;
   protected override lastAnimation = 'idle';
+
   private crawlAnimation?: AnimeInstance;
   private hitBoxes: Array<Object3D> = [];
+  private readonly attackDistance = 2.5;
 
   private hittingTimeout!: NodeJS.Timeout;
   private attackTimeout!: NodeJS.Timeout;
   private crawlTimeout!: NodeJS.Timeout;
-
-  private readonly attackDistance = 2.5;
-  private readonly walkDistance = 500.0;
-  private readonly runDistance = 250.0;
 
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
@@ -68,6 +67,9 @@ export default class Enemy extends Character
 
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
+
+    this.walkDistance = this.walkDistance < 0 ? Infinity : this.walkDistance;
+    this.runDistance = this.runDistance < 0 ? Infinity : this.runDistance;
 
     if (model && envMap) {
       this.character = clone(model.scene) as Assets.GLTF;
@@ -268,7 +270,7 @@ export default class Enemy extends Character
       return;
     }
 
-    this.crawlTimeout = setTimeout(this.onLegHit, 2500.0);
+    this.crawlTimeout = setTimeout(this.crawl.bind(this), 2500.0);
     this.updateAnimation('Falling', 'falling', 0.1);
     this.hitTime = this.fallTime = now;
 
@@ -376,14 +378,12 @@ export default class Enemy extends Character
     this.attacking = false;
 
     this.runTimeout = setTimeout(() => {
-      this.playSound('scream', true);
-
-      const delay = this.screamDuration - 250;
+      this.playSound('scream');
 
       this.runTimeout = setTimeout(() =>
         this.distance < this.attackDistance
           ? this.attack() : this.run()
-      , delay);
+      , this.screamDuration - 250);
     }, this.screamStart * 1e3);
 
     this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
@@ -497,16 +497,16 @@ export default class Enemy extends Character
   private toggleAnimation (): void {
     if (this.blockingAnimation) return;
     if (this.canAttack) return this.attack();
-    if (this.crawling || (!this.canLose && this.running)) return;
+    if (this.crawling || (!this.lose && this.running)) return;
 
     const idleAnimation   = this.distance   > this.walkDistance;
     const screamAnimation = this.distance   < this.runDistance;
     const walkAnimation   = !idleAnimation && !screamAnimation;
     const scream          = !this.screamed && screamAnimation;
 
-    if (this.canLose && this.moving && idleAnimation)   this.idle();
-    else if (!this.moving && walkAnimation)             this.walk();
-    else if (!(this.canLose && this.running) && scream) this.scream();
+    if (this.lose && this.moving && idleAnimation)   this.idle();
+    else if (!this.moving && walkAnimation)          this.walk();
+    else if (!(this.lose && this.running) && scream) this.scream();
   }
 
   public override dispose (): void {
