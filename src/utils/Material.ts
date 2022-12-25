@@ -3,11 +3,14 @@ import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 
-// Development imports:
-// import fragPars from '@/shaders/ground/pars.frag';
-// import vertPars from '@/shaders/ground/pars.vert';
-// import fragMain from '@/shaders/ground/main.frag';
-// import vertMain from '@/shaders/ground/main.vert';
+/**
+ * Development imports:
+ *
+ * import fragPars from '@/shaders/ground/pars.frag';
+ * import vertPars from '@/shaders/ground/pars.vert';
+ * import fragMain from '@/shaders/ground/main.frag';
+ * import vertMain from '@/shaders/ground/main.vert';
+ */
 
 import { Assets } from '@/loaders/AssetsLoader';
 import { Color } from '@/utils/Color';

@@ -364,7 +364,6 @@ export default class Player extends Character
       this.playerAnimation, animation
     );
 
-    this.hasRifle = this.equipRifle || rifle;
     this.equipRifle = rifle;
   }
 
@@ -467,8 +466,12 @@ export default class Player extends Character
   public pickRifle (): void {
     this.rifle.dummy.visible = !this.equipRifle;
     this.updateRiflePosition();
-    this.hasRifle = true;
     this.rifle.addAmmo();
+
+    if (!this.hasRifle) {
+      this.rifle.addAmmo(0.0);
+      this.hasRifle = true;
+    }
   }
 
   private updateRiflePosition (append = false): void {

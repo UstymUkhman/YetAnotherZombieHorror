@@ -1,8 +1,8 @@
 import { getRandomCoord } from '@/worker/getRandomCoord';
+import { fisherYates, random } from '@/utils/Array';
 import type { LevelCoords } from '@/scenes/types';
 import { Vector2 } from 'three/src/math/Vector2';
 import LevelScene from '@/scenes/LevelScene';
-import { randomInt } from '@/utils/Number';
 import Configs from '@/configs';
 
 export default class Coords
@@ -12,7 +12,6 @@ export default class Coords
   private static readonly coords: Array<LevelCoords> = [];
 
   private static readonly ammount = Configs.RandomCoords.ammount;
-  private static readonly lastIndex = Configs.RandomCoords.ammount - 1;
   private static readonly distance = Configs.RandomCoords.playerDistance ** 2;
 
   public static getRandomLevelCoords (x: number, z: number, distance?: number): LevelCoords {
@@ -21,6 +20,7 @@ export default class Coords
     do distance = Coords.setRandomCoords();
     while (distance < Coords.distance);
 
+    fisherYates(Coords.coords);
     return Coords.levelCoords.toArray();
   }
 
@@ -29,7 +29,7 @@ export default class Coords
   }
 
   private static setRandomCoords (): number {
-    Coords.levelCoords.fromArray(Coords.coords[randomInt(0, Coords.lastIndex)]);
+    Coords.levelCoords.fromArray(random(Coords.coords));
     return Coords.levelCoords.distanceToSquared(Coords.playerCoords);
   }
 

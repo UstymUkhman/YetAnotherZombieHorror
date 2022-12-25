@@ -32,41 +32,43 @@
       </li>
     {/each}
 
-    <li><h5>Reset To:</h5></li>
-
     <li class="reset">
-      <h5 on:mouseover={() => onListItemHover(Quality.LOW)}
-          class:active={selected === Quality.LOW}
-          on:mouseout={() => selected = -1}
-          on:keydown={onResetClick}
-          on:click={onResetClick}
-          on:focus
-          on:blur
-      >
-        {Quality[Quality.LOW]}
-      </h5>
+      <h5>Reset To:</h5>
 
-      <h5 on:mouseover={() => onListItemHover(Quality.MEDIUM)}
-          class:active={selected === Quality.MEDIUM}
-          on:mouseout={() => selected = -1}
-          on:keydown={onResetClick}
-          on:click={onResetClick}
-          on:focus
-          on:blur
-      >
-        {Quality[Quality.MEDIUM]}
-      </h5>
+      <dl>
+        <h5 on:mouseover={() => onListItemHover(Quality.LOW)}
+            class:active={selected === Quality.LOW}
+            on:mouseout={() => selected = -1}
+            on:keydown={onResetClick}
+            on:click={onResetClick}
+            on:focus
+            on:blur
+        >
+          {Quality[Quality.LOW]}
+        </h5>
 
-      <h5 on:mouseover={() => onListItemHover(Quality.HIGH)}
-          class:active={selected === Quality.HIGH}
-          on:mouseout={() => selected = -1}
-          on:keydown={onResetClick}
-          on:click={onResetClick}
-          on:focus
-          on:blur
-      >
-        {Quality[Quality.HIGH]}
-      </h5>
+        <h5 on:mouseover={() => onListItemHover(Quality.MEDIUM)}
+            class:active={selected === Quality.MEDIUM}
+            on:mouseout={() => selected = -1}
+            on:keydown={onResetClick}
+            on:click={onResetClick}
+            on:focus
+            on:blur
+        >
+          {Quality[Quality.MEDIUM]}
+        </h5>
+
+        <h5 on:mouseover={() => onListItemHover(Quality.HIGH)}
+            class:active={selected === Quality.HIGH}
+            on:mouseout={() => selected = -1}
+            on:keydown={onResetClick}
+            on:click={onResetClick}
+            on:focus
+            on:blur
+        >
+          {Quality[Quality.HIGH]}
+        </h5>
+      </dl>
     </li>
 
     <li on:mouseover={() => onListItemHover(back)}
@@ -257,12 +259,18 @@
     }
 
     &.reset {
-      margin-left: auto;
-      margin-right: 0;
-      width: 50%;
+      margin-top: 1.75em;
 
-      h5 {
-        pointer-events: all;
+      dl {
+        justify-content: space-between;
+        display: inline-flex;
+
+        width: 60%;
+        margin: 0;
+
+        h5 {
+          pointer-events: all;
+        }
       }
     }
 
