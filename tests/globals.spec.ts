@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import { version } from '../package.json';
 
 describe('globals', () => {

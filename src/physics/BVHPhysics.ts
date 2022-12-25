@@ -152,7 +152,7 @@ export default class BVHPhysics extends PhysicsWorld
 
   public update (delta: number): void {
     if (this.paused) return;
-    this.delta = delta / 5;
+    this.delta = delta * 0.2;
   }
 
   public remove (uuid: string): void {

@@ -59,6 +59,8 @@ export default class Zombie extends Character
   }
 
   public scream () {
+    if (DEBUG) return;
+
     this.setMixerTimeScale(1.0);
     this.animations.scream.play();
 

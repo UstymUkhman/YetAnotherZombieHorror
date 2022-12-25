@@ -36,6 +36,9 @@ const parseMessage = (event: string, params?: unknown) => {
 
     case 'Game::Dispose':
       return OffscreenManager.dispose();
+
+    case 'Game::Start':
+      return OffscreenManager.start();
   }
 
   return params;

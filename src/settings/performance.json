@@ -1,0 +1,56 @@
+[
+  {
+    "bullet": true,
+    "bulletPath": false,
+    "bulletHoles": false,
+
+    "raining": true,
+    "lighting": false,
+    "raindrops": false,
+    "softParticles": false,
+
+    "fog": true,
+    "bakedFog": false,
+    "volumetricFog": false,
+
+    "clouds": 0.0,
+    "dynamicClouds": false,
+    "physicalLights": false
+  },
+  {
+    "bullet": true,
+    "bulletPath": false,
+    "bulletHoles": true,
+
+    "raining": true,
+    "lighting": true,
+    "raindrops": true,
+    "softParticles": false,
+
+    "fog": false,
+    "bakedFog": false,
+    "volumetricFog": false,
+
+    "clouds": 300.0,
+    "dynamicClouds": true,
+    "physicalLights": false
+  },
+  {
+    "bullet": true,
+    "bulletPath": true,
+    "bulletHoles": true,
+
+    "raining": true,
+    "lighting": true,
+    "raindrops": true,
+    "softParticles": true,
+
+    "fog": true,
+    "bakedFog": true,
+    "volumetricFog": true,
+
+    "clouds": 1.0,
+    "dynamicClouds": false,
+    "physicalLights": true
+  }
+]

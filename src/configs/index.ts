@@ -1,4 +1,5 @@
 import type { CharacterMove } from '@/characters/types';
+import GameplayData from '@/settings/gameplay.json';
 
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
@@ -63,8 +64,12 @@ namespace Configs
   export const RandomCoords = deepFreeze({
     playerDistance: 5.0,
     boundOffset: 0.5,
-    ammount: 25.0
+    ammount: 50.0
   });
+
+  export const Gameplay = deepFreeze(
+    GameplayData.normal
+  );
 
   export const Level = deepFreeze({
     position: new Vector3(...LevelData.position),
@@ -85,7 +90,6 @@ namespace Configs
 
     model: LevelData.model,
     cloud: LevelData.cloud,
-    music: LevelData.music,
     rain: LevelData.rain,
     fog: LevelData.fog
   });
@@ -143,7 +147,6 @@ namespace Configs
 
     textures: PistolData.textures,
     emissive: PistolData.emissive,
-    damage: PistolData.damage,
     model: PistolData.model,
 
     bullet: {
@@ -182,7 +185,6 @@ namespace Configs
 
     textures: RifleData.textures,
     maxStock: RifleData.maxStock,
-    damage: RifleData.damage,
     model: RifleData.model,
 
     bullet: {

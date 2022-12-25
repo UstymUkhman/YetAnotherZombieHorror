@@ -14,6 +14,11 @@
   "magazine": -1,
   "ammo": -1,
 
+  "sounds": {
+    "bullet": "weapons/shell.mp3",
+    "shoot": "weapons/1911.mp3"
+  },
+
   "bullet": {
     "position": [0.1, 0.1, 0.35],
     "lifeTime": 500.0,
@@ -27,16 +32,5 @@
     "intensity": 2.0,
     "velocity": 0.25,
     "scale": 1.0
-  },
-
-  "sounds": {
-    "bullet": "weapons/shell.mp3",
-    "shoot": "weapons/1911.mp3"
-  },
-
-  "damage": {
-    "head": 75,
-    "body": 10,
-    "leg": 5
   }
 }

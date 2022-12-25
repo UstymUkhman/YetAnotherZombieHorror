@@ -51,6 +51,10 @@ class OffscreenManager
     this.loop.dispose();
   }
 
+  public start (): void {
+    this.loop.start();
+  }
+
   public set inputs (disabled: boolean) {
     this.loop.inputs = disabled;
   }

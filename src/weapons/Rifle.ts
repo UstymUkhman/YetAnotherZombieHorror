@@ -17,11 +17,11 @@ import anime from 'animejs';
 
 export default class Rifle extends Weapon
 {
-  private readonly halfLightPower = +Settings.getEnvironmentValue('physicalLights') * 70 + 5;
+  private readonly halfLightPower = +Settings.getPerformanceValue('physicalLights') * 70 + 5;
 
   private readonly light = new PointLight(
-    Color.WHITE, 1.0, +!Settings.getEnvironmentValue('physicalLights') * 2.5 + 2.5,
-    +Settings.getEnvironmentValue('physicalLights') + 1.0
+    Color.WHITE, 1.0, +!Settings.getPerformanceValue('physicalLights') * 2.5 + 2.5,
+    +Settings.getPerformanceValue('physicalLights') + 1.0
   );
 
   private readonly spinePosition = Configs.Rifle.spinePosition as Vector3;
@@ -29,15 +29,14 @@ export default class Rifle extends Weapon
 
   private readonly position = Configs.Rifle.position as Vector3;
   private readonly rotation = Configs.Rifle.rotation as Euler;
+
+  private readonly damage = Configs.Gameplay.damage.rifle;
   private readonly maxStock = Configs.Rifle.maxStock;
 
   private clone!: Assets.GLTF;
   private spine!: Assets.GLTF;
 
-  private reloadReset = false;
-  private reloading = false;
   private appended = false;
-
   private spawnTime = 0.0;
   private spawned = false;
 
@@ -90,23 +89,23 @@ export default class Rifle extends Weapon
     });
   }
 
-  public override toggleVisibility (hideDelay: number, showDelay: number): void {
-    const material = (this.object.children[0] as Mesh).material;
+  public override toggleVisibility (hide: number, show: number, duration = 100.0): void {
+    const { material } = this.object.children[0] as Mesh;
 
     anime({
       targets: material,
-      delay: hideDelay,
       easing: 'linear',
-      duration: 100,
-      opacity: 0.0
+      opacity: 0.0,
+      delay: hide,
+      duration
     });
 
     setTimeout(() => anime({
       targets: material,
       easing: 'linear',
-      duration: 100,
-      opacity: 1.0
-    }), showDelay);
+      opacity: 1.0,
+      duration
+    }), show);
   }
 
   public override addAmmo (ammo = Configs.Rifle.magazine): void {
@@ -122,7 +121,6 @@ export default class Rifle extends Weapon
       ), this.totalAmmo);
 
       this.loadedAmmo += toLoad;
-      this.stopReloading();
 
       GameEvents.dispatch('Weapon::Reload', {
         loaded: this.loadedAmmo,
@@ -132,24 +130,19 @@ export default class Rifle extends Weapon
     }
   }
 
+  public override getDamage (index: number): number {
+    const { head, body, leg } = this.damage;
+    return !index ? head : index === 1 ? body : leg;
+  }
+
   public override startReloading (): void {
     this.object.position.set(this.position.x, this.position.y, 0.0);
     this.object.rotation.set(this.rotation.x, this.rotation.y, 0.0);
-
     this.playSound('reload', { stop: true });
-    this.reloading = true;
   }
 
   public override stopReloading (): void {
-    this.reloadReset && !this.aiming && this.reset();
-
-    setTimeout(() => {
-      !this.reloadReset && !this.aiming && this.reset();
-      this.reloading && this.stopSound('reload');
-
-      this.reloadReset = false;
-      this.reloading = false;
-    }, 500.0);
+    !this.aiming && this.reset();
   }
 
   public update (player: Vector3): void {
@@ -185,7 +178,7 @@ export default class Rifle extends Weapon
   public updatePosition (factor: number): void {
     this.appended && anime({
       targets: this.spine.position,
-      duration: +!factor * 100,
+      duration: +!factor * 100.0,
       x: factor * 10.0 - 10.0,
       easing: 'linear'
     });
@@ -209,10 +202,6 @@ export default class Rifle extends Weapon
     this.light.dispose();
     this.clone.clear();
     super.dispose();
-  }
-
-  public set resetDelay (delay: boolean) {
-    this.reloadReset = delay;
   }
 
   public set toggle (equip: boolean) {

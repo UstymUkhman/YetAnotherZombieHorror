@@ -8,8 +8,8 @@ export const random = (min: number, max: number): number => Math.random() * (max
 export const easeOutSine = (v: number): number => !v ? 0 : v === 1 ? 1 : Math.sin(v * PI.d2);
 export const lerp = (v0: number, v1: number, t: number): number => v0 + t * (v1 - v0);
 
-export const toFixed = (value: number, mantissa = 2) => {
-  const pow10 = Math.pow(10, mantissa);
+export const toFixed = (value: number, mantissa = 2.0) => {
+  const pow10 = Math.pow(10.0, mantissa);
   return ~~(pow10 * value) / pow10;
 };
 
@@ -17,9 +17,10 @@ export const DELTA_UPDATE = 1.0 / 0.06;
 export const DELTA_FRAME = 1.0 / 60.0;
 
 export const PI = Object.freeze({
-  m2: Math.PI * 2,
-  d2: Math.PI / 2,
-  d3: Math.PI / 3,
-  d4: Math.PI / 4,
-  d6: Math.PI / 6
+  m075: Math.PI * 0.75,
+  m2: Math.PI * 2.0,
+  d2: Math.PI / 2.0,
+  d3: Math.PI / 3.0,
+  d4: Math.PI / 4.0,
+  d6: Math.PI / 6.0
 });

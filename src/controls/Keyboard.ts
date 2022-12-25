@@ -1,17 +1,17 @@
 import type { Event } from 'three/src/core/EventDispatcher';
+import { Direction, BUTTON, IDLING } from '@/controls';
 import EventsTarget from '@/offscreen/EventsTarget';
 
 import type Player from '@/characters/Player';
-import type { Directions } from '@/controls';
-
-import { Direction } from '@/controls';
+import Input from '@/controls/Input';
 import Configs from '@/configs';
 
-const enum BUTTON { LEFT, WHEEL, RIGHT }
-const IDLING = '0000';
-
-export default class Keyboard
+export default class Keyboard extends Input
 {
+  private wheelTime = 0.0;
+  protected override aimTime = 0.0;
+  protected override aimTimeout!: NodeJS.Timeout;
+
   private readonly events = Object.entries({
     contextmenu: this.onContextMenu.bind(this),
     mousewheel: this.onMouseWheel.bind(this),
@@ -24,17 +24,8 @@ export default class Keyboard
     keyup: this.onKeyUp.bind(this)
   });
 
-  private moves: Directions = [0, 0, 0, 0];
-  private aimTimeout!: NodeJS.Timeout;
-
-  private wheelTime = 0.0;
-  private aimTime = 0.0;
-
-  private paused = true;
-  private shift = false;
-  private move = IDLING;
-
-  public constructor (private readonly player: Player) {
+  public constructor (player: Player) {
+    super(player);
     this.addEventListeners();
   }
 
@@ -48,6 +39,7 @@ export default class Keyboard
 
   private onContextMenu (event: Event): boolean | void {
     if (this.paused) return;
+
     event.stopPropagation();
     event.preventDefault();
     return false;
@@ -58,7 +50,7 @@ export default class Keyboard
     event.stopPropagation();
 
     if (!this.disabled && now > this.wheelTime) {
-      this.wheelTime = now + 450;
+      this.wheelTime = now + 450.0;
       this.player.changeWeapon();
     }
   }
@@ -69,9 +61,8 @@ export default class Keyboard
 
     if (this.disabled) return;
 
-    if (event.button === BUTTON.LEFT) {
+    if (event.button === BUTTON.LEFT)
       this.player.startShooting();
-    }
 
     else if (event.button === BUTTON.RIGHT) {
       const updateAnimation = this.move !== IDLING;
@@ -85,7 +76,12 @@ export default class Keyboard
     event.stopPropagation();
 
     if (this.disabled) return;
-    this.player.rotate(event.movementX / -100, event.movementY / 400, 0.15);
+
+    this.player.rotate(
+      event.movementX / -100,
+      event.movementY / 400,
+      0.15
+    );
   }
 
   private onMouseUp (event: Event | MouseEvent): void {
@@ -94,21 +90,20 @@ export default class Keyboard
 
     if (this.disabled) return;
 
-    if (event.button === BUTTON.LEFT) {
+    if (event.button === BUTTON.LEFT)
       this.player.stopShooting();
-    }
 
     else if (event.button === BUTTON.RIGHT) {
       clearTimeout(this.aimTimeout);
 
       this.aimTimeout = setTimeout(() => {
-        const forward = !!this.moves[Direction.UP];
-        const running = this.shift && forward;
+        const forward = !!Input.moves[Direction.UP];
+        const running = Input.runs && forward;
         this.player.stopAiming(running);
 
-        running
-          ? this.player.run(this.moves, true)
-          : this.player.move(this.moves);
+        !running
+          ? this.player.move()
+          : this.player.run(true);
       }, Math.max(450 - (Date.now() - this.aimTime), 0));
     }
   }
@@ -122,23 +117,23 @@ export default class Keyboard
 
     switch (event.code) {
       case 'KeyW':
-        this.moves[Direction.UP] = 1;
-        this.moves[Direction.DOWN] = 0;
+        Input.moves[Direction.UP] = 1;
+        Input.moves[Direction.DOWN] = 0;
         break;
 
       case 'KeyD':
-        this.moves[Direction.RIGHT] = 1;
-        this.moves[Direction.LEFT] = 0;
+        Input.moves[Direction.RIGHT] = 1;
+        Input.moves[Direction.LEFT] = 0;
         break;
 
       case 'KeyS':
-          this.moves[Direction.DOWN] = 1;
-          this.moves[Direction.UP] = 0;
+          Input.moves[Direction.DOWN] = 1;
+          Input.moves[Direction.UP] = 0;
           break;
 
       case 'KeyA':
-        this.moves[Direction.RIGHT] = 0;
-        this.moves[Direction.LEFT] = 1;
+        Input.moves[Direction.RIGHT] = 0;
+        Input.moves[Direction.LEFT] = 1;
         break;
 
       default: return;
@@ -147,7 +142,7 @@ export default class Keyboard
     const move = this.movement;
 
     if (this.move !== move)
-      this.player.move(this.moves);
+      this.player.move();
 
     this.move = move;
   }
@@ -161,19 +156,19 @@ export default class Keyboard
 
     switch (event.code) {
       case 'KeyW':
-        this.moves[Direction.UP] = 0;
+        Input.moves[Direction.UP] = 0;
         break;
 
       case 'KeyD':
-        this.moves[Direction.RIGHT] = 0;
+        Input.moves[Direction.RIGHT] = 0;
         break;
 
       case 'KeyS':
-        this.moves[Direction.DOWN] = 0;
+        Input.moves[Direction.DOWN] = 0;
         break;
 
       case 'KeyA':
-        this.moves[Direction.LEFT] = 0;
+        Input.moves[Direction.LEFT] = 0;
         break;
 
       case 'KeyQ':
@@ -195,10 +190,7 @@ export default class Keyboard
         return this.player.changeCamera(false);
 
       case 'KeyR':
-        return this.player.reload(() => ({
-          directions: this.moves,
-          running: this.shift
-        }));
+        return this.player.reload();
 
       default: return;
     }
@@ -209,17 +201,17 @@ export default class Keyboard
       this.player.idle();
 
     else if (this.move !== move)
-      this.player.move(this.moves);
+      this.player.move();
 
     this.move = move;
   }
 
   private onShift (code: string, down: boolean): void {
-    const shift = down ? !this.shift : this.shift;
+    const shift = down ? !Input.runs : Input.runs;
 
     if (code === 'ShiftLeft' && shift) {
-      this.player.run(this.moves, down);
-      this.shift = down;
+      this.player.run(down);
+      Input.runs = down;
     }
   }
 
@@ -231,20 +223,8 @@ export default class Keyboard
     }
   }
 
-  public dispose (): void {
+  public override dispose (): void {
     this.removeEventListeners();
-    this.paused = true;
-  }
-
-  private get disabled (): boolean {
-    return this.paused || !this.player.alive;
-  }
-
-  private get movement (): string {
-    return (this.moves as unknown as Array<number>).join('');
-  }
-
-  public set pause (paused: boolean) {
-    this.paused = paused;
+    super.dispose();
   }
 }

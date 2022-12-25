@@ -1,20 +1,20 @@
-'use strict';
-
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const sveltePreprocess = require('svelte-preprocess');
+const resolve = require('path').resolve;
+const svelte = require('svelte-preprocess');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 module.exports = {
   css: false,
-  preprocess: sveltePreprocess({
+  preprocess: svelte({
     typescript: { tsconfigFile: './tsconfig.json' },
     globalStyle: { sourceMap: process.env.NODE_ENV !== 'production' },
 
-    scss: { importer: [url => {
-      return url.indexOf('@') ? url : {
-        file: url.replace('@', path.resolve('./src/components/scss'))
-      };
-    }]}
+    scss: {
+      importer: [url => {
+        return url.indexOf('@') ? url : {
+          file: url.replace('@', resolve('./src/components/scss'))
+        };
+      }]
+    }
   })
 };

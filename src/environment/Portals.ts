@@ -94,11 +94,11 @@ export default class Portals
     });
 
     this.material.defines = {
-      VOLUMETRIC_FOG: Settings.getEnvironmentValue('volumetricFog'),
-      USE_BAKED_FOG: Settings.getEnvironmentValue('bakedFog')
+      VOLUMETRIC_FOG: Settings.getPerformanceValue('volumetricFog'),
+      USE_BAKED_FOG: Settings.getPerformanceValue('bakedFog')
     };
 
-    this.material.fog = Settings.getEnvironmentValue('fog');
+    this.material.fog = Settings.getPerformanceValue('fog');
 
     return this.material;
   }

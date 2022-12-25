@@ -8,6 +8,7 @@ pids
 
 .idea
 .vscode
+.DS_Store
 .lock-wscript
 
 dist/
@@ -19,10 +20,11 @@ node_modules/
 public/**/*.ico
 public/**/*.png
 public/**/*.jpg
-
 public/**/*.mp3
 public/**/*.glb
 
+!build/package.json
+!build/pnpm-lock.yaml
 public/assets/shaders/*
+!public/**/shaders/.gitkeep
 !public/assets/sounds/YAZH.mp3
-.github/workflows/check-commit-message.yml

@@ -18,10 +18,9 @@ import { camelCase } from '@/utils/String';
 import { Vector } from '@/utils/Vector';
 import Physics from '@/physics';
 
-export default class Character
+export default abstract class Character
 {
   protected animations: { [name: string]: AnimationAction } = {};
-  private step: CharacterMove = this.config.moves.Idle;
   protected currentAnimation!: AnimationAction;
 
   protected readonly direction = new Vector3();
@@ -34,12 +33,13 @@ export default class Character
 
   protected lastAnimation = '';
   private model?: Assets.GLTF;
-  protected object: Mesh;
+  private step: CharacterMove;
 
   protected hitting = false;
   protected running = false;
   protected moving = false;
 
+  protected object: Mesh;
   protected dead = false;
   private still = false;
   private health = 100;
@@ -57,6 +57,7 @@ export default class Character
       height: y, radius: 0.5
     };
 
+    this.step = this.config.moves.Idle;
     this.uuid = this.object.uuid;
   }
 
@@ -85,7 +86,7 @@ export default class Character
     return character;
   }
 
-  protected playSound (sfx: CharacterSound, stop: boolean): void {
+  protected playSound (sfx: CharacterSound, stop = false): void {
     stop && this.stopSound(sfx);
 
     GameEvents.dispatch('SFX::Character', {
@@ -158,7 +159,7 @@ export default class Character
     return this.dead;
   }
 
-  private stopSound (sfx: CharacterSound): void {
+  protected stopSound (sfx: CharacterSound): void {
     GameEvents.dispatch('SFX::Character', {
       uuid: this.uuid, play: false, sfx,
       matrix: this.object.matrixWorld
@@ -261,6 +262,10 @@ export default class Character
     this.health = 100;
     this.still = true;
     this.dead = false;
+  }
+
+  protected get blockingAnimation (): boolean {
+    return this.dead || this.animationUpdate;
   }
 
   protected set mesh (mesh: Assets.GLTF) {

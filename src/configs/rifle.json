@@ -17,6 +17,14 @@
   "magazine": 30,
   "ammo": 0,
 
+  "sounds": {
+    "reload": "weapons/reload.mp3",
+    "bullet": "weapons/case.mp3",
+    "empty": "weapons/empty.mp3",
+    "shoot": "weapons/AK47.mp3",
+    "pick": "weapons/pick.mp3"
+  },
+
   "bullet": {
     "position": [0.065, 0.13, 0.75],
     "lifeTime": 200.0,
@@ -30,19 +38,5 @@
     "intensity": 3.0,
     "velocity": 11.2,
     "scale": 2.5
-  },
-
-  "sounds": {
-    "reload": "weapons/reload.mp3",
-    "bullet": "weapons/case.mp3",
-    "empty": "weapons/empty.mp3",
-    "shoot": "weapons/AK47.mp3",
-    "pick": "weapons/pick.mp3"
-  },
-
-  "damage": {
-    "head": 80,
-    "body": 20,
-    "leg": 10
   }
 }

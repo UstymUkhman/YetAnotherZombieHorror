@@ -1,13 +1,63 @@
-import type { Environment, EnvironmentKeys, RequestSuccess } from '@/settings/types';
-import EnvironmentData from '@/settings/environment.json';
+import type { Performance, RequestSuccess, PerformanceKeys, PerformanceData } from '@/settings/types';
+import { DefaultPerformance, DEFAULT_QUALITY } from '@/settings/constants';
+import PerformanceSettings from '@/settings/performance.json';
 import { GameEvents } from '@/events/GameEvents';
 
 export default class Settings
 {
-  private static readonly environment = Settings.getDefaultEnvironmentValues();
+  private static readonly performance = Settings.getDefaultPerformanceValues();
 
   public constructor () {
     this.openDBConnection(this.getEnviromentSettings.bind(this));
+  }
+
+  private updatePerformanceStore (db: IDBDatabase, add = true, performance = DefaultPerformance): void {
+    const transaction = db.transaction('Performance', 'readwrite');
+    const performanceStore = transaction.objectStore('Performance');
+
+    for (const setting in performance) {
+      const key = setting as PerformanceKeys;
+      Settings.performance.set(key, performance[key]);
+
+      performanceStore[add ? 'add' : 'put'](performance[key], key)
+        .onerror = this.onQueryError.bind(this);
+    }
+
+    transaction.oncomplete = this.onTransactionComplete.bind(this, db, false);
+  }
+
+  private getEnviromentSettings (db: IDBDatabase, updated = false): void {
+    const transaction = db.transaction('Performance', 'readonly');
+    const performanceStore = transaction.objectStore('Performance');
+
+    performanceStore.openCursor().onsuccess = (event: Event) => {
+      const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
+      if (!cursor) return updated ? null : this.updatePerformanceStore(db);
+
+      const key = cursor.key as PerformanceKeys;
+      Settings.performance.set(key, cursor.value);
+
+      cursor.continue();
+      updated = true;
+    };
+
+    transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
+  }
+
+  public updatePerformanceValues (performance: PerformanceData): void {
+    this.openDBConnection((db: IDBDatabase) =>
+      this.updatePerformanceStore(db, false, performance)
+    );
+  }
+
+  private onTransactionComplete (db: IDBDatabase, get: boolean): void {
+    get && GameEvents.dispatch('Game::SettingsInit');
+    db.close();
+  }
+
+  private onUpgradeNeeded (event: IDBVersionChangeEvent): void {
+    const db = (event.target as IDBRequest).result;
+    db.createObjectStore('Performance');
   }
 
   private openDBConnection (onSuccess: RequestSuccess): void {
@@ -21,51 +71,8 @@ export default class Settings
     };
   }
 
-  private onUpgradeNeeded (event: IDBVersionChangeEvent): void {
-    const db = (event.target as IDBRequest).result;
-    db.createObjectStore('Environment');
-  }
-
-  private getEnviromentSettings (db: IDBDatabase, updated = false): void {
-    const transaction = db.transaction('Environment', 'readonly');
-    const environmentStore = transaction.objectStore('Environment');
-
-    environmentStore.openCursor().onsuccess = (event: Event) => {
-      const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
-      if (!cursor) return updated ? null : this.updateEnvironmentStore(db);
-
-      const key = cursor.key as EnvironmentKeys;
-      Settings.environment.set(key, cursor.value);
-
-      cursor.continue();
-      updated = true;
-    };
-
-    transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
-  }
-
-  private updateEnvironmentStore (db: IDBDatabase, add = true, environment = EnvironmentData): void {
-    const transaction = db.transaction('Environment', 'readwrite');
-    const environmentStore = transaction.objectStore('Environment');
-
-    for (const setting in environment) {
-      const key = setting as EnvironmentKeys;
-      Settings.environment.set(key, environment[key]);
-
-      environmentStore[add ? 'add' : 'put'](environment[key], key)
-        .onerror = this.onQueryError.bind(this);
-    }
-
-    transaction.oncomplete = this.onTransactionComplete.bind(this, db, false);
-  }
-
-  private onTransactionComplete (db: IDBDatabase, get: boolean): void {
-    get && GameEvents.dispatch('Game::SettingsInit');
-    db.close();
-  }
-
-  private resetEnvironmentStore (db: IDBDatabase): void {
-    this.updateEnvironmentStore(db, false);
+  public resetPerformanceValues (index: number): void {
+    this.updatePerformanceValues(PerformanceSettings[index]);
   }
 
   private onRequestError (event: Event): void {
@@ -76,25 +83,15 @@ export default class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public updateEnvironmentValues (environment: typeof EnvironmentData): void {
-    this.openDBConnection((db: IDBDatabase) =>
-      this.updateEnvironmentStore(db, false, environment)
-    );
+  public static getDefaultPerformanceValues (index = DEFAULT_QUALITY): Performance {
+    return new Map(Object.entries(PerformanceSettings[index])) as Performance;
   }
 
-  public static getEnvironmentValue (key: EnvironmentKeys): boolean {
-    return Settings.environment.get(key) as boolean;
+  public static getPerformanceValue (key: PerformanceKeys): boolean {
+    return Settings.performance.get(key) as boolean;
   }
 
-  public static getDefaultEnvironmentValues (): Environment {
-    return new Map(Object.entries(EnvironmentData)) as Environment;
-  }
-
-  public static getEnvironmentValues (): Environment {
-    return Settings.environment;
-  }
-
-  public resetEnvironmentValues (): void {
-    this.openDBConnection(this.resetEnvironmentStore.bind(this));
+  public static getPerformanceValues (): Performance {
+    return Settings.performance;
   }
 }

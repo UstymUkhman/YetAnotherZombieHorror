@@ -1,15 +1,17 @@
 {
+  "include": ["./**/*.ts"],
+
   "compilerOptions": {
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "resolveJsonModule": true,
     "strictNullChecks": true,
+    "outDir": "../build/app",
     "esModuleInterop": true,
     "noUnusedLocals": true,
+
     "importHelpers": true,
     "noImplicitAny": true,
-
-    "outDir": "../build",
     "module": "commonjs",
     "sourceMap": false,
     "checkJs": false,
@@ -24,7 +26,5 @@
     "typeRoots": [
       "node_modules/@types"
     ]
-  },
-
-  "include": ["./**/*.ts"]
+  }
 }

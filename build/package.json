@@ -1,0 +1,10 @@
+{
+  "name": "YAZH physics & shaders setup",
+  "version": "0.7.0",
+  "scripts": {
+    "postinstall": "node ./index.mjs"
+  },
+  "devDependencies": {
+    "vite-plugin-glsl": "0.1.1"
+  }
+}

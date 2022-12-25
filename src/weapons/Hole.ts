@@ -25,7 +25,7 @@ export default class Hole
   private readonly scale = new Vector3();
   private material!: MeshPhongMaterial;
 
-  private readonly ground = [
+  private readonly surface = [
     'defaultMaterial002_24',
     'defaultMaterial002_39'
   ];
@@ -46,7 +46,7 @@ export default class Hole
   }
 
   public show (wall: Intersection<Mesh>): void {
-    if (this.ground.includes(wall.object.name)) return;
+    if (this.surface.includes(wall.object.name)) return;
 
     this.position.copy(wall.point);
     this.origin.copy(this.position);
@@ -76,7 +76,9 @@ export default class Hole
   }
 
   private remove (h: number): void {
+    if (!this.holes[h]) return;
     const hole = this.holes[h];
+
     (hole.material as MeshPhongMaterial).map?.dispose();
     (hole.material as MeshPhongMaterial).dispose();
 

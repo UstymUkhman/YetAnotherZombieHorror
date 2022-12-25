@@ -1,8 +1,10 @@
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { HitDirection } from '@/characters/types';
 import type { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Vector3 } from 'three/src/math/Vector3';
+import { GAME_RATIO } from '@/scenes/WhiteBox';
 import { Clock } from 'three/src/core/Clock';
 import { Vector } from '@/utils/Vector';
 
@@ -41,7 +43,7 @@ export class CameraManager
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
-    const ratio = TEST ? innerWidth / innerHeight : Viewport.ratio;
+    const ratio = (TEST && !GAME_RATIO) ? innerWidth / innerHeight : Viewport.ratio;
     this.camera = new PerspectiveCamera(45, ratio, +this.fps * 0.215 + 0.1);
     this.camera.far = Configs.Level.depth;
 
@@ -94,7 +96,7 @@ export class CameraManager
 
   public updateNearPlane (aiming: boolean, rifle: boolean, running?: boolean): void {
     const fpRifle = this.camera.near === 0.5;
-    const duration = +fpRifle * -300 + 400;
+    const duration = +fpRifle * -300.0 + 400.0;
 
     const near = aiming ? 0.03 : this.fps
       ? rifle ? 0.5 : 0.315 : 0.1;
@@ -156,6 +158,55 @@ export class CameraManager
     });
   }
 
+  public headAnimation (direction: HitDirection, duration: number): void {
+    const { x: px, y: py, z: pz } = this.camera.position;
+    const { x: rx, y: ry, z: rz } = this.camera.rotation;
+
+    const dp = { x: 0.0, y: 0.0, z: 0.0 };
+    const dr = { x: 0.0, y: 0.0, z: 0.0 };
+
+    switch (direction) {
+      case 'Front':
+        dp.y = 0.2;
+        dr.x = -0.2;
+      break;
+
+      case 'Left':
+        dp.x = -0.5;
+        dp.y = 0.5;
+        dr.x = 0.5;
+        dr.y = -1.0;
+      break;
+
+      case 'Right':
+        dp.x = 0.36;
+        dp.y = -0.2;
+        dr.x = 0.5;
+        dr.y = 0.55;
+      break;
+    }
+
+    anime({
+      targets: this.camera.position,
+      direction: 'alternate',
+      easing: 'easeOutSine',
+      duration,
+      x: px + dp.x,
+      y: py + dp.y,
+      z: pz + dp.z
+    });
+
+    anime({
+      targets: this.camera.rotation,
+      direction: 'alternate',
+      easing: 'easeOutSine',
+      duration,
+      x: rx + dr.x,
+      y: ry + dr.y,
+      z: rz + dr.z
+    });
+  }
+
   public shakeAnimation (duration: number): void {
     this.shakeDuration = Math.max(duration, 0);
 
@@ -205,7 +256,19 @@ export class CameraManager
     this.camera.rotation.y -= cos * offset / 500;
   }
 
-  public deathAnimation (): void { return; }
+  public deathAnimation (delay: number): void {
+    const { x, z } = Configs.Camera.tps.idle;
+
+    anime({
+      targets: this.camera.position,
+      easing: 'easeInOutQuad',
+      duration: 500.0,
+      z: z - 1.0,
+      y: 0.75,
+      delay,
+      x
+    });
+  }
 
   public setTo (target: Object3D): void {
     target.add(this.camera);

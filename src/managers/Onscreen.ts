@@ -10,6 +10,10 @@ export default class Onscreen implements ApplicationManager
     setTimeout(() => this.loop = new MainLoop(scene, pixelRatio, worker), 500);
   }
 
+  public start (): void {
+    this.loop.start();
+  }
+
   public resize (width: number, height: number): void {
     this.loop.resize(width, height);
   }

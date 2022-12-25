@@ -1,10 +1,16 @@
 {
 	"settings": {		
+		"js-import.plainFileSuffix": "css,fbx,frag,glb,glsl,gltf,less,sass,scss,svg,vert,wasm,wat",
 		"svelte.language-server.runtime": "C:/Program Files/nodejs/node.exe",
+    "js-import.filesToScan": "**/*.{ts,js,vert,frag,glsl}",
+
 		"editor.bracketPairColorization.enabled": false,
 		"svelte.plugin.typescript.enable": true,
 		"svelte.plugin.svelte.enable": true,
+
+		"vetur.validation.template": false,
 		"git.ignoreLimitWarning": true,
+		"js-import.semicolon": true,
 
 		"[svelte]": {
 			"editor.defaultFormatter": "svelte.svelte-vscode"
@@ -17,7 +23,12 @@
 		"js-import.alias": {
 			"@components": "./src/components",
 			"@": "./src"
-		}
+		},
+
+		"eslint.validate": [
+      "typescript",
+      "javascript"
+    ]
 	},
 
 	"folders": [{

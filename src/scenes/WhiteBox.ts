@@ -1,4 +1,4 @@
-import type { CharacterSoundConfig, CharacterSound } from '@/characters/types';
+import type { CharacterSoundConfig, CharacterSound, EnemyAttackData } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
@@ -37,6 +37,7 @@ import RAF from '@/managers/RAF';
 import Physics from '@/physics';
 import Configs from '@/configs';
 
+export const GAME_RATIO = false;
 const ORBIT_CONTROLS = false;
 const SCENE_SIZE = 500.0;
 
@@ -60,6 +61,7 @@ export default class WhiteBox
   private readonly pistol = new Pistol(this.envMap);
   private readonly onResize = this.resize.bind(this);
 
+  private readonly onKeyRelease = this.onKeyUp.bind(this);
   private readonly onPointerLock = this.requestPointerLock.bind(this);
   private readonly renderer = new WebGLRenderer({ antialias: true, alpha: false });
 
@@ -125,25 +127,6 @@ export default class WhiteBox
     this.scene.add(ground);
   }
 
-  private async createCharacters (): Promise<void> {
-    this.enemies = new Enemies(this.envMap);
-    await this.player.loadCharacter(this.envMap);
-    Physics.setCharacter(this.player.collider, 90);
-
-    await this.addWeaponSounds(this.pistol);
-    await this.addWeaponSounds(this.rifle);
-
-    this.player.setPistol([], this.pistol);
-    this.addCharacterSounds(this.player);
-
-    this.player.addRifle(this.rifle);
-    this.player.pickRifle();
-
-    Physics.pause = false;
-    RAF.add(this.update);
-    RAF.pause = false;
-  }
-
   private createColliders (): void {
     const halfSize = SCENE_SIZE * 0.5;
     const { position, height } = Configs.Level;
@@ -175,6 +158,20 @@ export default class WhiteBox
 
     this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
+
+    if (GAME_RATIO) {
+      this.renderer.domElement.style.transform = 'translate(-50%, -50%)';
+      this.renderer.domElement.style.position = 'absolute';
+      this.renderer.domElement.style.margin = 'auto';
+      this.renderer.domElement.style.left = '50%';
+      this.renderer.domElement.style.top = '50%';
+
+      const { width, height } = Viewport.size;
+      this.renderer.setSize(width, height);
+
+      Camera.object.aspect = width / height;
+      Camera.object.updateProjectionMatrix();
+    }
   }
 
   private createControls (): void {
@@ -199,8 +196,11 @@ export default class WhiteBox
 
   private addEvents (): void {
     Viewport.addResizeCallback(this.onResize);
+    document.body.addEventListener('keyup', this.onKeyRelease);
     document.body.addEventListener('click', this.onPointerLock);
 
+    GameEvents.add('Enemy::Attack', this.onPlayerHit.bind(this));
+    GameEvents.add('Player::Death', this.onPlayerDeath.bind(this));
     GameEvents.add('Level::AddObject', this.addGameObject.bind(this));
     GameEvents.add('Game::Pause', this.toggleControls.bind(this, false));
     GameEvents.add('Level::RemoveObject', this.removeGameObject.bind(this));
@@ -216,19 +216,22 @@ export default class WhiteBox
   }
 
   private async addCharacterSounds (character: Character): Promise<void> {
+    const collider = character instanceof Player ? character.collider : character as unknown as Mesh;
     const sfx = character instanceof Player ? Configs.Player.sounds : Configs.Enemy.sounds;
+
     const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
-      const volume = names[s] === 'death' ? 2.5 : 0.5;
+      let volume = names[s] === 'scream' ? 1.0 : 0.5;
 
+      volume = names[s] === 'death' ? 2.5 : volume;
       audio.userData = { name: names[s] };
-      character.collider.add(audio);
 
       audio.setVolume(volume);
       audio.setBuffer(sound);
+      collider.add(audio);
     });
   }
 
@@ -240,18 +243,33 @@ export default class WhiteBox
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'bullet' ? 0.25 : 2.5;
+
       volume = names[s] === 'shoot' ? 5.0 : volume;
-
       audio.userData = { name: names[s] };
-      weapon.object.add(audio);
 
+      weapon.object.add(audio);
       audio.setVolume(volume);
       audio.setBuffer(sound);
     });
   }
 
-  private onEnemyActive (): void {
-    this.player.setTargets(this.enemies.colliders);
+  private async createCharacters (): Promise<void> {
+    this.enemies = new Enemies(this.envMap);
+    await this.player.loadCharacter(this.envMap);
+    Physics.setCharacter(this.player.collider, 90);
+
+    await this.addWeaponSounds(this.pistol);
+    await this.addWeaponSounds(this.rifle);
+
+    this.player.setPistol([], this.pistol);
+    this.addCharacterSounds(this.player);
+
+    this.player.addRifle(this.rifle);
+    this.player.pickRifle();
+
+    Physics.pause = false;
+    RAF.add(this.update);
+    RAF.pause = false;
   }
 
   private playCharacter (event: GameEvent): void {
@@ -271,8 +289,9 @@ export default class WhiteBox
   }
 
   private onEnemySpawn (event: GameEvent): void {
-    const enemy = event.data as Enemy;
-    this.addCharacterSounds(enemy);
+    const uuid = event.data as string;
+    const enemy = this.scene.getObjectByProperty('uuid', uuid);
+    this.addCharacterSounds(enemy as unknown as Enemy);
   }
 
   private playWeapon (event: GameEvent): void {
@@ -288,20 +307,16 @@ export default class WhiteBox
       : sound.isPlaying && sound.stop();
   }
 
-  private requestPointerLock (): void {
-    if (!this.controls) return;
-    this.pointer.requestPointerLock();
-    this.toggleControls(true);
+  private onKeyUp (event: KeyboardEvent): void {
+    event.key === 'f' && this.rifle.addAmmo();
   }
 
   private addGameObject (event: GameEvent): void {
-    const object = event.data as Object3D;
-    this.scene.add(object);
+    this.scene.add(event.data as Object3D);
   }
 
   private removeGameObject (event: GameEvent): void {
-    const object = event.data as Object3D;
-    this.scene.remove(object);
+    this.scene.remove(event.data as Object3D);
   }
 
   private updateCharacters (player: Vector3, delta: number): void {
@@ -316,20 +331,49 @@ export default class WhiteBox
     Camera.updateState();
   }
 
+  private onPlayerDeath (event: GameEvent): void {
+    this.enemies.playerDead = event.data as boolean;
+  }
+
+  private onPlayerHit (event: GameEvent): void {
+    const { position: ePosition, damage } = event.data as EnemyAttackData;
+    const { position: pPosition, rotation } = this.player.location;
+
+    const direction = this.enemies.getHitDirection(
+      ePosition, pPosition, rotation
+    );
+
+    this.player.hit(direction, damage);
+  }
+
   private toggleControls (enable: boolean) {
     if (!this.controls) return;
     this.controls.pause = !enable;
   }
 
+  private requestPointerLock (): void {
+    if (!this.controls) return;
+    this.pointer.requestPointerLock();
+    this.toggleControls(true);
+  }
+
+  private onEnemyActive (): void {
+    this.player.setTargets(this.enemies.colliders);
+  }
+
   private removeEvents (): void {
     document.body.removeEventListener('click', this.onPointerLock);
+    document.body.removeEventListener('keyup', this.onKeyRelease);
     Viewport.removeResizeCallback(this.onResize);
 
     GameEvents.remove('Level::RemoveObject');
     GameEvents.remove('Level::AddObject');
     GameEvents.remove('SFX::Character');
 
+    GameEvents.remove('Player::Death');
+    GameEvents.remove('Enemy::Attack');
     GameEvents.remove('Enemy::Active');
+
     GameEvents.remove('Enemy::Spawn');
     GameEvents.remove('SFX::Weapon');
     GameEvents.remove('Game::Pause');
@@ -353,13 +397,11 @@ export default class WhiteBox
     this.rifle.resize(innerHeight);
     this.pistol.resize(innerHeight);
 
-    if (!this.orbit) Camera.resize();
+    this.renderer.setSize(innerWidth, innerHeight);
+    this.camera.aspect = innerWidth / innerHeight;
 
-    else {
-      this.camera.aspect = innerWidth / innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(innerWidth, innerHeight);
-    }
+    this.camera.updateProjectionMatrix();
+    !this.orbit && Camera.resize();
   }
 
   public dispose (): void {

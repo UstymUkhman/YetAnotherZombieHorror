@@ -1,24 +1,21 @@
 {
   "ambient": "environment/rain.mp3",
-  "music": "Day Of The Dead.mp3",
-
   "position": [0, 4.98, 13.5],
   "sidewalkHeight": 0.216,
   "scale": [75, 75, 75],
-
   "model": "level.glb",
+
   "cloud": "cloud.png",
   "fogDensity": 0.05,
   "fog": "noise.jpg",
   "skybox": "level",
+  "height": 10.0,
+  "depth": 250.0,
 
   "portalsOffset": [
     -0.025,  0.225,
     -0.275, -0.025
   ],
-
-  "height": 10,
-  "depth": 250,
 
   "lighting": [
     "environment/lightning0.mp3",

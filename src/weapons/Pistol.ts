@@ -13,6 +13,8 @@ export default class Pistol extends Weapon
   private readonly position = Configs.Pistol.position as Vector3;
   private readonly rotation = Configs.Pistol.rotation as Euler;
 
+  private readonly damage = Configs.Gameplay.damage.pistol;
+
   public constructor (envMap: Texture) {
     super(Configs.Pistol as WeaponConfig);
     this.load(envMap);
@@ -68,25 +70,30 @@ export default class Pistol extends Weapon
     });
   }
 
-  public override toggleVisibility (hideDelay: number, showDelay: number): void {
+  public override toggleVisibility (hide: number, show: number, duration = 100.0): void {
     this.object.children[0].children.forEach(child => {
-      const childMesh = child as Mesh;
+      const { material } = child as Mesh;
 
       anime({
-        targets: childMesh.material,
-        delay: hideDelay,
+        targets: material,
         easing: 'linear',
-        duration: 100,
-        opacity: 0.0
+        opacity: 0.0,
+        delay: hide,
+        duration
       });
 
       setTimeout(() => anime({
-        targets: childMesh.material,
+        targets: material,
         easing: 'linear',
-        duration: 100,
-        opacity: 1.0
-      }), showDelay);
+        opacity: 1.0,
+        duration
+      }), show);
     });
+  }
+
+  public override getDamage (index: number): number {
+    const { head, body, leg } = this.damage;
+    return !index ? head : index === 1 ? body : leg;
   }
 
   public override dispose (): void {

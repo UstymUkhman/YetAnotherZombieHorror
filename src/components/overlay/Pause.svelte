@@ -1,6 +1,7 @@
 <div transition:fade>
   <ul>
     <li on:mouseover={() => onMouseOver(0)}
+        on:keydown={onClick}
         on:click={onClick}
         on:focus
     >
@@ -8,6 +9,7 @@
     </li>
 
     <li on:mouseover={() => onMouseOver(1)}
+        on:keydown={onClick}
         on:click={onClick}
         on:focus
     >

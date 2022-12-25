@@ -1,4 +1,4 @@
-import type { CharacterSoundsConfig, CharacterSoundConfig, CharacterSounds, CharacterSound } from '@/characters/types';
+import type { CharacterSoundsConfig, CharacterSoundConfig, PlayerSounds, EnemySounds, CharacterSound } from '@/characters/types';
 import type { WeaponSoundsConfig, WeaponSoundConfig, PistolSounds, RifleSounds, WeaponSound } from '@/weapons/types';
 
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
@@ -23,18 +23,18 @@ import anime from 'animejs';
 
 export default class AudioScene
 {
+  private readonly playerSounds: Map<keyof PlayerSounds, PositionalAudio> = new Map();
+  private readonly enemySounds: Map<keyof EnemySounds, PositionalAudio> = new Map();
+
   private readonly pistolSounds: Map<keyof PistolSounds, PositionalAudio> = new Map();
   private readonly rifleSounds: Map<keyof RifleSounds, PositionalAudio> = new Map();
 
-  private readonly isRaining = Settings.getEnvironmentValue('raining');
+  private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
+  private readonly onCharacter = this.playCharacter.bind(this);
 
-  private readonly characterSounds: CharacterSounds = new Map();
   private readonly enemies: Map<string, Object3D> = new Map();
 
-  private readonly onDisposeEnemy = this.disposeEnemy.bind(this);
-  private readonly onCreateEnemy = this.createEnemy.bind(this);
-
-  private readonly onCharacter = this.playCharacter.bind(this);
+  private readonly onSpawnEnemy = this.spawnEnemy.bind(this);
   private readonly onThunder = this.playThuder.bind(this);
 
   private readonly onWeapon = this.playWeapon.bind(this);
@@ -57,18 +57,14 @@ export default class AudioScene
   private ambient?: Audio;
 
   public constructor () {
-    const isLighting = Settings.getEnvironmentValue('lighting');
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
+    this.scene.matrixWorldAutoUpdate = false;
 
     this.camera.matrixAutoUpdate = false;
     this.scene.matrixAutoUpdate = false;
+
     this.camera.add(this.listener);
-
-    this.scene.autoUpdate = false;
     this.scene.add(this.player);
-
-    this.isRaining && this.createAmbientSound();
-    isLighting && this.createThunderSounds();
 
     this.createCharacterSounds(Configs.Player.sounds, true);
     this.createCharacterSounds(Configs.Enemy.sounds, false);
@@ -88,18 +84,19 @@ export default class AudioScene
 
   private async createCharacterSounds (sfx: CharacterSoundsConfig, player: boolean): Promise<void> {
     const names = Object.keys(sfx) as unknown as Array<CharacterSound>;
+    const soundsMap = player ? this.playerSounds : this.enemySounds;
     const sounds = await this.loadSounds(Object.values(sfx));
 
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
-      const volume = names[s] === 'death' ? 2.5 : 0.5;
+      let volume = names[s] === 'scream' ? 1.0 : 0.5;
 
-      audio.setVolume(volume);
-      audio.setBuffer(sound);
+      volume = names[s] === 'death' ? 2.5 : volume;
+      audio.setVolume(volume).setBuffer(sound);
 
-      this.characterSounds.set(names[s], audio);
-      audio.userData = { name: names[s] };
       player && this.player.add(audio);
+      soundsMap.set(names[s], audio);
+      audio.name = names[s];
     });
   }
 
@@ -111,10 +108,9 @@ export default class AudioScene
     sounds.forEach((sound, s) => {
       const audio = new PositionalAudio(this.listener);
       let volume = names[s] === 'bullet' ? 0.25 : 2.5;
-      volume = names[s] === 'shoot' ? 5.0 : volume;
 
-      audio.setBuffer(sound);
-      audio.setVolume(volume);
+      volume = names[s] === 'shoot' ? 5.0 : volume;
+      audio.setVolume(volume).setBuffer(sound);
 
       soundsMap.set(names[s], audio);
       this.weapon.add(audio);
@@ -151,48 +147,61 @@ export default class AudioScene
     this.enemies.delete(uuid);
   }
 
-  private createEnemy (event: GameEvent): void {
+  public async updateAmbient (): Promise<void> {
+    if (Settings.getPerformanceValue('lighting')) {
+      this.createThunderSounds();
+    }
+
+    if (Settings.getPerformanceValue('raining')) {
+      await this.createAmbientSound();
+      this.scene.updateMatrixWorld(true);
+
+      setTimeout(() => anime({
+        begin: () => this.ambient?.play(),
+        targets: { volume: this.ambient?.getVolume() },
+        update: ({ animations }) => this.ambient?.setVolume(
+          +animations[0].currentValue
+        ),
+
+        easing: 'linear',
+        duration: 1e3,
+        volume: 0.25
+      }), 100);
+    }
+  }
+
+  private spawnEnemy (event: GameEvent): void {
     const enemy = new Object3D();
     const uuid = event.data as string;
 
-    this.characterSounds.forEach(
-      audio => enemy.add(audio)
-    );
+    this.enemySounds.forEach((audio, name) => {
+      const clone = new PositionalAudio(this.listener);
+
+      clone.setBuffer(audio.buffer as AudioBuffer)
+        .setVolume(audio.getVolume())
+        .name = name;
+
+      enemy.add(clone);
+    });
 
     this.scene.add(enemy);
     this.enemies.set(uuid, enemy);
   }
 
   private removeEventListeners (): void {
-    GameEvents.remove('SFX::Character', true);
     GameEvents.remove('Enemy::Dispose', true);
-    GameEvents.remove('Enemy::Create', true);
+    GameEvents.remove('SFX::Character', true);
+    GameEvents.remove('Enemy::Spawn', true);
     GameEvents.remove('SFX::Thunder', true);
     GameEvents.remove('SFX::Weapon', true);
   }
 
   private addEventListeners (): void {
     GameEvents.add('Enemy::Dispose', this.onDisposeEnemy, true);
-    GameEvents.add('Enemy::Create', this.onCreateEnemy, true);
     GameEvents.add('SFX::Character', this.onCharacter, true);
+    GameEvents.add('Enemy::Spawn', this.onSpawnEnemy, true);
     GameEvents.add('SFX::Thunder', this.onThunder, true);
     GameEvents.add('SFX::Weapon', this.onWeapon, true);
-  }
-
-  public updateAmbient (): void {
-    if (!this.isRaining) return;
-    this.scene.updateMatrixWorld(true);
-
-    setTimeout(() => anime({
-      targets: { volume: this.ambient?.getVolume() },
-      update: ({ animations }) => this.ambient?.setVolume(
-        +animations[0].currentValue
-      ),
-
-      easing: 'linear',
-      duration: 1000,
-      volume: 0.25
-    }), 100);
   }
 
   private playThuder (event: GameEvent): void {
@@ -226,16 +235,13 @@ export default class AudioScene
   }
 
   private playCharacter (event: GameEvent): void {
-    const { sfx, uuid, matrix, play } = event.data as CharacterSoundConfig;
-    let sound = this.characterSounds.get(sfx) as PositionalAudio;
     let character = this.player;
+    const { sfx, uuid, matrix, play } = event.data as CharacterSoundConfig;
+    let sound = this.playerSounds.get(sfx as keyof PlayerSounds) as PositionalAudio;
 
     if (this.enemies.has(uuid)) {
       character = this.enemies.get(uuid) as Object3D;
-
-      sound = character.children.find(audio =>
-        audio.userData.name === sfx
-      ) as PositionalAudio;
+      sound = character.getObjectByName(sfx) as PositionalAudio;
     }
 
     character.matrixWorld.copy(matrix);
@@ -288,9 +294,10 @@ export default class AudioScene
     while (this.scene.children.length > 0)
       this.scene.remove(this.scene.children[0]);
 
-    this.characterSounds.clear();
     this.removeEventListeners();
+    this.playerSounds.clear();
     this.pistolSounds.clear();
+    this.enemySounds.clear();
     this.rifleSounds.clear();
 
     RAF.remove(this.onUpdate);

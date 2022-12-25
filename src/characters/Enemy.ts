@@ -1,6 +1,6 @@
+import type { CharacterSound, EnemyAnimations, EnemyDeathAnimation } from '@/characters/types';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
-import type { EnemyAnimations, EnemyDeathAnimation } from '@/characters/types';
 
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
@@ -10,32 +10,34 @@ import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
-
 import { GameEvents } from '@/events/GameEvents';
+
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
+import type { AnimeInstance } from 'animejs';
 import { Material } from '@/utils/Material';
 
 import Configs from '@/configs';
 import anime from 'animejs';
 
-// Game Difficulty Settings:
-// const ATTACK_IMMUNE = false; // Immune while attacking
-const CAN_LOSE = true; // Pass to walk/idle animation after screaming
-
 export default class Enemy extends Character
 {
-  private readonly onLegHit = this.crawl.bind(this);
+  private readonly walkDistance = Configs.Gameplay.enemy.walk;
+  private readonly runDistance = Configs.Gameplay.enemy.run;
+  private readonly lose = Configs.Gameplay.enemy.lose;
+
+  protected override animationUpdate = true;
   protected override lastAnimation = 'idle';
+
+  private crawlAnimation?: AnimeInstance;
   private hitBoxes: Array<Object3D> = [];
-
   private readonly attackDistance = 2.5;
-  private readonly walkDistance = 500.0;
-  private readonly runDistance = 250.0;
 
+  private hittingTimeout!: NodeJS.Timeout;
   private attackTimeout!: NodeJS.Timeout;
   private crawlTimeout!: NodeJS.Timeout;
+
   private animTimeout!: NodeJS.Timeout;
   private runTimeout!: NodeJS.Timeout;
   private hitTimeout!: NodeJS.Timeout;
@@ -46,7 +48,9 @@ export default class Enemy extends Character
   private screamDuration!: number;
   private screamStart!: number;
   private hitDuration!: number;
+
   private distance = Infinity;
+  private playerDead = false;
   private hitStart!: number;
 
   private attacking = false;
@@ -64,10 +68,13 @@ export default class Enemy extends Character
   public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
 
+    this.walkDistance = this.walkDistance < 0 ? Infinity : this.walkDistance;
+    this.runDistance = this.runDistance < 0 ? Infinity : this.runDistance;
+
     if (model && envMap) {
-      GameEvents.dispatch('Enemy::Create', this.uuid, true);
-      GameEvents.dispatch('Level::AddObject', this.object);
       this.character = clone(model.scene) as Assets.GLTF;
+      GameEvents.dispatch('Level::AddObject', this.object);
+      GameEvents.dispatch('Enemy::Spawn', this.uuid, !TEST);
 
       const opacity = +!this.id;
       this.mesh = this.character;
@@ -114,11 +121,13 @@ export default class Enemy extends Character
       this.animations.run.stop();
     }
 
-    setTimeout(() =>
-      GameEvents.dispatch('Enemy::Active', show, true)
-    , +show * duration);
+    setTimeout(() => {
+      GameEvents.dispatch('Enemy::Active', show);
+      this.animationUpdate = false;
+    }, +show * duration);
 
     anime({
+      changeBegin: this.disableShadow.bind(this),
       targets: this.material,
       opacity: +show,
       duration,
@@ -139,41 +148,10 @@ export default class Enemy extends Character
     this.toggleVisibility(false, animation);
   }
 
-  private updateHitDamage (damage: number): boolean {
-    const lyingDown = this.falling || this.crawling;
-    const dead = this.updateHealth(damage);
-    if (!lyingDown) return false;
-
-    if (!dead) this.playSound('hit', true);
-
-    else if (this.crawling) {
-      this.toggleVisibility(false, 'crawlDeath');
-      this.updateAnimation('Idle', 'crawlDeath');
-    }
-
-    return true;
-  }
-
-  private toggleAnimation (): void {
-    const lyingDown  = this.falling   || this.crawling;
-    const aggressive = this.screaming || this.attacking;
-    if (this.animationUpdate || aggressive || lyingDown) return;
-
-    this.distance < this.attackDistance && this.attack();
-    if (this.attacking || (!CAN_LOSE && this.running)) return;
-
-    const idleAnimation   = this.distance   > this.walkDistance;
-    const screamAnimation = this.distance   < this.runDistance;
-    const walkAnimation   = !idleAnimation && !screamAnimation;
-    const scream          = !this.screamed && screamAnimation;
-
-    /**/ if (CAN_LOSE && this.moving && idleAnimation) this.idle();
-    else if (!this.moving && walkAnimation)            this.walk();
-    else if (!(CAN_LOSE && this.running) && scream)    this.scream();
-  }
-
   public headHit (damage: number, kill: boolean): void {
     if (this.dead) return;
+
+    this.stopSounds();
     this.cancelAnimation();
 
     this.hitting && this.cancelHit();
@@ -187,7 +165,8 @@ export default class Enemy extends Character
       this.updateAnimation('Idle', 'headshot');
     }
 
-    else this.fallDeadAnimation('headshot');
+    else if (this.falling)
+      this.fallDeadAnimation('headshot');
 
     this.hitTime = Date.now();
     this.running = false;
@@ -195,6 +174,8 @@ export default class Enemy extends Character
 
   public bodyHit (damage: number): void {
     if (this.dead) return;
+
+    this.playHitSound();
     this.cancelAnimation();
 
     if (this.updateHitDamage(damage)) {
@@ -231,16 +212,19 @@ export default class Enemy extends Character
       }
     }
 
-    if (!this.hitting) {
+    if (this.previousAnimation !== 'hit') {
       this.animations.hit.time = this.hitStart;
       this.updateAnimation('Idle', 'hit', 0.15);
     }
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;
-      const attacking = this.previousAnimation.includes('Attack');
 
-      if (!attacking) this.animTimeout = this.updateAnimation(
+      const attacking = this.previousAnimation.includes('Attack');
+      const screaming = this.previousAnimation === 'scream';
+      const blockingAnimation = attacking || screaming;
+
+      if (!blockingAnimation) this.animTimeout = this.updateAnimation(
         animation, this.previousAnimation, 0.15
       );
 
@@ -253,9 +237,9 @@ export default class Enemy extends Character
         const hit     = this.previousAnimation === 'hit';
         const run     = running && !this.running;
 
-        /**/ if (attack)     this.attack();
+             if (attack)     this.attack();
         else if (hit || run) this.run();
-      }, +!attacking * 150);
+      }, +!blockingAnimation * 150);
     }, this.hitDuration - 150);
 
     const animation = this.animation;
@@ -265,6 +249,8 @@ export default class Enemy extends Character
 
   public legHit (damage: number): NodeJS.Timeout | void {
     if (this.dead) return;
+
+    this.playHitSound();
     this.cancelAnimation();
 
     const now = Date.now();
@@ -284,15 +270,34 @@ export default class Enemy extends Character
       return;
     }
 
-    this.crawlTimeout = setTimeout(this.onLegHit, 2500.0);
+    this.crawlTimeout = setTimeout(this.crawl.bind(this), 2500.0);
     this.updateAnimation('Falling', 'falling', 0.1);
     this.hitTime = this.fallTime = now;
-    this.playSound('hit', true);
 
     this.running = false;
     this.falling = true;
     this.hitting = true;
     this.moving = false;
+  }
+
+  private crawl (duration = 3.0): void {
+    if (this.dead) return;
+    this.crawlTime = Date.now();
+    this.crawlTimeout = this.updateAnimation('Crawling', 'crawling', duration);
+
+    if (!this.crawling) this.crawlAnimation = anime({
+      z: this.rotation.z * (duration * -0.1),
+      targets: this.character.position,
+      duration: duration * 1e3,
+      easing: 'linear'
+    });
+
+    this.attacking = false;
+    this.crawling = true;
+
+    this.falling = false;
+    this.hitting = false;
+    this.moving = true;
   }
 
   private cancelAnimation (): void {
@@ -302,6 +307,7 @@ export default class Enemy extends Character
       this.animations.softAttack.stop();
       this.animations.hardAttack.stop();
 
+      clearTimeout(this.hittingTimeout);
       clearTimeout(this.attackTimeout);
       clearTimeout(this.animTimeout);
       this.attacking = false;
@@ -317,52 +323,26 @@ export default class Enemy extends Character
     }
   }
 
+  private playHitSound (): void {
+    this.stopSounds();
+    !this.falling && this.playSound('hit');
+  }
+
+  private stopSounds (): void {
+    if (this.screaming)
+      this.stopSound('scream');
+
+    else if (this.attacking) {
+      this.stopSound('hardAttack');
+      this.stopSound('softAttack');
+    }
+  }
+
   private cancelHit (): void {
     this.animations.hit.stopFading();
     clearTimeout(this.animTimeout);
     clearTimeout(this.hitTimeout);
     this.animations.hit.stop();
-  }
-
-  private scream (): void {
-    if (this.dead) return;
-    this.cancelHit();
-
-    this.moving = false;
-    this.hitting = false;
-    this.screamed = true;
-    this.screaming = true;
-    this.attacking = false;
-
-    this.runTimeout = setTimeout(() => {
-      this.playSound('scream', true);
-      const delay = this.screamDuration - 250;
-
-      this.runTimeout = setTimeout(() =>
-        this.distance < this.attackDistance
-          ? this.attack() : this.run()
-      , delay);
-    }, this.screamStart * 1e3);
-
-    this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
-  }
-
-  private crawl (): void {
-    if (this.dead) return;
-    this.crawlTime = Date.now();
-    this.crawlTimeout = this.updateAnimation('Crawling', 'crawling', 3.0);
-
-    anime({
-      targets: this.character.position,
-      z: this.rotation.z * -0.3,
-      easing: 'linear',
-      duration: 3e3
-    });
-
-    this.crawling = true;
-    this.falling = false;
-    this.hitting = false;
-    this.moving = true;
   }
 
   private idle (): void {
@@ -387,6 +367,28 @@ export default class Enemy extends Character
     this.moving = true;
   }
 
+  private scream (): void {
+    if (this.dead) return;
+    this.cancelHit();
+
+    this.moving = false;
+    this.hitting = false;
+    this.screamed = true;
+    this.screaming = true;
+    this.attacking = false;
+
+    this.runTimeout = setTimeout(() => {
+      this.playSound('scream');
+
+      this.runTimeout = setTimeout(() =>
+        this.distance < this.attackDistance
+          ? this.attack() : this.run()
+      , this.screamDuration - 250);
+    }, this.screamStart * 1e3);
+
+    this.animTimeout = this.updateAnimation('Idle', 'scream', this.screamStart);
+  }
+
   private run (): void {
     if (this.dead) return;
 
@@ -404,26 +406,41 @@ export default class Enemy extends Character
   private attack (): void {
     if (this.dead) return;
 
-    const duration = this.crawling ? 0.5 : 0.166;
-    const hard = this.life > 50 && Math.random() < 0.5;
-    const delay = this.crawling ? 2200 : hard ? 3000 : 2500;
+    const hard = this.life > 50.0 && Math.random() < 0.5;
+    let attack = 'crawlAttack', duration = 0.5,
+      delay = 2200.0, hitDelay = 250.0;
 
-    // const hitDelay = this.crawling ? 250 : hard ? 750 : 1000;
-    // const previousAnimation = this.crawling ? 'crawl' : this.lastAnimation;
-    const attack = this.crawling ? 'crawlAttack' : hard ? 'hardAttack' : 'softAttack';
+    if (!this.crawling) {
+      attack = hard ? 'hardAttack' : 'softAttack';
+      hitDelay = hard ? 1300.0 : 1000.0;
+      delay = hard ? 3000.0 : 2500.0;
 
-    // if (!this.crawling) {
-    //   this.stopSounds();
-    //   this.sfx[attack].play();
-    // }
+      setTimeout(this.playSound.bind(
+        this, attack as CharacterSound, true
+      ), +!hard * 350.0 + 400.0);
+
+      duration = 0.166;
+    }
 
     this.updateAnimation('Idle', attack, duration);
 
-    this.attackTimeout = setTimeout(() => {
-      if (this.dead) return;
+    this.hittingTimeout = setTimeout(() => {
+      const { strong, soft } = Configs.Gameplay.damage.enemy;
 
-      this.distance < this.attackDistance
-        ? this.idle() : this.run();
+      this.canAttack && GameEvents.dispatch('Enemy::Attack', {
+        position: this.position, damage: hard ? strong : soft
+      });
+    }, hitDelay);
+
+    this.attackTimeout = setTimeout(() => {
+      if (this.dead || (this.crawling && this.playerDead)) return;
+
+      const attack = this.distance < (
+        this.crawling ? 1.5 : this.attackDistance
+      );
+
+      this.crawling ? this.crawl(+attack + 1.0)
+        : attack ? this.idle() : this.run();
     }, duration * 1e3 + delay);
 
     this.screaming = false;
@@ -448,12 +465,56 @@ export default class Enemy extends Character
     this.toggleAnimation();
   }
 
+  private updateHitDamage (damage: number): boolean {
+    const lyingDown = this.falling || this.crawling;
+    const dead = this.updateHealth(damage);
+
+    if (!lyingDown) return false;
+
+    else if (dead && this.crawling) {
+      let duration = undefined;
+
+      if (!this.crawlAnimation?.completed) {
+        this.character.position.z = this.rotation.z;
+        this.crawlAnimation?.pause();
+
+        this.animations.falling
+          .setEffectiveTimeScale(1.0)
+          .setEffectiveWeight(1.0)
+          .stopWarping()
+          .stopFading();
+
+        duration = 0.0;
+      }
+
+      this.toggleVisibility(false, 'crawlDeath');
+      this.updateAnimation('Idle', 'crawlDeath', duration);
+    }
+
+    return true;
+  }
+
+  private toggleAnimation (): void {
+    if (this.blockingAnimation) return;
+    if (this.canAttack) return this.attack();
+    if (this.crawling || (!this.lose && this.running)) return;
+
+    const idleAnimation   = this.distance   > this.walkDistance;
+    const screamAnimation = this.distance   < this.runDistance;
+    const walkAnimation   = !idleAnimation && !screamAnimation;
+    const scream          = !this.screamed && screamAnimation;
+
+    if (this.lose && this.moving && idleAnimation)   this.idle();
+    else if (!this.moving && walkAnimation)          this.walk();
+    else if (!(this.lose && this.running) && scream) this.scream();
+  }
+
   public override dispose (): void {
     super.dispose();
     this.removeHitBoxes();
     this.character?.clear();
 
-    GameEvents.dispatch('Enemy::Death', this.id, true);
+    GameEvents.dispatch('Enemy::Death', this.id);
     GameEvents.dispatch('Enemy::Dispose', this.uuid, true);
     GameEvents.dispatch('Level::RemoveObject', this.object);
   }
@@ -583,6 +644,18 @@ export default class Enemy extends Character
     leftLeg.add(leftLegHitBox);
   }
 
+  private disableShadow (): void {
+    this.dead &&
+      this.mesh.traverse(child => {
+        const childMesh = child as Mesh;
+        if (childMesh.isMesh) childMesh.castShadow = false;
+      });
+  }
+
+  protected override get blockingAnimation (): boolean {
+    return this.attacking || this.falling || this.screaming || super.blockingAnimation;
+  }
+
   private get material (): MeshStandardMaterial {
     return (this.mesh.children[0].children[1] as SkinnedMesh).material as MeshStandardMaterial;
   }
@@ -592,8 +665,18 @@ export default class Enemy extends Character
     return this.falling ? 'Falling' : this.crawling ? 'Crawling' : direction;
   }
 
+  public set playerDeath (dead: boolean) {
+    this.playerDead = dead;
+  }
+
   public get hitBox (): Array<Object3D> {
     return this.hitBoxes;
+  }
+
+  private get canAttack (): boolean {
+    return !this.playerDead && this.distance < (
+      this.crawling ? 1.5 : this.attackDistance
+    );
   }
 
   public get index (): number {
