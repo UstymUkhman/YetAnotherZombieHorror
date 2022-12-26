@@ -31,10 +31,9 @@ export default class Enemies
   private spawnedEnemies = 0;
 
   public constructor (private readonly envMap: Texture) {
-    (new Enemy).loadCharacter(envMap).then(model => {
-      this.enemyModel = model;
-      this.spawnEnemy([0.0, 0.0]);
-    });
+    (new Enemy).loadCharacter(envMap).then(model =>
+      this.enemyModel = model
+    );
 
     this.addEvents();
   }
@@ -86,6 +85,10 @@ export default class Enemies
     for (let enemy = this.enemies.length; enemy--;) {
       this.enemies[enemy].update(delta, player);
     }
+  }
+
+  public spawnFirst (): void {
+    this.spawnEnemy([0.0, 0.0]);
   }
 
   public spawnMultiple (x: number, z: number, enemies = 2): void {

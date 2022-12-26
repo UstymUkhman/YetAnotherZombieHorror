@@ -59,6 +59,6 @@ export const getRandomCoord = (params: LevelParams): LevelCoords => {
     random(
       Math.max(topRightX, bottomRightX),
       Math.min(topLeftX, bottomLeftX)
-    ), randomZ
+    ) | 0, randomZ | 0
   ];
 };

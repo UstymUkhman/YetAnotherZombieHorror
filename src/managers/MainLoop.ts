@@ -80,7 +80,9 @@ export default class MainLoop
     this.player.loadCharacter(envMap).then(() => {
       this.player.setPistol(this.level.walls, this.pistol);
       Physics.setCharacter(this.player.collider, 90);
+
       this.player.addRifle(this.rifle);
+      this.enemies.spawnFirst();
 
       this.createRandomCoords();
       RAF.add(this.loop);

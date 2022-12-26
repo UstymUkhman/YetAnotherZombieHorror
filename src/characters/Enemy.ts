@@ -653,7 +653,8 @@ export default class Enemy extends Character
   }
 
   protected override get blockingAnimation (): boolean {
-    return this.attacking || this.falling || this.screaming || super.blockingAnimation;
+    return this.attacking || this.falling || this.screaming ||
+      this.playerDead || super.blockingAnimation;
   }
 
   private get material (): MeshStandardMaterial {

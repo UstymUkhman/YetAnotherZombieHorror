@@ -264,6 +264,7 @@
       dl {
         justify-content: space-between;
         display: inline-flex;
+        max-width: 280px;
 
         width: 60%;
         margin: 0;
