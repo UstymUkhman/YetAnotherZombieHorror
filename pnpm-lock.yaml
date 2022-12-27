@@ -12,6 +12,7 @@ specifiers:
   electron: ^21.1.1
   electron-builder: ^23.6.0
   eslint: ^8.25.0
+  eslint-plugin-svelte3: ^4.0.0
   fake-indexeddb: ^4.0.0
   jest-canvas-mock: ^2.4.0
   jsdom: ^20.0.1
@@ -48,6 +49,7 @@ devDependencies:
   electron: 21.1.1
   electron-builder: 23.6.0
   eslint: 8.25.0
+  eslint-plugin-svelte3: 4.0.0_2h6d4ngklmojchucosx7yvuw7m
   fake-indexeddb: 4.0.0
   jest-canvas-mock: 2.4.0
   jsdom: 20.0.1
@@ -1712,6 +1714,16 @@ packages:
       optionator: 0.8.3
     optionalDependencies:
       source-map: 0.6.1
+    dev: true
+
+  /eslint-plugin-svelte3/4.0.0_2h6d4ngklmojchucosx7yvuw7m:
+    resolution: {integrity: sha512-OIx9lgaNzD02+MDFNLw0GEUbuovNcglg+wnd/UY0fbZmlQSz7GlQiQ1f+yX0XvC07XPcDOnFcichqI3xCwp71g==}
+    peerDependencies:
+      eslint: '>=8.0.0'
+      svelte: ^3.2.0
+    dependencies:
+      eslint: 8.25.0
+      svelte: 3.52.0
     dev: true
 
   /eslint-scope/5.1.1:

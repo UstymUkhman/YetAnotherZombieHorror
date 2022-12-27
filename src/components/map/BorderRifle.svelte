@@ -11,15 +11,11 @@
     borderRotation = angle - playerRotation;
   }
 
-  $: (angle => {
-    if (!playerRotation) return;
-    updateBorderRotation();
-  })(angle);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  $: (_ => playerRotation && updateBorderRotation())(angle);
 
-  $: (playerRotation => {
-    if (!angle) return;
-    updateBorderRotation();
-  })(playerRotation);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  $: (_ => angle && updateBorderRotation())(playerRotation);
 </script>
 
 <style lang="scss">

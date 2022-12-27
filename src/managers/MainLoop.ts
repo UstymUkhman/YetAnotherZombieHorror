@@ -81,14 +81,13 @@ export default class MainLoop
       this.player.setPistol(this.level.walls, this.pistol);
       Physics.setCharacter(this.player.collider, 90);
 
+      this.enemies = new Enemies(envMap);
       this.player.addRifle(this.rifle);
-      this.enemies.spawnFirst();
 
       this.createRandomCoords();
       RAF.add(this.loop);
     });
 
-    this.enemies = new Enemies(envMap);
     this.pistol = new Pistol(envMap);
     this.rifle = new Rifle(envMap);
   }

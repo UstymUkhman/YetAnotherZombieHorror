@@ -1,19 +1,5 @@
 @use "sass:math";
 
-/* @keyframes loading {
-  0% {
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-} */
-
 @keyframes shoot {
   0% {
     transform: scale(1);
@@ -30,6 +16,7 @@
 
 @keyframes pulse {
   0% {
+    // stylelint-disable-next-line function-no-unknown
     transform: scale(math.div(1, 3));
     opacity: 1;
   }

@@ -59,7 +59,7 @@
 
     dispatch('hide');
     await tick();
-    dispatch('update', false)
+    dispatch('update', false);
   }
 
   function settingsUpdated (): void {

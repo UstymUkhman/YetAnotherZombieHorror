@@ -99,8 +99,8 @@
   }
 
   function drawBounds (): void {
+    context = map.getContext('2d') as CanvasRenderingContext2D;
     const nBounds = getNormalizedBounds();
-    context = map.getContext('2d')!;
 
     context.strokeStyle = '#000';
     context.lineWidth = 2.0;

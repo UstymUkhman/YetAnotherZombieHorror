@@ -9,6 +9,7 @@
 }
 
 @mixin font-size ($size) {
+  // stylelint-disable-next-line function-no-unknown
   letter-spacing: string.unquote("0.#{$size}rem");
   line-height: #{$size}vw;
   font-size: #{$size}vw;

@@ -1,6 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
+  "plugins": ["svelte3", "@typescript-eslint"],
 
   "extends": [
     "plugin:@typescript-eslint/recommended",
@@ -12,21 +13,34 @@
     "sourceType": "module"
   },
 
-  "plugins": ["@typescript-eslint"],
+  "overrides": [{
+    "processor": "svelte3/svelte3",
+    "files": ["*.svelte"]
+  }],
 
   "rules": {
-    "@typescript-eslint/no-unused-vars": [2, {"vars": "local", "args": "after-used"}],
+    "@typescript-eslint/no-unused-vars": [2, {
+      "vars": "local", "args": "after-used"
+    }],
+
     "@typescript-eslint/no-redeclare": 2,
     "@typescript-eslint/no-namespace": 0,
+
     "generator-star-spacing": 0,
     "quotes": [2, "single"],
     "no-unused-vars": 0,
+
     "no-redeclare": 0,
     "comma-dangle": 2,
     "no-debugger": 1,
+
     "no-console": 0,
     "no-undef": 0,
     "semi": 2
+  },
+
+  "settings": {
+    "svelte3/typescript": true
   },
 
   "globals": {

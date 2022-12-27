@@ -8,7 +8,7 @@
   const height = Viewport.size.height;
   const width = Viewport.size.width;
 
-  // @ts-expect-error
+  // @ts-expect-error - Optional:
   let canvas: HTMLCanvasElement;
   export let updating = false;
   let visible = false;
