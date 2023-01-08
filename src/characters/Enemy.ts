@@ -658,7 +658,7 @@ export default class Enemy extends Character
   }
 
   private get material (): MeshStandardMaterial {
-    return (this.mesh.children[0].children[1] as SkinnedMesh).material as MeshStandardMaterial;
+    return (this.mesh.children[0].children[0] as SkinnedMesh).material as MeshStandardMaterial;
   }
 
   private get animation (): EnemyAnimations {

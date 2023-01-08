@@ -571,7 +571,7 @@ export default class Player extends Character
   }
 
   private get meshes (): Array<SkinnedMesh> {
-    return this.mesh.children[0].children[1].children as Array<SkinnedMesh>;
+    return this.mesh.children[0].children[0].children as Array<SkinnedMesh>;
   }
 
   public get location (): PlayerLocation {
@@ -588,6 +588,6 @@ export default class Player extends Character
   }
 
   private get spine (): Bone {
-    return this.mesh.children[0].children[0].children[0] as Bone;
+    return this.mesh.children[0].children[1].children[0] as Bone;
   }
 }

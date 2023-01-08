@@ -357,8 +357,12 @@ export default class WhiteBox
     this.toggleControls(true);
   }
 
-  private onEnemyActive (): void {
-    this.player.setTargets(this.enemies.colliders);
+  private onEnemyActive (event: GameEvent): void {
+    !event.data && setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.enemies as any).spawnEnemy([0.0, 0.0]);
+      this.player.setTargets(this.enemies.colliders);
+    }, 500.0);
   }
 
   private removeEvents (): void {

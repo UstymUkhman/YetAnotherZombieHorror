@@ -1,7 +1,7 @@
+<Aim hide={!aiming} />
+
 {#if visibleHUD}
   <div transition:fade>
-    <Aim hide={!aiming} />
-
     <Map
       playerRotation={location.rotation}
       playerPosition={location.position}
@@ -58,7 +58,7 @@
   let zoomScale: number;
   let mapRadius: number;
 
-  let aiming = true;
+  let aiming = false;
   let scale: number;
 
   function updateRifleAngle (event: CustomEvent): void {
@@ -84,8 +84,8 @@
   }
 
   function dispatchUpdate (): void {
-    setTimeout(() => dispatch('firstUpdate'), 1500);
-    setTimeout(() => visibleHUD = true, 2500);
+    setTimeout(() => visibleHUD = aiming = true, 5000);
+    setTimeout(() => dispatch('firstUpdate'), 2500);
 
     firstUpdate = true;
     dispatch('start');

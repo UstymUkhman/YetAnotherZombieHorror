@@ -78,7 +78,7 @@ export default class Zombie extends Character
   }
 
   private get skinnedMesh (): SkinnedMesh {
-    return this.mesh.children[0].children[1] as SkinnedMesh;
+    return this.mesh.children[0].children[0] as SkinnedMesh;
   }
 
   public set freeze (frozen: boolean) {
