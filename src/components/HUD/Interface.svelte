@@ -3,16 +3,17 @@
 {#if visibleHUD}
   <div transition:fade>
     <Map
-      playerRotation={location.rotation}
-      playerPosition={location.position}
+      playerPosition={playerLocation.position}
+      playerRotation={playerLocation.rotation}
       radius={mapRadius / zoomScale}
       scale={scale} zoom={zoomScale}
       on:rifle={updateRifleAngle}
+      enemies={enemiesPositions}
     />
 
     {#if visibleRifle}
       <BorderRifle
-        playerRotation={location.rotation}
+        playerRotation={playerLocation.rotation}
         angle={rifleAngle}
       />
     {/if}
@@ -42,13 +43,14 @@
   };
 
   const scaleRatio = Math.tan(PI.d3) + Number.EPSILON;
-  const scaleFactor = Math.round(scaleRatio * 100);
+  const scaleFactor = Math.round(scaleRatio * 100.0);
 
   const dispatch = createEventDispatcher();
   const radiusFactor = scaleFactor / 10.0;
 
-  const zoom = new Elastic.Number(0);
-  let location: PlayerLocation;
+  const zoom = new Elastic.Number(0.0);
+  let enemiesPositions: Array<Vector3>;
+  let playerLocation: PlayerLocation;
 
   let visibleRifle = false;
   let firstUpdate = false;
@@ -92,8 +94,10 @@
   }
 
   GameEvents.add('Characters::Location', event => {
-    location = (event.data as LocationEvent).player;
+    const { player, enemies } = event.data as LocationEvent;
     !firstUpdate && dispatchUpdate();
+    enemiesPositions = enemies;
+    playerLocation = player;
   }, true);
 
   GameEvents.add('Player::Run', event => {

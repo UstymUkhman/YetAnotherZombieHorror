@@ -19,10 +19,9 @@
   let circ, start = 0.0;
 
   function spawnRifle (): void {
-    clearRifle();
-    RAF.add(spawnRifle);
     const [x, y] = coords;
 
+    context.clearRect(x - CIRC, y - CIRC, CIRC2, CIRC2);
     context.fillStyle = `rgb(${RIFLE_RGB})`;
 
     context.beginPath();
@@ -50,15 +49,10 @@
     RAF.remove(spawnRifle);
   }
 
-  function clearRifle (): void {
-    const [x, y] = coords;
-    context.clearRect(x - CIRC, y - CIRC, CIRC2, CIRC2);
-  }
-
   onDestroy(pickRifle);
 
   $: (visible => {
     if (!coords) return;
-    visible ? spawnRifle() : pickRifle();
+    visible ? RAF.add(spawnRifle) : pickRifle();
   })(visible);
 </script>

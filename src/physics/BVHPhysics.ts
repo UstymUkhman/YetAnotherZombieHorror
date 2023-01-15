@@ -147,7 +147,8 @@ export default class BVHPhysics extends PhysicsWorld
   }
 
   public stop (uuid: string): void {
-    (this.characterVelocity.get(uuid) as Vector3).setScalar(0);
+    const velocity = this.characterVelocity.get(uuid);
+    velocity?.setScalar(0);
   }
 
   public update (delta: number): void {

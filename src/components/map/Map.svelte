@@ -3,6 +3,13 @@
     <canvas bind:this={map} style="transform: {canvasTransform};" />
     <Player rotation={playerRotation} />
 
+    <!-- <Enemies
+      minCoords={minCoords}
+      positions={enemies}
+      context={context}
+      scale={scale}
+    /> -->
+
     {#if renderRifle}
       <MapRifle
         visible={visibleRifle}
@@ -21,6 +28,7 @@
 
   import MapRifle from '@components/map/MapRifle.svelte';
   import type { Vector3 } from 'three/src/math/Vector3';
+  // import Enemies from '@components/map/Enemies.svelte';
 
   import Player from '@components/map/Player.svelte';
   import { cloneBounds, max } from '@/utils/Array';
@@ -35,6 +43,7 @@
   let context: CanvasRenderingContext2D;
   const maxCoords = LevelScene.maxCoords;
 
+  export let enemies: Array<Vector3>;
   export let playerPosition: Vector3;
   export let playerRotation: number;
 
