@@ -69,7 +69,7 @@ export default class BVHPhysics extends PhysicsWorld
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public setCharacter (collider: Mesh, mass?: number): void {
+  public setCharacter (collider: Mesh, mass: number): void {
     this.characterVelocity.set(collider.uuid, new Vector3());
     this.characters.set(collider.uuid, collider);
 

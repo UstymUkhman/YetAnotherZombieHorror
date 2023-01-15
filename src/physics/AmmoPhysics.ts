@@ -1,5 +1,4 @@
 import type { AmmoWorld, AmmoBody, RigidBody, AmmoCollider } from '@/physics/types';
-import type { Quaternion } from 'three/src/math/Quaternion';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Mesh } from 'three/src/objects/Mesh';
 
@@ -31,8 +30,9 @@ export default class AmmoPhysics extends PhysicsWorld
     this.world.setGravity(new Ammo.btVector3(0.0, this.GRAVITY, 0.0));
   }
 
-  private createRigidBody (shape: RigidBody, mass: number, position: Vector3, quaternion: Quaternion): AmmoBody {
+  private createRigidBody (shape: RigidBody, mesh: Mesh, mass: number): AmmoBody {
     const transform = new Ammo.btTransform();
+    const { position, quaternion } = mesh;
 
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
@@ -54,7 +54,7 @@ export default class AmmoPhysics extends PhysicsWorld
   private createCharacterCollider (mesh: Mesh, mass: number): void {
     const { radius, height } = mesh.userData;
     const shape = new Ammo.btCapsuleShape(radius * 0.9225, height * 0.9225);
-    const body = this.createRigidBody(shape, mass, mesh.position, mesh.quaternion);
+    const body = this.createRigidBody(shape, mesh, mass);
 
     body.setAngularFactor(new Ammo.btVector3(0.0, 0.0, 0.0));
     body.setLinearFactor(new Ammo.btVector3(1.0, 1.0, 1.0));
@@ -68,14 +68,15 @@ export default class AmmoPhysics extends PhysicsWorld
     const { x, y, z } = this.sizeVector;
 
     this.world.addRigidBody(this.createRigidBody(
-      new Ammo.btBoxShape(new Ammo.btVector3(x / 2.0, y / 2.0, z / 2.0)),
-      0.0, collider.position, collider.quaternion
+      new Ammo.btBoxShape(
+        new Ammo.btVector3(x * 0.5, y * 0.5, z * 0.5)
+      ), collider, 0.0
     ), 2.0, 0xFFFF);
   }
 
-  public setCharacter (player: Mesh, mass = 75.0): void {
-    this.createCharacterCollider(player, mass);
-    (this.colliders.get(player.uuid) as AmmoCollider).body.forceActivationState(this.DISABLE);
+  public setCharacter (character: Mesh, mass: number): void {
+    this.createCharacterCollider(character, mass);
+    (this.colliders.get(character.uuid) as AmmoCollider).body.forceActivationState(this.DISABLE);
   }
 
   public override teleportCollider (uuid: string): void {
@@ -94,14 +95,21 @@ export default class AmmoPhysics extends PhysicsWorld
 
     collider.body.setLinearVelocity(this.linearVelocity);
     collider.body.forceActivationState(this.ENABLE);
+
+    collider.body.setDamping(0.0, 0.0);
+    collider.body.setFriction(0.0);
   }
 
   public stop (uuid: string): void {
-    const collider = this.colliders.get(uuid) as AmmoCollider;
-    this.linearVelocity.setValue(0.0, 0.0, 0.0);
+    const collider = this.colliders.get(uuid);
 
-    collider.body.forceActivationState(this.DISABLE);
-    collider.body.setLinearVelocity(this.linearVelocity);
+    if (collider) {
+      this.linearVelocity.setValue(0.0, 0.0, 0.0);
+      collider.body.setLinearVelocity(this.linearVelocity);
+
+      collider.body.setDamping(1.0, 1.0);
+      collider.body.setFriction(1.0);
+    }
   }
 
   public update (delta: number): void {

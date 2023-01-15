@@ -230,7 +230,6 @@ export default abstract class Character
       delete this.model;
     }
 
-    Physics.remove(this.uuid);
     this.animations = {};
     delete this.mixer;
     this.reset();
@@ -239,6 +238,7 @@ export default abstract class Character
   protected die (): void {
     this.playSound('death', true);
     this.setAnimation('Idle');
+    Physics.remove(this.uuid);
 
     this.hitting = false;
     this.running = false;

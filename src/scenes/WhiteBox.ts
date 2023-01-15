@@ -256,7 +256,7 @@ export default class WhiteBox
   private async createCharacters (): Promise<void> {
     this.enemies = new Enemies(this.envMap);
     await this.player.loadCharacter(this.envMap);
-    Physics.setCharacter(this.player.collider, 90);
+    Physics.setCharacter(this.player.collider, 90.0);
 
     await this.addWeaponSounds(this.pistol);
     await this.addWeaponSounds(this.rifle);

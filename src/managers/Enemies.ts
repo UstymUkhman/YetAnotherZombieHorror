@@ -53,10 +53,10 @@ export default class Enemies
     );
 
     this.enemyPosition.set(coords[0], enemy.collider.position.y, coords[1]);
-    enemy.teleport(this.enemyPosition);
+    Physics.setCharacter(enemy.collider, 75.0);
 
+    enemy.teleport(this.enemyPosition);
     this.enemies.push(enemy);
-    Physics.setCharacter(enemy.collider);
   }
 
   private headHit (event: GameEvent): void {

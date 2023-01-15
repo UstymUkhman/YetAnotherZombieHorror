@@ -31,11 +31,15 @@ export interface AmmoBody {
   }
 
   setWorldTransform: (transform: AmmoTransform) => void
+  setDamping: (linear: number, angular: number) => void
+
   setAngularFactor: (angularFactor: Vector3) => void
   setLinearFactor: (linearFactor: Vector3) => void
 
   setLinearVelocity: (velocity: Vector3) => void
   forceActivationState: (state: number) => void
+
+  setFriction: (friction: number) => void
 }
 
 interface AmmoTransform {
