@@ -3,7 +3,7 @@
   "description": "Yet Another Zombie Horror",
   "homepage": "https://github.com/UstymUkhman/YetAnotherZombieHorror#readme",
   "author": "Ustym Ukhman <ustym.ukhman@gmail.com> (https://github.com/UstymUkhman/)",
-  "packageManager": "^pnpm@7.19.0",
+  "packageManager": "^pnpm@7.25.0",
   "main": "src/main.ts",
   "version": "0.7.0",
   "license": "MIT",

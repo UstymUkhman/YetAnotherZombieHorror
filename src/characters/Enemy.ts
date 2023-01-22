@@ -453,16 +453,18 @@ export default class Enemy extends Character
     this.moving = false;
   }
 
-  public override update (delta: number, player?: Vector3): void {
+  public override update (delta: number, player?: Vector3): Vector3 {
     const playerPosition = player as Vector3;
-    if (!this.visible) return;
+    if (!this.visible) return this.position;
 
     super.update(delta);
-    if (this.dead) return;
+    if (this.dead) return this.position;
 
     this.distance = this.object.position.distanceToSquared(playerPosition);
     this.character.lookAt(playerPosition.x, 0.0, playerPosition.z);
+
     this.toggleAnimation();
+    return this.position;
   }
 
   private updateHitDamage (damage: number): boolean {

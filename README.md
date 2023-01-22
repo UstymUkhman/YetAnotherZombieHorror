@@ -4,7 +4,7 @@
 <br />
 
 ![GitHub deployments](https://img.shields.io/github/deployments/UstymUkhman/YetAnotherZombieHorror/github-pages)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UstymUkhman/YetAnotherZombieHorror/Check%20commit%20message%20style/main)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/UstymUkhman/YetAnotherZombieHorror/.github/workflows/check-commit-message.yml?branch=main)
 ![GitHub repo size](https://img.shields.io/github/repo-size/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub](https://img.shields.io/github/license/UstymUkhman/YetAnotherZombieHorror)

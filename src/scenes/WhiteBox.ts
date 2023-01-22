@@ -358,11 +358,9 @@ export default class WhiteBox
   }
 
   private onEnemyActive (event: GameEvent): void {
-    !event.data && setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.enemies as any).spawnEnemy([0.0, 0.0]);
-      this.player.setTargets(this.enemies.colliders);
-    }, 500.0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    !event.data && (this.enemies as any).spawnEnemy([0.0, 0.0]);
+    this.player.setTargets(this.enemies.colliders);
   }
 
   private removeEvents (): void {

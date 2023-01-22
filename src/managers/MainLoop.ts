@@ -137,18 +137,18 @@ export default class MainLoop
 
   private updateCharactersLocation (delta: number): Vector3 {
     this.player.update(delta);
+    const { location } = this.player;
 
-    const playerLocation = this.player.location;
-    const position = this.level.outOfBounds(playerLocation.position);
+    const position = this.level.outOfBounds(location.position);
+    const enemies = this.enemies.update(delta, location.position);
 
-    this.enemies.update(delta, playerLocation.position);
     position && this.player.teleport(position);
 
     GameEvents.dispatch('Characters::Location', {
-      player: playerLocation
+      player: location, enemies
     }, true);
 
-    return position ?? playerLocation.position;
+    return position ?? location.position;
   }
 
   public resize (width: number, height: number): void {

@@ -1,6 +1,7 @@
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { HitDirection } from '@/characters/types';
+import PhysicsSettings from '@/settings/physics.json';
 
 import type { GameEvent } from '@/events/GameEvents';
 import type { Assets } from '@/loaders/AssetsLoader';
@@ -24,6 +25,7 @@ export default class Enemies
   private readonly onLegHit = this.legHit.bind(this);
   private readonly onDeath = this.death.bind(this);
 
+  private readonly positions: Array<Vector3> = [];
   private readonly enemyPosition = new Vector3();
   private readonly enemies: Array<Enemy> = [];
 
@@ -47,15 +49,14 @@ export default class Enemies
   }
 
   private spawnEnemy (coords: LevelCoords): void {
-    const enemy = new Enemy(
-      this.enemyModel, this.envMap,
-      this.spawnedEnemies++
-    );
-
+    const enemy = new Enemy(this.enemyModel, this.envMap, this.spawnedEnemies++);
     this.enemyPosition.set(coords[0], enemy.collider.position.y, coords[1]);
-    Physics.setCharacter(enemy.collider, 75.0);
+    PhysicsSettings.ammo && Physics.setCharacter(enemy.collider, 75.0);
 
     enemy.teleport(this.enemyPosition);
+
+    !PhysicsSettings.ammo && Physics.setCharacter(enemy.collider, 75.0);
+    this.positions.push(new Vector3().copy(this.enemyPosition));
     this.enemies.push(enemy);
   }
 
@@ -79,13 +80,20 @@ export default class Enemies
 
   private death (event: GameEvent): void {
     const index = this.getEnemyIndex(event.data as number);
-    this.enemies.splice(index, 1);
+    this.positions.splice(index, 1.0);
+    this.enemies.splice(index, 1.0);
   }
 
-  public update (delta: number, player: Vector3): void {
-    for (let enemy = this.enemies.length; enemy--;) {
-      this.enemies[enemy].update(delta, player);
+  public update (delta: number, player: Vector3): Array<Vector3> {
+    for (let e = this.enemies.length; e--;) {
+      const position = this.enemies[e].update(delta, player);
+
+      this.enemies[e].alive
+        ? this.positions[e].copy(position)
+        : this.positions[e].setScalar(NaN);
     }
+
+    return this.positions;
   }
 
   public spawnMultiple (x: number, z: number, enemies = 2): void {
@@ -153,6 +161,7 @@ export default class Enemies
     }
 
     this.enemyModel.scene.clear();
+    this.positions.splice(0);
     this.enemies.splice(0);
     this.removeEvents();
   }

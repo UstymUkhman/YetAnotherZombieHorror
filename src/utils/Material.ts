@@ -4,12 +4,12 @@ import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial';
 import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 
 // Development imports
-// import fragPars from '@/shaders/ground/pars.frag';
-// import vertPars from '@/shaders/ground/pars.vert';
-// import fragMain from '@/shaders/ground/main.frag';
-// import vertMain from '@/shaders/ground/main.vert';
+import fragPars from '@/shaders/ground/pars.frag';
+import vertPars from '@/shaders/ground/pars.vert';
+import fragMain from '@/shaders/ground/main.frag';
+import vertMain from '@/shaders/ground/main.vert';
 
-import { Assets } from '@/loaders/AssetsLoader';
+// import { Assets } from '@/loaders/AssetsLoader';
 import { Color } from '@/utils/Color';
 
 export namespace Material
@@ -23,8 +23,8 @@ export namespace Material
 
     private async updateDefaultFragmentShader (shader: Shader): Promise<void> {
       // Production imports:
-      const fragPars = await Assets.Loader.loadShader('ground/pars.frag');
-      const fragMain = await Assets.Loader.loadShader('ground/main.frag');
+      // const fragPars = await Assets.Loader.loadShader('ground/pars.frag');
+      // const fragMain = await Assets.Loader.loadShader('ground/main.frag');
 
       shader.fragmentShader = `${fragPars}
       ${shader.fragmentShader.replace(
@@ -35,8 +35,8 @@ export namespace Material
 
     private async updateDefaultVertexShader (shader: Shader): Promise<void> {
       // Production imports:
-      const vertPars = await Assets.Loader.loadShader('ground/pars.vert');
-      const vertMain = await Assets.Loader.loadShader('ground/main.vert');
+      // const vertPars = await Assets.Loader.loadShader('ground/pars.vert');
+      // const vertMain = await Assets.Loader.loadShader('ground/main.vert');
 
       shader.vertexShader = `${vertPars}
       ${shader.vertexShader.replace(

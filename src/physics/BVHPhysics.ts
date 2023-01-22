@@ -1,7 +1,7 @@
 import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from '@/physics/types';
-import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
-import type { BufferGeometry } from 'three/src/core/BufferGeometry';
-import { MeshBVH, disposeBoundsTree } from 'three-mesh-bvh';
+// import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { StaticGeometryGenerator, MeshBVH, disposeBoundsTree } from 'three-mesh-bvh';
+// import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 
 import PhysicsWorld from '@/physics/PhysicsWorld';
 import { GameEvents } from '@/events/GameEvents';
@@ -33,11 +33,36 @@ export default class BVHPhysics extends PhysicsWorld
   private paused = true;
   private delta = 0.0;
 
+  /* private updateCollisions (): void {
+    const characters = Array.from(this.characters.values());
+
+    for (let i = characters.length; i--; ) {
+      const iCollider = characters[i];
+
+      for (let j = i; j--; ) {
+        const jCollider = characters[j];
+
+        this.linearVelocity.subVectors(iCollider.position, jCollider.position);
+
+        const depth = this.linearVelocity.length() - (
+          iCollider.userData.radius + jCollider.userData.radius
+        );
+
+        if ( depth < 0 ) {
+          console.log('Character Collision!');
+        }
+      }
+    }
+  } */
+
   private addPhysicsCollider (): void {
-    const geometries: Array<BufferGeometry> = [];
+    // const geometries: Array<BufferGeometry> = [];
 		this.environment.updateMatrixWorld(true);
 
-		this.environment.traverse(collider => {
+    const staticGenerator = new StaticGeometryGenerator(this.environment);
+    staticGenerator.attributes = ['position'];
+
+		/* this.environment.traverse(collider => {
       const colliderMesh = collider as Mesh;
 
 			if (colliderMesh.geometry) {
@@ -50,9 +75,11 @@ export default class BVHPhysics extends PhysicsWorld
 
 				geometries.push(colliderGeometry);
 			}
-		});
+		}); */
 
-		const mergedGeometry: BVHGeometry = mergeBufferGeometries(geometries, false);
+		// const mergedGeometry: BVHGeometry = mergeBufferGeometries(geometries, false);
+
+    const mergedGeometry = staticGenerator.generate();
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
 
     GameEvents.dispatch('Level::AddObject', this.environment);
@@ -154,6 +181,7 @@ export default class BVHPhysics extends PhysicsWorld
   public update (delta: number): void {
     if (this.paused) return;
     this.delta = delta * 0.2;
+    // this.updateCollisions();
   }
 
   public remove (uuid: string): void {
