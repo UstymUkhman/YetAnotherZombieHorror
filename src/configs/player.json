@@ -3,6 +3,7 @@
   "collider": [0.6, 1.7, -0.85],
   "scale": [1.5, 1.5, 1.5],
   "model": "player.glb",
+  "mass": 90.0,
 
   "sounds": {
     "death": "player/death.mp3",

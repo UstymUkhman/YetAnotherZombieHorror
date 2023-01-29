@@ -12,9 +12,9 @@ import { PI } from '@/utils/Number';
 
 export default abstract class PhysicsWorld
 {
-  public abstract setCharacter (collider: Mesh, mass: number): void;
   public abstract move (uuid: string, direction: Vector3): void;
   protected abstract addStaticCollider (collider: Mesh): void;
+  public abstract setCharacter (collider: Mesh): void;
 
   protected readonly positionVector = new Vector3();
   protected readonly rotationVector = new Euler();

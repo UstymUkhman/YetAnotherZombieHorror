@@ -11,8 +11,8 @@ import BVHPhysics from '@/physics/BVHPhysics';
 const Physics = new BVHPhysics();
 const isAmmo = Physics.constructor.name.includes('Ammo');
 
-const ammo = PhysicsSettings.ammo && !isAmmo;
-const bvh = isAmmo && !PhysicsSettings.ammo;
+const ammo = PhysicsSettings.engine === 'ammo' && !isAmmo;
+const bvh = isAmmo && PhysicsSettings.engine === 'bvh';
 
 if (!PRODUCTION && (ammo || bvh)) {
   console.warn(

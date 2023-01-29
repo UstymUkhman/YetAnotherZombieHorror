@@ -1,15 +1,15 @@
-import type { DefaultPerformance } from '@/settings/constants';
+import type { DefaultVisuals } from '@/settings/constants';
 
-type Performance = Map<PerformanceKeys, PerformanceValues>;
-type PerformanceValues = PerformanceData[PerformanceKeys];
+type Visuals = Map<VisualKeys, VisualValues>;
+type VisualValues = VisualData[VisualKeys];
 
 type RequestSuccess  = (db: IDBDatabase) => void;
-type PerformanceData = typeof DefaultPerformance;
-type PerformanceKeys = keyof PerformanceData;
+type VisualData = typeof DefaultVisuals;
+type VisualKeys = keyof VisualData;
 
-type PerformanceSettings = Array<{
-  value: PerformanceValues,
-  key: PerformanceKeys,
+type VisualSettings = Array<{
+  value: VisualValues,
   enabled: boolean,
+  key: VisualKeys,
   name: string
 }>;

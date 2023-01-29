@@ -24,10 +24,10 @@ import Configs from '@/configs';
 
 export default class Clouds
 {
-  private readonly count = Settings.getPerformanceValue('clouds') as unknown as number;
-  private readonly staticClouds = !Settings.getPerformanceValue('dynamicClouds');
-  private readonly isLighting = Settings.getPerformanceValue('lighting');
-  private readonly useFog = Settings.getPerformanceValue('fog');
+  private readonly count = Settings.getVisualValue('clouds') as unknown as number;
+  private readonly staticClouds = !Settings.getVisualValue('dynamicClouds');
+  private readonly isLighting = Settings.getVisualValue('lighting');
+  private readonly useFog = Settings.getVisualValue('fog');
 
   private readonly onShowLighting = this.showLighting.bind(this);
   private readonly onHideLighting = this.hideLighting.bind(this);
@@ -46,7 +46,7 @@ export default class Clouds
   }
 
   private createLighting (): void {
-    const decay = +(!this.useFog && Settings.getPerformanceValue('physicalLights')) + 1.0;
+    const decay = +(!this.useFog && Settings.getVisualValue('physicalLights')) + 1.0;
 
     this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
     this.lighting.position.set(0.0, Clouds.height, 0.0);

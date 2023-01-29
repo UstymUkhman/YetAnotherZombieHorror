@@ -1,7 +1,5 @@
 import type { BoundsOptions, BVHGeometry, SeparatingAxisTriangle } from '@/physics/types';
-// import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { StaticGeometryGenerator, MeshBVH, disposeBoundsTree } from 'three-mesh-bvh';
-// import type { BufferGeometry } from 'three/src/core/BufferGeometry';
 
 import PhysicsWorld from '@/physics/PhysicsWorld';
 import { GameEvents } from '@/events/GameEvents';
@@ -33,7 +31,7 @@ export default class BVHPhysics extends PhysicsWorld
   private paused = true;
   private delta = 0.0;
 
-  /* private updateCollisions (): void {
+  private updateCollisions (): void {
     const characters = Array.from(this.characters.values());
 
     for (let i = characters.length; i--; ) {
@@ -41,43 +39,46 @@ export default class BVHPhysics extends PhysicsWorld
 
       for (let j = i; j--; ) {
         const jCollider = characters[j];
-
         this.linearVelocity.subVectors(iCollider.position, jCollider.position);
 
         const depth = this.linearVelocity.length() - (
           iCollider.userData.radius + jCollider.userData.radius
         );
 
-        if ( depth < 0 ) {
-          console.log('Character Collision!');
-        }
+        if (depth > 0) continue;
+        this.linearVelocity.normalize();
+
+        const iVelocity = this.characterVelocity.get(iCollider.uuid) as Vector3;
+        const jVelocity = this.characterVelocity.get(jCollider.uuid) as Vector3;
+
+        const iVelocityDot = iVelocity.dot(this.linearVelocity);
+        const jVelocityDot = jVelocity.dot(this.linearVelocity);
+
+        const iOffsetRatio = Math.max(iVelocityDot, 0.2);
+        const jOffsetRatio = Math.max(jVelocityDot, 0.2);
+
+        const totalRatio = iOffsetRatio + jOffsetRatio;
+
+        const iRatio = iOffsetRatio / totalRatio;
+        const jRatio = jOffsetRatio / totalRatio;
+
+        const { y: iY } = iCollider.position;
+        const { y: jY } = jCollider.position;
+
+        iCollider.position.addScaledVector(this.linearVelocity, -iRatio * depth);
+        jCollider.position.addScaledVector(this.linearVelocity, jRatio * depth);
+
+        iCollider.position.y = iY;
+        jCollider.position.y = jY;
       }
     }
-  } */
+  }
 
   private addPhysicsCollider (): void {
-    // const geometries: Array<BufferGeometry> = [];
 		this.environment.updateMatrixWorld(true);
 
     const staticGenerator = new StaticGeometryGenerator(this.environment);
     staticGenerator.attributes = ['position'];
-
-		/* this.environment.traverse(collider => {
-      const colliderMesh = collider as Mesh;
-
-			if (colliderMesh.geometry) {
-				const colliderGeometry = colliderMesh.geometry.clone();
-				colliderGeometry.applyMatrix4(colliderMesh.matrixWorld);
-
-				for (const attribute in colliderGeometry.attributes) {
-          attribute !== 'position' && colliderGeometry.deleteAttribute(attribute);
-				}
-
-				geometries.push(colliderGeometry);
-			}
-		}); */
-
-		// const mergedGeometry: BVHGeometry = mergeBufferGeometries(geometries, false);
 
     const mergedGeometry = staticGenerator.generate();
 		mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false });
@@ -95,8 +96,7 @@ export default class BVHPhysics extends PhysicsWorld
     this.addPhysicsCollider();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public setCharacter (collider: Mesh, mass: number): void {
+  public setCharacter (collider: Mesh): void {
     this.characterVelocity.set(collider.uuid, new Vector3());
     this.characters.set(collider.uuid, collider);
 
@@ -181,7 +181,7 @@ export default class BVHPhysics extends PhysicsWorld
   public update (delta: number): void {
     if (this.paused) return;
     this.delta = delta * 0.2;
-    // this.updateCollisions();
+    this.updateCollisions();
   }
 
   public remove (uuid: string): void {

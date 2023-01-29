@@ -117,7 +117,8 @@ namespace Configs
     animations: PlayerData.animations,
 
     sounds: PlayerData.sounds,
-    model: PlayerData.model
+    model: PlayerData.model,
+    mass: PlayerData.mass
   });
 
   export const Enemy = deepFreeze({
@@ -129,7 +130,8 @@ namespace Configs
     animations: EnemyData.animations,
 
     sounds: EnemyData.sounds,
-    model: EnemyData.model
+    model: EnemyData.model,
+    mass: EnemyData.mass
   });
 
   export const Pistol = deepFreeze({

@@ -1,25 +1,25 @@
-import type { Performance, RequestSuccess, PerformanceKeys, PerformanceData } from '@/settings/types';
-import { DefaultPerformance, DEFAULT_QUALITY } from '@/settings/constants';
-import PerformanceSettings from '@/settings/performance.json';
+import type { Visuals, RequestSuccess, VisualKeys, VisualData } from '@/settings/types';
+import { DefaultVisuals, DEFAULT_QUALITY } from '@/settings/constants';
+import VisualSettings from '@/settings/visuals.json';
 import { GameEvents } from '@/events/GameEvents';
 
 export default class Settings
 {
-  private static readonly performance = Settings.getDefaultPerformanceValues();
+  private static readonly visuals = Settings.getDefaultVisualValues();
 
   public constructor () {
     this.openDBConnection(this.getEnviromentSettings.bind(this));
   }
 
-  private updatePerformanceStore (db: IDBDatabase, add = true, performance = DefaultPerformance): void {
-    const transaction = db.transaction('Performance', 'readwrite');
-    const performanceStore = transaction.objectStore('Performance');
+  private updateVisualsStore (db: IDBDatabase, add = true, visuals = DefaultVisuals): void {
+    const transaction = db.transaction('Visuals', 'readwrite');
+    const visualsStore = transaction.objectStore('Visuals');
 
-    for (const setting in performance) {
-      const key = setting as PerformanceKeys;
-      Settings.performance.set(key, performance[key]);
+    for (const visual in visuals) {
+      const key = visual as VisualKeys;
+      Settings.visuals.set(key, visuals[key]);
 
-      performanceStore[add ? 'add' : 'put'](performance[key], key)
+      visualsStore[add ? 'add' : 'put'](visuals[key], key)
         .onerror = this.onQueryError.bind(this);
     }
 
@@ -27,15 +27,15 @@ export default class Settings
   }
 
   private getEnviromentSettings (db: IDBDatabase, updated = false): void {
-    const transaction = db.transaction('Performance', 'readonly');
-    const performanceStore = transaction.objectStore('Performance');
+    const transaction = db.transaction('Visuals', 'readonly');
+    const visualsStore = transaction.objectStore('Visuals');
 
-    performanceStore.openCursor().onsuccess = (event: Event) => {
+    visualsStore.openCursor().onsuccess = (event: Event) => {
       const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
-      if (!cursor) return updated ? null : this.updatePerformanceStore(db);
+      if (!cursor) return updated ? null : this.updateVisualsStore(db);
 
-      const key = cursor.key as PerformanceKeys;
-      Settings.performance.set(key, cursor.value);
+      const key = cursor.key as VisualKeys;
+      Settings.visuals.set(key, cursor.value);
 
       cursor.continue();
       updated = true;
@@ -44,9 +44,9 @@ export default class Settings
     transaction.oncomplete = this.onTransactionComplete.bind(this, db, true);
   }
 
-  public updatePerformanceValues (performance: PerformanceData): void {
+  public updateVisualValues (visuals: VisualData): void {
     this.openDBConnection((db: IDBDatabase) =>
-      this.updatePerformanceStore(db, false, performance)
+      this.updateVisualsStore(db, false, visuals)
     );
   }
 
@@ -57,7 +57,7 @@ export default class Settings
 
   private onUpgradeNeeded (event: IDBVersionChangeEvent): void {
     const db = (event.target as IDBRequest).result;
-    db.createObjectStore('Performance');
+    db.createObjectStore('Visuals');
   }
 
   private openDBConnection (onSuccess: RequestSuccess): void {
@@ -71,8 +71,8 @@ export default class Settings
     };
   }
 
-  public resetPerformanceValues (index: number): void {
-    this.updatePerformanceValues(PerformanceSettings[index]);
+  public resetVisualValues (index: number): void {
+    this.updateVisualValues(VisualSettings[index]);
   }
 
   private onRequestError (event: Event): void {
@@ -83,15 +83,15 @@ export default class Settings
     console.error('Settings DB Query Error:', event);
   }
 
-  public static getDefaultPerformanceValues (index = DEFAULT_QUALITY): Performance {
-    return new Map(Object.entries(PerformanceSettings[index])) as Performance;
+  public static getDefaultVisualValues (index = DEFAULT_QUALITY): Visuals {
+    return new Map(Object.entries(VisualSettings[index])) as Visuals;
   }
 
-  public static getPerformanceValue (key: PerformanceKeys): boolean {
-    return Settings.performance.get(key) as boolean;
+  public static getVisualValue (key: VisualKeys): boolean {
+    return Settings.visuals.get(key) as boolean;
   }
 
-  public static getPerformanceValues (): Performance {
-    return Settings.performance;
+  public static getVisualValues (): Visuals {
+    return Settings.visuals;
   }
 }

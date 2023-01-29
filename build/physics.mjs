@@ -8,8 +8,10 @@ const Settings = readFileSync(SETTINGS_FILE).toString();
 const Physics  = readFileSync(PHYSICS_FILE).toString();
 
 const lines  = Physics.split('\n');
-const ammo   = JSON.parse(Settings).ammo;
 const isAmmo = lines[10].includes('Ammo');
+
+const engine = JSON.parse(Settings).engine;
+const ammo   = engine === 'ammo';
 
 if ((ammo && !isAmmo) || (isAmmo && !ammo)) {
   const target  = ammo ? 'Ammo' : 'BVH';

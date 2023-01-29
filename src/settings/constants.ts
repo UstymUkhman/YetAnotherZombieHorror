@@ -1,14 +1,14 @@
-import Performance from '@/settings/performance.json';
+import Visuals from '@/settings/visuals.json';
 
 export const MAX_CLOUDS = 300.0;
 export const DEFAULT_QUALITY = 0.0;
 
-export const DefaultPerformance = Performance[DEFAULT_QUALITY];
-const { length } = Object.keys(DefaultPerformance);
-export const PERFORMANCE_LENGTH = length;
+export const DefaultVisuals = Visuals[DEFAULT_QUALITY];
+const { length } = Object.keys(DefaultVisuals);
+export const VISUALS_LENGTH = length;
 
 export enum Quality {
-  LOW    = PERFORMANCE_LENGTH + 0.0,
-  MEDIUM = PERFORMANCE_LENGTH + 1.0,
-  HIGH   = PERFORMANCE_LENGTH + 2.0
+  LOW    = VISUALS_LENGTH + 0.0,
+  MEDIUM = VISUALS_LENGTH + 1.0,
+  HIGH   = VISUALS_LENGTH + 2.0
 }

@@ -51,12 +51,13 @@ export default class Enemies
   private spawnEnemy (coords: LevelCoords): void {
     const enemy = new Enemy(this.enemyModel, this.envMap, this.spawnedEnemies++);
     this.enemyPosition.set(coords[0], enemy.collider.position.y, coords[1]);
-    PhysicsSettings.ammo && Physics.setCharacter(enemy.collider, 75.0);
 
+    const ammo = PhysicsSettings.engine === 'ammo';
+    ammo && Physics.setCharacter(enemy.collider);
     enemy.teleport(this.enemyPosition);
 
-    !PhysicsSettings.ammo && Physics.setCharacter(enemy.collider, 75.0);
     this.positions.push(new Vector3().copy(this.enemyPosition));
+    !ammo && Physics.setCharacter(enemy.collider);
     this.enemies.push(enemy);
   }
 

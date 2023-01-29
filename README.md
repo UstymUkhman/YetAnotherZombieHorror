@@ -53,7 +53,7 @@
 
 ## Settings ##
 
-### Performance ###
+### Visuals ###
 
 | Option          | Type      | Default Value | Description |
 | --------------- | --------- | ------------- | ----------- |
@@ -73,14 +73,14 @@
 
 ### Physics ###
 
-| Option | Type      | Default Value |
-| ------ | --------- | ------------- |
-| ammo   | *Boolean* | `false`       |
+| Option | Type              | Default Value |
+| ------ | ----------------- | ------------- |
+| Engine | *"ammo" \| "bvh"* | `"bvh"`       |
 
-**Note:** *This option can only be changed manually in `src/settings/physics.json` before launching the game. Every time this setting is updated, you will need to run `pnpm run setup` in order to use the corresponding Physics Engine [in here](https://github.com/UstymUkhman/YetAnotherZombieHorror/blob/main/src/physics/index.ts). If set to:*
+**Note:** *This option can only be changed manually in `src/settings/physics.json` before launching the game. Every time this setting is updated, you will need to run `pnpm run setup` in order to use the corresponding physics engine [in here](https://github.com/UstymUkhman/YetAnotherZombieHorror/blob/main/src/physics/index.ts). If set to:*
 
-  - `true` - [**ammo.js**](https://github.com/kripken/ammo.js), a direct port of [Bullet Physics Engine](https://pybullet.org/) will be used.
-  - `false` - [**three-mesh-bvh**](https://github.com/gkjohnson/three-mesh-bvh) will be used, which may lead to slightly better performance.
+  - `"ammo"` - [**ammo.js**](https://github.com/kripken/ammo.js), a direct port of [Bullet Physics Engine](https://pybullet.org/) will be used.
+  - `"bvh"` - [**three-mesh-bvh**](https://github.com/gkjohnson/three-mesh-bvh) will be used, which may lead to slightly better performance.
 
 ## Controls ##
 

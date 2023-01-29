@@ -51,8 +51,8 @@ export default class LevelScene
   private fog?: Fog;
 
   public constructor (canvas: HTMLCanvasElement, pixelRatio: number, worker?: WebWorker) {
-    this.physicalLights = Settings.getPerformanceValue('physicalLights');
-    const raindrops = Settings.getPerformanceValue('raindrops');
+    this.physicalLights = Settings.getVisualValue('physicalLights');
+    const raindrops = Settings.getVisualValue('raindrops');
 
     this.renderer = new WebGLRenderer({
       powerPreference: 'high-performance',
@@ -84,11 +84,11 @@ export default class LevelScene
   }
 
   private async createEnvironment (worker?: WebWorker): Promise<void> {
-    const fog = Settings.getPerformanceValue('fog');
-    const raining = Settings.getPerformanceValue('raining');
-    const lighting = Settings.getPerformanceValue('lighting');
+    const fog = Settings.getVisualValue('fog');
+    const raining = Settings.getVisualValue('raining');
+    const lighting = Settings.getVisualValue('lighting');
 
-    const volumetricFog = fog && Settings.getPerformanceValue('volumetricFog');
+    const volumetricFog = fog && Settings.getVisualValue('volumetricFog');
     const skyboxMap = await this.createSkybox(Configs.Level.skybox);
     const level = await this.loadLevel(Configs.Level.model);
 
@@ -148,7 +148,7 @@ export default class LevelScene
     const skybox = await Assets.Loader.loadCubeTexture(folder);
     skybox.encoding = sRGBEncoding;
 
-    if (!Settings.getPerformanceValue('fog')) {
+    if (!Settings.getVisualValue('fog')) {
       this.scene.background = skybox;
     }
 

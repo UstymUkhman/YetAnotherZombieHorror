@@ -46,7 +46,7 @@ export default class Application
   }
 
   private async createRaindrops (canvas: HTMLCanvasElement): Promise<void> {
-    Settings.getPerformanceValue('raindrops') && import('@/environment/Raindrops').then(Raindrops =>
+    Settings.getVisualValue('raindrops') && import('@/environment/Raindrops').then(Raindrops =>
       this.raindrops = new Raindrops.default(this.scene, canvas)
     );
   }

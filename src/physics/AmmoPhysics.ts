@@ -51,8 +51,8 @@ export default class AmmoPhysics extends PhysicsWorld
     return body;
   }
 
-  private createCharacterCollider (mesh: Mesh, mass: number): void {
-    const { radius, height } = mesh.userData;
+  private createCharacterCollider (mesh: Mesh): void {
+    const { radius, height, mass } = mesh.userData;
     const shape = new Ammo.btCapsuleShape(radius * 0.9225, height * 0.9225);
     const body = this.createRigidBody(shape, mesh, mass);
 
@@ -74,8 +74,8 @@ export default class AmmoPhysics extends PhysicsWorld
     ), 2.0, 0xFFFF);
   }
 
-  public setCharacter (character: Mesh, mass: number): void {
-    this.createCharacterCollider(character, mass);
+  public setCharacter (character: Mesh): void {
+    this.createCharacterCollider(character);
     (this.colliders.get(character.uuid) as AmmoCollider).body.forceActivationState(this.DISABLE);
   }
 

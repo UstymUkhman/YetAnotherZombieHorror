@@ -48,13 +48,13 @@ export default abstract class Character
     const { x, y } = this.config.collider;
 
     this.object = new Mesh(
-      new RoundedBoxGeometry(x, y, x, 2, 0.5),
+      new RoundedBoxGeometry(x, y, x, 2.0, 0.5),
       Material.DynamicCollider
     );
 
     this.object.userData = {
       segment: new Line3(new Vector3(), Vector.DOWN),
-      height: y, radius: 0.5
+      height: y, radius: 0.5, mass: this.config.mass
     };
 
     this.step = this.config.moves.Idle;

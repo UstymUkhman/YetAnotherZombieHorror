@@ -1,11 +1,11 @@
-import { PERFORMANCE_LENGTH } from '@/settings/constants';
+import { VISUALS_LENGTH } from '@/settings/constants';
 import type { Quality } from '@/settings/constants';
 
 import type {
-  Performance,
-  PerformanceKeys,
-  PerformanceData,
-  PerformanceSettings
+  Visuals,
+  VisualKeys,
+  VisualData,
+  VisualSettings
 } from '@/settings/types';
 
 import Settings from '@/settings';
@@ -20,13 +20,13 @@ const dependencies = new Map([
   ['clouds', ['lighting', 'dynamicClouds']]
 ]);
 
-const performanceNeedsUpdate = (performance: PerformanceSettings, values: Performance): PerformanceData | void => {
-  const settings = performance.reduce((performance, variable) => ({
-    ...performance, [variable.key]: variable.value
-  }), {}) as PerformanceData;
+const visualsNeedsUpdate = (visuals: VisualSettings, values: Visuals): VisualData | void => {
+  const settings = visuals.reduce((visuals, visual) => ({
+    ...visuals, [visual.key]: visual.value
+  }), {}) as VisualData;
 
-  for (const variable in settings) {
-    const key = variable as PerformanceKeys;
+  for (const visual in settings) {
+    const key = visual as VisualKeys;
 
     if (values.get(key) !== settings[key]) {
       return settings;
@@ -34,25 +34,25 @@ const performanceNeedsUpdate = (performance: PerformanceSettings, values: Perfor
   }
 };
 
-export const resetPerformance = (updated: PerformanceSettings, quality: Quality): boolean => {
-  const qualityIndex = quality - PERFORMANCE_LENGTH;
+export const resetVisuals = (updated: VisualSettings, quality: Quality): boolean => {
+  const qualityIndex = quality - VISUALS_LENGTH;
 
-  const performanceValues = Settings.getDefaultPerformanceValues(qualityIndex);
-  const currentValues = performanceNeedsUpdate(updated, performanceValues);
+  const visualValues = Settings.getDefaultVisualValues(qualityIndex);
+  const currentValues = visualsNeedsUpdate(updated, visualValues);
 
-  currentValues && settings.resetPerformanceValues(qualityIndex);
+  currentValues && settings.resetVisualValues(qualityIndex);
   return !!currentValues;
 };
 
-export const getOptionDependencies = (key: PerformanceKeys): Array<string> | void => {
+export const getOptionDependencies = (key: VisualKeys): Array<string> | void => {
   const dependency = dependencies.get(key);
   if (dependency) return dependency;
 };
 
-export const updatePerformance = (updated: PerformanceSettings): boolean => {
-  const performanceValues = Settings.getPerformanceValues();
-  const currentValues = performanceNeedsUpdate(updated, performanceValues);
+export const updateVisuals = (updated: VisualSettings): boolean => {
+  const visualValues = Settings.getVisualValues();
+  const currentValues = visualsNeedsUpdate(updated, visualValues);
 
-  currentValues && settings.updatePerformanceValues(currentValues);
+  currentValues && settings.updateVisualValues(currentValues);
   return !!currentValues;
 };

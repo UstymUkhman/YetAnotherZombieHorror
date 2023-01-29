@@ -78,7 +78,7 @@ export default class MainLoop
     const envMap = event.data as Texture;
 
     this.player.loadCharacter(envMap).then(() => {
-      Physics.setCharacter(this.player.collider, 90.0);
+      Physics.setCharacter(this.player.collider);
       this.player.setPistol(this.level.walls, this.pistol);
 
       this.enemies = new Enemies(envMap);

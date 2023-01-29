@@ -1,23 +1,21 @@
-import Performance from '@/settings/performance.json';
-
 import { describe, test, expect } from 'vitest';
 import Physics from '@/settings/physics.json';
-
+import Visuals from '@/settings/visuals.json';
 import Settings from '@/settings';
 import Configs from '@/configs';
 
 import {
   Quality,
   MAX_CLOUDS,
-  DEFAULT_QUALITY,
-  PERFORMANCE_LENGTH,
-  DefaultPerformance
+  DefaultVisuals,
+  VISUALS_LENGTH,
+  DEFAULT_QUALITY
 } from '@/settings/constants';
 
 describe('Settings', () => {
   test('Constants', () => {
-    expect(DefaultPerformance).toStrictEqual(Performance[0]);
-    expect(PERFORMANCE_LENGTH).toStrictEqual(13.0);
+    expect(DefaultVisuals).toStrictEqual(Visuals[0]);
+    expect(VISUALS_LENGTH).toStrictEqual(13.0);
 
     expect(DEFAULT_QUALITY).toStrictEqual(0.0);
     expect(MAX_CLOUDS).toStrictEqual(300.0);
@@ -27,82 +25,82 @@ describe('Settings', () => {
     expect(Quality.HIGH).toStrictEqual(15.0);
   });
 
-  test('Performance', () => {
-    expect(typeof Settings.getPerformanceValue('bullet')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('bulletPath')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('bulletHoles')).toStrictEqual('boolean');
+  test('Visuals', () => {
+    expect(typeof Settings.getVisualValue('bullet')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('bulletPath')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('bulletHoles')).toStrictEqual('boolean');
 
-    expect(typeof Settings.getPerformanceValue('raining')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('lighting')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('raindrops')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('softParticles')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('raining')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('lighting')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('raindrops')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('softParticles')).toStrictEqual('boolean');
 
-    expect(typeof Settings.getPerformanceValue('fog')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('bakedFog')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('volumetricFog')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('fog')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('bakedFog')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('volumetricFog')).toStrictEqual('boolean');
 
-    expect(Settings.getPerformanceValue('clouds')).toBeLessThanOrEqual(300);
-    expect(Settings.getPerformanceValue('clouds')).toBeGreaterThanOrEqual(0.0);
-    expect(typeof Settings.getPerformanceValue('clouds')).toStrictEqual('number');
-    expect(typeof Settings.getPerformanceValue('dynamicClouds')).toStrictEqual('boolean');
-    expect(typeof Settings.getPerformanceValue('physicalLights')).toStrictEqual('boolean');
+    expect(Settings.getVisualValue('clouds')).toBeLessThanOrEqual(300);
+    expect(Settings.getVisualValue('clouds')).toBeGreaterThanOrEqual(0.0);
+    expect(typeof Settings.getVisualValue('clouds')).toStrictEqual('number');
+    expect(typeof Settings.getVisualValue('dynamicClouds')).toStrictEqual('boolean');
+    expect(typeof Settings.getVisualValue('physicalLights')).toStrictEqual('boolean');
   });
 
-  test('Performance.LOW', () => {
-    expect(Performance[0].bullet).toStrictEqual(true);
-    expect(Performance[0].bulletPath).toStrictEqual(false);
-    expect(Performance[0].bulletHoles).toStrictEqual(false);
+  test('Visuals.LOW', () => {
+    expect(Visuals[0].bullet).toStrictEqual(true);
+    expect(Visuals[0].bulletPath).toStrictEqual(false);
+    expect(Visuals[0].bulletHoles).toStrictEqual(false);
 
-    expect(Performance[0].raining).toStrictEqual(true);
-    expect(Performance[0].lighting).toStrictEqual(false);
-    expect(Performance[0].raindrops).toStrictEqual(false);
-    expect(Performance[0].softParticles).toStrictEqual(false);
+    expect(Visuals[0].raining).toStrictEqual(true);
+    expect(Visuals[0].lighting).toStrictEqual(false);
+    expect(Visuals[0].raindrops).toStrictEqual(false);
+    expect(Visuals[0].softParticles).toStrictEqual(false);
 
-    expect(Performance[0].fog).toStrictEqual(true);
-    expect(Performance[0].bakedFog).toStrictEqual(false);
-    expect(Performance[0].volumetricFog).toStrictEqual(false);
+    expect(Visuals[0].fog).toStrictEqual(true);
+    expect(Visuals[0].bakedFog).toStrictEqual(false);
+    expect(Visuals[0].volumetricFog).toStrictEqual(false);
 
-    expect(Performance[0].clouds).toStrictEqual(0.0);
-    expect(Performance[0].dynamicClouds).toStrictEqual(false);
-    expect(Performance[0].physicalLights).toStrictEqual(false);
+    expect(Visuals[0].clouds).toStrictEqual(0.0);
+    expect(Visuals[0].dynamicClouds).toStrictEqual(false);
+    expect(Visuals[0].physicalLights).toStrictEqual(false);
   });
 
-  test('Performance.MEDIUM', () => {
-    expect(Performance[1].bullet).toStrictEqual(true);
-    expect(Performance[1].bulletPath).toStrictEqual(false);
-    expect(Performance[1].bulletHoles).toStrictEqual(true);
+  test('Visuals.MEDIUM', () => {
+    expect(Visuals[1].bullet).toStrictEqual(true);
+    expect(Visuals[1].bulletPath).toStrictEqual(false);
+    expect(Visuals[1].bulletHoles).toStrictEqual(true);
 
-    expect(Performance[1].raining).toStrictEqual(true);
-    expect(Performance[1].lighting).toStrictEqual(true);
-    expect(Performance[1].raindrops).toStrictEqual(true);
-    expect(Performance[1].softParticles).toStrictEqual(false);
+    expect(Visuals[1].raining).toStrictEqual(true);
+    expect(Visuals[1].lighting).toStrictEqual(true);
+    expect(Visuals[1].raindrops).toStrictEqual(true);
+    expect(Visuals[1].softParticles).toStrictEqual(false);
 
-    expect(Performance[1].fog).toStrictEqual(false);
-    expect(Performance[1].bakedFog).toStrictEqual(false);
-    expect(Performance[1].volumetricFog).toStrictEqual(false);
+    expect(Visuals[1].fog).toStrictEqual(false);
+    expect(Visuals[1].bakedFog).toStrictEqual(false);
+    expect(Visuals[1].volumetricFog).toStrictEqual(false);
 
-    expect(Performance[1].clouds).toStrictEqual(300.0);
-    expect(Performance[1].dynamicClouds).toStrictEqual(true);
-    expect(Performance[1].physicalLights).toStrictEqual(false);
+    expect(Visuals[1].clouds).toStrictEqual(300.0);
+    expect(Visuals[1].dynamicClouds).toStrictEqual(true);
+    expect(Visuals[1].physicalLights).toStrictEqual(false);
   });
 
-  test('Performance.HIGH', () => {
-    expect(Performance[2].bullet).toStrictEqual(true);
-    expect(Performance[2].bulletPath).toStrictEqual(true);
-    expect(Performance[2].bulletHoles).toStrictEqual(true);
+  test('Visuals.HIGH', () => {
+    expect(Visuals[2].bullet).toStrictEqual(true);
+    expect(Visuals[2].bulletPath).toStrictEqual(true);
+    expect(Visuals[2].bulletHoles).toStrictEqual(true);
 
-    expect(Performance[2].raining).toStrictEqual(true);
-    expect(Performance[2].lighting).toStrictEqual(true);
-    expect(Performance[2].raindrops).toStrictEqual(true);
-    expect(Performance[2].softParticles).toStrictEqual(true);
+    expect(Visuals[2].raining).toStrictEqual(true);
+    expect(Visuals[2].lighting).toStrictEqual(true);
+    expect(Visuals[2].raindrops).toStrictEqual(true);
+    expect(Visuals[2].softParticles).toStrictEqual(true);
 
-    expect(Performance[2].fog).toStrictEqual(true);
-    expect(Performance[2].bakedFog).toStrictEqual(true);
-    expect(Performance[2].volumetricFog).toStrictEqual(true);
+    expect(Visuals[2].fog).toStrictEqual(true);
+    expect(Visuals[2].bakedFog).toStrictEqual(true);
+    expect(Visuals[2].volumetricFog).toStrictEqual(true);
 
-    expect(Performance[2].clouds).toStrictEqual(1.0);
-    expect(Performance[0].dynamicClouds).toStrictEqual(false);
-    expect(Performance[2].physicalLights).toStrictEqual(true);
+    expect(Visuals[2].clouds).toStrictEqual(1.0);
+    expect(Visuals[0].dynamicClouds).toStrictEqual(false);
+    expect(Visuals[2].physicalLights).toStrictEqual(true);
   });
 
   test('Enemies.max', () => {
@@ -163,6 +161,6 @@ describe('Settings', () => {
   });
 
   test('Physics', () => {
-    expect(typeof Physics.ammo).toStrictEqual('boolean');
+    expect(['ammo', 'bvh'].includes(Physics.engine)).toStrictEqual(true);
   });
 });

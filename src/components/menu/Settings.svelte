@@ -1,32 +1,32 @@
 <div in:screenFly={{ show: true }} out:screenFly={{ show: false }}>
   <ul>
-    {#each performance as variable, v}
+    {#each visuals as visual, v}
       <li on:mouseover={() => onListItemHover(v)}
-          class:disabled={!variable.enabled}
           on:mouseout={() => selected = -1}
+          class:disabled={!visual.enabled}
           on:keydown={() => onClick()}
           on:click={onListItemClick}
           on:focus
           on:blur
       >
         <h5 class:active={selected === v}>
-          {variable.name}
+          {visual.name}
         </h5>
 
-        {#if typeof variable.value === 'number'}
+        {#if typeof visual.value === 'number'}
           <Range
             on:update={onRangeUpdate}
             active={selected === v}
-            value={variable.value}
             max={MAX_CLOUDS + 99}
+            value={visual.value}
             offset={99}
             min={99}
           />
 
         {:else}
           <Checkbox
-            checked={variable.value}
             active={selected === v}
+            checked={visual.value}
           />
         {/if}
       </li>
@@ -82,8 +82,8 @@
 </div>
 
 <script lang="ts">
-  import type { PerformanceSettings, PerformanceKeys, PerformanceValues } from '@/settings/types';
-  import { getOptionDependencies, updatePerformance, resetPerformance } from '@/settings/utils';
+  import { getOptionDependencies, updateVisuals, resetVisuals } from '@/settings/utils';
+  import type { VisualSettings, VisualKeys, VisualValues } from '@/settings/types';
 
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { Quality, MAX_CLOUDS } from '@/settings/constants';
@@ -95,39 +95,39 @@
 
   const dispatch = createEventDispatcher();
 
-  let parsePerformanceData: () => void;
-  let performance: PerformanceSettings;
+  let parseVisualData: () => void;
+  let visuals: VisualSettings;
 
   let selected: number;
   let reseted = false;
   let back: number;
 
-  (parsePerformanceData = () => {
-    performance = Array.from(Settings.getPerformanceValues()).map(([ key, value ]) => ({
+  (parseVisualData = () => {
+    visuals = Array.from(Settings.getVisualValues()).map(([ key, value ]) => ({
       name: (key as string).replace(/[A-Z]/g, char => ` ${char}`),
       enabled: true, key, value
     }));
 
     const backIndex = Object.keys(Quality).length * 0.5;
-    selected = back = performance.length + backIndex;
+    selected = back = visuals.length + backIndex;
 
-    updatePerformanceData();
+    updateVisualData();
   })();
 
-  function updatePerformanceData (key?: PerformanceKeys, value?: PerformanceValues): void {
-    if (!key && !value) return performance.forEach(({ key, value }) =>
+  function updateVisualData (key?: VisualKeys, value?: VisualValues): void {
+    if (!key && !value) return visuals.forEach(({ key, value }) =>
       updateOptionDependencies(key, value)
     );
 
-    updateOptionDependencies(key as PerformanceKeys, value as PerformanceValues);
+    updateOptionDependencies(key as VisualKeys, value as VisualValues);
   }
 
-  function updateOptionDependencies (key: PerformanceKeys, value: PerformanceValues): void {
+  function updateOptionDependencies (key: VisualKeys, value: VisualValues): void {
     const dependencies = getOptionDependencies(key);
     if (!dependencies) return;
 
     dependencies.forEach(key => {
-      const dependency = performance.find(variable => variable.key === key);
+      const dependency = visuals.find(visual => visual.key === key);
       if (!dependency) return;
 
       if (!value) dependency.value = false;
@@ -148,7 +148,7 @@
   function onKeyDown (event: KeyboardEvent, index?: number): void {
     const key = index ?? getKey(event, selected, back + 1);
 
-    if (performance[key] && !performance[key].enabled) {
+    if (visuals[key] && !visuals[key].enabled) {
       const direction = +(event.code === 'ArrowDown');
       return onKeyDown(event, key + direction * 2 - 1);
     }
@@ -173,12 +173,12 @@
 
   function onResetClick (): void {
     Sounds.onClick();
-    reseted = resetPerformance(performance, selected);
-    reseted && setTimeout(parsePerformanceData, 100);
+    reseted = resetVisuals(visuals, selected);
+    reseted && setTimeout(parseVisualData, 100);
   }
 
   function onBackClick (): void {
-    const update = updatePerformance(performance);
+    const update = updateVisuals(visuals);
     dispatch('menu', update || reseted);
     Sounds.onClick();
   }
@@ -187,7 +187,7 @@
     if (resetIndex()) return onResetClick();
     if (selected === back) return onBackClick();
 
-    const { key, value } = performance[selected];
+    const { key, value } = visuals[selected];
 
     if (typeof value === 'number') {
       const extreme = value ? 0 : MAX_CLOUDS;
@@ -195,14 +195,14 @@
       onRangeUpdate({ detail } as CustomEvent);
     }
 
-    else performance[selected].value = !value;
+    else visuals[selected].value = !value;
 
-    updatePerformanceData(key, performance[selected].value);
+    updateVisualData(key, visuals[selected].value);
     Sounds.onClick();
   }
 
   function onRangeUpdate (event: CustomEvent): void {
-    performance[selected].value = event.detail;
+    visuals[selected].value = event.detail;
   }
 
   onMount(() =>
