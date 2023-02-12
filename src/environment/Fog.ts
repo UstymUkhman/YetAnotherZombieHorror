@@ -19,12 +19,12 @@ export default class Fog extends FogExp2
   private time = 0.0;
 
   public constructor (private readonly volumetric: boolean) {
-    super(Color.FOG, Configs.Level.fogDensity);
+    super(Color.FOG, Configs.Level.fogDensity * (+!volumetric * 4.0 + 1.0));
 
     if (this.volumetric) {
       this.loadShaders();
 
-      Settings.getVisualValue('bakedFog') &&
+      Settings.getVisualValue('volumetricFog') &&
         Assets.Loader.loadTexture(Configs.Level.fog)
           .then(texture => this.noise = texture);
     }
@@ -43,9 +43,7 @@ export default class Fog extends FogExp2
     const fogFrag = await Assets.Loader.loadShader('fog/main.frag');
     const fogVert = await Assets.Loader.loadShader('fog/main.vert');
 
-    ShaderChunk.fog_pars_fragment = Settings.getVisualValue('bakedFog')
-      ? `#define USE_BAKED_FOG\n\n${parsFrag}` : parsFrag;
-
+    ShaderChunk.fog_pars_fragment = parsFrag;
     ShaderChunk.fog_pars_vertex = parsVert;
     ShaderChunk.fog_fragment = fogFrag;
     ShaderChunk.fog_vertex = fogVert;

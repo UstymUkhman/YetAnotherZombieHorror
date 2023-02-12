@@ -73,16 +73,22 @@ export default class Portals
     const vertPortal = await Assets.Loader.loadShader('portal/main.vert');
     const fragPortal = await Assets.Loader.loadShader('portal/main.frag');
 
+    const volumetricFog = Settings.getVisualValue('volumetricFog');
+
     const backgroundColor = Color.getClass(Color.PORTAL);
     const spikesColor = Color.getClass(Color.MOON);
 
+    const density = Configs.Level.fogDensity * (
+      +!volumetricFog * 4.0 + 1.0
+    );
+
     this.material = new ShaderMaterial({
       uniforms: {
-        fogDensity: { value: Configs.Level.fogDensity },
         fogColor: { value: Color.getClass(Color.FOG) },
-
         backgroundColor: { value: backgroundColor },
+
         spikesColor: { value: spikesColor },
+        fogDensity: { value: density },
         deltaTime: { value: 0.0 }
       },
 
@@ -94,8 +100,7 @@ export default class Portals
     });
 
     this.material.defines = {
-      VOLUMETRIC_FOG: Settings.getVisualValue('volumetricFog'),
-      USE_BAKED_FOG: Settings.getVisualValue('bakedFog')
+      VOLUMETRIC_FOG: volumetricFog
     };
 
     this.material.fog = Settings.getVisualValue('fog');

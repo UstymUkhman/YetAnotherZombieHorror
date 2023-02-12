@@ -10,7 +10,6 @@
     "softParticles": false,
 
     "fog": true,
-    "bakedFog": false,
     "volumetricFog": false,
 
     "clouds": 0.0,
@@ -28,7 +27,6 @@
     "softParticles": false,
 
     "fog": false,
-    "bakedFog": false,
     "volumetricFog": false,
 
     "clouds": 300.0,
@@ -46,7 +44,6 @@
     "softParticles": true,
 
     "fog": true,
-    "bakedFog": true,
     "volumetricFog": true,
 
     "clouds": 1.0,

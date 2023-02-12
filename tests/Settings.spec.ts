@@ -15,14 +15,14 @@ import {
 describe('Settings', () => {
   test('Constants', () => {
     expect(DefaultVisuals).toStrictEqual(Visuals[0]);
-    expect(VISUALS_LENGTH).toStrictEqual(13.0);
+    expect(VISUALS_LENGTH).toStrictEqual(12.0);
 
     expect(DEFAULT_QUALITY).toStrictEqual(0.0);
     expect(MAX_CLOUDS).toStrictEqual(300.0);
 
-    expect(Quality.LOW).toStrictEqual(13.0);
-    expect(Quality.MEDIUM).toStrictEqual(14.0);
-    expect(Quality.HIGH).toStrictEqual(15.0);
+    expect(Quality.LOW).toStrictEqual(12.0);
+    expect(Quality.MEDIUM).toStrictEqual(13.0);
+    expect(Quality.HIGH).toStrictEqual(14.0);
   });
 
   test('Visuals', () => {
@@ -36,7 +36,6 @@ describe('Settings', () => {
     expect(typeof Settings.getVisualValue('softParticles')).toStrictEqual('boolean');
 
     expect(typeof Settings.getVisualValue('fog')).toStrictEqual('boolean');
-    expect(typeof Settings.getVisualValue('bakedFog')).toStrictEqual('boolean');
     expect(typeof Settings.getVisualValue('volumetricFog')).toStrictEqual('boolean');
 
     expect(Settings.getVisualValue('clouds')).toBeLessThanOrEqual(300);
@@ -57,7 +56,6 @@ describe('Settings', () => {
     expect(Visuals[0].softParticles).toStrictEqual(false);
 
     expect(Visuals[0].fog).toStrictEqual(true);
-    expect(Visuals[0].bakedFog).toStrictEqual(false);
     expect(Visuals[0].volumetricFog).toStrictEqual(false);
 
     expect(Visuals[0].clouds).toStrictEqual(0.0);
@@ -76,7 +74,6 @@ describe('Settings', () => {
     expect(Visuals[1].softParticles).toStrictEqual(false);
 
     expect(Visuals[1].fog).toStrictEqual(false);
-    expect(Visuals[1].bakedFog).toStrictEqual(false);
     expect(Visuals[1].volumetricFog).toStrictEqual(false);
 
     expect(Visuals[1].clouds).toStrictEqual(300.0);
@@ -95,7 +92,6 @@ describe('Settings', () => {
     expect(Visuals[2].softParticles).toStrictEqual(true);
 
     expect(Visuals[2].fog).toStrictEqual(true);
-    expect(Visuals[2].bakedFog).toStrictEqual(true);
     expect(Visuals[2].volumetricFog).toStrictEqual(true);
 
     expect(Visuals[2].clouds).toStrictEqual(1.0);

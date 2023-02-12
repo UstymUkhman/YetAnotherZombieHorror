@@ -6,9 +6,9 @@
   "model": "level.glb",
 
   "cloud": "cloud.png",
-  "fogDensity": 0.05,
-  "fog": "noise.jpg",
+  "fogDensity": 0.01,
   "skybox": "level",
+  "fog": "fog.png",
   "height": 10.0,
   "depth": 250.0,
 

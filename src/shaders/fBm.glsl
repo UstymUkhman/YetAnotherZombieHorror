@@ -1,6 +1,8 @@
-// Fractional Brownian Motion by Inigo Quilez:
-// https://www.iquilezles.org/www/articles/fbm/fbm.htm
-// https://www.iquilezles.org/www/articles/warp/warp.htm
+/**
+ * Fractional Brownian Motion by Inigo Quilez:
+ * https://www.iquilezles.org/www/articles/fbm/fbm.htm
+ * https://www.iquilezles.org/www/articles/warp/warp.htm
+ */
 
 #ifndef GL_FRAGMENT_PRECISION_HIGH
   precision mediump float;
@@ -9,32 +11,40 @@
   precision highp float;
 #endif
 
-#ifdef USE_BAKED_FOG
-  uniform sampler2D noise;
+uniform sampler2D noise;
 
-#else
-  #include snoise;
-#endif
+float fBmTex (vec3 point, int octaves)
+{
+  float value = 0.0;
+  float amplitude = 0.5;
 
-#ifndef USE_BAKED_FOG
-  float fBm (vec3 point, int octaves) {
-    float value = 0.0;
-    float amplitude = 0.5;
+  for (int o = 0; o < octaves; o++)
+  {
+    vec3 p = fract(point);
 
-    for (int o = 0; o < octaves; o++) {
-      value += amplitude * snoise(point);
-      point = point * 2.0 + 100.0;
-      amplitude *= 0.5;
-    }
+    /**
+     * Use the green channel when sampling this texture due
+     * to the extra bit of precision provided for green in
+     * DXT-compressed and uncompressed RGB 565 formats.
+     */
+    float t1 = texture(noise, p.yx).g;
+    float t2 = texture(noise, p.yz).g;
 
-    return value;
+    float v = (t1 + t2) * 0.5;
+    value += amplitude * v;
+
+    amplitude *= 0.5;
+    point *= 2.0;
+
+    /**
+     * Alternatively, "snoise.glsl" can also be used
+     * in this loop to generate noise at runtime:
+     *
+     * value += amplitude * snoise(point);
+     * amplitude *= 0.5;
+     * point *= 2.0;
+     */
   }
 
-#else
-  float fBmTex (vec3 point) {
-    // Use the green channel when sampling this texture due
-    // to the extra bit of precision provided for green in
-    // DXT-compressed and uncompressed RGB 565 formats.
-    return texture(noise, point.zx).y * 0.5;
-  }
-#endif
+  return value;
+}
