@@ -14,8 +14,8 @@ const settings = new Settings();
 
 const dependencies = new Map([
   ['bullet', ['bulletPath', 'bulletHoles']],
-  ['raining', ['raindrops', 'softParticles']],
   ['fog', ['volumetricFog']],
+  ['raining', ['raindrops', 'softParticles']],
   ['clouds', ['lighting', 'dynamicClouds']]
 ]);
 

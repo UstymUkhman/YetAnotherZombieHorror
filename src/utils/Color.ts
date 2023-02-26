@@ -8,7 +8,7 @@ export namespace Color
   export const PORTAL = 0x222222;
   export const BLUE   = 0x2D78FF;
 
-  export const FOG    = 0x333333;
+  export const FOG    = 0x636363;
   export const RAIN   = 0x4B4B4B;
   export const RED    = 0x8A0707;
 

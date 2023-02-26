@@ -4,16 +4,17 @@
     "bulletPath": false,
     "bulletHoles": false,
 
-    "raining": true,
-    "lighting": false,
-    "raindrops": false,
-    "softParticles": false,
-
     "fog": true,
     "volumetricFog": false,
 
+    "raining": true,
+    "raindrops": false,
+    "softParticles": false,
+
     "clouds": 0.0,
     "dynamicClouds": false,
+
+    "lighting": false,
     "physicalLights": false
   },
   {
@@ -21,16 +22,17 @@
     "bulletPath": false,
     "bulletHoles": true,
 
-    "raining": true,
-    "lighting": true,
-    "raindrops": true,
-    "softParticles": false,
-
     "fog": false,
     "volumetricFog": false,
 
+    "raining": true,
+    "raindrops": true,
+    "softParticles": false,
+
     "clouds": 300.0,
     "dynamicClouds": true,
+
+    "lighting": true,
     "physicalLights": false
   },
   {
@@ -38,16 +40,17 @@
     "bulletPath": true,
     "bulletHoles": true,
 
-    "raining": true,
-    "lighting": true,
-    "raindrops": true,
-    "softParticles": true,
-
     "fog": true,
     "volumetricFog": true,
 
+    "raining": true,
+    "raindrops": true,
+    "softParticles": true,
+
     "clouds": 1.0,
     "dynamicClouds": false,
+
+    "lighting": true,
     "physicalLights": true
   }
 ]
