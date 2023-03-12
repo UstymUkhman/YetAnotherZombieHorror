@@ -163,7 +163,7 @@ export default class Player extends Character
   }
 
   public hit (direction: HitDirection, damage: number): void {
-    if (this.dead || this.updateHealth(damage)) return;
+    if (this.dead || this.updateHealth(damage) || this.hitting) return;
     this.aiming && this.stopAiming(this.running);
 
     const hitAnimation = this.getHitAnimation(direction);

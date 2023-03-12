@@ -1,5 +1,5 @@
 import type { Texture } from 'three/src/textures/Texture';
-import { PointLight } from 'three/src/lights/PointLight';
+// import { PointLight } from 'three/src/lights/PointLight';
 import type { Vector3 } from 'three/src/math/Vector3';
 import type { Assets } from '@/loaders/AssetsLoader';
 import type { WeaponConfig } from '@/weapons/types';
@@ -9,20 +9,20 @@ import type { LevelCoords } from '@/scenes/types';
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
-import { Color } from '@/utils/Color';
+// import { Color } from '@/utils/Color';
 import Weapon from '@/weapons/Weapon';
-import Settings from '@/settings';
+// import Settings from '@/settings';
 import Configs from '@/configs';
 import anime from 'animejs';
 
 export default class Rifle extends Weapon
 {
-  private readonly halfLightPower = +Settings.getVisualValue('physicalLights') * 70 + 5;
+  /* private readonly halfLightPower = +Settings.getVisualValue('physicalLights') * 70 + 5;
 
   private readonly light = new PointLight(
     Color.WHITE, 1.0, +!Settings.getVisualValue('physicalLights') * 2.5 + 2.5,
     +Settings.getVisualValue('physicalLights') + 1.0
-  );
+  ); */
 
   private readonly spinePosition = Configs.Rifle.spinePosition as Vector3;
   private readonly spineRotation = Configs.Rifle.spineRotation as Euler;
@@ -37,7 +37,7 @@ export default class Rifle extends Weapon
   private spine!: Assets.GLTF;
 
   private appended = false;
-  private spawnTime = 0.0;
+  // private spawnTime = 0.0;
   private spawned = false;
 
   public constructor (envMap: Texture) {
@@ -53,11 +53,11 @@ export default class Rifle extends Weapon
     GameEvents.dispatch('Level::AddObject', clone);
     clone.rotation.set(0.0, 0.0, 0.0);
 
-    this.light.visible = false;
-    this.light.power = 0.0;
+    // this.light.visible = false;
+    // this.light.power = 0.0;
     clone.visible = false;
 
-    clone.add(this.light);
+    // clone.add(this.light);
     this.clone = clone;
     return clone;
   }
@@ -150,16 +150,16 @@ export default class Rifle extends Weapon
     this.clone.rotation.y -= 0.025;
 
     const playerDistance = this.clone.position.distanceToSquared(player);
-    const normalizedPower = Math.cos(this.spawnTime += 0.05) + 1.0;
-    this.light.power = normalizedPower * this.halfLightPower;
+    // const normalizedPower = Math.cos(this.spawnTime += 0.05) + 1.0;
+    // this.light.power = normalizedPower * this.halfLightPower;
 
     if (this.inStock < this.maxStock && playerDistance < 6.25) {
       GameEvents.dispatch('Player::PickRifle', this.clone);
       GameEvents.dispatch('Rifle::Pick', null, true);
 
       this.clone.visible = false;
-      this.light.visible = false;
-      this.light.power = 0.0;
+      // this.light.visible = false;
+      // this.light.power = 0.0;
       this.spawned = false;
     }
   }
@@ -167,11 +167,11 @@ export default class Rifle extends Weapon
   public spawn (coords: LevelCoords): void {
     this.clone.position.set(coords[0], 1.75, coords[1]);
     GameEvents.dispatch('Rifle::Spawn', coords, true);
-    this.light.power = this.halfLightPower * 2.0;
+    // this.light.power = this.halfLightPower * 2.0;
 
     this.clone.visible = true;
-    this.light.visible = true;
-    this.spawnTime = 0.0;
+    // this.light.visible = true;
+    // this.spawnTime = 0.0;
     this.spawned = true;
   }
 
@@ -199,7 +199,7 @@ export default class Rifle extends Weapon
   }
 
   public override dispose (): void {
-    this.light.dispose();
+    // this.light.dispose();
     this.clone.clear();
     super.dispose();
   }

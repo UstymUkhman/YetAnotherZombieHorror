@@ -200,10 +200,9 @@ export default class Enemy extends Character
       const prevRun = this.previousAnimation === 'run';
       const lastRun = this.lastAnimation === 'run';
 
-      if (this.hitting && this.running && prevRun && lastRun) {
-        if (this.updateHitDamage(this.life)) {
+      if (this.running && prevRun && lastRun) {
+        if (this.updateHitDamage(this.life))
           return this.fallDeadAnimation('death');
-        }
 
         this.toggleVisibility(false, 'death');
         this.updateAnimation('Idle', 'death');
@@ -214,33 +213,31 @@ export default class Enemy extends Character
 
     if (this.previousAnimation !== 'hit') {
       this.animations.hit.time = this.hitStart;
-      this.updateAnimation('Idle', 'hit', 0.15);
+      this.updateAnimation('Idle', 'hit', 0.1);
     }
 
     this.hitTimeout = setTimeout(() => {
       if (this.dead || this.attacking) return;
 
-      const attacking = this.previousAnimation.includes('Attack');
+      const hitting   = this.previousAnimation === 'hit';
       const screaming = this.previousAnimation === 'scream';
-      const blockingAnimation = attacking || screaming;
+
+      const attacking = this.previousAnimation.includes('Attack');
+      const blockingAnimation = hitting || screaming || attacking;
 
       if (!blockingAnimation) this.animTimeout = this.updateAnimation(
-        animation, this.previousAnimation, 0.15
+        animation, this.previousAnimation, 0.1
       );
 
       this.hitTimeout = setTimeout(() => {
         if (this.dead) return;
         this.hitting = false;
 
-        const attack  = this.distance < this.attackDistance;
-        const running = this.distance < this.runDistance;
-        const hit     = this.previousAnimation === 'hit';
-        const run     = running && !this.running;
-
-             if (attack)     this.attack();
-        else if (hit || run) this.run();
-      }, +!blockingAnimation * 150);
-    }, this.hitDuration - 150);
+        const run = this.distance < this.runDistance && !this.running;
+        const attack = this.distance < this.attackDistance;
+        attack ? this.attack() : run && this.run();
+      }, +!blockingAnimation * 100);
+    }, this.hitDuration - 100);
 
     const animation = this.animation;
     this.hitTime = Date.now();
@@ -390,7 +387,7 @@ export default class Enemy extends Character
   }
 
   private run (): void {
-    if (this.dead) return;
+    if (this.dead || this.playerDead) return;
 
     const slow = +(this.attacking || this.screaming) * 0.1;
     this.updateAnimation('Running', 'run', slow + 0.1);
@@ -669,7 +666,7 @@ export default class Enemy extends Character
   }
 
   public set playerDeath (dead: boolean) {
-    this.playerDead = dead;
+    (this.playerDead = dead) && this.moving && this.idle();
   }
 
   public get hitBox (): Array<Object3D> {
