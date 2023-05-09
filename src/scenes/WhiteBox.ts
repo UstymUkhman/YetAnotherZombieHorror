@@ -1,8 +1,8 @@
 import type { CharacterSoundConfig, CharacterSound, EnemyAttackData } from '@/characters/types';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+import { PCFSoftShadowMap, SRGBColorSpace } from 'three/src/constants';
 import type { WeaponSoundConfig, WeaponSound } from '@/weapons/types';
-import { PCFSoftShadowMap, sRGBEncoding } from 'three/src/constants';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry';
 import { PositionalAudio } from 'three/src/audio/PositionalAudio';
@@ -150,13 +150,13 @@ export default class WhiteBox
 
   private createRenderer (): void {
     document.body.appendChild(this.renderer.domElement);
+
+    this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
     this.renderer.setSize(innerWidth, innerHeight);
 
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setClearColor(Color.PORTAL, 1);
-
-    this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
 
     if (GAME_RATIO) {
@@ -185,12 +185,12 @@ export default class WhiteBox
 
   private createStats (): void {
     if (document.body.lastElementChild?.id !== 'stats') {
-      this.stats = Stats();
+      this.stats = new Stats();
       this.stats.showPanel(0);
 
-      this.stats.domElement.style.left = 'auto';
-      this.stats.domElement.style.right = '0px';
-      document.body.appendChild(this.stats.domElement);
+      this.stats.dom.style.left = 'auto';
+      this.stats.dom.style.right = '0px';
+      document.body.appendChild(this.stats.dom);
     }
   }
 
@@ -425,7 +425,7 @@ export default class WhiteBox
     Camera.dispose();
     RAF.dispose();
 
-    this.stats?.domElement.remove();
+    this.stats?.dom.remove();
     this.renderer.domElement.remove();
     Camera.object.remove(this.listener);
 

@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, sRGBEncoding } from 'three/src/constants';
+import { ACESFilmicToneMapping, PCFSoftShadowMap, FrontSide, SRGBColorSpace } from 'three/src/constants';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
@@ -146,7 +146,7 @@ export default class LevelScene
 
   private async createSkybox (folder: string): Promise<Texture> {
     const skybox = await Assets.Loader.loadCubeTexture(folder);
-    skybox.encoding = sRGBEncoding;
+    skybox.colorSpace = SRGBColorSpace;
 
     if (!Settings.getVisualValue('fog')) {
       this.scene.background = skybox;
@@ -191,17 +191,17 @@ export default class LevelScene
   }
 
   private createRenderer (pixelRatio: number): void {
-    const exposure = +this.physicalLights * 0.75 + 0.25;
+    const exposure = +!this.physicalLights * 0.25 + 0.25;
 
-    this.renderer.physicallyCorrectLights = this.physicalLights;
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
+    this.renderer.useLegacyLights = this.physicalLights;
 
     this.renderer.toneMapping = ACESFilmicToneMapping;
+    this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 
     this.renderer.setClearColor(Color.BLACK, 0.0);
     this.renderer.toneMappingExposure = exposure;
-    this.renderer.outputEncoding = sRGBEncoding;
 
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.shadowMap.enabled = true;

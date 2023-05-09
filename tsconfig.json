@@ -4,8 +4,8 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types"],
-    "importsNotUsedAsValues": "error",
 
+    "verbatimModuleSyntax": true,
     "noUnusedParameters": false,
     "noImplicitOverride": true,
     "moduleResolution": "node",

@@ -5,7 +5,7 @@ import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { AudioListener } from 'three/src/audio/AudioListener';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
 
-import { sRGBEncoding } from 'three/src/constants';
+import { SRGBColorSpace } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Clock } from 'three/src/core/Clock';
@@ -95,7 +95,7 @@ export default class MenuScene
     const ratio = window.devicePixelRatio;
 
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.outputColorSpace = SRGBColorSpace;
 
     this.renderer.setClearColor(Color.BLACK, 1);
     this.renderer.setPixelRatio(ratio || 1.0);

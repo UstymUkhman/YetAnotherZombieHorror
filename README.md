@@ -25,6 +25,8 @@
 
 `pnpm start:app`
 
+## Lint ##
+
 `pnpm lint:js`
 
 `pnpm lint:css`
@@ -34,12 +36,6 @@
 `pnpm build:web`
 
 `pnpm build:app`
-
-## Test ##
-
-`pnpm test:run`
-
-`pnpm test:cover`
 
 `pnpm serve:web`
 
