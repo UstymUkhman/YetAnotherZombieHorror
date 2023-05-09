@@ -8,7 +8,7 @@ export namespace Elastic
   {
     private current: number;
     private target: number;
-    public speed = 10;
+    public speed = 10.0;
 
     public constructor (value: number) {
       this.target = this.current = value;

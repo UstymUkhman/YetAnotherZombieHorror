@@ -19,10 +19,10 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { Assets } from '@/loaders/AssetsLoader';
 import type WebWorker from '@/worker/WebWorker';
 import LevelScene from '@/scenes/LevelScene';
+import { Color } from 'three/src/math/Color';
 
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import { PI } from '@/utils/Number';
-
 import Settings from '@/settings';
 import Configs from '@/configs';
 
@@ -95,7 +95,7 @@ export default class Rain
       uniforms: {
         soft: { value: Settings.getVisualValue('softParticles') },
         screenSize: { value: new Vector2(width, height) },
-        color: { value: Color.getClass(Color.RAIN) },
+        color: { value: new Color(Colors.RAIN) },
 
         ratio: { value: height / DROP_RATIO },
         near: { value: CameraObject.near },

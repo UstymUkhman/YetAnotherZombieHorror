@@ -14,9 +14,10 @@ import { Assets } from '@/loaders/AssetsLoader';
 
 import type { Ray } from 'three/src/math/Ray';
 import { Mesh } from 'three/src/objects/Mesh';
-import { DELTA_FRAME } from '@/utils/Number';
+import { Color } from 'three/src/math/Color';
 
-import { Color } from '@/utils/Color';
+import { DELTA_FRAME } from '@/utils/Number';
+import { Colors } from '@/utils/Color';
 import Settings from '@/settings';
 
 const MAX_PATH_LENGTH = 10.0;
@@ -59,6 +60,8 @@ export default class Bullet
   }
 
   private async createPath (): Promise<Mesh> {
+    const radius = this.radius * 1.2;
+
     // Development imports:
     /* const vertPath = (await import('../shaders/main.vert')).default;
     const fragPath = (await import('../shaders/shot/bullet.frag')).default; */
@@ -67,17 +70,16 @@ export default class Bullet
     const vertPath = await Assets.Loader.loadShader('main.vert');
     const fragPath = await Assets.Loader.loadShader('shot/bullet.frag');
 
-    const radius = this.radius * 1.2;
-
     const path = new Mesh(
       new CylinderGeometry(
-        radius, radius, this.width,
-        this.segments, 1.0, true
+        radius, radius,
+        this.width, this.segments,
+        1.0, true
       ),
 
       new ShaderMaterial({
         uniforms: {
-          color: { value: Color.getClass(Color.WHITE) },
+          color: { value: new Color(Colors.WHITE) },
           traces: { value: 0.0 },
           time: { value: 0.0 }
         },

@@ -14,7 +14,6 @@ import { Mesh } from 'three/src/objects/Mesh';
 import { Line3 } from 'three/src/math/Line3';
 
 import { Material } from '@/utils/Material';
-import { camelCase } from '@/utils/String';
 import { Vector } from '@/utils/Vector';
 import Physics from '@/physics';
 
@@ -128,7 +127,8 @@ export default abstract class Character
     this.mixer = new AnimationMixer(this.mesh);
 
     for (let a = animations.length; a--;) {
-      const clip = camelCase(animations[a].name);
+      const { name } = animations[a];
+      const clip = name.charAt(0).toLowerCase() + name.slice(1);
       this.animations[clip] = this.mixer.clipAction(animations[a]);
     }
 

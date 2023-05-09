@@ -6,7 +6,7 @@ import type { ShaderCompileCallback } from '@/environment/types';
 import { FogExp2 } from 'three/src/scenes/FogExp2';
 import { Assets } from '@/loaders/AssetsLoader';
 
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Settings from '@/settings';
 import Configs from '@/configs';
 
@@ -19,7 +19,7 @@ export default class Fog extends FogExp2
   private time = 0.0;
 
   public constructor (private readonly volumetric: boolean) {
-    super(Color.FOG, Configs.Level.fogDensity * (+!volumetric * 4.0 + 1.0));
+    super(Colors.FOG, Configs.Level.fogDensity * (+!volumetric * 4.0 + 1.0));
 
     if (this.volumetric) {
       this.loadShaders();

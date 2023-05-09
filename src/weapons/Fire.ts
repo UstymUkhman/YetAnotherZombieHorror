@@ -11,7 +11,7 @@ import { Points } from 'three/src/objects/Points';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
 
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Spline from '@/utils/Spline';
 import Settings from '@/settings';
 
@@ -45,7 +45,7 @@ export default class Fire
     const { intensity, position: { x, y } } = this.config;
     const decay = +Settings.getVisualValue('physicalLights') + 1.0;
 
-    this.light = new PointLight(Color.FIRE, intensity * (3.0 - decay), 1.0, decay);
+    this.light = new PointLight(Colors.FIRE, intensity * (3.0 - decay), 1.0, decay);
 
     this.lightPower = this.light.power;
     this.light.position.set(x, y, 0.0);

@@ -8,12 +8,12 @@ import { AmbientLight } from 'three/src/lights/AmbientLight';
 import { SRGBColorSpace } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
+import { Color } from 'three/src/math/Color';
 import { Clock } from 'three/src/core/Clock';
 
 import Zombie from '@/characters/Zombie';
 import Viewport from '@/utils/Viewport';
-import { Color } from '@/utils/Color';
-
+import { Colors } from '@/utils/Color';
 import Configs from '@/configs';
 import anime from 'animejs';
 
@@ -36,7 +36,7 @@ export default class MenuScene
   private readonly camera = new PerspectiveCamera(45, this.ratio, 1, 500);
 
   public constructor (canvas: HTMLCanvasElement) {
-    this.scene.background = Color.getClass(Color.BLACK);
+    this.scene.background = new Color(Colors.BLACK);
     Viewport.addResizeCallback(this.onResize);
 
     this.camera.rotation.set(0, Math.PI, 0);
@@ -97,7 +97,7 @@ export default class MenuScene
     this.renderer.debug.checkShaderErrors = !PRODUCTION;
     this.renderer.outputColorSpace = SRGBColorSpace;
 
-    this.renderer.setClearColor(Color.BLACK, 1);
+    this.renderer.setClearColor(Colors.BLACK, 1);
     this.renderer.setPixelRatio(ratio || 1.0);
 
     this.renderer.shadowMap.enabled = false;
@@ -105,8 +105,8 @@ export default class MenuScene
   }
 
   private createLights (): void {
-    const directional = new DirectionalLight(Color.WHITE, 0.1);
-    const ambient = new AmbientLight(Color.WHITE);
+    const directional = new DirectionalLight(Colors.WHITE, 0.1);
+    const ambient = new AmbientLight(Colors.WHITE);
 
     directional.position.set(-5, 10, 25);
 

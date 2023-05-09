@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "types": ["vite/client", "svelte", "node"],
     "forceConsistentCasingInFileNames": true,
+    "types": ["node", "./src/global.d.ts"],
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types"],
 

@@ -1,7 +1,8 @@
-import { Vector3 } from 'three/src/math/Vector3';
 import { random as randomNumber } from '@/utils/Number';
+import { Vector3 } from 'three/src/math/Vector3';
 
-export namespace Vector {
+export namespace Vector
+{
   export const UP       = new Vector3( 0.0,  1.0,  0.0);
   export const DOWN     = new Vector3( 0.0, -1.0,  0.0);
 

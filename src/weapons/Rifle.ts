@@ -9,7 +9,7 @@ import type { LevelCoords } from '@/scenes/types';
 import type { Euler } from 'three/src/math/Euler';
 import { GameEvents } from '@/events/GameEvents';
 
-// import { Color } from '@/utils/Color';
+// import { Colors } from '@/utils/Color';
 import Weapon from '@/weapons/Weapon';
 // import Settings from '@/settings';
 import Configs from '@/configs';
@@ -20,7 +20,7 @@ export default class Rifle extends Weapon
   /* private readonly halfLightPower = +Settings.getVisualValue('physicalLights') * 70 + 5;
 
   private readonly light = new PointLight(
-    Color.WHITE, 1.0, +!Settings.getVisualValue('physicalLights') * 2.5 + 2.5,
+    Colors.WHITE, 1.0, +!Settings.getVisualValue('physicalLights') * 2.5 + 2.5,
     +Settings.getVisualValue('physicalLights') + 1.0
   ); */
 

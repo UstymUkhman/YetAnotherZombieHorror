@@ -5,6 +5,11 @@ import type WebWorker from '@/worker/WebWorker';
 import type { Callback } from '@/worker/types';
 import Configs from '@/configs';
 
+export class GameEvent extends CustomEvent<unknown>
+{
+  public data: unknown = null;
+}
+
 class Events extends CustomEvents
 {
   private workerEvents?: WorkerEvents;
@@ -35,10 +40,6 @@ class Events extends CustomEvents
     this.workerEvents?.dispose();
     super.dispose();
   }
-}
-
-export class GameEvent extends CustomEvent<unknown> {
-  public data: unknown = null;
 }
 
 export const GameEvents = new Events();

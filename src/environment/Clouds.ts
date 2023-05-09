@@ -18,7 +18,7 @@ import LevelScene from '@/scenes/LevelScene';
 import { Euler } from 'three/src/math/Euler';
 
 import { Vector } from '@/utils/Vector';
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Settings from '@/settings';
 import Configs from '@/configs';
 
@@ -48,7 +48,7 @@ export default class Clouds
   private createLighting (): void {
     const decay = +(!this.useFog && Settings.getVisualValue('physicalLights')) + 1.0;
 
-    this.lighting = new PointLight(Color.BLUE, 10.0, Clouds.height, decay);
+    this.lighting = new PointLight(Colors.BLUE, 10.0, Clouds.height, decay);
     this.lighting.position.set(0.0, Clouds.height, 0.0);
 
     this.lighting.castShadow = true;
@@ -97,7 +97,6 @@ export default class Clouds
     if (!this.count || (!this.isLighting && this.useFog)) return;
 
     const cloudsGeometry = new SphereGeometry(Clouds.height, 16, 16, 0, Math.PI);
-    cloudsGeometry.parameters.phiLength = Math.PI;
     cloudsGeometry.rotateX(-PI.d2);
 
     const position = new Vector3();

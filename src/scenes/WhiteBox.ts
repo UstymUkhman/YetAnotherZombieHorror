@@ -18,6 +18,7 @@ import type Character from '@/characters/Character';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
 import { Mesh } from 'three/src/objects/Mesh';
+import { Color } from 'three/src/math/Color';
 import { Clock } from 'three/src/core/Clock';
 import { Material } from '@/utils/Material';
 import type Enemy from '@/characters/Enemy';
@@ -28,7 +29,7 @@ import Enemies from '@/managers/Enemies';
 import Player from '@/characters/Player';
 import Viewport from '@/utils/Viewport';
 import Camera from '@/managers/Camera';
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Pistol from '@/weapons/Pistol';
 import Rifle from '@/weapons/Rifle';
 import { PI } from '@/utils/Number';
@@ -81,8 +82,8 @@ export default class WhiteBox
   }
 
   private createScene (): void {
-    this.scene.background = Color.getClass(Color.WHITE);
-    this.scene.fog = new Fog(Color.WHITE, ORBIT_CONTROLS ? 10 : 0.1, 50);
+    this.scene.background = new Color(Colors.WHITE);
+    this.scene.fog = new Fog(Colors.WHITE, ORBIT_CONTROLS ? 10 : 0.1, 50);
   }
 
   private createCamera (): void {
@@ -95,8 +96,8 @@ export default class WhiteBox
   }
 
   private createLights (): void {
-    const directional = new DirectionalLight(Color.WHITE);
-    const ambient = new AmbientLight(Color.WHITE, 0.25);
+    const directional = new DirectionalLight(Colors.WHITE);
+    const ambient = new AmbientLight(Colors.WHITE, 0.25);
 
     directional.position.set(-2.5, 12.5, 20.0);
 
@@ -119,7 +120,7 @@ export default class WhiteBox
   private createGround (): void {
     const ground = new Mesh(
       new PlaneGeometry(SCENE_SIZE, SCENE_SIZE),
-      new Material.Ground({ color: Color.WHITE })
+      new Material.Ground({ color: Colors.WHITE })
     );
 
     ground.receiveShadow = true;
@@ -155,8 +156,8 @@ export default class WhiteBox
     this.renderer.shadowMap.type = PCFSoftShadowMap;
     this.renderer.setSize(innerWidth, innerHeight);
 
+    this.renderer.setClearColor(Colors.PORTAL, 1);
     this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.setClearColor(Color.PORTAL, 1);
     this.renderer.shadowMap.enabled = true;
 
     if (GAME_RATIO) {

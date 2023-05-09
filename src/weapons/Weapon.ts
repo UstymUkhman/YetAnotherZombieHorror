@@ -17,7 +17,7 @@ import { Assets } from '@/loaders/AssetsLoader';
 
 import { random } from '@/utils/Number';
 import { Vector } from '@/utils/Vector';
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Bullet from '@/weapons/Bullet';
 
 import Settings from '@/settings';
@@ -68,7 +68,7 @@ export default abstract class Weapon
   }
 
   protected async load (envMap: Texture): Promise<Assets.GLTF> {
-    const { emissive = Color.BLACK, emissiveIntensity = 1.0 } = this.config;
+    const { emissive = Colors.BLACK, emissiveIntensity = 1.0 } = this.config;
     this.weapon = (await Assets.Loader.loadGLTF(this.config.model)).scene;
 
     this.weapon.traverse(child => {

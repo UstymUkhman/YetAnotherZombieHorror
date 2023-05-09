@@ -4,9 +4,8 @@ import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMater
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator';
 import type { LevelBounds, LevelCoords } from '@/scenes/types';
-import { CubeTexture } from 'three/src/textures/CubeTexture';
-
 import { AmbientLight } from 'three/src/lights/AmbientLight';
+import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { GameEvents, GameEvent } from '@/events/GameEvents';
 import type { CMSMode } from 'three/examples/jsm/csm/CSM';
 import type { Texture } from 'three/src/textures/Texture';
@@ -17,19 +16,17 @@ import { CameraObject } from '@/managers/Camera';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
 import { CSM } from 'three/examples/jsm/csm/CSM';
-
 import type WebWorker from '@/worker/WebWorker';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
+import { Color } from 'three/src/math/Color';
 
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
 import { min, max } from '@/utils/Array';
-
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 import Rain from '@/environment/Rain';
 import Fog from '@/environment/Fog';
-
 import Settings from '@/settings';
 import Physics from '@/physics';
 import Configs from '@/configs';
@@ -104,7 +101,7 @@ export default class LevelScene
       this.fog = new Fog(volumetricFog);
       this.scene.fog = this.fog;
 
-      this.scene.background = Color.getClass(Color.FOG);
+      this.scene.background = new Color(Colors.FOG);
       volumetricFog && this.portals.setFogUniforms(this.fog.setUniforms);
     }
 
@@ -160,7 +157,7 @@ export default class LevelScene
     const ambientIntensity = 0.1 + (+DEBUG * 0.9);
     const intensity = 0.25 + +!this.physicalLights * 0.1;
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
-    this.scene.add(new AmbientLight(Color.WHITE, ambientIntensity));
+    this.scene.add(new AmbientLight(Colors.WHITE, ambientIntensity));
 
     this.csm = new CSM({
       mode: 'logarithmic' as CMSMode,
@@ -176,7 +173,7 @@ export default class LevelScene
     });
 
     this.csm.lights.forEach(light =>
-      light.color.set(Color.MOON)
+      light.color.set(Colors.MOON)
     );
 
     this.csm.fade = true;
@@ -200,7 +197,7 @@ export default class LevelScene
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 
-    this.renderer.setClearColor(Color.BLACK, 0.0);
+    this.renderer.setClearColor(Colors.BLACK, 0.0);
     this.renderer.toneMappingExposure = exposure;
 
     this.renderer.setPixelRatio(pixelRatio);

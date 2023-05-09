@@ -14,11 +14,10 @@ export default class CustomEvents
 
   protected dispatch (name: string, data: unknown = null): void {
     const event = this.events.get(name);
+    if (!event) return;
 
-    if (event) {
-      event.data = data;
-      this.target.dispatchEvent(event);
-    }
+    event.data = data;
+    this.target.dispatchEvent(event);
   }
 
   protected remove (name: string): void {
@@ -30,9 +29,8 @@ export default class CustomEvents
   }
 
   protected dispose (): void {
-    for (const [name] of this.events) {
+    for (const [name] of this.events)
       this.remove(name);
-    }
 
     this.callbacks.clear();
     this.events.clear();

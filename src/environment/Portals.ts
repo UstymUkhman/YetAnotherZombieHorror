@@ -10,10 +10,11 @@ import { Assets } from '@/loaders/AssetsLoader';
 import { Mesh } from 'three/src/objects/Mesh';
 import LevelScene from '@/scenes/LevelScene';
 
+import { Color } from 'three/src/math/Color';
 import { GLSL3 } from 'three/src/constants';
-import { Color } from '@/utils/Color';
-import { PI } from '@/utils/Number';
+import { Colors } from '@/utils/Color';
 
+import { PI } from '@/utils/Number';
 import Settings from '@/settings';
 import Configs from '@/configs';
 
@@ -75,8 +76,8 @@ export default class Portals
 
     const volumetricFog = Settings.getVisualValue('volumetricFog');
 
-    const backgroundColor = Color.getClass(Color.PORTAL);
-    const spikesColor = Color.getClass(Color.MOON);
+    const backgroundColor = new Color(Colors.PORTAL);
+    const spikesColor = new Color(Colors.MOON);
 
     const density = Configs.Level.fogDensity * (
       +!volumetricFog * 4.0 + 1.0
@@ -84,7 +85,7 @@ export default class Portals
 
     this.material = new ShaderMaterial({
       uniforms: {
-        fogColor: { value: Color.getClass(Color.FOG) },
+        fogColor: { value: new Color(Colors.FOG) },
         backgroundColor: { value: backgroundColor },
 
         spikesColor: { value: spikesColor },

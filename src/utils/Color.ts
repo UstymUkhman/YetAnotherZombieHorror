@@ -1,49 +1,54 @@
-import { Color as ThreeColor } from 'three/src/math/Color';
+import { clamp, randomInt } from '@/utils/Number';
+import type { Color } from 'three/src/math/Color';
 
-export namespace Color
-{
-  export type RGB = { r: number, g: number, b: number };
+export type RGB = Color | { r: number; g: number; b: number; };
 
-  export const BLACK  = 0x000000;
-  export const PORTAL = 0x222222;
-  export const BLUE   = 0x2D78FF;
+const getValue = ({ r, g, b }: RGB) =>
+  clamp(r * 255, 0, 255) << 16 ^ clamp(g * 255, 0, 255) << 8 ^ clamp(b * 255, 0, 255) << 0;
 
-  export const FOG    = 0x636363;
-  export const RAIN   = 0x4B4B4B;
-  export const RED    = 0x8A0707;
+export const blend = (initial: RGB | string | number, target: RGB | string | number, p = 0.5): string => {
+  initial = getRGB(typeof initial === 'object' ? getInt(initial) : initial, 255);
+  target = getRGB(typeof target === 'object' ? getInt(target) : target, 255);
 
-  export const MOON   = 0xA8D9A7;
-  export const FIRE   = 0xFBB741;
-  export const WHITE  = 0xFFFFFF;
+  return `#${(0x100000000 +
+    (Math.round(((target.r - initial.r) * p) + initial.r) * 0x10000) +
+    (Math.round(((target.g - initial.g) * p) + initial.g) * 0x100) +
+    Math.round(((target.b - initial.b) * p) + initial.b)
+  ).toString(16).slice(3)}`;
+};
 
-  export const blend = (initial: string, target: string, p = 0.5): string => {
-    const iColor: RGB = hexToRGB(initial);
-    const tColor: RGB = hexToRGB(target);
+export const getRGB = (color: string | number, format: 255 | 1 = 1): RGB => {
+  color = typeof color === 'string' ? parseInt(color.slice(1), 16) : color;
 
-    return `#${(0x100000000 +
-      (Math.round(((tColor.r - iColor.r) * p) + iColor.r) * 0x10000) +
-      (Math.round(((tColor.g - iColor.g) * p) + iColor.g) * 0x100) +
-      Math.round(((tColor.b - iColor.b) * p) + iColor.b)
-    ).toString(16).slice(3)}`.toUpperCase();
+  return {
+    r: (color >> 16) & format,
+    g: (color >> 8) & format,
+    b: color & format
   };
+};
 
-  export const getClass = (color: number | string): ThreeColor => {
-    return new ThreeColor(color);
-  };
+export const getHex = (color: RGB | number) => {
+  color = typeof color === 'number' ? color : getValue(color);
+  return `#${(`000000${color.toString(16)}`).slice(-6)}`;
+};
 
-  export const rgbToHEX = (rgb: RGB): string => {
-    return `#${(
-      (1 << 24) + (rgb.r << 16) + (rgb.g << 8) + rgb.b
-    ).toString(16).slice(1)}`.toUpperCase();
-  };
+export const getInt = (color: RGB | string) => {
+  color = typeof color === 'string' ? color : getHex(color);
+  return parseInt(color.slice(1), 16);
+};
 
-  export const hexToRGB = (hex: string): RGB => {
-    const color = parseInt(hex.slice(1), 16);
+export const random = () => randomInt(0, 0xffffff);
 
-    return {
-      r: (color >> 16) & 255,
-      g: (color >> 8) & 255,
-      b: color & 255
-    };
-  };
+export enum Colors {
+  BLACK  = 0x000000,
+  PORTAL = 0x222222,
+  BLUE   = 0x2D78FF,
+
+  FOG    = 0x484848,
+  RAIN   = 0x4B4B4B,
+  RED    = 0x8A0707,
+
+  MOON   = 0xA8D9A7,
+  FIRE   = 0xFBB741,
+  WHITE  = 0xFFFFFF
 }

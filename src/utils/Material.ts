@@ -10,7 +10,7 @@ import type { Shader } from 'three/src/renderers/shaders/ShaderLib';
 // import vertMain from '@/shaders/ground/main.vert';
 
 import { Assets } from '@/loaders/AssetsLoader';
-import { Color } from '@/utils/Color';
+import { Colors } from '@/utils/Color';
 
 export namespace Material
 {
@@ -54,22 +54,22 @@ export namespace Material
   }
 
   export const DynamicCollider = new MeshBasicMaterial({
-    color: Color.RED,
+    color: Colors.RED,
     wireframe: true,
     visible: DEBUG,
     opacity: 0.33
   });
 
   export const StaticCollider = new MeshBasicMaterial({
+    color: Colors.RAIN,
     transparent: true,
     depthWrite: false,
-    color: Color.RAIN,
     visible: DEBUG,
     opacity: 0.5
   });
 
   export const Transparent = new MeshBasicMaterial({
-    color: Color.BLACK,
+    color: Colors.BLACK,
     transparent: true,
     depthWrite: false,
     visible: false,
@@ -79,7 +79,7 @@ export namespace Material
   export const HitBox = new MeshBasicMaterial({
     transparent: true,
     depthWrite: false,
-    color: Color.RED,
+    color: Colors.RED,
     visible: DEBUG,
     opacity: 0.75
   });
