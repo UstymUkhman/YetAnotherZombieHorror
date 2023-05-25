@@ -1,4 +1,3 @@
 dist/*
+build/*
 public/*
-coverage/*
-build/app/*

@@ -1,3 +1,9 @@
+*,	
+*::after,	
+*::before {	
+  box-sizing: border-box;
+}
+
 html,
 body {
   -webkit-tap-highlight-color: transparent;
@@ -13,10 +19,12 @@ body {
   backface-visibility: hidden;
   background-color: #000000;
 
+  -webkit-user-select: none;
+  overscroll-behavior: none;
   text-size-adjust: 100%;
   letter-spacing: normal;
-  line-height: normal;
 
+  line-height: normal;
   font-weight: normal;
   font-kerning: none;
   font-style: normal;
@@ -25,23 +33,20 @@ body {
   appearance: none;
   overflow: hidden;
 
-  font-size: 1rem;
-  color: #8a0707;
-
   max-height: 100%;
   min-height: 100%;
 
   max-width: 100%;
   min-width: 100%;
 
+  font-size: 16px;
+  color: #8a0707;
+
   height: 100%;
   width: 100%;
 
   padding: 0;
   margin: 0;
-
-  left: 0;
-  top: 0;
 }
 
 .disabled-js,

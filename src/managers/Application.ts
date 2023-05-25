@@ -40,14 +40,14 @@ export default class Application
     Viewport.addResizeCallback(this.onResize);
     this.audioScene = new AudioScene();
 
-    import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/Onscreen').then(Manager =>
-      this.manager = new Manager.default(this.scene, this.worker, pixelRatio)
+    import(Configs.offscreen ? '@/offscreen/OffscreenCanvas' : '@/managers/Onscreen').then(
+      Manager => this.manager = new Manager.default(this.scene, this.worker, pixelRatio)
     );
   }
 
   private async createRaindrops (canvas: HTMLCanvasElement): Promise<void> {
-    Settings.getVisualValue('raindrops') && import('@/environment/Raindrops').then(Raindrops =>
-      this.raindrops = new Raindrops.default(this.scene, canvas)
+    Settings.getVisualValue('raindrops') && import('@/environment/Raindrops').then(
+      Raindrops => this.raindrops = new Raindrops.default(this.scene, canvas)
     );
   }
 

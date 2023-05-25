@@ -9,12 +9,12 @@
     "noUnusedParameters": false,
     "noImplicitOverride": true,
     "moduleResolution": "node",
+
     "noImplicitReturns": true,
     "resolveJsonModule": true,
     "strictNullChecks": true,
-
     "lib": ["esnext", "dom"],
-    "isolatedModules": true,
+
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "importHelpers": true,
@@ -22,7 +22,7 @@
     "skipLibCheck": true,
 
     "module": "ESNext",
-    "target": "ES2020",
+    "target": "ESNext",
     "sourceMap": true,
     "jsx": "preserve",
 
@@ -33,14 +33,14 @@
     "noEmit": true,
 
     "paths": {
-      "@components/*": ["src/components/*"],
       "@/*": ["src/*"]
     }
   },
 
   "include": [
+    "src/**/*.js",
     "src/**/*.ts",
-    "tests/**/*.ts",
+    "src/**/*.d.ts",
     "src/**/*.svelte"
   ],
 

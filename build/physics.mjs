@@ -1,8 +1,8 @@
 import { resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 
-const SETTINGS_FILE = resolve('../src/settings/physics.json');
 const PHYSICS_FILE  = resolve('../src/physics/index.ts');
+const SETTINGS_FILE = resolve('../src/settings/physics.json');
 
 const Settings = readFileSync(SETTINGS_FILE).toString();
 const Physics  = readFileSync(PHYSICS_FILE).toString();

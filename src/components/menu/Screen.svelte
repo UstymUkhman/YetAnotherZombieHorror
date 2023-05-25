@@ -24,7 +24,7 @@
 <script lang="ts">
   import { createEventDispatcher, tick, onMount, onDestroy } from 'svelte';
   import Settings from '@/components/menu/Settings.svelte';
-  import { Await } from '@components/overlay/index';
+  import { Await } from '@/components/overlay/index';
   import Menu from '@/components/menu/Main.svelte';
   import MenuScene from '@/scenes/MenuScene';
 

@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { GameEvents } from '@/events/GameEvents';
-  import Aim from '@components/HUD/Aim.svelte';
+  import Aim from '@/components/HUD/Aim.svelte';
   import { onMount, onDestroy } from 'svelte';
   import WhiteBox from '@/scenes/WhiteBox';
 

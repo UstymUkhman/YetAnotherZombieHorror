@@ -1,4 +1,4 @@
-<main>
+<main id="root">
   {#if menuScreen && !loading}
     <Menu
       on:update={({ detail }) => updating = detail}
@@ -39,11 +39,11 @@
 </main>
 
 <script lang="ts">
-  import { Await, Pause, Raindrops } from '@components/overlay/index';
-  import Menu from '@components/menu/Screen.svelte';
+  import { Await, Pause, Raindrops } from '@/components/overlay/index';
+  import Menu from '@/components/menu/Screen.svelte';
   import { GameEvents } from '@/events/GameEvents';
 
-  import Game from '@components/Game.svelte';
+  import Game from '@/components/Game.svelte';
   import { onDestroy } from 'svelte';
   import Configs from '@/configs';
 

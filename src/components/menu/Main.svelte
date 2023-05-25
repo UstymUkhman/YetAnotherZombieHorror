@@ -19,8 +19,8 @@
 
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
-  import { getKey, screenFade } from '@components/menu/utils';
-  import Sounds from '@components/menu/Sounds';
+  import { getKey, screenFade } from '@/components/menu/utils';
+  import Sounds from '@/components/menu/Sounds';
 
   import { mix } from '@/utils/Number';
   import Configs from '@/configs';

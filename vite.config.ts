@@ -5,14 +5,11 @@ import { version } from './package.json';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default ({ mode }: { mode: string }) => defineConfig({
-  base: './',
-  // build: { target: 'esnext' },
+  assetsInclude: ['**/*.bin', '**/*.fbx', '**/*.glb', '**/*.gltf'],
 
   resolve: {
-    alias: {
-      '@components': resolve('src/components'),
-      '@': resolve('src')
-    }
+    conditions: ['development', 'browser'],
+    alias: { '@': resolve('src') }
   },
 
   define: {
@@ -36,15 +33,13 @@ export default ({ mode }: { mode: string }) => defineConfig({
     })
   ],
 
-  assetsInclude: [
-    '**/*.fbx',
-    '**/*.glb',
-    '**/*.gltf'
-  ],
+  build: { target: 'esnext' },
 
   server: {
     host: '0.0.0.0',
     port: 8080,
     open: true
-  }
+  },
+
+  base: './'
 });

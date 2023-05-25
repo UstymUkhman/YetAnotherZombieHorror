@@ -20,8 +20,8 @@
 
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
-  import { getKey } from '@components/menu/utils';
-  import Sounds from '@components/menu/Sounds';
+  import { getKey } from '@/components/menu/utils';
+  import Sounds from '@/components/menu/Sounds';
   import { fade } from 'svelte/transition';
 
   const dispatch = createEventDispatcher();

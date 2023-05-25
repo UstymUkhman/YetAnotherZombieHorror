@@ -6,8 +6,8 @@
 
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
-  import type Raindrops from '@components/overlay/Raindrops.svelte';
-  import Interface from '@components/HUD/Interface.svelte';
+  import type Raindrops from '@/components/overlay/Raindrops.svelte';
+  import Interface from '@/components/HUD/Interface.svelte';
 
   import { GameEvents } from '@/events/GameEvents';
   import Application from '@/managers/Application';

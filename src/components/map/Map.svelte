@@ -6,14 +6,14 @@
 </div>
 
 <script lang="ts">
-  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@components/map/utils';
+  import { getScaledCoords, pointInCircle, getAngleToRifle } from '@/components/map/utils';
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import type { LevelCoords, LevelBounds } from '@/scenes/types';
   import { PI, DELTA_FRAME, easeOutSine } from '@/utils/Number';
   import { GameEvents, GameEvent } from '@/events/GameEvents';
 
   import type { Vector3 } from 'three/src/math/Vector3';
-  import Player from '@components/map/Player.svelte';
+  import Player from '@/components/map/Player.svelte';
   import { cloneBounds, max } from '@/utils/Array';
   import LevelScene from '@/scenes/LevelScene';
   import RAF from '@/managers/RAF';

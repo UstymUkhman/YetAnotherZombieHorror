@@ -7,8 +7,8 @@
 
   "cloud": "cloud.png",
   "fogDensity": 0.01,
-  "skybox": "level",
   "fog": "fog.png",
+  "skybox": "sky",
   "height": 10.0,
   "depth": 250.0,
 

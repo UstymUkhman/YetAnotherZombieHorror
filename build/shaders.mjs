@@ -8,26 +8,28 @@ import {
 } from 'fs';
 
 import { EOL } from 'os';
-import glsl from 'vite-plugin-glsl';
 import { join, resolve, dirname } from 'path';
+import { default as glsl } from 'vite-plugin-glsl';
 
 const SHADER_DIR = resolve('../src/shaders');
-const OUTPUT_DIR = resolve('../public/assets/shaders');
+
+const OUTPUT_PATH = path.replace(SHADER_DIR,
+  resolve('../public/assets/shaders')
+);
+
+const OUTPUT_DIR = dirname(OUTPUT_PATH);
 
 function compileShader (path) {
   let shader = readFileSync(path).toString();
-  shader = glsl.default().transform(shader, path);
+  shader = glsl().transform(shader, path);
 
   shader = shader.replace(/\\t/g, '  ');
   shader = shader.replace(/\\n/g, EOL);
   shader = shader.replace(/\\r/g, '');
-  shader = shader.slice(16, -2);
+  shader = shader.slice(16.0, -2.0);
 
-  const outputPath = path.replace(SHADER_DIR, OUTPUT_DIR);
-  const outputDir = dirname(outputPath);
-
-  !existsSync(outputDir) && mkdirSync(outputDir);
-  writeFileSync(outputPath, shader);
+  !existsSync(OUTPUT_DIR) && mkdirSync(OUTPUT_DIR);
+  writeFileSync(OUTPUT_PATH, shader);
 }
 
 function readShaderDirectory (directory) {
@@ -36,8 +38,7 @@ function readShaderDirectory (directory) {
       const path = join(directory, file);
 
       stat(path, (_, stat) => {
-        if (stat.isFile())
-          compileShader(path);
+        if (stat.isFile()) compileShader(path);
 
         else if (stat.isDirectory())
           readShaderDirectory(path);

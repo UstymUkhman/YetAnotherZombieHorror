@@ -87,10 +87,10 @@
 
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { Quality, MAX_CLOUDS } from '@/settings/constants';
-  import { getKey, screenFly } from '@components/menu/utils';
-  import { Checkbox, Range } from '@components/common';
+  import { getKey, screenFly } from '@/components/menu/utils';
+  import { Checkbox, Range } from '@/components/common';
 
-  import Sounds from '@components/menu/Sounds';
+  import Sounds from '@/components/menu/Sounds';
   import Settings from '@/settings';
 
   const dispatch = createEventDispatcher();

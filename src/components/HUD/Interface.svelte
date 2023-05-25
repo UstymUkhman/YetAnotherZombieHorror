@@ -22,13 +22,13 @@
 
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
-  import BorderRifle from '@components/map/BorderRifle.svelte';
+  import BorderRifle from '@/components/map/BorderRifle.svelte';
   import type { PlayerLocation } from '@/characters/types';
   import type { Vector3 } from 'three/src/math/Vector3';
 
   import { GameEvents } from '@/events/GameEvents';
-  import Aim from '@components/HUD/Aim.svelte';
-  import Map from '@components/map/Map.svelte';
+  import Aim from '@/components/HUD/Aim.svelte';
+  import Map from '@/components/map/Map.svelte';
 
   import { Elastic } from '@/utils/Elastic';
   import { fade } from 'svelte/transition';

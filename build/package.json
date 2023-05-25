@@ -1,5 +1,5 @@
 {
-  "name": "YAZH physics & shaders setup",
+  "name": "Physics And Shaders Setup",
   "version": "0.7.5",
   "scripts": {
     "postinstall": "node ./index.mjs"
