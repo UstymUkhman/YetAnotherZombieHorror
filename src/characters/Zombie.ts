@@ -1,10 +1,11 @@
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
-import type { Assets } from '@/loaders/AssetsLoader';
-import type { Mesh } from 'three/src/objects/Mesh';
 
+import type { Mesh } from 'three/src/objects/Mesh';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
+
 import Configs from '@/configs';
 import anime from 'animejs';
 
@@ -17,7 +18,7 @@ export default class Zombie extends Character
     });
   }
 
-  public override async load (): Promise<Assets.GLTFModel> {
+  public override async load (): Promise<GLTF> {
     const character = await super.load();
     this.setDefaultState();
     return character;

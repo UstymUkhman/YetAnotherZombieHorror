@@ -7,10 +7,10 @@ import { Vector3 } from 'three/src/math/Vector3';
 import { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Assets } from '@/loaders/AssetsLoader';
+import { Direction } from '@/utils/Direction';
 import { Mesh } from 'three/src/objects/Mesh';
-import { Euler } from 'three/src/math/Euler';
 
-import { Vector } from '@/utils/Vector';
+import { Euler } from 'three/src/math/Euler';
 import { PI } from '@/utils/Number';
 import anime from 'animejs';
 
@@ -52,7 +52,7 @@ export default class Hole
     this.origin.copy(this.position);
 
     this.origin.add((wall.face as Face).normal);
-    this.rotation.lookAt(this.origin, this.position, Vector.UP);
+    this.rotation.lookAt(this.origin, this.position, Direction.UP);
 
     this.orientation.setFromRotationMatrix(this.rotation);
     this.orientation.z = Math.random() * PI.m2;

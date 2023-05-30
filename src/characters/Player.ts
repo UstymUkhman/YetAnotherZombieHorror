@@ -3,21 +3,21 @@ import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMater
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 
 import type { Texture } from 'three/src/textures/Texture';
+import { Direction as InputDirection } from '@/controls';
 import type { PlayerLocation } from '@/characters/types';
 import type { Object3D } from 'three/src/core/Object3D';
 import { Quaternion } from 'three/src/math/Quaternion';
+
 import { radToDeg } from 'three/src/math/MathUtils';
 import type { Bone } from 'three/src/objects/Bone';
-
 import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
-import { Weapon } from '@/weapons/types.d';
+import { Direction } from '@/utils/Direction';
 
 import type Pistol from '@/weapons/Pistol';
+import { Weapon } from '@/weapons/types.d';
 import type Rifle from '@/weapons/Rifle';
-import { Vector } from '@/utils/Vector';
-import { Direction } from '@/controls';
 import Camera from '@/managers/Camera';
 
 import Controls from '@/controls';
@@ -79,14 +79,14 @@ export default class Player extends Character
     const fps = +Camera.isFPS;
     const tilt = this.rotation.y;
 
-    model.rotateOnWorldAxis(Vector.UP, x);
+    model.rotateOnWorldAxis(Direction.UP, x);
     if (this.running) return;
 
     const minTilt = fps * -0.2 - 0.2;
     maxTilt = Math.min(maxTilt + fps * maxTilt, 0.25);
 
     if ((lookDown && tilt >= minTilt) || (!lookDown && tilt <= maxTilt)) {
-      model.rotateOnAxis(Vector.RIGHT, y);
+      model.rotateOnAxis(Direction.RIGHT, y);
     }
   }
 
@@ -150,7 +150,7 @@ export default class Player extends Character
         setTimeout(this.idle.bind(this), 150);
     }
 
-    if (Controls.moves[Direction.UP]) {
+    if (Controls.moves[InputDirection.UP]) {
       this.hasRifle && this.rifle.updatePosition(1.5);
       GameEvents.dispatch('Player::Run', true, true);
 
@@ -392,7 +392,7 @@ export default class Player extends Character
     if (run) {
       const model = this.mesh;
       const targetRotation = new Quaternion()
-        .setFromAxisAngle(Vector.RIGHT, this.rotation.y);
+        .setFromAxisAngle(Direction.RIGHT, this.rotation.y);
 
       this.modelRotation.copy(model.quaternion);
       this.modelRotation.multiply(targetRotation);
@@ -407,7 +407,7 @@ export default class Player extends Character
 
     else if (this.rotation.y < -0.2) {
       const y = this.rotation.y + 0.2;
-      this.mesh.rotateOnAxis(Vector.RIGHT, y);
+      this.mesh.rotateOnAxis(Direction.RIGHT, y);
     }
   }
 
@@ -549,18 +549,18 @@ export default class Player extends Character
   private get movementAnimation (): PlayerAnimations {
     const directions = Controls.moves;
 
-    let direction = directions[Direction.UP]
-      ? 'Forward' : directions[Direction.DOWN]
+    let direction = directions[InputDirection.UP]
+      ? 'Forward' : directions[InputDirection.DOWN]
       ? 'Backward' : '';
 
     if (!this.equipRifle && !direction)
-      direction = directions[Direction.LEFT]
-        ? 'Left' : directions[Direction.RIGHT]
+      direction = directions[InputDirection.LEFT]
+        ? 'Left' : directions[InputDirection.RIGHT]
         ? 'Right' : direction;
 
     else if (this.equipRifle)
-      direction += directions[Direction.LEFT]
-        ? 'Left' : directions[Direction.RIGHT]
+      direction += directions[InputDirection.LEFT]
+        ? 'Left' : directions[InputDirection.RIGHT]
         ? 'Right' : '';
 
     return direction as PlayerAnimations || 'Idle';

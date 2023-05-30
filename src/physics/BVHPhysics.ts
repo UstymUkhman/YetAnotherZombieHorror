@@ -9,9 +9,9 @@ import { Vector3 } from 'three/src/math/Vector3';
 import { Group } from 'three/src/objects/Group';
 import { Mesh } from 'three/src/objects/Mesh';
 
+import { Direction } from '@/utils/Direction';
 import { Line3 } from 'three/src/math/Line3';
 import { Box3 } from 'three/src/math/Box3';
-import { Vector } from '@/utils/Vector';
 
 export default class BVHPhysics extends PhysicsWorld
 {
@@ -106,7 +106,7 @@ export default class BVHPhysics extends PhysicsWorld
 
     const { x, z } = collider.position;
     collider.position.set(x, height, z);
-    this.move(collider.uuid, Vector.UP);
+    this.move(collider.uuid, Direction.UP);
   }
 
   public move (uuid: string, direction: Vector3): void {

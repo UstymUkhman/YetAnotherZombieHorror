@@ -1,7 +1,7 @@
 import type { Texture } from 'three/src/textures/Texture';
 // import { PointLight } from 'three/src/lights/PointLight';
 import type { Vector3 } from 'three/src/math/Vector3';
-import type { Assets } from '@/loaders/AssetsLoader';
+import type { Group } from 'three/src/objects/Group';
 import type { WeaponConfig } from '@/weapons/types';
 
 import type { Mesh } from 'three/src/objects/Mesh';
@@ -33,19 +33,19 @@ export default class Rifle extends Weapon
   private readonly damage = Configs.Gameplay.damage.rifle;
   private readonly maxStock = Configs.Rifle.maxStock;
 
-  private clone!: Assets.GLTF;
-  private spine!: Assets.GLTF;
-
   private appended = false;
   // private spawnTime = 0.0;
   private spawned = false;
+
+  private clone!: Group;
+  private spine!: Group;
 
   public constructor (envMap: Texture) {
     super(Configs.Rifle as WeaponConfig);
     this.load(envMap);
   }
 
-  protected override async load (envMap: Texture): Promise<Assets.GLTF> {
+  protected override async load (envMap: Texture): Promise<Group> {
     const clone = await super.load(envMap);
     this.spine = clone.clone();
 
@@ -209,11 +209,11 @@ export default class Rifle extends Weapon
     this.visible = equip;
   }
 
-  public get dummy (): Assets.GLTF {
-    return this.spine;
-  }
-
   public get onStage (): boolean {
     return this.spawned;
+  }
+
+  public get dummy (): Group {
+    return this.spine;
   }
 }

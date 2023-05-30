@@ -6,6 +6,7 @@ import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { BufferGeometry } from 'three/src/core/BufferGeometry';
 import { PI, DELTA_FRAME, randomInt } from '@/utils/Number';
 import { PointLight } from 'three/src/lights/PointLight';
+import type { Group } from 'three/src/objects/Group';
 
 import { Points } from 'three/src/objects/Points';
 import { Vector3 } from 'three/src/math/Vector3';
@@ -33,7 +34,7 @@ export default class Fire
   private readonly geometry;
   private lightPower = 0.0;
 
-  public constructor (private readonly config: FireConfig, weapon: Assets.GLTF, textures: string) {
+  public constructor (private readonly config: FireConfig, weapon: Group, textures: string) {
     this.geometry = new BufferGeometry();
 
     this.createFireLight(weapon);
@@ -41,7 +42,7 @@ export default class Fire
     this.createParticles(weapon, textures);
   }
 
-  private createFireLight (weapon: Assets.GLTF): void {
+  private createFireLight (weapon: Group): void {
     const { intensity, position: { x, y } } = this.config;
     const decay = +Settings.getVisualValue('physicalLights') + 1.0;
 
@@ -81,7 +82,7 @@ export default class Fire
     this.smokeSize.addPoint(1.0, this.config.scale * 0.12);
   }
 
-  private async createParticles (weapon: Assets.GLTF, textures: string): Promise<void> {
+  private async createParticles (weapon: Group, textures: string): Promise<void> {
     // Development imports:
     /* const vertFire = (await import('../shaders/shot/fire.vert')).default;
     const fragFire = (await import('../shaders/shot/fire.frag')).default; */

@@ -3,18 +3,20 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 import type { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import type { AnimationAction } from 'three/src/animation/AnimationAction';
+import type { AnimationClip } from 'three/src/animation/AnimationClip';
 import { AnimationMixer } from 'three/src/animation/AnimationMixer';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import type { Texture } from 'three/src/textures/Texture';
+import type { Group } from 'three/src/objects/Group';
 
 import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
 import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
+import { Direction } from '@/utils/Direction';
 import { Mesh } from 'three/src/objects/Mesh';
 import { Line3 } from 'three/src/math/Line3';
-
 import { Material } from '@/utils/Material';
-import { Vector } from '@/utils/Vector';
 import Physics from '@/physics';
 
 export default abstract class Character
@@ -29,9 +31,7 @@ export default abstract class Character
   protected animationUpdate = false;
   protected readonly uuid: string;
   private mixer?: AnimationMixer;
-
   protected lastAnimation = '';
-  private model?: Assets.GLTF;
   private step: CharacterMove;
 
   protected hitting = false;
@@ -41,6 +41,7 @@ export default abstract class Character
   protected object: Mesh;
   protected dead = false;
   private still = false;
+  private model?: Group;
   private health = 100;
 
   public constructor (private config: CharacterConfig) {
@@ -52,7 +53,7 @@ export default abstract class Character
     );
 
     this.object.userData = {
-      segment: new Line3(new Vector3(), Vector.DOWN),
+      segment: new Line3(new Vector3(), Direction.DOWN),
       height: y, radius: 0.5, mass: this.config.mass
     };
 
@@ -76,7 +77,7 @@ export default abstract class Character
     }, duration * 1e3);
   }
 
-  protected async load (envMap?: Texture): Promise<Assets.GLTFModel> {
+  protected async load (envMap?: Texture): Promise<GLTF> {
     const character = await Assets.Loader.loadGLTF(this.config.model);
     this.mesh = character.scene;
 
@@ -122,8 +123,8 @@ export default abstract class Character
     this.step = this.config.moves[animation];
   }
 
-  private setAnimations (character: Assets.GLTFModel): void {
-    const animations = character.animations as Assets.Animations;
+  private setAnimations (character: GLTF): void {
+    const animations = character.animations as Array<AnimationClip>;
     this.mixer = new AnimationMixer(this.mesh);
 
     for (let a = animations.length; a--;) {
@@ -135,7 +136,7 @@ export default abstract class Character
     this.currentAnimation = this.animations.idle;
   }
 
-  protected setTransform (model: Assets.GLTFModel): void {
+  protected setTransform (model: GLTF): void {
     this.object.position.copy(this.config.position as Vector3);
     this.mesh.position.set(0.0, this.config.collider.z, 0.0);
     this.object.scale.copy(this.config.scale as Vector3);
@@ -173,7 +174,7 @@ export default abstract class Character
   public teleport (position: Vector3): void {
     Physics.pause = true;
     this.object.position.copy(position);
-    this.mesh.rotateOnWorldAxis(Vector.UP, Math.PI);
+    this.mesh.rotateOnWorldAxis(Direction.UP, Math.PI);
 
     Physics.teleportCollider?.(this.object.uuid);
     Physics.pause = false;
@@ -268,12 +269,12 @@ export default abstract class Character
     return this.dead || this.animationUpdate;
   }
 
-  protected set mesh (mesh: Assets.GLTF) {
+  protected set mesh (mesh: Group) {
     this.model = mesh;
   }
 
-  protected get mesh (): Assets.GLTF {
-    return this.model as Assets.GLTF;
+  protected get mesh (): Group {
+    return this.model as Group;
   }
 
   protected get life (): number {

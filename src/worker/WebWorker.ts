@@ -3,8 +3,8 @@ import WorkerManager from '@/worker/WorkerManager?worker';
 
 export default class WebWorker
 {
-  private events: Map<string, EventData> = new Map();
   private worker = new WorkerManager();
+  private events: Map<string, EventData> = new Map();
 
   public constructor () {
     this.worker.onmessage = this.onMessage.bind(this);
@@ -31,9 +31,7 @@ export default class WebWorker
 
   private onMessage (event: MessageEvent): void {
     const { name, response } = event.data;
-    const callback = this.events?.get(name)?.callback;
-
-    callback?.({ data: response });
+    this.events.get(name)?.callback({ data: response });
   }
 
   private onError (error: ErrorEvent): void {
@@ -45,8 +43,10 @@ export default class WebWorker
   }
 
   public dispose (): void {
-    this.worker.onmessage = null;
-    this.worker.onerror = null;
+    this.worker.onmessage =
+      this.worker.onerror = null;
+
+    this.events.clear();
   }
 
   public clear (): void {

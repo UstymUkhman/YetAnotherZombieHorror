@@ -2,6 +2,7 @@ import type { CharacterSound, EnemyAnimations, EnemyDeathAnimation } from '@/cha
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import type { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial';
 
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import type { SkinnedMesh } from 'three/src/objects/SkinnedMesh';
 import { BoxGeometry } from 'three/src/geometries/BoxGeometry';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
@@ -9,9 +10,9 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { Vector3 } from 'three/src/math/Vector3';
-import type { Assets } from '@/loaders/AssetsLoader';
-import { GameEvents } from '@/events/GameEvents';
+import type { Group } from 'three/src/objects/Group';
 
+import { GameEvents } from '@/events/GameEvents';
 import { LoopOnce } from 'three/src/constants';
 import Character from '@/characters/Character';
 import { Mesh } from 'three/src/objects/Mesh';
@@ -43,8 +44,6 @@ export default class Enemy extends Character
   private hitTimeout!: NodeJS.Timeout;
 
   private previousAnimation = 'idle';
-  private character!: Assets.GLTF;
-
   private screamDuration!: number;
   private screamStart!: number;
   private hitDuration!: number;
@@ -52,6 +51,7 @@ export default class Enemy extends Character
   private distance = Infinity;
   private playerDead = false;
   private hitStart!: number;
+  private character!: Group;
 
   private attacking = false;
   private screaming = false;
@@ -65,14 +65,14 @@ export default class Enemy extends Character
   private fallTime = 0.0;
   private hitTime = 0.0;
 
-  public constructor (model?: Assets.GLTFModel, envMap?: Texture, private readonly id = 0) {
+  public constructor (model?: GLTF, envMap?: Texture, private readonly id = 0) {
     super(Configs.Enemy);
 
     this.walkDistance = this.walkDistance < 0 ? Infinity : this.walkDistance;
     this.runDistance = this.runDistance < 0 ? Infinity : this.runDistance;
 
     if (model && envMap) {
-      this.character = clone(model.scene) as Assets.GLTF;
+      this.character = clone(model.scene) as Group;
       GameEvents.dispatch('Level::AddObject', this.object);
       GameEvents.dispatch('Enemy::Spawn', this.uuid, !TEST);
 
@@ -136,7 +136,7 @@ export default class Enemy extends Character
     });
   }
 
-  public async loadCharacter (envMap?: Texture): Promise<Assets.GLTFModel> {
+  public async loadCharacter (envMap?: Texture): Promise<GLTF> {
     return this.load(envMap);
   }
 

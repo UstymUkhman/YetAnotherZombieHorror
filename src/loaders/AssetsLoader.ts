@@ -1,37 +1,31 @@
-import { LoadingManager as ThreeLoadingManager } from 'three/src/loaders/LoadingManager';
-import type { AnimationClip } from 'three/src/animation/AnimationClip';
 import type { CanvasTexture } from 'three/src/textures/CanvasTexture';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { LoadingManager } from 'three/src/loaders/LoadingManager';
 
 import { CubeTexture } from 'three/src/textures/CubeTexture';
 import { AudioLoader } from 'three/src/loaders/AudioLoader';
 import CubeTextureLoader from '@/loaders/CubeTextureLoader';
-
 import { generateUUID } from 'three/src/math/MathUtils';
-import type { Group } from 'three/src/objects/Group';
 
 import TextureLoader from '@/loaders/TextureLoader';
 import { GameEvents } from '@/events/GameEvents';
 import { RGBAFormat } from 'three/src/constants';
-
 import Configs from '@/configs';
 
 export namespace Assets
 {
-  type Assets = CanvasTexture | CubeTexture | GLTFModel | AudioBuffer;
   type Resolve<Asset> = (asset?: Asset | PromiseLike<Asset>) => void;
   type ProgressEventTarget = EventTarget & { responseURL: string };
-  type Reject = (error: ErrorEvent) => void;
+  type Assets = GLTF | AudioBuffer | CubeTexture | CanvasTexture;
 
   type Callbacks = {
-    onProgress: (event: ProgressEvent<EventTarget>) => void
-    onLoad: (asset: Assets) => void
-    onError: Reject
+    onProgress: (event: ProgressEvent<EventTarget>) => void;
+    onError: (error: ErrorEvent) => void;
+    onLoad: (asset: Assets) => void;
   }
 
-  const BASE_PATH = Configs.basePath();
-
-  class LoadingManager extends ThreeLoadingManager
+  class Manager extends LoadingManager
   {
     private readonly imageBasePath   = `${BASE_PATH}/images/`;
     private readonly modelBasePath   = `${BASE_PATH}/models/`;
@@ -51,7 +45,7 @@ export namespace Assets
       'pz.png', 'nz.png'
     ];
 
-    private getPromiseCallbacks (resolve: Resolve<Assets>, reject: Reject): Callbacks {
+    private getPromiseCallbacks (resolve: Resolve<Assets>, reject: (error: ErrorEvent) => void): Callbacks {
       return {
         onLoad: asset => {
           if (asset instanceof CubeTexture) {
@@ -96,7 +90,11 @@ export namespace Assets
       });
     }
 
-    public async loadGLTF (file: string): Promise<GLTFModel> {
+    public async loadShader (file: string): Promise<string> {
+      return await (await fetch(`${this.shaderBasePath + file}`)).text();
+    }
+
+    public async loadGLTF (file: string): Promise<GLTF> {
       return await new Promise((resolve, reject) => {
         const promise = this.getPromiseCallbacks(resolve as Resolve<Assets>, reject);
 
@@ -105,12 +103,8 @@ export namespace Assets
       });
     }
 
-    public async loadShader (file: string): Promise<string> {
-      return await (await fetch(`${this.shaderBasePath + file}`)).text();
-    }
-
     public override onProgress = (url: string, loaded: number, total: number): void => {
-      GameEvents.dispatch('Asset::LoadingProgress', {
+      GameEvents.dispatch(Loading.Progress, {
         progress: loaded * 100 / total,
         uuid: this.uuid
       }, true);
@@ -121,17 +115,21 @@ export namespace Assets
     };
 
     public override onStart = (): void => {
-      GameEvents.dispatch('Asset::LoadingStart', this.uuid, true);
+      GameEvents.dispatch(Loading.Start, this.uuid, true);
     };
 
     public override onLoad = (): void => {
-      GameEvents.dispatch('Asset::LoadingComplete', this.uuid, true);
+      GameEvents.dispatch(Loading.Complete, this.uuid, true);
     };
   }
 
-  export type GLTFModel = { scene: GLTF, animations?: Animations };
-  export type Animations = Array<AnimationClip>;
-  export type GLTF = Group;
+  const BASE_PATH = Configs.basePath();
 
-  export const Loader = new LoadingManager();
+  export const Loader = new Manager();
+
+  export enum Loading {
+    Complete = 'Loading::Complete',
+    Progress = 'Loading::Progress',
+    Start    = 'Loading::Start'
+  }
 }

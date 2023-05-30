@@ -1,11 +1,12 @@
+type Size = { height: number, width: number, ratio: number };
 type Callback = (width: number, height: number) => void;
-type Size = { width: number, height: number };
 
 class Viewport
 {
   private readonly update = this.updateScreen.bind(this);
   private readonly callbacks: Array<Callback> = [];
   private readonly root!: CSSStyleDeclaration;
+  private readonly ratio = 16.0 / 9.0;
 
   private height = 0.0;
   private width = 0.0;
@@ -13,9 +14,9 @@ class Viewport
   public constructor () {
     if (typeof window !== 'undefined') {
       this.root = document.documentElement.style;
-      window.addEventListener('resize', this.update, false);
+      this.root.setProperty('--ratio', `${this.ratio}`);
 
-      this.root.setProperty('--ratio', '16 / 9');
+      window.addEventListener('resize', this.update, false);
       this.updateScreen();
     }
   }
@@ -24,11 +25,10 @@ class Viewport
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    if (this.width / this.height < this.ratio) {
+    if (this.width / this.height < this.ratio)
       this.height = this.width / this.ratio;
-    } else {
+    else
       this.width = this.height * this.ratio;
-    }
 
     this.root.setProperty('--height', `${this.height}px`);
     this.root.setProperty('--width', `${this.width}px`);
@@ -50,17 +50,14 @@ class Viewport
 
   public dispose (): void {
     window.removeEventListener('resize', this.update, false);
-    this.callbacks.splice(0);
-  }
-
-  public get ratio (): number {
-    return 16 / 9;
+    this.callbacks.length = 0;
   }
 
   public get size (): Size {
     return {
       height: this.height,
-      width: this.width
+      width: this.width,
+      ratio: this.ratio
     };
   }
 }

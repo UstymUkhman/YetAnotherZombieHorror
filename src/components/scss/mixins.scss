@@ -25,11 +25,7 @@
   position: absolute;
   display: block;
   margin: auto;
-
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
+  inset: 0;
 }
 
 @mixin center-transform {

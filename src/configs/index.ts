@@ -1,18 +1,14 @@
 import type { CharacterMove } from '@/characters/types';
 import GameplayData from '@/settings/gameplay.json';
-
 import { Vector2 } from 'three/src/math/Vector2';
 import { Vector3 } from 'three/src/math/Vector3';
-
-import CameraData from '@/configs/camera.json';
-import LevelData from '@/configs/level.json';
-
 import PlayerData from '@/configs/player.json';
-import EnemyData from '@/configs/enemy.json';
-
 import PistolData from '@/configs/pistol.json';
-import RifleData from '@/configs/rifle.json';
+import CameraData from '@/configs/camera.json';
 
+import LevelData from '@/configs/level.json';
+import EnemyData from '@/configs/enemy.json';
+import RifleData from '@/configs/rifle.json';
 import { Euler } from 'three/src/math/Euler';
 import deepFreeze from '@/utils/deepFreeze';
 
@@ -149,6 +145,7 @@ namespace Configs
 
     textures: PistolData.textures,
     emissive: PistolData.emissive,
+    sounds: PistolData.sounds,
     model: PistolData.model,
 
     bullet: {
@@ -164,9 +161,7 @@ namespace Configs
       intensity: PistolData.fire.intensity,
       velocity: PistolData.fire.velocity,
       scale: PistolData.fire.scale
-    },
-
-    sounds: PistolData.sounds
+    }
   });
 
   export const Rifle = deepFreeze({
@@ -187,6 +182,7 @@ namespace Configs
 
     textures: RifleData.textures,
     maxStock: RifleData.maxStock,
+    sounds: RifleData.sounds,
     model: RifleData.model,
 
     bullet: {
@@ -202,9 +198,7 @@ namespace Configs
       intensity: RifleData.fire.intensity,
       velocity: RifleData.fire.velocity,
       scale: RifleData.fire.scale
-    },
-
-    sounds: RifleData.sounds
+    }
   });
 }
 

@@ -13,11 +13,11 @@ import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Assets } from '@/loaders/AssetsLoader';
 
+import { Direction } from '@/utils/Direction';
 import { Mesh } from 'three/src/objects/Mesh';
 import LevelScene from '@/scenes/LevelScene';
-import { Euler } from 'three/src/math/Euler';
 
-import { Vector } from '@/utils/Vector';
+import { Euler } from 'three/src/math/Euler';
 import { Colors } from '@/utils/Color';
 import Settings from '@/settings';
 import Configs from '@/configs';
@@ -121,7 +121,7 @@ export default class Clouds
       sampler.sample(position);
       cloud.position.copy(position);
 
-      cloud.lookAt(Vector.DOWN);
+      cloud.lookAt(Direction.DOWN);
       cloud.updateMatrix();
 
       this.clouds.setMatrixAt(i, cloud.matrix);

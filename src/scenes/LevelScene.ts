@@ -11,6 +11,7 @@ import type { CMSMode } from 'three/examples/jsm/csm/CSM';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 
+import type { Group } from 'three/src/objects/Group';
 import type { Mesh } from 'three/src/objects/Mesh';
 import { CameraObject } from '@/managers/Camera';
 import { Vector2 } from 'three/src/math/Vector2';
@@ -19,8 +20,8 @@ import { CSM } from 'three/examples/jsm/csm/CSM';
 import type WebWorker from '@/worker/WebWorker';
 import { Assets } from '@/loaders/AssetsLoader';
 import { Scene } from 'three/src/scenes/Scene';
-import { Color } from 'three/src/math/Color';
 
+import { Color } from 'three/src/math/Color';
 import Portals from '@/environment/Portals';
 import Clouds from '@/environment/Clouds';
 import { min, max } from '@/utils/Array';
@@ -135,7 +136,7 @@ export default class LevelScene
     GameEvents.dispatch('Level::EnvMap', envMap);
   }
 
-  private async loadLevel (file: string): Promise<Assets.GLTF> {
+  private async loadLevel (file: string): Promise<Group> {
     const level = await Assets.Loader.loadGLTF(file);
     this.scene.add(level.scene);
     return level.scene;

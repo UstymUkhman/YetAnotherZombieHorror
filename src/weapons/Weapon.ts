@@ -5,18 +5,19 @@ import type { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import type { Intersection } from 'three/src/core/Raycaster';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
+import type { Group } from 'three/src/objects/Group';
 import { Raycaster } from 'three/src/core/Raycaster';
+
 import type { Mesh } from 'three/src/objects/Mesh';
 import type { Euler } from 'three/src/math/Euler';
-
 import { CameraObject } from '@/managers/Camera';
 import { GameEvents } from '@/events/GameEvents';
 import { Vector3 } from 'three/src/math/Vector3';
+
 import { FrontSide } from 'three/src/constants';
 import { Assets } from '@/loaders/AssetsLoader';
-
+import { Direction } from '@/utils/Direction';
 import { random } from '@/utils/Number';
-import { Vector } from '@/utils/Vector';
 import { Colors } from '@/utils/Color';
 import Bullet from '@/weapons/Bullet';
 
@@ -42,13 +43,12 @@ export default abstract class Weapon
   public targets: Array<Object3D> = [];
   protected readonly magazine: number;
   public walls: Array<Object3D> = [];
-
   private readonly bullet?: Bullet;
-  private weapon!: Assets.GLTF;
 
   protected loadedAmmo: number;
   protected totalAmmo: number;
   // private bulletSpeed = 0.0;
+  private weapon!: Group;
 
   private aimed = false;
   public aiming = false;
@@ -67,7 +67,7 @@ export default abstract class Weapon
     this.totalAmmo = config.ammo;
   }
 
-  protected async load (envMap: Texture): Promise<Assets.GLTF> {
+  protected async load (envMap: Texture): Promise<Group> {
     const { emissive = Colors.BLACK, emissiveIntensity = 1.0 } = this.config;
     this.weapon = (await Assets.Loader.loadGLTF(this.config.model)).scene;
 
@@ -137,7 +137,7 @@ export default abstract class Weapon
       spread ? this.camera.clone().add(this.spread) : this.camera
     );
 
-    this.raycaster.ray.direction.copy(Vector.FORWARD)
+    this.raycaster.ray.direction.copy(Direction.FORWARD)
       .unproject(CameraObject)
       .sub(this.camera)
       .normalize();
@@ -312,10 +312,6 @@ export default abstract class Weapon
     return this.aiming ? y : x;
   }
 
-  public get object (): Assets.GLTF {
-    return this.weapon as Assets.GLTF;
-  }
-
   private get spread (): Vector3 {
     let { x, y } = this.config.spread;
     const spread = +!this.aiming * 0.5 + 0.5;
@@ -356,5 +352,9 @@ export default abstract class Weapon
 
   public get full (): boolean {
     return this.loadedAmmo === this.magazine;
+  }
+
+  public get object (): Group {
+    return this.weapon as Group;
   }
 }

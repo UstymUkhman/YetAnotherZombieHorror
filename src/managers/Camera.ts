@@ -5,8 +5,8 @@ import type { Matrix4 } from 'three/src/math/Matrix4';
 
 import { Vector3 } from 'three/src/math/Vector3';
 import { GAME_RATIO } from '@/scenes/WhiteBox';
+import { Direction } from '@/utils/Direction';
 import { Clock } from 'three/src/core/Clock';
-import { Vector } from '@/utils/Vector';
 
 import Viewport from '@/utils/Viewport';
 import RAF from '@/managers/RAF';
@@ -43,7 +43,7 @@ export class CameraManager
   private readonly fpRifleAim = new Vector3(-0.1541, 1.524, 0.5);
 
   public constructor () {
-    const ratio = (TEST && !GAME_RATIO) ? innerWidth / innerHeight : Viewport.ratio;
+    const ratio = (TEST && !GAME_RATIO) ? innerWidth / innerHeight : Viewport.size.ratio;
     this.camera = new PerspectiveCamera(45, ratio, +this.fps * 0.215 + 0.1);
     this.camera.far = Configs.Level.depth;
 
@@ -212,7 +212,7 @@ export class CameraManager
 
     if (this.shakeDuration) {
       const delta = this.clock.getDelta();
-      const offset = Vector.random().multiplyScalar(this.shakePower);
+      const offset = Direction.random().multiplyScalar(this.shakePower);
 
       setTimeout(() => this.shakeAnimation(this.shakeDuration), delta);
       this.shakeDuration -= delta * this.shakeAttenuation;

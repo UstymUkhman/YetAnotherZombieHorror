@@ -39,22 +39,17 @@
       @include mixin.size(2.25vw);
 
       animation: 1s var.$ease-out-sine infinite pulse;
-      background-color: var.$white;
+      inset: auto 3.875vw 8.875vw auto;
 
+      background-color: var.$white;
       backface-visibility: hidden;
       transform-origin: 50% 50%;
 
       border-radius: 50%;
       position: absolute;
 
-      bottom: 8.875vw;
-      right: 3.875vw;
-
       display: block;
       margin: auto;
-
-      left: auto;
-      top: auto;
     }
   }
 </style>

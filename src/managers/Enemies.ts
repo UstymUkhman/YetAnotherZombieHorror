@@ -1,10 +1,10 @@
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import type { Texture } from 'three/src/textures/Texture';
 import type { Object3D } from 'three/src/core/Object3D';
 import type { HitDirection } from '@/characters/types';
-import PhysicsSettings from '@/settings/physics.json';
 
+import PhysicsSettings from '@/settings/physics.json';
 import type { GameEvent } from '@/events/GameEvents';
-import type { Assets } from '@/loaders/AssetsLoader';
 import { degToRad } from 'three/src/math/MathUtils';
 
 import type { LevelCoords } from '@/scenes/types';
@@ -29,8 +29,8 @@ export default class Enemies
   private readonly enemyPosition = new Vector3();
   private readonly enemies: Array<Enemy> = [];
 
-  private enemyModel!: Assets.GLTFModel;
   private spawnedEnemies = 0;
+  private enemyModel!: GLTF;
 
   public constructor (private readonly envMap: Texture) {
     (new Enemy).loadCharacter(envMap).then(model => {
