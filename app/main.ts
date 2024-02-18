@@ -7,18 +7,23 @@ delete process.env.ELECTRON_ENABLE_SECURITY_WARNINGS;
 const SCREEN_RATIO = 0.9 + +PRODUCTION * 0.1;
 let game: BrowserWindow | null = null;
 
+import { join } from 'path';
+
 function createWindow(): void {
   if (game !== null) return;
 
   game = new BrowserWindow({
-    webPreferences: { preload: './preloader.js' },
+    webPreferences: {
+      preload: join(__dirname, './preloader.js')
+    },
+
     backgroundColor: '#000000',
     fullscreen: PRODUCTION,
     frame: false
   });
 
+  game.loadFile(join(__dirname, '../../dist/index.html'));
   !PRODUCTION && game.webContents.openDevTools();
-  game.loadFile('../../dist/index.html');
   game.on('closed', () => game = null);
 }
 

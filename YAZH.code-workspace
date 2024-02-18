@@ -1,36 +1,35 @@
 {
-	"settings": {		
-		"js-import.plainFileSuffix": "bin,css,fbx,frag,fs,glb,glsl,gltf,less,sass,scss,svg,vert,vs,wasm,wat,wgsl",
+  "settings": {
+    "js-import.plainFileSuffix": "bin,css,fbx,frag,fs,glb,glsl,gltf,less,sass,scss,svg,vert,vs,wasm,wat,wgsl",
     "js-import.filesToScan": "**/*.{ts,tsx,js,jsx,vs,fs,vert,frag,glsl,wgsl}",
-		"svelte.language-server.runtime": "C:/Program Files/nodejs/node.exe",
+    "svelte.language-server.runtime": "C:/Program Files/nodejs/node.exe",
 
-		"[svelte]": {
-			"editor.defaultFormatter": "svelte.svelte-vscode"
-		},
+    "[svelte]": {
+      "editor.defaultFormatter": "svelte.svelte-vscode"
+    },
 
-		"editor.bracketPairColorization.enabled": false,
-		"svelte.plugin.typescript.enable": true,
-		"svelte.plugin.svelte.enable": true,
+    "editor.bracketPairColorization.enabled": false,
+    "svelte.plugin.typescript.enable": true,
+    "svelte.plugin.svelte.enable": true,
 
-		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": false
-		},
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "never"
+    },
 
-		"git.ignoreLimitWarning": true,
-		"js-import.semicolon": true,
+    "git.ignoreLimitWarning": true,
+    "js-import.semicolon": true,
 
-		"js-import.alias": {
-			"@": "./src"
-		},
+    "js-import.alias": {
+      "@": "./src"
+    },
 
-		"eslint.validate": [
-      "typescript",
-      "javascript"
-    ]
-	},
+    "eslint.validate": ["typescript", "javascript"]
+  },
 
-	"folders": [{
-		"name": "Yet Another Zombie Horror",
-		"path": "."
-	}]
+  "folders": [
+    {
+      "name": "Yet Another Zombie Horror",
+      "path": "."
+    }
+  ]
 }
