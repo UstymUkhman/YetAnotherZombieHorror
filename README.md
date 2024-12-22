@@ -1,5 +1,5 @@
-# [Yet Another Zombie Horror](http://35.158.218.205/experiments/YetAnotherZombieHorror/) #
-*or simply ***YAZH*** [[jɑːʒ](http://35.158.218.205/experiments/YetAnotherZombieHorror/assets/sounds/YAZH.mp3)], is a first / third person zombie survival shooter.*
+# Yet Another Zombie Horror #
+*or simply ***YAZH*** [jɑːʒ], is a first / third person zombie survival shooter.*
 
 <br />
 
