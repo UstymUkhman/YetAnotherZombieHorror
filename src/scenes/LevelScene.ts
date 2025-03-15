@@ -155,7 +155,7 @@ export default class LevelScene
   }
 
   private createLights (): void {
-    const ambientIntensity = 0.1 + (+DEBUG * 0.9);
+    const ambientIntensity = 0.2 + (+DEBUG * 0.8);
     const intensity = 0.25 + +!this.physicalLights * 0.1;
     const direction = new Vector3(0.925, -1.875, -1.0).normalize();
     this.scene.add(new AmbientLight(Colors.WHITE, ambientIntensity));
