@@ -26,5 +26,6 @@ public/**/*.glb
 !build/package.json
 !build/pnpm-lock.yaml
 public/assets/shaders/*
+!public/**/thumbnail.jpg
 !public/**/shaders/.gitkeep
 !public/assets/sounds/YAZH.mp3

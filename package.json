@@ -2,9 +2,9 @@
   "name": "YetAnotherZombieHorror",
   "description": "Yet Another Zombie Horror",
   "homepage": "https://github.com/UstymUkhman/YetAnotherZombieHorror#readme",
-  "packageManager": "^pnpm@8.4.0",
+  "packageManager": "^pnpm@8.15.4",
   "main": "src/main.ts",
-  "version": "0.7.5",
+  "version": "0.8.0",
   "license": "MIT",
   "private": false,
   "type": "module",
@@ -89,7 +89,7 @@
     "vite-plugin-glsl": "^1.1.2"
   },
   "engines": {
-    "node": ">= 18.12.1",
-    "pnpm": ">= 8.4.0"
+    "node": ">= 20.15.0",
+    "pnpm": ">= 8.15.4"
   }
 }

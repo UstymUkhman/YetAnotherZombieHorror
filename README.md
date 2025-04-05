@@ -9,6 +9,8 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UstymUkhman/YetAnotherZombieHorror)
 ![GitHub](https://img.shields.io/github/license/UstymUkhman/YetAnotherZombieHorror)
 
+[![Gameplay Trailer](./public/assets/images/thumbnail.jpg)](https://www.youtube.com/watch?v=DzxZ0I5d7_0)
+
 ## Download ##
 
 ```sh
